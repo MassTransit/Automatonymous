@@ -5,10 +5,10 @@
     using System.Reflection;
     using Impl;
 
-    public abstract class StateMachineSpecification<TInstance>
+    public abstract class StateMachine<TInstance>
         where TInstance : StateMachineInstance
     {
-        protected StateMachineSpecification()
+        protected StateMachine()
         {
             State(() => Initial);
             State(() => Completed);

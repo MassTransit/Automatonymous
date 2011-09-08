@@ -39,7 +39,7 @@
         }
 
         class TestStateMachine :
-            StateMachineSpecification<StateMachineInstance>
+            StateMachine<StateMachineInstance>
         {
             public TestStateMachine()
             {
