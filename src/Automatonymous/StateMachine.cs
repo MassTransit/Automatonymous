@@ -18,6 +18,7 @@ namespace Automatonymous
     using System.Linq.Expressions;
     using System.Reflection;
     using Impl;
+    using Impl.Activities;
     using Internal.Caching;
 
 
@@ -25,6 +26,7 @@ namespace Automatonymous
         where TInstance : StateMachineInstance
     {
         readonly Cache<string, Event> _eventCache;
+        readonly Activity<TInstance> _initialActivity;
         readonly Cache<string, StateImpl<TInstance>> _stateCache;
 
         protected StateMachine()
@@ -34,6 +36,8 @@ namespace Automatonymous
 
             State(() => Initial);
             State(() => Completed);
+
+            _initialActivity = new TransitionActivity<TInstance>(Initial);
         }
 
         public State Initial { get; private set; }
@@ -41,10 +45,7 @@ namespace Automatonymous
 
         public void RaiseEvent(TInstance instance, Event @event)
         {
-            WithInstance(instance, x =>
-                {
-                    _stateCache[instance.CurrentState.Name].Raise(instance, @event, null);
-                });
+            WithInstance(instance, x => { _stateCache[instance.CurrentState.Name].Raise(instance, @event, null); });
         }
 
         void WithInstance(TInstance instance, Action<TInstance> callback)
@@ -53,18 +54,9 @@ namespace Automatonymous
                 throw new ArgumentNullException("instance");
 
             if (instance.CurrentState == null)
-            {
-                EnterState(instance, Initial);
-            }
+                _initialActivity.Execute(instance);
 
             callback(instance);
-        }
-
-        void EnterState(TInstance instance, State state)
-        {
-            instance.CurrentState = state;
-
-            RaiseEvent(instance, state.Enter);
         }
 
         protected void Event(Expression<Func<Event>> propertyExpression)
@@ -127,17 +119,10 @@ namespace Automatonymous
 
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            if(state == null)
-                throw new ArgumentNullException("state");
-
-            var activityState = state as StateImpl<TInstance>;
-            if(activityState == null)
-                throw new ArgumentException("The state is invalid: " + state.Name);
+            State<TInstance> activityState = state.For<TInstance>();
 
             foreach (var activity in activities.SelectMany(x => x))
-            {
                 activityState.Bind(activity);
-            }
         }
 
         protected void Initially(params EventActivity<TInstance>[] args)
@@ -147,10 +132,7 @@ namespace Automatonymous
 
         protected IEnumerable<EventActivity<TInstance>> When(Event @event, params Activity<TInstance>[] activities)
         {
-            foreach (var activity in activities)
-            {
-                yield return new EventActivityImpl<TInstance>(@event, activity);
-            }
+            return activities.Select(activity => new EventActivityImpl<TInstance>(@event, activity));
         }
 
         protected int When<TData>(Event<TData> @event, params Activity<TInstance>[] activities)
@@ -158,11 +140,9 @@ namespace Automatonymous
             return 0;
         }
 
-        protected Activity<TInstance> TransitionTo(State value)
+        protected Activity<TInstance> TransitionTo(State toState)
         {
-            StateImpl<TInstance> state = value as StateImpl<TInstance>;
-            if(state == null)
-                throw new ArgumentException("is not a valid state");
+            State<TInstance> state = toState.For<TInstance>();
 
             var activity = new TransitionActivity<TInstance>(state);
 

@@ -39,13 +39,14 @@
   <ItemGroup>
     <Compile Include="Event.cs" />
     <Compile Include="Impl\Activity.cs" />
-    <Compile Include="Impl\ActionEventActivity.cs" />
+    <Compile Include="Impl\Activities\ActionEventActivity.cs" />
     <Compile Include="Impl\DataEvent.cs" />
     <Compile Include="Impl\EventActivityImpl.cs" />
     <Compile Include="Impl\SimpleEvent.cs" />
     <Compile Include="Impl\State.cs" />
+    <Compile Include="Impl\StateExtensions.cs" />
     <Compile Include="Impl\StateImpl.cs" />
-    <Compile Include="Impl\TransitionActivity.cs" />
+    <Compile Include="Impl\Activities\TransitionActivity.cs" />
     <Compile Include="Internal\Caching\AbstractCacheDecorator.cs" />
     <Compile Include="Internal\Caching\Cache.cs" />
     <Compile Include="Internal\Caching\CacheItemCallback.cs" />

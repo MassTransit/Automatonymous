@@ -17,5 +17,7 @@ namespace Automatonymous.Impl
         where TInstance : StateMachineInstance
     {
         void Raise(TInstance instance, Event @event, object value);
+
+        void Bind(EventActivity<TInstance> activity);
     }
 }

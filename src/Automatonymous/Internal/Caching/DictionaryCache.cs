@@ -1,5 +1,5 @@
-﻿// Copyright 2007-2010 The Apache Software Foundation.
-// 
+﻿// Copyright 2011 Chris Patterson, Dru Sellers
+//  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -17,17 +17,18 @@ namespace Automatonymous.Internal.Caching
     using System.Collections.Generic;
     using System.Linq;
 
+
     [Serializable]
     public class DictionaryCache<TKey, TValue> :
         Cache<TKey, TValue>
     {
         readonly IDictionary<TKey, TValue> _values;
+        CacheItemCallback<TKey, TValue> _duplicateValueAdded;
 
         KeySelector<TKey, TValue> _keySelector = DefaultKeyAccessor;
         MissingValueProvider<TKey, TValue> _missingValueProvider = ThrowOnMissingValue;
         CacheItemCallback<TKey, TValue> _valueAddedCallback = DefaultCacheItemCallback;
         CacheItemCallback<TKey, TValue> _valueRemovedCallback = DefaultCacheItemCallback;
-        CacheItemCallback<TKey, TValue> _duplicateValueAdded;
 
         public DictionaryCache()
         {
@@ -289,7 +290,8 @@ namespace Automatonymous.Internal.Caching
 
         static void ThrowOnDuplicateValue(TKey key, TValue value)
         {
-            throw new ArgumentException(string.Format("An item with the same key already exists in the cache: {0}", key), "key");
+            throw new ArgumentException(
+                string.Format("An item with the same key already exists in the cache: {0}", key), "key");
         }
 
         static void DefaultCacheItemCallback(TKey key, TValue value)

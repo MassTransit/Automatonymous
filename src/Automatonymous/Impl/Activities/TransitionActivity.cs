@@ -10,18 +10,20 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous.Impl.Activities
 {
-    using System;
-
-
     public class TransitionActivity<TInstance> :
         Activity<TInstance>
         where TInstance : StateMachineInstance
     {
-        readonly StateImpl<TInstance> _toState;
+        readonly State<TInstance> _toState;
 
-        public TransitionActivity(StateImpl<TInstance> toState)
+        public TransitionActivity(State toState)
+        {
+            _toState = toState.For<TInstance>();
+        }
+
+        public TransitionActivity(State<TInstance> toState)
         {
             _toState = toState;
         }
@@ -36,9 +38,7 @@ namespace Automatonymous.Impl
             if (instance.CurrentState == _toState)
                 return;
 
-            var currentState = instance.CurrentState as StateImpl<TInstance>;
-            if (currentState != null)
-                currentState.Raise(instance, currentState.Leave, null);
+            instance.CurrentState.WithState<TInstance>(x => x.Raise(instance, x.Leave, null));
 
             instance.CurrentState = ToState;
             _toState.Raise(instance, ToState.Enter, null);
@@ -46,13 +46,7 @@ namespace Automatonymous.Impl
 
         public void Inspect(StateMachineInspector inspector)
         {
-            throw new NotImplementedException();
-        }
-
-        public Event Event
-        {
-            get { throw new NotImplementedException(); }
+            inspector.Inspect(this);
         }
     }
 }
-

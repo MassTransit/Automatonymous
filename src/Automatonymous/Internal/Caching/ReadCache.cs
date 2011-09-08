@@ -1,5 +1,5 @@
-// Copyright 2007-2010 The Apache Software Foundation.
-// 
+// Copyright 2011 Chris Patterson, Dru Sellers
+//  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,6 +14,7 @@ namespace Automatonymous.Internal.Caching
 {
     using System;
     using System.Collections.Generic;
+
 
     /// <summary>
     /// A read-only view of a cache. Methods that are able to modify the cache contents are not
