@@ -8,8 +8,8 @@
     <ProjectGuid>{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Stayt.Tests</RootNamespace>
-    <AssemblyName>Stayt.Tests</AssemblyName>
+    <RootNamespace>Automatonymous.Tests</RootNamespace>
+    <AssemblyName>Automatonymous.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

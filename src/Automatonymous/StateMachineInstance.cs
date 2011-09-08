@@ -1,4 +1,4 @@
-﻿namespace Stayt
+﻿namespace Automatonymous
 {
     public interface StateMachineInstance
     {

@@ -1,5 +1,6 @@
-﻿namespace Stayt.Tests
+﻿namespace Automatonymous.Tests
 {
+    using Automatonymous;
     using NUnit.Framework;
 
     [TestFixture]

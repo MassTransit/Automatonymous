@@ -8,8 +8,8 @@
     <ProjectGuid>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Stayt</RootNamespace>
-    <AssemblyName>Stayt</AssemblyName>
+    <RootNamespace>Automatonymous</RootNamespace>
+    <AssemblyName>Automatonymous</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

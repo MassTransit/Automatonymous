@@ -1,4 +1,4 @@
-namespace Stayt.Impl
+namespace Automatonymous.Impl
 {
     public class StateImpl<TInstance> :
         State

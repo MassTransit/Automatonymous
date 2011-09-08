@@ -1,4 +1,4 @@
-﻿namespace Stayt
+﻿namespace Automatonymous
 {
     using System;
     using System.Linq.Expressions;
