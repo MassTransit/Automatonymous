@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Event_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State_Specs.cs" />
   </ItemGroup>

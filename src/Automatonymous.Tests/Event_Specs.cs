@@ -4,30 +4,30 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class When_a_state_is_declared
+    public class When_an_event_is_declared
     {
         [Test]
-        public void It_should_capture_the_name_of_completed()
+        public void It_should_capture_a_simple_event_name()
         {
-            Assert.AreEqual("Completed", _machine.Completed.Name);
+            Assert.AreEqual("Hello", _machine.Hello.Name);
         }
 
         [Test]
-        public void It_should_capture_the_name_of_initial()
+        public void It_should_capture_the_data_event_name()
         {
-            Assert.AreEqual("Initial", _machine.Initial.Name);
+            Assert.AreEqual("EventA", _machine.EventA.Name);
         }
 
         [Test]
-        public void It_should_capture_the_name_of_running()
+        public void It_should_create_the_proper_event_type_for_simple_events()
         {
-            Assert.AreEqual("Running", _machine.Running.Name);
+            Assert.IsInstanceOf<EventImpl<Test>>(_machine.Hello);
         }
 
         [Test]
-        public void Should_be_an_instance_of_the_proper_type()
+        public void It_should_create_the_proper_event_type_for_data_events()
         {
-            Assert.IsInstanceOf<StateImpl<Test>>(_machine.Initial);
+            Assert.IsInstanceOf<EventImpl<Test, A>>(_machine.EventA);
         }
 
         TestStateMachine _machine;
@@ -36,6 +36,10 @@
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();
+        }
+
+        class A
+        {
         }
 
         class Test :
@@ -49,8 +53,12 @@
         {
             public TestStateMachine()
             {
-                State(() => Running);
+                Event(() => Hello);
+                Event(() => EventA);
             }
+
+            public Event Hello { get; private set; }
+            public Event<A> EventA { get; private set; }
 
             public State Running { get; private set; }
         }
