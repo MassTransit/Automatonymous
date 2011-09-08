@@ -16,8 +16,14 @@ namespace Automatonymous.Tests
 
 
     [TestFixture]
-    public class When_specifying_an_event_activity
+    public class When_specifying_an_event_activity_with_data
     {
+        [Test]
+        public void Should_have_the_proper_value()
+        {
+            Assert.AreEqual("Hello", _instance.Value);
+        }
+
         [Test]
         public void Should_transition_to_the_proper_state()
         {
@@ -28,19 +34,29 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
 
         [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public void Specifying_an_event_activity_with_data()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized, new Init
+                {
+                    Value = "Hello"
+                });
         }
 
 
         class Instance :
             StateMachineInstance
         {
+            public string Value { get; set; }
             public State CurrentState { get; set; }
+        }
+
+
+        class Init
+        {
+            public string Value { get; set; }
         }
 
 
@@ -54,62 +70,14 @@ namespace Automatonymous.Tests
                 Event(() => Initialized);
 
                 During(Initial,
-                    When(Initialized)
-                        .TransitionTo(Running));
+                       When(Initialized)
+                            .Then((instance, data) => instance.Value = data.Value)
+                            .TransitionTo(Running));
             }
 
             public State Running { get; private set; }
 
-            public Event Initialized { get; private set; }
-        }
-    }
-
-    [TestFixture]
-    public class When_specifying_an_event_activity_using_initially
-    {
-        [Test]
-        public void Should_transition_to_the_proper_state()
-        {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
-        }
-
-        Instance _instance;
-        InstanceStateMachine _machine;
-
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
-        {
-            _instance = new Instance();
-            _machine = new InstanceStateMachine();
-
-            _machine.RaiseEvent(_instance, _machine.Initialized);
-        }
-
-
-        class Instance :
-            StateMachineInstance
-        {
-            public State CurrentState { get; set; }
-        }
-
-
-        class InstanceStateMachine :
-            StateMachine<Instance>
-        {
-            public InstanceStateMachine()
-            {
-                State(() => Running);
-
-                Event(() => Initialized);
-
-                Initially(
-                    When(Initialized)
-                        .TransitionTo(Running));
-            }
-
-            public State Running { get; private set; }
-
-            public Event Initialized { get; private set; }
+            public Event<Init> Initialized { get; private set; }
         }
     }
 }

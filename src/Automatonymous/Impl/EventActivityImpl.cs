@@ -25,9 +25,9 @@ namespace Automatonymous.Impl
             _activity = activity;
         }
 
-        public void Execute(TInstance instance)
+        public void Execute(TInstance instance, object value)
         {
-            _activity.Execute(instance);
+            _activity.Execute(instance, value);
         }
 
         public void Inspect(StateMachineInspector inspector)

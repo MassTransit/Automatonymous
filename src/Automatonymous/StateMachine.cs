@@ -48,13 +48,19 @@ namespace Automatonymous
             WithInstance(instance, x => { _stateCache[instance.CurrentState.Name].Raise(instance, @event, null); });
         }
 
+        public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
+            where TData : class
+        {
+            WithInstance(instance, x => { _stateCache[instance.CurrentState.Name].Raise(instance, @event, value); });
+        }
+
         void WithInstance(TInstance instance, Action<TInstance> callback)
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
             if (instance.CurrentState == null)
-                _initialActivity.Execute(instance);
+                _initialActivity.Execute(instance, null);
 
             callback(instance);
         }
@@ -73,7 +79,7 @@ namespace Automatonymous
             _eventCache[name] = @event;
         }
 
-        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
+        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression) where T : class
         {
             PropertyInfo property = GetPropertyInfo(propertyExpression);
 
@@ -125,34 +131,20 @@ namespace Automatonymous
                 activityState.Bind(activity);
         }
 
-        protected void Initially(params EventActivity<TInstance>[] args)
+        protected void Initially(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            During(_stateCache["Initial"], args);
+            During(_stateCache["Initial"], activities);
         }
 
-        protected IEnumerable<EventActivity<TInstance>> When(Event @event, params Activity<TInstance>[] activities)
+        protected EventActivityBinder<TInstance> When(Event @event)
         {
-            return activities.Select(activity => new EventActivityImpl<TInstance>(@event, activity));
+            return new SimpleEventActivityBinder<TInstance>(@event);
         }
 
-        protected int When<TData>(Event<TData> @event, params Activity<TInstance>[] activities)
+        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
+            where TData : class
         {
-            return 0;
-        }
-
-        protected Activity<TInstance> TransitionTo(State toState)
-        {
-            State<TInstance> state = toState.For<TInstance>();
-
-            var activity = new TransitionActivity<TInstance>(state);
-
-            return activity;
-        }
-
-
-        protected Activity<TInstance> Then(Action<TInstance> action)
-        {
-            return new ActionEventActivity<TInstance>(action);
+            return new DataEventActivityBinder<TInstance, TData>(@event);
         }
     }
 }

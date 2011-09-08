@@ -12,16 +12,10 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    public interface Activity :
-        StateMachineNode
-    {
-    }
-
-
-    public interface Activity<TInstance> :
-        Activity
+    public interface EventActivity<TInstance> :
+        Activity<TInstance>
         where TInstance : StateMachineInstance
     {
-        void Execute(TInstance instance, object value);
+        Event Event { get; }
     }
 }

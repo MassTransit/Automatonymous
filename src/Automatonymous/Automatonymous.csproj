@@ -37,7 +37,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityExtensions.cs" />
     <Compile Include="Event.cs" />
+    <Compile Include="Impl\DataEventActivityBinder.cs" />
+    <Compile Include="Impl\EventActivity.cs" />
+    <Compile Include="Impl\EventActivityBinder.cs" />
+    <Compile Include="Impl\SimpleEventActivityBinder.cs" />
     <Compile Include="Impl\Activity.cs" />
     <Compile Include="Impl\Activities\ActionEventActivity.cs" />
     <Compile Include="Impl\DataEvent.cs" />
@@ -63,6 +68,7 @@
     <Compile Include="StateMachineInstance.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="StateMachineNode.cs" />
+    <Compile Include="TransitionExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

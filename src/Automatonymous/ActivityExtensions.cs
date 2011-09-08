@@ -10,18 +10,21 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous
 {
-    public interface Activity :
-        StateMachineNode
-    {
-    }
+    using System;
+    using Impl;
+    using Impl.Activities;
 
 
-    public interface Activity<TInstance> :
-        Activity
-        where TInstance : StateMachineInstance
+    public static class ThenExtensions
     {
-        void Execute(TInstance instance, object value);
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Action<TInstance, TData> action)
+            where TInstance : StateMachineInstance
+            where TData : class
+        {
+            return source.Add(new ActionEventActivity<TInstance, TData>(action));
+        }
     }
 }

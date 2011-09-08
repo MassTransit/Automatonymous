@@ -16,6 +16,7 @@ namespace Automatonymous.Impl
         SimpleEvent<TInstance>,
         Event<TData>
         where TInstance : StateMachineInstance
+        where TData : class
     {
         public DataEvent(string name)
             : base(name)

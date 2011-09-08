@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity_Specs.cs" />
+    <Compile Include="DataActivity_Specs.cs" />
     <Compile Include="Event_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State_Specs.cs" />

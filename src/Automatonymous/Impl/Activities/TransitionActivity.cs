@@ -33,7 +33,7 @@ namespace Automatonymous.Impl.Activities
             get { return _toState; }
         }
 
-        public void Execute(TInstance instance)
+        public void Execute(TInstance instance, object value)
         {
             if (instance.CurrentState == _toState)
                 return;

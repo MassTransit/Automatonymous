@@ -39,32 +39,15 @@ namespace Automatonymous.Impl
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this,
-                              _ =>
-                                  {
-                                      _activityCache.Each(
-                                                          (key, value) =>
-                                                              {
-                                                                  inspector.Inspect(key,
-                                                                                    __ =>
-                                                                                        {
-                                                                                            value.ForEach(
-                                                                                                          activity =>
-                                                                                                              {
-                                                                                                                  inspector
-                                                                                                                      .
-                                                                                                                      Inspect
-                                                                                                                      (activity);
-                                                                                                              });
-                                                                                        });
-                                                              });
-                                  });
+            inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
+                {
+                    inspector.Inspect(key, __ => value.ForEach(inspector.Inspect));
+                }));
         }
 
         public void Raise(TInstance instance, Event @event, object value)
         {
-            _activityCache.WithValue(@event,
-                                     activities => { activities.ForEach(activity => { activity.Execute(instance); }); });
+            _activityCache.WithValue(@event, activities => activities.ForEach(activity => activity.Execute(instance, value)));
         }
 
         public void Bind(EventActivity<TInstance> activity)

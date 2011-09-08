@@ -26,9 +26,35 @@ namespace Automatonymous.Impl.Activities
             _action = action;
         }
 
-        public void Execute(TInstance instance)
+        public void Execute(TInstance instance, object value)
         {
             _action(instance);
+        }
+
+        public void Inspect(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this);
+        }
+    }
+
+
+    public class ActionEventActivity<TInstance, TData> :
+        Activity<TInstance>
+        where TInstance : StateMachineInstance
+        where TData : class
+    {
+        readonly Action<TInstance, TData> _action;
+
+        public ActionEventActivity(Action<TInstance, TData> action)
+        {
+            _action = action;
+        }
+
+        public void Execute(TInstance instance, object value)
+        {
+            var data = value as TData;
+
+            _action(instance, data);
         }
 
         public void Inspect(StateMachineInspector inspector)

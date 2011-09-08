@@ -12,16 +12,22 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    public interface Activity :
-        StateMachineNode
+    using System.Collections.Generic;
+
+
+    public interface EventActivityBinder<TInstance> :
+        IEnumerable<EventActivity<TInstance>>
+        where TInstance : StateMachineInstance
     {
+        EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
     }
 
 
-    public interface Activity<TInstance> :
-        Activity
+    public interface EventActivityBinder<TInstance, TData> :
+        IEnumerable<EventActivity<TInstance>>
         where TInstance : StateMachineInstance
+        where TData : class
     {
-        void Execute(TInstance instance, object value);
+        EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
     }
 }
