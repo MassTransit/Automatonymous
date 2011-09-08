@@ -19,15 +19,15 @@
         }
 
         [Test]
-        public void It_should_create_the_proper_event_type_for_simple_events()
+        public void It_should_create_the_proper_event_type_for_data_events()
         {
-            Assert.IsInstanceOf<EventImpl<Test>>(_machine.Hello);
+            Assert.IsInstanceOf<EventImpl<StateMachineInstance, A>>(_machine.EventA);
         }
 
         [Test]
-        public void It_should_create_the_proper_event_type_for_data_events()
+        public void It_should_create_the_proper_event_type_for_simple_events()
         {
-            Assert.IsInstanceOf<EventImpl<Test, A>>(_machine.EventA);
+            Assert.IsInstanceOf<EventImpl<StateMachineInstance>>(_machine.Hello);
         }
 
         TestStateMachine _machine;
@@ -42,14 +42,8 @@
         {
         }
 
-        class Test :
-            StateMachineInstance
-        {
-            public State CurrentState { get; set; }
-        }
-
         class TestStateMachine :
-            StateMachineSpecification<Test>
+            StateMachineSpecification<StateMachineInstance>
         {
             public TestStateMachine()
             {
@@ -59,8 +53,6 @@
 
             public Event Hello { get; private set; }
             public Event<A> EventA { get; private set; }
-
-            public State Running { get; private set; }
         }
     }
 }

@@ -27,7 +27,7 @@
         [Test]
         public void Should_be_an_instance_of_the_proper_type()
         {
-            Assert.IsInstanceOf<StateImpl<Test>>(_machine.Initial);
+            Assert.IsInstanceOf<StateImpl<StateMachineInstance>>(_machine.Initial);
         }
 
         TestStateMachine _machine;
@@ -38,14 +38,8 @@
             _machine = new TestStateMachine();
         }
 
-        class Test :
-            StateMachineInstance
-        {
-            public State CurrentState { get; set; }
-        }
-
         class TestStateMachine :
-            StateMachineSpecification<Test>
+            StateMachineSpecification<StateMachineInstance>
         {
             public TestStateMachine()
             {
