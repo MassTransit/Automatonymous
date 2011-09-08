@@ -12,12 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface State :
-        StateMachineNode
-    {
-        string Name { get; }
+    using System;
+    using Impl;
 
-        Event Enter { get; }
-        Event Leave { get; }
+
+    public interface StateMachineInspector
+    {
+        void Inspect(State state, Action<State> next);
+        void Inspect(Event @event, Action<Event> next);
+        void Inspect(Activity activity);
     }
 }

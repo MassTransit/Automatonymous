@@ -38,12 +38,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Event.cs" />
-    <Compile Include="Impl\EventImpl.cs" />
+    <Compile Include="Impl\Activity.cs" />
+    <Compile Include="Impl\ActionEventActivity.cs" />
+    <Compile Include="Impl\DataEvent.cs" />
+    <Compile Include="Impl\EventActivityImpl.cs" />
+    <Compile Include="Impl\SimpleEvent.cs" />
+    <Compile Include="Impl\State.cs" />
     <Compile Include="Impl\StateImpl.cs" />
+    <Compile Include="Impl\TransitionActivity.cs" />
+    <Compile Include="Internal\Caching\AbstractCacheDecorator.cs" />
+    <Compile Include="Internal\Caching\Cache.cs" />
+    <Compile Include="Internal\Caching\CacheItemCallback.cs" />
+    <Compile Include="Internal\Caching\ConcurrentCache.cs" />
+    <Compile Include="Internal\Caching\DictionaryCache.cs" />
+    <Compile Include="Internal\Caching\GenericTypeCache.cs" />
+    <Compile Include="Internal\Caching\KeySelector.cs" />
+    <Compile Include="Internal\Caching\MissingValueProvider.cs" />
+    <Compile Include="Internal\Caching\ReadCache.cs" />
+    <Compile Include="Internal\Caching\ReaderWriterLockedCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State.cs" />
+    <Compile Include="StateMachineInspector.cs" />
     <Compile Include="StateMachineInstance.cs" />
     <Compile Include="StateMachine.cs" />
+    <Compile Include="StateMachineNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
