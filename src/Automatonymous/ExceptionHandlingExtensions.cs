@@ -38,23 +38,24 @@ namespace Automatonymous
             return source.Add(new TryActivity<TInstance>(source.Event, contextBinder, exceptionBinder));
         }
 
-        public static EventActivityBinder<TInstance> Handle<TInstance>(
-            this EventActivityBinder<TInstance> source,
-            Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> context,
-            Func<ExceptionActivityBinder<TInstance>, ExceptionActivityBinder<TInstance>> handlers)
+        public static EventActivityBinder<TInstance, TData> Try<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> context,
+            Func<ExceptionActivityBinder<TInstance, TData>, ExceptionActivityBinder<TInstance, TData>> handlers)
             where TInstance : StateMachineInstance
+            where TData : class
         {
-            EventActivityBinder<TInstance> contextBinder = new SimpleEventActivityBinder<TInstance>(
+            EventActivityBinder<TInstance, TData> contextBinder = new DataEventActivityBinder<TInstance, TData>(
                 source.StateMachine, source.Event);
 
             contextBinder = context(contextBinder);
 
-            ExceptionActivityBinder<TInstance> exceptionBinder =
-                new ExceptionActivityBinderImpl<TInstance>(source.StateMachine, source.Event);
+            ExceptionActivityBinder<TInstance, TData> exceptionBinder =
+                new ExceptionActivityBinderImpl<TInstance, TData>(source.StateMachine, source.Event);
 
             exceptionBinder = handlers(exceptionBinder);
 
-            return source.Add(new TryActivity<TInstance>(source.Event, contextBinder, exceptionBinder));
+            return source.Add(new TryActivity<TInstance, TData>(source.Event, contextBinder, exceptionBinder));
         }
     }
 }

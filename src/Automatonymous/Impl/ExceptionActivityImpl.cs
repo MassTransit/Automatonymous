@@ -19,7 +19,7 @@ namespace Automatonymous.Impl
     public class ExceptionActivityImpl<TInstance, TException> :
         ExceptionActivity<TInstance>
         where TInstance : StateMachineInstance
-        where TException : Exception
+        where TException : class
     {
         readonly Activity<TInstance> _activity;
 

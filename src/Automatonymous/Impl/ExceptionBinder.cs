@@ -20,6 +20,5 @@ namespace Automatonymous.Impl
         IEnumerable<ExceptionActivity<TInstance>>
         where TInstance : StateMachineInstance
     {
-        StateMachine<TInstance> StateMachine { get; }
     }
 }

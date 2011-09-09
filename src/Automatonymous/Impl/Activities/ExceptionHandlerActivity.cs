@@ -20,18 +20,23 @@ namespace Automatonymous.Impl.Activities
     public class ExceptionHandlerActivity<TInstance, TException> :
         ExceptionActivity<TInstance>
         where TInstance : StateMachineInstance
-        where TException : Exception
+        where TException : class
     {
+        readonly Type _exceptionType;
         readonly List<Activity<TInstance>> _activities;
 
-        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities)
+        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities, Type exceptionType)
         {
-            _activities = new List<Activity<TInstance>>(activities
-                .Select(x => new ExceptionActivityImpl<TInstance, TException>(x)));
+            _exceptionType = exceptionType;
+            _activities = new List<Activity<TInstance>>(activities);
+                //.Select(x => new ExceptionActivityImpl<TInstance, TException>(x)));
         }
 
         public void Execute(TInstance instance, object value)
         {
+            if (value == null)
+                throw new ArgumentNullException("value", "The exception argument cannot be null");
+
             _activities.ForEach(activity => activity.Execute(instance, value));
         }
 
@@ -42,7 +47,7 @@ namespace Automatonymous.Impl.Activities
 
         public Type ExceptionType
         {
-            get { return typeof(TException); }
+            get { return _exceptionType; }
         }
     }
 }

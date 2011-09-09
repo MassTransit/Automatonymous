@@ -29,8 +29,9 @@ namespace Automatonymous.Impl
         ExceptionBinder<TInstance>
         where TInstance : StateMachineInstance
     {
-        ExceptionActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
-
-        Type ExceptionType { get; }
+        ExceptionActivityBinder<TInstance, TData> Handle<TException>(
+            Func<EventActivityBinder<TInstance, Tuple<TData, TException>>,
+                EventActivityBinder<TInstance, Tuple<TData, TException>>> context)
+            where TException : Exception;
     }
 }

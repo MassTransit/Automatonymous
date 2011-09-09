@@ -27,6 +27,14 @@ namespace Automatonymous
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Action<TInstance> action)
+            where TInstance : StateMachineInstance
+            where TData : class
+        {
+            return source.Add(new ActionActivity<TInstance>(action));
+        }
+
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Action<TInstance, TData> action)
             where TInstance : StateMachineInstance
             where TData : class

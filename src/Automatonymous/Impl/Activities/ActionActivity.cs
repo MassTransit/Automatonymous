@@ -57,7 +57,7 @@ namespace Automatonymous.Impl.Activities
 
             var data = value as TData;
             if (data == null)
-                throw new ArgumentException("The data argument was not a compatible type: " + value.GetType().Name,
+                throw new ArgumentException("Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name,
                     "value");
 
             _action(instance, data);

@@ -25,8 +25,8 @@ namespace Automatonymous.Impl.Activities
         readonly List<Activity<TInstance>> _activities;
         readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;
 
-        public TryActivity(Event @event, EventActivityBinder<TInstance> activities,
-                           ExceptionActivityBinder<TInstance> exceptionBinder)
+        public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
+                           IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
         {
             _activities = new List<Activity<TInstance>>(activities
                 .Select(x => new EventActivityImpl<TInstance>(@event, x)));
@@ -47,10 +47,64 @@ namespace Automatonymous.Impl.Activities
             catch (Exception ex)
             {
                 Type exceptionType = ex.GetType();
-                while (exceptionType != typeof(Exception).BaseType)
+                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
                 {
                     if (_exceptionHandlers.WithValue(exceptionType,
                         x => x.ForEach(activity => activity.Execute(instance, ex))))
+                        return;
+
+                    exceptionType = exceptionType.BaseType;
+                }
+
+                throw;
+            }
+        }
+
+        public void Inspect(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this);
+        }
+    }
+
+
+    public class TryActivity<TInstance, TData> :
+        Activity<TInstance>
+        where TInstance : StateMachineInstance
+    {
+        readonly List<Activity<TInstance>> _activities;
+        readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;
+
+        public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
+                           IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
+        {
+            _activities = new List<Activity<TInstance>>(activities
+                .Select(x => new EventActivityImpl<TInstance>(@event, x)));
+
+            _exceptionHandlers =
+                new DictionaryCache<Type, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
+
+            foreach (var exceptionActivity in exceptionBinder)
+                _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
+        }
+
+        public void Execute(TInstance instance, object value)
+        {
+            try
+            {
+                _activities.ForEach(activity => activity.Execute(instance, value));
+            }
+            catch (Exception ex)
+            {
+                Type exceptionType = ex.GetType();
+                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+                {
+                    if (_exceptionHandlers.WithValue(exceptionType,x =>
+                        {
+                            var tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
+                            object arg =Activator.CreateInstance(tupleType,value, ex);
+
+                            x.ForEach(activity => activity.Execute(instance, arg));
+                        }))
                         return;
 
                     exceptionType = exceptionType.BaseType;

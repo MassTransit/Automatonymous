@@ -32,6 +32,7 @@ namespace Automatonymous.Impl
         where TData : class
     {
         StateMachine<TInstance> StateMachine { get; }
+        Event<TData> Event { get; }
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity,
                                                   params ExceptionBinder<TInstance>[] exceptions);
