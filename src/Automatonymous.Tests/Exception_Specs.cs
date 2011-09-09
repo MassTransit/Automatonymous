@@ -37,6 +37,18 @@ namespace Automatonymous.Tests
             Assert.IsTrue(_instance.NotCalled);
         }
 
+        [Test]
+        public void Should_capture_the_exception_message()
+        {
+            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+        }
+
+        [Test]
+        public void Should_capture_the_exception_type()
+        {
+            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -60,7 +72,9 @@ namespace Automatonymous.Tests
 
             public bool Called { get; set; }
             public bool NotCalled { get; set; }
+            public Type ExceptionType { get; set; }
             public State CurrentState { get; set; }
+            public string ExceptionMessage { get; set; }
         }
 
 
@@ -78,7 +92,16 @@ namespace Automatonymous.Tests
                         .Try(x => x.Then(instance => instance.Called = true)
                                       .Then(_ => { throw new ApplicationException("Boom!"); })
                                       .Then(instance => instance.NotCalled = false),
-                            x => x.Handle<ApplicationException>(ex => ex.TransitionTo(Failed))));
+                            x => x.Handle<Exception>(ex =>
+                                {
+                                    return ex
+                                        .Then((instance, exception) =>
+                                            {
+                                                instance.ExceptionMessage = exception.Message;
+                                                instance.ExceptionType = exception.GetType();
+                                            })
+                                        .TransitionTo(Failed);
+                                })));
             }
 
             public State Failed { get; private set; }
