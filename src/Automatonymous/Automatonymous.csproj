@@ -37,14 +37,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActivityExtensions.cs" />
+    <Compile Include="CallExtensions.cs" />
+    <Compile Include="ExceptionHandlingExtensions.cs" />
+    <Compile Include="Impl\Activities\CallActivity.cs" />
+    <Compile Include="Impl\Activities\ExceptionActivity.cs" />
+    <Compile Include="Impl\Activities\ExceptionHandlerActivity.cs" />
+    <Compile Include="Impl\Activities\TryActivity.cs" />
+    <Compile Include="Impl\ExceptionActivityBinder.cs" />
+    <Compile Include="Impl\ExceptionActivityBinderImpl.cs" />
+    <Compile Include="Impl\ExceptionActivityImpl.cs" />
+    <Compile Include="Impl\ExceptionBinder.cs" />
+    <Compile Include="Internal\ExpressionNameVisitor.cs" />
+    <Compile Include="ThenExtensions.cs" />
+    <Compile Include="AutomatonymousException.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Impl\DataEventActivityBinder.cs" />
     <Compile Include="Impl\EventActivity.cs" />
     <Compile Include="Impl\EventActivityBinder.cs" />
     <Compile Include="Impl\SimpleEventActivityBinder.cs" />
     <Compile Include="Impl\Activity.cs" />
-    <Compile Include="Impl\Activities\ActionEventActivity.cs" />
+    <Compile Include="Impl\Activities\ActionActivity.cs" />
     <Compile Include="Impl\DataEvent.cs" />
     <Compile Include="Impl\EventActivityImpl.cs" />
     <Compile Include="Impl\SimpleEvent.cs" />

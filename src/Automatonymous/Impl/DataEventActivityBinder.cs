@@ -12,9 +12,11 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
 
 
     public class DataEventActivityBinder<TInstance, TData> :
@@ -24,22 +26,50 @@ namespace Automatonymous.Impl
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event<TData> _event;
+        readonly Expression<Func<TData, bool>> _filterExpression;
+        readonly StateMachine<TInstance> _machine;
 
-        public DataEventActivityBinder(Event<TData> @event)
-            : this(@event, Enumerable.Empty<Activity<TInstance>>())
+        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event)
+            : this(machine, @event, null, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
-        public DataEventActivityBinder(Event<TData> @event, IEnumerable<Activity<TInstance>> activities)
+        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
+                                       Expression<Func<TData, bool>> filterExpression)
+            : this(machine, @event, filterExpression, Enumerable.Empty<Activity<TInstance>>())
+        {
+        }
+
+        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
+                                       Expression<Func<TData, bool>> filterExpression,
+                                       IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
             _activities = activities;
+            _machine = machine;
+            _filterExpression = filterExpression;
         }
 
-        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity)
+        public Expression<Func<TData, bool>> FilterExpression
         {
-            return new DataEventActivityBinder<TInstance, TData>(_event,
+            get { return _filterExpression; }
+        }
+
+        public Event<TData> Event
+        {
+            get { return _event; }
+        }
+
+        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity,
+            params ExceptionBinder<TInstance>[] exceptions)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
+        }
+
+        public StateMachine<TInstance> StateMachine
+        {
+            get { return _machine; }
         }
 
         public IEnumerator<EventActivity<TInstance>> GetEnumerator()

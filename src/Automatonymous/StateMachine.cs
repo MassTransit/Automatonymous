@@ -74,7 +74,7 @@ namespace Automatonymous
             var @event = new SimpleEvent<TInstance>(name);
 
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                              null, null);
+                null, null);
 
             _eventCache[name] = @event;
         }
@@ -88,7 +88,7 @@ namespace Automatonymous
             var @event = new DataEvent<TInstance, T>(name);
 
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                              null, null);
+                null, null);
 
             _eventCache[name] = @event;
         }
@@ -102,7 +102,7 @@ namespace Automatonymous
             var state = new StateImpl<TInstance>(name);
 
             property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                              null, null);
+                null, null);
 
             _stateCache[name] = state;
         }
@@ -138,13 +138,20 @@ namespace Automatonymous
 
         protected EventActivityBinder<TInstance> When(Event @event)
         {
-            return new SimpleEventActivityBinder<TInstance>(@event);
+            return new SimpleEventActivityBinder<TInstance>(this, @event);
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
             where TData : class
         {
-            return new DataEventActivityBinder<TInstance, TData>(@event);
+            return new DataEventActivityBinder<TInstance, TData>(this, @event);
+        }
+
+        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
+                                                                    Expression<Func<TData, bool>> filterExpression)
+            where TData : class
+        {
+            return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
         }
     }
 }

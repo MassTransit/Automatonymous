@@ -12,28 +12,25 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    using System.Collections.Generic;
+    using System;
 
 
-    public interface EventActivityBinder<TInstance> :
-        IEnumerable<EventActivity<TInstance>>
+    public interface ExceptionActivityBinder<TInstance> :
+        ExceptionBinder<TInstance>
         where TInstance : StateMachineInstance
     {
-        StateMachine<TInstance> StateMachine { get; }
-        Event Event { get; }
-
-        EventActivityBinder<TInstance> Add(Activity<TInstance> activity, params ExceptionBinder<TInstance>[] exceptions);
+        ExceptionActivityBinder<TInstance> Handle<TException>(Func<EventActivityBinder<TInstance, TException>,
+                                                                  EventActivityBinder<TInstance, TException>> context)
+            where TException : Exception;
     }
 
 
-    public interface EventActivityBinder<TInstance, TData> :
-        IEnumerable<EventActivity<TInstance>>
+    public interface ExceptionActivityBinder<TInstance, TData> :
+        ExceptionBinder<TInstance>
         where TInstance : StateMachineInstance
-        where TData : class
     {
-        StateMachine<TInstance> StateMachine { get; }
+        ExceptionActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
 
-        EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity,
-                                                  params ExceptionBinder<TInstance>[] exceptions);
+        Type ExceptionType { get; }
     }
 }

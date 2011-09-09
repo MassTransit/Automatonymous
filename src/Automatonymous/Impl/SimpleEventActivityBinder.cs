@@ -23,22 +23,36 @@ namespace Automatonymous.Impl
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event _event;
+        readonly StateMachine<TInstance> _machine;
 
-        public SimpleEventActivityBinder(Event @event)
-            : this(@event, Enumerable.Empty<Activity<TInstance>>())
+        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event)
+            : this(machine, @event, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
-        public SimpleEventActivityBinder(Event @event, IEnumerable<Activity<TInstance>> activities)
+        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event,
+                                         IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
             _activities = activities;
+            _machine = machine;
         }
 
-        public EventActivityBinder<TInstance> Add(Activity<TInstance> activity)
+        public Event Event
         {
-            return new SimpleEventActivityBinder<TInstance>(_event,
+            get { return _event; }
+        }
+
+        public EventActivityBinder<TInstance> Add(Activity<TInstance> activity,
+                                                  params ExceptionBinder<TInstance>[] exceptions)
+        {
+            return new SimpleEventActivityBinder<TInstance>(_machine, _event,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
+        }
+
+        public StateMachine<TInstance> StateMachine
+        {
+            get { return _machine; }
         }
 
         public IEnumerator<EventActivity<TInstance>> GetEnumerator()

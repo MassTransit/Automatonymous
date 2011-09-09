@@ -1,4 +1,4 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,53 +13,36 @@
 namespace Automatonymous.Impl.Activities
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
 
-    public class ActionEventActivity<TInstance> :
-        Activity<TInstance>
+    public class ExceptionHandlerActivity<TInstance, TException> :
+        ExceptionActivity<TInstance>
         where TInstance : StateMachineInstance
+        where TException : Exception
     {
-        readonly Action<TInstance> _action;
+        readonly List<Activity<TInstance>> _activities;
 
-        public ActionEventActivity(Action<TInstance> action)
+        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities)
         {
-            _action = action;
+            _activities = new List<Activity<TInstance>>(activities
+                .Select(x => new ExceptionActivityImpl<TInstance, TException>(x)));
         }
 
         public void Execute(TInstance instance, object value)
         {
-            _action(instance);
+            _activities.ForEach(activity => activity.Execute(instance, value));
         }
 
         public void Inspect(StateMachineInspector inspector)
         {
             inspector.Inspect(this);
         }
-    }
 
-
-    public class ActionEventActivity<TInstance, TData> :
-        Activity<TInstance>
-        where TInstance : StateMachineInstance
-        where TData : class
-    {
-        readonly Action<TInstance, TData> _action;
-
-        public ActionEventActivity(Action<TInstance, TData> action)
+        public Type ExceptionType
         {
-            _action = action;
-        }
-
-        public void Execute(TInstance instance, object value)
-        {
-            var data = value as TData;
-
-            _action(instance, data);
-        }
-
-        public void Inspect(StateMachineInspector inspector)
-        {
-            inspector.Inspect(this);
+            get { return typeof(TException); }
         }
     }
 }

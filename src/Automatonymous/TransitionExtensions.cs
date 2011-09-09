@@ -18,6 +18,9 @@ namespace Automatonymous
 
     public static class TransitionExtensions
     {
+        /// <summary>
+        /// Transition the state machine to the specified state
+        /// </summary>
         public static EventActivityBinder<TInstance> TransitionTo<TInstance>(
             this EventActivityBinder<TInstance> source, State toState)
             where TInstance : StateMachineInstance
@@ -29,12 +32,45 @@ namespace Automatonymous
             return source.Add(activity);
         }
 
+        /// <summary>
+        /// Transition the state machine to the specified state
+        /// </summary>
         public static EventActivityBinder<TInstance, TData> TransitionTo<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, State toState)
             where TInstance : StateMachineInstance
             where TData : class
         {
             State<TInstance> state = toState.For<TInstance>();
+
+            var activity = new TransitionActivity<TInstance>(state);
+
+            return source.Add(activity);
+        }
+
+        /// <summary>
+        /// Transition the state machine to the Completed state
+        /// </summary>
+        public static EventActivityBinder<TInstance, TData> Complete<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source)
+            where TInstance : StateMachineInstance
+            where TData : class
+        {
+            State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
+
+            var activity = new TransitionActivity<TInstance>(state);
+
+            return source.Add(activity);
+        }
+
+
+        /// <summary>
+        /// Transition the state machine to the Completed state
+        /// </summary>
+        public static EventActivityBinder<TInstance> Complete<TInstance>(
+            this EventActivityBinder<TInstance> source)
+            where TInstance : StateMachineInstance
+        {
+            State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
 
             var activity = new TransitionActivity<TInstance>(state);
 
