@@ -15,22 +15,34 @@ namespace Automatonymous.Tests
     using System;
     using Graphing;
     using NUnit.Framework;
-    using Visualizer;
 
 
     [TestFixture]
-    [Explicit]
     public class When_visualizing_a_state_machine
     {
-        [Test]
-        public void Should_show_the_goods()
+        InstanceStateMachine _machine;
+        StateMachineGraph _graph;
+
+        [TestFixtureSetUp]
+        void Setup()
         {
-            var machine = new InstanceStateMachine();
+            _machine = new InstanceStateMachine();
 
-            StateMachineGraph stateMachineGraph = machine.GetGraph();
-
-            StateMachineDebugVisualizer.TestShowVisualizer(stateMachineGraph);
+            _graph = _machine.GetGraph();
         }
+
+        [Test]
+        public void Should_parse_the_graph()
+        {
+            Assert.IsNotNull(_graph);
+        }
+
+//        [Test]
+//        [Explicit]
+//        public void Should_show_the_goods()
+//        {
+//            StateMachineDebugVisualizer.TestShowVisualizer(_graph);
+//        }
 
 
         class Instance :
