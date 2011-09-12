@@ -4,7 +4,6 @@ build_output/*
 **/*.suo
 **/**/*.suo
 **/*.user
-**/*.sln*
 bin
 obj
 _ReSharper*
