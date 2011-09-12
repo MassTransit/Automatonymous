@@ -10,17 +10,25 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl.Activities
+namespace Automatonymous.Graphing
 {
     using System;
 
 
-    public interface ExceptionActivity<TInstance> :
-        Activity<TInstance>
-        where TInstance : StateMachineInstance
+    [Serializable]
+    public class Vertex
     {
-        Type ExceptionType { get; }
+        public Vertex(Type type, Type targetType, string title)
+        {
+            VertexType = type;
+            TargetType = targetType;
+            Title = title;
+        }
 
-        Event Event { get; }
+        public string Title { get; private set; }
+
+        public Type VertexType { get; private set; }
+
+        public Type TargetType { get; private set; }
     }
 }

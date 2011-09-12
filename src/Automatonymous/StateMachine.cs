@@ -22,7 +22,8 @@ namespace Automatonymous
     using Internal.Caching;
 
 
-    public abstract class StateMachine<TInstance>
+    public abstract class StateMachine<TInstance> :
+        StateMachineNode
         where TInstance : StateMachineInstance
     {
         readonly Cache<string, Event> _eventCache;
@@ -42,6 +43,21 @@ namespace Automatonymous
 
         public State Initial { get; private set; }
         public State Completed { get; private set; }
+
+        public void Inspect(StateMachineInspector inspector)
+        {
+            Initial.Inspect(inspector);
+
+            _stateCache.Each(x =>
+                {
+                    if (x == Initial || x == Completed)
+                        return;
+
+                    x.Inspect(inspector);
+                });
+
+            Completed.Inspect(inspector);
+        }
 
         public void RaiseEvent(TInstance instance, Event @event)
         {

@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>QuickGraph.Glee</name>
+    </assembly>
+    <members>
+        <member name="T:System.Diagnostics.Contracts.Contract">
+            <summary>
+            Methods to express preconditions, postconditions and invariants.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Assert(System.Boolean)">
+            <summary>
+            In debug builds, perform a runtime test that a condition is true. 
+            (shortcut: cca)
+            </summary>
+            <param name="condition">the asserted condition</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Assert(System.Boolean,System.String)">
+            <summary>
+            In debug builds, perform a runtime test that a condition is true. 
+            </summary>
+            <param name="condition">the asserted condition</param>
+            <param name="message">custom message</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Assume(System.Boolean)">
+            <summary>
+             In debug builds, instructs code analysis tools to assume a condition is true even if it can not be statically proven to always be true. 
+             (shortcut: ccam)
+            </summary>
+            <param name="condition">the assumed condition</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Assume(System.Boolean,System.String)">
+            <summary>
+             In debug builds with contracts, instructs code analysis tools to assume a condition is true even if it can not be statically proven to always be true. 
+            </summary>
+            <param name="condition">the assumed condition</param>
+            <param name="message">custom message</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.EndContractBlock">
+            <summary>
+            Identifies the end of a contract block. Place this method call after legacy parameter validations.
+            </summary>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Ensures(System.Boolean)">
+            <summary>
+            Specifies a public contract such that the conditional expression is true when the enclosing method or property returns normally.
+            (shortcut: ce)
+            </summary>
+            <param name="condition">The conditional expression to test for true. The expression may include OldValue(T) and Result(T).</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Ensures(System.Boolean,System.String)">
+            <summary>
+            Specifies a public contract such that the conditional expression is true when the enclosing method or property returns normally.
+            </summary>
+            <param name="condition">The conditional expression to test for true. The expression may include OldValue(T) and Result(T).</param>
+            <param name="message">custom logging message</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.EnsuresOnThrow``1(System.Boolean)">
+            <summary>
+            Specifies a contract such that if an exception of type TException is thrown then the conditional expression should be true 
+            when the enclosing method or property terminates abnormally.
+            </summary>
+            <param name="condition">The conditional expression to test for true. The expression may include OldValue(T) and Result(T).</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.EnsuresOnThrow``1(System.Boolean,System.String)">
+            <summary>
+            Specifies a contract such that if an exception of type TException is thrown then the conditional expression should be true 
+            when the enclosing method or property terminates abnormally.
+            </summary>
+            <param name="condition">The conditional expression to test for true. The expression may include OldValue(T) and Result(T).</param>
+            <param name="message">custom message</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Exists``1(System.Collections.Generic.IEnumerable{``0},System.Predicate{``0})">
+            <summary>
+            Returns true if predicate returns true for any element in collection
+            </summary>
+            <typeparam name="T">the element type of the collection</typeparam>
+            <param name="collection">the collection</param>
+            <param name="predicate">the predicate</param>
+            <returns>true if any element evaluates predicate to true</returns>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Exists(System.Int32,System.Int32,System.Predicate{System.Int32})">
+            <summary>
+            Returns true if predicate returns true for any integer starting from inclusiveLowerBound to exclusiveUpperBound - 1.
+            </summary>
+            <param name="inclusiveLowerBound">the inclusive lower bound</param>
+            <param name="exclusiveUpperBound">the exclusive upper bound</param>
+            <param name="predicate">a method that evaluates an index to a boolean value</param>
+            <returns>true if predicate returns true for any integer starting from inclusiveLowerBound to exclusiveUpperBound - 1.</returns>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Requires(System.Boolean)">
+            <summary>
+            Specifies a contract such that a condition must be true before the enclosing method or property is invoked. 
+            (shortcut: cr, crn, crsn)
+            </summary>
+            <param name="condition">The conditional expression to test for true.</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Requires(System.Boolean,System.String)">
+            <summary>
+            Specifies a contract such that a condition must be true before the enclosing method or property is invoked. 
+            </summary>
+            <param name="condition">The conditional expression to test for true.</param>
+            <param name="message">custom error message</param>
+        </member>
+        <member name="M:System.Diagnostics.Contracts.Contract.Requires``1(System.Boolean)">
+            <summary>
+            Specifies a contract such that a condition must be true when a particular exception type is raised.
+            (shortcuts: cre, cren, cresn)
+            </summary>
+            <param name="condition">The conditional expression to test for true.</param>
+        </member>
+        <member name="T:QuickGraph.Algorithms.Contracts.DummyAlgorithmContract">
+            <summary>
+            Ensures that System.Diagnostics.Contracts namespace exists 
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -52,7 +52,7 @@ namespace Automatonymous.Impl
 
             contextBinder = context(contextBinder);
 
-            var handler = new ExceptionHandlerActivity<TInstance, TException>(contextBinder, typeof(TException));
+            var handler = new ExceptionHandlerActivity<TInstance, TException>(contextBinder, typeof(TException), contextBinder.Event);
 
             return new ExceptionActivityBinderImpl<TInstance>(_machine, _event,
                 _activities.Concat(Enumerable.Repeat(handler, 1)));
@@ -103,7 +103,7 @@ namespace Automatonymous.Impl
             contextBinder = context(contextBinder);
 
             var handler = new ExceptionHandlerActivity<TInstance, Tuple<TData, TException>>(contextBinder,
-                typeof(TException));
+                typeof(TException), contextBinder.Event);
 
             return new ExceptionActivityBinderImpl<TInstance, TData>(_machine, _event,
                 _activities.Concat(Enumerable.Repeat(handler, 1)));

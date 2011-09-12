@@ -20,6 +20,6 @@ namespace Automatonymous
     {
         void Inspect(State state, Action<State> next);
         void Inspect(Event @event, Action<Event> next);
-        void Inspect(Activity activity);
+        void Inspect(Activity activity, Action<Activity> next);
     }
 }

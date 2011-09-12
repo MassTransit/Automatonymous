@@ -14,7 +14,6 @@ namespace Automatonymous.Impl.Activities
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
 
     public class ExceptionHandlerActivity<TInstance, TException> :
@@ -22,14 +21,16 @@ namespace Automatonymous.Impl.Activities
         where TInstance : StateMachineInstance
         where TException : class
     {
-        readonly Type _exceptionType;
         readonly List<Activity<TInstance>> _activities;
+        readonly Type _exceptionType;
+        Event<TException> _event;
 
-        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities, Type exceptionType)
+        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities, Type exceptionType,
+                                        Event<TException> @event)
         {
             _exceptionType = exceptionType;
+            _event = @event;
             _activities = new List<Activity<TInstance>>(activities);
-                //.Select(x => new ExceptionActivityImpl<TInstance, TException>(x)));
         }
 
         public void Execute(TInstance instance, object value)
@@ -42,12 +43,17 @@ namespace Automatonymous.Impl.Activities
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this);
+            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Inspect(inspector)); });
         }
 
         public Type ExceptionType
         {
             get { return _exceptionType; }
+        }
+
+        public Event Event
+        {
+            get { return _event; }
         }
     }
 }

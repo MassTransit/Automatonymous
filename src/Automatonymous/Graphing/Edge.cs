@@ -10,17 +10,25 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl.Activities
+namespace Automatonymous.Graphing
 {
     using System;
 
 
-    public interface ExceptionActivity<TInstance> :
-        Activity<TInstance>
-        where TInstance : StateMachineInstance
+    [Serializable]
+    public class Edge
     {
-        Type ExceptionType { get; }
+        public Edge(Vertex from, Vertex to, string title)
+        {
+            From = from;
+            To = to;
+            Title = title;
+        }
 
-        Event Event { get; }
+        public Vertex To { get; private set; }
+
+        public Vertex From { get; private set; }
+
+        public string Title { get; private set; }
     }
 }

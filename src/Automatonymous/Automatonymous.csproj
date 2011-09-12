@@ -38,14 +38,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallExtensions.cs" />
+    <Compile Include="Graphing\StateMachineGraph.cs" />
+    <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
+    <Compile Include="Graphing\Edge.cs" />
     <Compile Include="ExceptionHandlingExtensions.cs" />
+    <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="Impl\Activities\CallActivity.cs" />
     <Compile Include="Impl\Activities\ExceptionActivity.cs" />
     <Compile Include="Impl\Activities\ExceptionHandlerActivity.cs" />
     <Compile Include="Impl\Activities\TryActivity.cs" />
     <Compile Include="Impl\ExceptionActivityBinder.cs" />
     <Compile Include="Impl\ExceptionActivityBinderImpl.cs" />
-    <Compile Include="Impl\ExceptionActivityImpl.cs" />
     <Compile Include="Impl\ExceptionBinder.cs" />
     <Compile Include="Internal\ExpressionNameVisitor.cs" />
     <Compile Include="ThenExtensions.cs" />
@@ -81,6 +84,7 @@
     <Compile Include="StateMachine.cs" />
     <Compile Include="StateMachineNode.cs" />
     <Compile Include="TransitionExtensions.cs" />
+    <Compile Include="Graphing\Vertex.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

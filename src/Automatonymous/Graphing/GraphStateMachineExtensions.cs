@@ -10,17 +10,18 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl.Activities
+namespace Automatonymous.Graphing
 {
-    using System;
-
-
-    public interface ExceptionActivity<TInstance> :
-        Activity<TInstance>
-        where TInstance : StateMachineInstance
+    public static class GraphStateMachineExtensions
     {
-        Type ExceptionType { get; }
+        public static StateMachineGraph GetGraph<TInstance>(this StateMachine<TInstance> machine)
+            where TInstance : StateMachineInstance
+        {
+            var inspector = new GraphStateMachineVisitor<TInstance>();
 
-        Event Event { get; }
+            machine.Inspect(inspector);
+
+            return inspector.Graph;
+        }
     }
 }

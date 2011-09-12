@@ -33,7 +33,7 @@ namespace Automatonymous.Impl.Activities
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this);
+            inspector.Inspect(this, x => { });
         }
     }
 
@@ -65,7 +65,7 @@ namespace Automatonymous.Impl.Activities
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this);
+            inspector.Inspect(this, x => { });
         }
     }
 }

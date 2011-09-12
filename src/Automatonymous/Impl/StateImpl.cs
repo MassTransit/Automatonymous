@@ -41,7 +41,7 @@ namespace Automatonymous.Impl
         {
             inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
                 {
-                    inspector.Inspect(key, __ => value.ForEach(inspector.Inspect));
+                    inspector.Inspect(key, __ => value.ForEach(activity => activity.Inspect(inspector)));
                 }));
         }
 

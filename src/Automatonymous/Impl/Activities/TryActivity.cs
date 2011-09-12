@@ -23,7 +23,7 @@ namespace Automatonymous.Impl.Activities
         where TInstance : StateMachineInstance
     {
         readonly List<Activity<TInstance>> _activities;
-        readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;
+        readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
                            IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
@@ -32,7 +32,8 @@ namespace Automatonymous.Impl.Activities
                 .Select(x => new EventActivityImpl<TInstance>(@event, x)));
 
             _exceptionHandlers =
-                new DictionaryCache<Type, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
+                new DictionaryCache<Type, List<ExceptionActivity<TInstance>>>(
+                    x => new List<ExceptionActivity<TInstance>>());
 
             foreach (var exceptionActivity in exceptionBinder)
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
@@ -62,7 +63,15 @@ namespace Automatonymous.Impl.Activities
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this);
+            inspector.Inspect(this, _ =>
+                {
+                    _activities.ForEach(activity =>
+                        {
+                            activity.Inspect(inspector);
+
+                            _exceptionHandlers.Each((type, handler) => handler.ForEach(x => x.Inspect(inspector)));
+                        });
+                });
         }
     }
 
@@ -98,10 +107,10 @@ namespace Automatonymous.Impl.Activities
                 Type exceptionType = ex.GetType();
                 while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
                 {
-                    if (_exceptionHandlers.WithValue(exceptionType,x =>
+                    if (_exceptionHandlers.WithValue(exceptionType, x =>
                         {
-                            var tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
-                            object arg =Activator.CreateInstance(tupleType,value, ex);
+                            Type tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
+                            object arg = Activator.CreateInstance(tupleType, value, ex);
 
                             x.ForEach(activity => activity.Execute(instance, arg));
                         }))
@@ -116,7 +125,7 @@ namespace Automatonymous.Impl.Activities
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this);
+            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Inspect(inspector)); });
         }
     }
 }
