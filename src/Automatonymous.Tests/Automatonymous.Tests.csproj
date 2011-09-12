@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity_Specs.cs" />
+    <Compile Include="Anytime_Specs.cs" />
+    <Compile Include="Combine_Specs.cs" />
     <Compile Include="DataActivity_Specs.cs" />
     <Compile Include="Event_Specs.cs" />
     <Compile Include="Exception_Specs.cs" />

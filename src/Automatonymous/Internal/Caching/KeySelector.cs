@@ -12,5 +12,5 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Internal.Caching
 {
-    public delegate TKey KeySelector<out TKey, in TValue>(TValue value);
+    delegate TKey KeySelector<out TKey, in TValue>(TValue value);
 }

@@ -19,7 +19,7 @@ namespace Automatonymous.Internal.Caching
 
 
     [Serializable]
-    public class DictionaryCache<TKey, TValue> :
+    class DictionaryCache<TKey, TValue> :
         Cache<TKey, TValue>
     {
         readonly IDictionary<TKey, TValue> _values;

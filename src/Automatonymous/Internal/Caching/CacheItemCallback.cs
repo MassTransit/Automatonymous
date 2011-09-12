@@ -12,5 +12,5 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Internal.Caching
 {
-    public delegate void CacheItemCallback<in TKey, in TValue>(TKey key, TValue value);
+    delegate void CacheItemCallback<in TKey, in TValue>(TKey key, TValue value);
 }

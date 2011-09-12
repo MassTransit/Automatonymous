@@ -56,6 +56,7 @@
       </FormatSettings>
       <UsingsSettings>
         <AddImportsToDeepestScope>True</AddImportsToDeepestScope>
+        <AllowAlias>False</AllowAlias>
       </UsingsSettings>
       <Naming2>
         <EventHandlerPatternLong>$object$_On$event$</EventHandlerPatternLong>
@@ -74,6 +75,10 @@
         <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="StaticReadonly" />
         <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="EnumMember" />
         <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="Other" />
+        <PredefinedRule Inspect="True" Prefix="_" Suffix="" Style="aaBb" ElementKind="PrivateInstanceFields" />
+        <PredefinedRule Inspect="True" Prefix="_" Suffix="" Style="aaBb" ElementKind="PrivateStaticFields" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateConstants" />
+        <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="PrivateStaticReadonly" />
       </Naming2>
       <CustomMemberReorderingPatterns><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
 

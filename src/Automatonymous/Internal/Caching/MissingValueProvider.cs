@@ -12,5 +12,5 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Internal.Caching
 {
-    public delegate TValue MissingValueProvider<in TKey, out TValue>(TKey key);
+    delegate TValue MissingValueProvider<in TKey, out TValue>(TKey key);
 }

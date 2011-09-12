@@ -17,7 +17,7 @@ namespace Automatonymous.Internal.Caching
     using System.Collections.Generic;
 
 
-    public abstract class AbstractCacheDecorator<TKey, TValue> :
+    abstract class AbstractCacheDecorator<TKey, TValue> :
         Cache<TKey, TValue>
     {
         readonly Cache<TKey, TValue> _cache;

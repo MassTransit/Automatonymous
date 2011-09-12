@@ -17,7 +17,7 @@ namespace Automatonymous.Internal.Caching
     using System.Collections.Generic;
 
 
-    public class GenericTypeCache<TInterface> :
+    class GenericTypeCache<TInterface> :
         Cache<Type, TInterface>
     {
         readonly Cache<Type, TInterface> _cache;

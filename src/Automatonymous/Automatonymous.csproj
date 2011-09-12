@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,7 +52,9 @@
     <Compile Include="Impl\ExceptionActivityBinder.cs" />
     <Compile Include="Impl\ExceptionActivityBinderImpl.cs" />
     <Compile Include="Impl\ExceptionBinder.cs" />
+    <Compile Include="Internal\ExpressionExtensions.cs" />
     <Compile Include="Internal\ExpressionNameVisitor.cs" />
+    <Compile Include="Internal\FastProperty.cs" />
     <Compile Include="ThenExtensions.cs" />
     <Compile Include="AutomatonymousException.cs" />
     <Compile Include="Event.cs" />

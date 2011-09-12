@@ -22,7 +22,7 @@ namespace Automatonymous.Internal.Caching
     /// </summary>
     /// <typeparam name="TKey">The key type of the cache</typeparam>
     /// <typeparam name="TValue">The value type of the cache</typeparam>
-    public interface Cache<TKey, TValue> :
+    interface Cache<TKey, TValue> :
         ReadCache<TKey, TValue>
     {
         /// <summary>

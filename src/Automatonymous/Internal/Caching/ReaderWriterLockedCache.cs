@@ -19,7 +19,7 @@ namespace Automatonymous.Internal.Caching
     using System.Threading;
 
 
-    public class ReaderWriterLockedCache<TKey, TValue> :
+    class ReaderWriterLockedCache<TKey, TValue> :
         Cache<TKey, TValue>,
         IDisposable
     {

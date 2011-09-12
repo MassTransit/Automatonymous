@@ -23,7 +23,7 @@ namespace Automatonymous.Internal.Caching
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public interface ReadCache<TKey, TValue> :
+    interface ReadCache<TKey, TValue> :
         IEnumerable<TValue>
     {
         /// <summary>

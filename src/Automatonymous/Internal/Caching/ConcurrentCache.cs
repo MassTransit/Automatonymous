@@ -20,7 +20,7 @@ namespace Automatonymous.Internal.Caching
 
 
     [Serializable]
-    public class ConcurrentCache<TKey, TValue> :
+    class ConcurrentCache<TKey, TValue> :
         Cache<TKey, TValue>
     {
         readonly ConcurrentDictionary<TKey, TValue> _values;

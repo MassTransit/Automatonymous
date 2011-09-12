@@ -16,7 +16,7 @@ namespace Automatonymous.Internal
     using System.Text;
 
 
-    public class ExpressionNameVisitor :
+    class ExpressionNameVisitor :
         ExpressionVisitor
     {
         readonly StringBuilder _text = new StringBuilder();
