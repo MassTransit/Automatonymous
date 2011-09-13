@@ -16,9 +16,16 @@ namespace Automatonymous
                .Where(e => e.From.TargetType == typeof (State) && e.From.Title == current.Name)
                .Select(e=>e.Title).ToList();
 
+           //need to take into account the 'Any'
+           var any = graph.Edges
+               .Where(e => e.From.TargetType == typeof (State) && e.From.Title == ".Any")
+               .Select(e => e.Title).ToList();
+
            var allEvents = machine.Events;
 
-           return allEvents.Where(e => eventNames.Contains(e.Name));
+           var combine = eventNames.Union(any);
+
+           return allEvents.Where(e => combine.Contains(e.Name));
        }
 
     }
