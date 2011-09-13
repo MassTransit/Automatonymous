@@ -22,9 +22,16 @@ namespace Automatonymous
     using Internal;
     using Internal.Caching;
 
+    public interface StateMachine
+    {
+        IEnumerable<Event> Events { get; }
+        IEnumerable<State> States { get; }
+        Type InstanceType { get; }
+    }
 
     public abstract class StateMachine<TInstance> :
-        StateMachineNode
+        StateMachineNode,
+        StateMachine
         where TInstance : StateMachineInstance
     {
         readonly State<TInstance> _anyState;
@@ -188,6 +195,11 @@ namespace Automatonymous
         public IEnumerable<Event> Events
         {
             get { return _eventCache; }
+        }
+
+        public Type InstanceType
+        {
+            get { return typeof(TInstance); }
         }
 
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)

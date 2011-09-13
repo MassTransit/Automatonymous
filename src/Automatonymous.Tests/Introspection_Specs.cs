@@ -36,6 +36,12 @@ namespace Automatonymous.Tests
             Assert.Contains(_machine.Pissed, _machine.States.ToList());
         }
 
+        [Test]
+        public void The_machine_shoud_report_its_instance_type()
+        {
+            Assert.AreEqual(typeof(Instance), _machine.InstanceType);
+        }
+
         Instance _instance;
         TestStateMachine _machine;
 
@@ -62,7 +68,7 @@ namespace Automatonymous.Tests
         }
 
         class TestStateMachine :
-            StateMachine<StateMachineInstance>
+            StateMachine<Instance>
         {
             public TestStateMachine()
             {
