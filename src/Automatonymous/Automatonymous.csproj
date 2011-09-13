@@ -54,6 +54,7 @@
     <Compile Include="Impl\ExceptionBinder.cs" />
     <Compile Include="Internal\ExpressionExtensions.cs" />
     <Compile Include="Internal\FastProperty.cs" />
+    <Compile Include="IntrospectionExtensions.cs" />
     <Compile Include="ThenExtensions.cs" />
     <Compile Include="AutomatonymousException.cs" />
     <Compile Include="Event.cs" />

@@ -180,6 +180,16 @@ namespace Automatonymous
         }
 
 
+        public IEnumerable<State> AllStates
+        {
+            get { return _stateCache; }
+        }
+
+        public IEnumerable<Event> AllEvents
+        {
+            get { return _eventCache; }
+        }
+
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
         {
             State<TInstance> activityState = state.For<TInstance>();
