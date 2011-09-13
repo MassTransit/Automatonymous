@@ -16,7 +16,7 @@ namespace Automatonymous
                .Where(e => e.From.TargetType == typeof (State) && e.From.Title == current.Name)
                .Select(e=>e.Title).ToList();
 
-           var allEvents = machine.AllEvents;
+           var allEvents = machine.Events;
 
            return allEvents.Where(e => eventNames.Contains(e.Name));
        }

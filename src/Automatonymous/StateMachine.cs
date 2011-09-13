@@ -180,12 +180,12 @@ namespace Automatonymous
         }
 
 
-        public IEnumerable<State> AllStates
+        public IEnumerable<State> States
         {
             get { return _stateCache; }
         }
 
-        public IEnumerable<Event> AllEvents
+        public IEnumerable<Event> Events
         {
             get { return _eventCache; }
         }
