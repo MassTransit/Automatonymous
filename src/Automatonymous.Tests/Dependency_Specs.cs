@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using Impl;
     using NUnit.Framework;
 
 
@@ -30,7 +31,7 @@ namespace Automatonymous.Tests
         [TestFixtureSetUp]
         public void Specifying_an_event_activity()
         {
-            _claim = new ClaimAdjustmentInstance(new LocalCalculator());
+            _claim = new ClaimAdjustmentInstance();
             _machine = new InstanceStateMachine();
 
             var data = new CreateClaim
@@ -46,26 +47,35 @@ namespace Automatonymous.Tests
         class ClaimAdjustmentInstance :
             ClaimAdjustment
         {
+            public State CurrentState { get; set; }
+            public string Value { get; set; }
+        }
+
+
+        class CalculateValueActivity :
+            Activity<ClaimAdjustment, CreateClaim>
+        {
             readonly CalculatorService _calculator;
 
-            public ClaimAdjustmentInstance(CalculatorService calculator)
+            public CalculateValueActivity(CalculatorService calculator)
             {
                 _calculator = calculator;
             }
 
-            public State CurrentState { get; set; }
-            public string Value { get; set; }
-
-            public string Add(int x, int y)
+            public void Execute(ClaimAdjustment instance, CreateClaim data)
             {
-                return _calculator.Add(x, y);
+                instance.Value = _calculator.Add(data.X, data.Y);
+            }
+
+            public void Inspect(StateMachineInspector inspector)
+            {
+                inspector.Inspect(this, x => { });
             }
         }
 
 
         interface ClaimAdjustment :
-            ClaimModel,
-            CalculatorService
+            ClaimModel
         {
         }
 
@@ -95,7 +105,7 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Create)
-                        .Then((instance, data) => instance.Value = instance.Add(data.X, data.Y))
+                        .Then(() => new CalculateValueActivity(new LocalCalculator()))
                         .TransitionTo(Running));
             }
 

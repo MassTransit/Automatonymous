@@ -24,4 +24,13 @@ namespace Automatonymous.Impl
     {
         void Execute(TInstance instance, object value);
     }
+
+
+    public interface Activity<TInstance, TData> :
+        Activity
+        where TInstance : StateMachineInstance
+        where TData : class
+    {
+        void Execute(TInstance instance, TData data);
+    }
 }

@@ -41,5 +41,14 @@ namespace Automatonymous
         {
             return source.Add(new ActionActivity<TInstance, TData>(action));
         }
+
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData, TActivity>(
+            this EventActivityBinder<TInstance, TData> source, Func<TActivity> activityFactory) 
+            where TActivity : Activity<TInstance,TData>
+            where TInstance:StateMachineInstance
+            where TData : class
+        {
+            return source.Add(new FactoryEventActivity<TActivity, TInstance, TData>(activityFactory));
+        }
     }
 }
