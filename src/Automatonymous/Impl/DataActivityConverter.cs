@@ -44,7 +44,7 @@ namespace Automatonymous.Impl
 
         public void Inspect(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, x => { });
+            inspector.Inspect(this, x => _activity.Inspect(inspector));
         }
     }
 }

@@ -21,13 +21,13 @@
         [Test]
         public void It_should_create_the_proper_event_type_for_data_events()
         {
-            Assert.IsInstanceOf<DataEvent<StateMachineInstance, A>>(_machine.EventA);
+            Assert.IsInstanceOf<DataEvent<A>>(_machine.EventA);
         }
 
         [Test]
         public void It_should_create_the_proper_event_type_for_simple_events()
         {
-            Assert.IsInstanceOf<SimpleEvent<StateMachineInstance>>(_machine.Hello);
+            Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
         }
 
         TestStateMachine _machine;

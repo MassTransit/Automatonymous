@@ -12,9 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    public class SimpleEvent<TInstance> :
+    public class SimpleEvent :
         Event
-        where TInstance : StateMachineInstance
     {
         public SimpleEvent(string name)
         {
@@ -23,8 +22,9 @@ namespace Automatonymous.Impl
 
         public string Name { get; private set; }
 
-        public void Inspect(StateMachineInspector inspector)
+        public virtual void Inspect(StateMachineInspector inspector)
         {
+            inspector.Inspect(this, x => { });
         }
 
         public override string ToString()

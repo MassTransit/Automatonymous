@@ -19,7 +19,12 @@ namespace Automatonymous
     public interface StateMachineInspector
     {
         void Inspect(State state, Action<State> next);
+
         void Inspect(Event @event, Action<Event> next);
+
+        void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next)
+            where TData : class;
+
         void Inspect(Activity activity, Action<Activity> next);
     }
 }

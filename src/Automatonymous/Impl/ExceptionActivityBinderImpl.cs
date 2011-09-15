@@ -16,8 +16,6 @@ namespace Automatonymous.Impl
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
-    using System.Runtime.Serialization;
     using Activities;
 
 
@@ -48,7 +46,7 @@ namespace Automatonymous.Impl
         {
             EventActivityBinder<TInstance, TException> contextBinder = new DataEventActivityBinder
                 <TInstance, TException>(
-                _machine, new DataEvent<TInstance, TException>(typeof(TException).Name));
+                _machine, new DataEvent<TException>(typeof(TException).Name));
 
             contextBinder = context(contextBinder);
 
@@ -98,7 +96,7 @@ namespace Automatonymous.Impl
             EventActivityBinder<TInstance, Tuple<TData, TException>> contextBinder = new DataEventActivityBinder
                 <TInstance, Tuple<TData, TException>>(
                 _machine,
-                new DataEvent<TInstance, Tuple<TData, TException>>(typeof(TData).Name + "." + typeof(TException).Name));
+                new DataEvent<Tuple<TData, TException>>(typeof(TData).Name + "." + typeof(TException).Name));
 
             contextBinder = context(contextBinder);
 

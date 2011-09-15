@@ -12,15 +12,19 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    public class DataEvent<TInstance, TData> :
-        SimpleEvent<TInstance>,
+    public class DataEvent<TData> :
+        SimpleEvent,
         Event<TData>
-        where TInstance : StateMachineInstance
         where TData : class
     {
         public DataEvent(string name)
             : base(name)
         {
+        }
+
+        public override void Inspect(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this, x => { });
         }
     }
 }

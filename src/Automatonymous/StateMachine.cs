@@ -134,7 +134,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var @event = new SimpleEvent<TInstance>(name);
+            var @event = new SimpleEvent(name);
 
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
@@ -155,7 +155,7 @@ namespace Automatonymous
 
             string name = eventProperty.Name;
 
-            var @event = new SimpleEvent<TInstance>(name);
+            var @event = new SimpleEvent(name);
 
             eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
                 null,
@@ -190,7 +190,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var @event = new DataEvent<TInstance, T>(name);
+            var @event = new DataEvent<T>(name);
 
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);

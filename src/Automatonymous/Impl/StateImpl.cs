@@ -26,8 +26,8 @@ namespace Automatonymous.Impl
         {
             Name = name;
 
-            Enter = new SimpleEvent<TInstance>(name + ".Enter");
-            Leave = new SimpleEvent<TInstance>(name + ".Leave");
+            Enter = new SimpleEvent(name + ".Enter");
+            Leave = new SimpleEvent(name + ".Leave");
 
             _activityCache = new DictionaryCache<Event, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
         }
@@ -41,13 +41,15 @@ namespace Automatonymous.Impl
         {
             inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
                 {
-                    inspector.Inspect(key, __ => value.ForEach(activity => activity.Inspect(inspector)));
+                    key.Inspect(inspector);
+                    value.ForEach(activity => activity.Inspect(inspector));
                 }));
         }
 
         public void Raise(TInstance instance, Event @event, object value)
         {
-            _activityCache.WithValue(@event, activities => activities.ForEach(activity => activity.Execute(instance, value)));
+            _activityCache.WithValue(@event,
+                activities => activities.ForEach(activity => activity.Execute(instance, value)));
         }
 
         public void Bind(EventActivity<TInstance> activity)

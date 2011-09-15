@@ -60,6 +60,11 @@ namespace Automatonymous.Graphing
             next(@event);
         }
 
+        public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next) where TData : class
+        {
+            Inspect((Event)@event, x => next(@event));
+        }
+
         public void Inspect(Activity activity, Action<Activity> next)
         {
             var transitionActivity = activity as TransitionActivity<TInstance>;
@@ -100,12 +105,12 @@ namespace Automatonymous.Graphing
             _edges.Add(new Edge(_currentEvent, targetState, _currentEvent.Title));
         }
 
-        Vertex GetStateVertex(State state)
+        static Vertex GetStateVertex(State state)
         {
             return new Vertex(typeof(State), typeof(State), state.Name);
         }
 
-        Vertex GetEventVertex(Event @event)
+        static Vertex GetEventVertex(Event @event)
         {
             Type targetType = @event
                 .GetType()

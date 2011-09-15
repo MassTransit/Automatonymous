@@ -18,7 +18,7 @@ namespace Automatonymous.Tests
         [Test]
         public void The_machine_should_expose_all_events()
         {
-            Assert.AreEqual(4, _machine.Events.Count());
+            Assert.AreEqual(4, ((StateMachine)_machine).Events.Count());
             Assert.Contains(_machine.Ignored, _machine.Events.ToList());
             Assert.Contains(_machine.Handshake, _machine.Events.ToList());
             Assert.Contains(_machine.Hello, _machine.Events.ToList());
@@ -28,7 +28,7 @@ namespace Automatonymous.Tests
         [Test]
         public void The_machine_should_expose_all_states()
         {
-            Assert.AreEqual(5, _machine.States.Count());
+            Assert.AreEqual(5, ((StateMachine)_machine).States.Count());
             Assert.Contains(_machine.Initial, _machine.States.ToList());
             Assert.Contains(_machine.Completed, _machine.States.ToList());
             Assert.Contains(_machine.Greeted, _machine.States.ToList());

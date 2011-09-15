@@ -22,8 +22,8 @@ namespace Automatonymous.Impl.Activities
         where TException : class
     {
         readonly List<Activity<TInstance>> _activities;
+        readonly Event<TException> _event;
         readonly Type _exceptionType;
-        Event<TException> _event;
 
         public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance>> activities, Type exceptionType,
                                         Event<TException> @event)

@@ -22,23 +22,11 @@ namespace Automatonymous.Internal
         public readonly Func<T, TProperty> GetDelegate;
         public readonly Action<T, TProperty> SetDelegate;
 
-        public FastProperty(Expression<Func<T, TProperty>> propertyExpression)
-            : this(propertyExpression.GetPropertyInfo())
-        {
-        }
-
         public FastProperty(PropertyInfo property)
         {
             Property = property;
             GetDelegate = GetGetMethod(Property);
-            SetDelegate = GetSetMethod(Property, false);
-        }
-
-        public FastProperty(PropertyInfo property, BindingFlags bindingFlags)
-        {
-            Property = property;
-            GetDelegate = GetGetMethod(Property);
-            SetDelegate = GetSetMethod(Property, (bindingFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic);
+            SetDelegate = GetSetMethod(Property);
         }
 
         public PropertyInfo Property { get; private set; }
@@ -53,15 +41,13 @@ namespace Automatonymous.Internal
             SetDelegate(instance, value);
         }
 
-        static Action<T, TProperty> GetSetMethod(PropertyInfo property, bool includeNonPublic)
+        static Action<T, TProperty> GetSetMethod(PropertyInfo property)
         {
             ParameterExpression instance = Expression.Parameter(typeof(T), "instance");
             ParameterExpression value = Expression.Parameter(typeof(TProperty), "value");
-            MethodCallExpression call = Expression.Call(instance, property.GetSetMethod(includeNonPublic), value);
+            MethodCallExpression call = Expression.Call(instance, property.GetSetMethod(true), value);
 
             return Expression.Lambda<Action<T, TProperty>>(call, new[] {instance, value}).Compile();
-
-            // roughly looks like Action<T,P> a = new Action<T,P>((instance,value) => instance.set_Property(value));
         }
 
         static Func<T, TProperty> GetGetMethod(PropertyInfo property)
@@ -70,8 +56,6 @@ namespace Automatonymous.Internal
             return
                 Expression.Lambda<Func<T, TProperty>>(Expression.Call(instance, property.GetGetMethod()), instance).
                     Compile();
-
-            // roughly looks like Func<T,P> getter = instance => return instance.get_Property();
         }
     }
 }
