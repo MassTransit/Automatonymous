@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
+    using System.Collections.Generic;
+
+
     public interface State<TInstance> :
         State
         where TInstance : StateMachineInstance
@@ -19,5 +22,7 @@ namespace Automatonymous.Impl
         void Raise(TInstance instance, Event @event, object value);
 
         void Bind(EventActivity<TInstance> activity);
+
+        IEnumerable<Event> Events { get; }
     }
 }

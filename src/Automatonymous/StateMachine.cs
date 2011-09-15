@@ -22,26 +22,30 @@ namespace Automatonymous
     using Internal;
     using Internal.Caching;
 
+
     public interface StateMachine
     {
         IEnumerable<Event> Events { get; }
         IEnumerable<State> States { get; }
         Type InstanceType { get; }
+
+        IEnumerable<Event> NextEvents(State state);
     }
+
 
     public abstract class StateMachine<TInstance> :
         StateMachineNode,
         StateMachine
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly State<TInstance> _anyState;
         readonly Cache<string, Event> _eventCache;
         readonly Activity<TInstance> _initialActivity;
-        readonly Cache<string, StateImpl<TInstance>> _stateCache;
+        readonly Cache<string, State<TInstance>> _stateCache;
 
         protected StateMachine()
         {
-            _stateCache = new DictionaryCache<string, StateImpl<TInstance>>();
+            _stateCache = new DictionaryCache<string, State<TInstance>>();
             _eventCache = new DictionaryCache<string, Event>();
 
             State(() => Initial);
@@ -54,6 +58,28 @@ namespace Automatonymous
 
         public State Initial { get; private set; }
         public State Completed { get; private set; }
+
+        public IEnumerable<State> States
+        {
+            get { return _stateCache; }
+        }
+
+        public IEnumerable<Event> Events
+        {
+            get { return _eventCache; }
+        }
+
+        public Type InstanceType
+        {
+            get { return typeof(TInstance); }
+        }
+
+        public IEnumerable<Event> NextEvents(State state)
+        {
+            return _stateCache[state.Name].Events
+                .Concat(_anyState.Events)
+                .Distinct(new NameEqualityComparer());
+        }
 
         public void Inspect(StateMachineInspector inspector)
         {
@@ -187,21 +213,6 @@ namespace Automatonymous
         }
 
 
-        public IEnumerable<State> States
-        {
-            get { return _stateCache; }
-        }
-
-        public IEnumerable<Event> Events
-        {
-            get { return _eventCache; }
-        }
-
-        public Type InstanceType
-        {
-            get { return typeof(TInstance); }
-        }
-
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
         {
             State<TInstance> activityState = state.For<TInstance>();
@@ -236,6 +247,20 @@ namespace Automatonymous
             where TData : class
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
+        }
+
+
+        class NameEqualityComparer : IEqualityComparer<Event>
+        {
+            public bool Equals(Event x, Event y)
+            {
+                return Equals(x.Name, y.Name);
+            }
+
+            public int GetHashCode(Event @event)
+            {
+                return @event.Name.GetHashCode();
+            }
         }
     }
 }

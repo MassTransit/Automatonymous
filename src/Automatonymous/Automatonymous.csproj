@@ -41,13 +41,14 @@
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
-    <Compile Include="ExceptionHandlingExtensions.cs" />
+    <Compile Include="TryExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="Impl\Activities\CallActivity.cs" />
     <Compile Include="Impl\Activities\ExceptionActivity.cs" />
     <Compile Include="Impl\Activities\ExceptionHandlerActivity.cs" />
     <Compile Include="Impl\Activities\FactoryEventActivity.cs" />
     <Compile Include="Impl\Activities\TryActivity.cs" />
+    <Compile Include="Impl\DataActivityConverter.cs" />
     <Compile Include="Impl\ExceptionActivityBinder.cs" />
     <Compile Include="Impl\ExceptionActivityBinderImpl.cs" />
     <Compile Include="Impl\ExceptionBinder.cs" />

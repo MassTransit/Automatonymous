@@ -17,24 +17,25 @@ namespace Automatonymous.Impl
 
     public interface EventActivityBinder<TInstance> :
         IEnumerable<EventActivity<TInstance>>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         StateMachine<TInstance> StateMachine { get; }
         Event Event { get; }
 
-        EventActivityBinder<TInstance> Add(Activity<TInstance> activity, params ExceptionBinder<TInstance>[] exceptions);
+        EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
     }
 
 
     public interface EventActivityBinder<TInstance, TData> :
         IEnumerable<EventActivity<TInstance>>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
         where TData : class
     {
         StateMachine<TInstance> StateMachine { get; }
         Event<TData> Event { get; }
 
-        EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity,
-                                                  params ExceptionBinder<TInstance>[] exceptions);
+        EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
+
+        EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
     }
 }

@@ -77,8 +77,9 @@ namespace Automatonymous.Impl.Activities
 
 
     public class TryActivity<TInstance, TData> :
-        Activity<TInstance>
+        Activity<TInstance, TData>
         where TInstance : StateMachineInstance
+        where TData : class
     {
         readonly List<Activity<TInstance>> _activities;
         readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;
@@ -96,11 +97,11 @@ namespace Automatonymous.Impl.Activities
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance, TData data)
         {
             try
             {
-                _activities.ForEach(activity => activity.Execute(instance, value));
+                _activities.ForEach(activity => activity.Execute(instance, data));
             }
             catch (Exception ex)
             {
@@ -110,7 +111,7 @@ namespace Automatonymous.Impl.Activities
                     if (_exceptionHandlers.WithValue(exceptionType, x =>
                         {
                             Type tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
-                            object arg = Activator.CreateInstance(tupleType, value, ex);
+                            object arg = Activator.CreateInstance(tupleType, data, ex);
 
                             x.ForEach(activity => activity.Execute(instance, arg));
                         }))

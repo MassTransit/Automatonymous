@@ -21,7 +21,7 @@ namespace Automatonymous.Impl
 
     public class DataEventActivityBinder<TInstance, TData> :
         EventActivityBinder<TInstance, TData>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
         where TData : class
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
@@ -60,11 +60,16 @@ namespace Automatonymous.Impl
             get { return _event; }
         }
 
-        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity,
-            params ExceptionBinder<TInstance>[] exceptions)
+        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity)
         {
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
+        }
+
+        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
+                _activities.Concat(Enumerable.Repeat(new DataActivityConverter<TInstance, TData>(activity), 1)));
         }
 
         public StateMachine<TInstance> StateMachine

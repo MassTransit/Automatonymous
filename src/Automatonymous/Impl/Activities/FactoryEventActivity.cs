@@ -15,31 +15,45 @@ namespace Automatonymous.Impl.Activities
     using System;
 
 
-    public class FactoryEventActivity<TActivity, TInstance, TData> :
+    public class FactoryEventActivity<TInstance> :
         Activity<TInstance>
-        where TActivity : Activity<TInstance, TData>
         where TInstance : StateMachineInstance
-        where TData : class
     {
-        readonly Func<TActivity> _activityFactory;
+        readonly Func<Activity<TInstance>> _activityFactory;
 
-        public FactoryEventActivity(Func<TActivity> activityFactory)
+        public FactoryEventActivity(Func<Activity<TInstance>> activityFactory)
         {
             _activityFactory = activityFactory;
         }
 
         public void Execute(TInstance instance, object value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
+            Activity<TInstance> activity = _activityFactory();
 
-            var data = value as TData;
-            if (data == null)
-            {
-                throw new ArgumentException("Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name,
-                    "value");
-            }
+            activity.Execute(instance, value);
+        }
 
+        public void Inspect(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this, x => { });
+        }
+    }
+
+
+    public class FactoryEventActivity<TInstance, TData> :
+        Activity<TInstance, TData>
+        where TInstance : StateMachineInstance
+        where TData : class
+    {
+        readonly Func<Activity<TInstance, TData>> _activityFactory;
+
+        public FactoryEventActivity(Func<Activity<TInstance, TData>> activityFactory)
+        {
+            _activityFactory = activityFactory;
+        }
+
+        public void Execute(TInstance instance, TData data)
+        {
             Activity<TInstance, TData> activity = _activityFactory();
 
             activity.Execute(instance, data);

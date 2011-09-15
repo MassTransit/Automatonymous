@@ -35,9 +35,6 @@ namespace Automatonymous.Impl.Activities
 
         public void Execute(TInstance instance, object value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value", "The exception argument cannot be null");
-
             _activities.ForEach(activity => activity.Execute(instance, value));
         }
 

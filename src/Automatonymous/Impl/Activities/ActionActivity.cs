@@ -39,7 +39,7 @@ namespace Automatonymous.Impl.Activities
 
 
     public class ActionActivity<TInstance, TData> :
-        Activity<TInstance>
+        Activity<TInstance, TData>
         where TInstance : StateMachineInstance
         where TData : class
     {
@@ -50,16 +50,8 @@ namespace Automatonymous.Impl.Activities
             _action = action;
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance, TData data)
         {
-            if (value == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
-
-            var data = value as TData;
-            if (data == null)
-                throw new ArgumentException("Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name,
-                    "value");
-
             _action(instance, data);
         }
 

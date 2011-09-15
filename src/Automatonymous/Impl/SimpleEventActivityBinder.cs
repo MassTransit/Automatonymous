@@ -19,7 +19,7 @@ namespace Automatonymous.Impl
 
     public class SimpleEventActivityBinder<TInstance> :
         EventActivityBinder<TInstance>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event _event;
@@ -43,8 +43,7 @@ namespace Automatonymous.Impl
             get { return _event; }
         }
 
-        public EventActivityBinder<TInstance> Add(Activity<TInstance> activity,
-                                                  params ExceptionBinder<TInstance>[] exceptions)
+        public EventActivityBinder<TInstance> Add(Activity<TInstance> activity)
         {
             return new SimpleEventActivityBinder<TInstance>(_machine, _event,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));

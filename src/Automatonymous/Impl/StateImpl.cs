@@ -55,6 +55,11 @@ namespace Automatonymous.Impl
             _activityCache[activity.Event].Add(activity);
         }
 
+        public IEnumerable<Event> Events
+        {
+            get { return _activityCache.GetAllKeys(); }
+        }
+
         public override string ToString()
         {
             return string.Format("{0} (State)", Name);

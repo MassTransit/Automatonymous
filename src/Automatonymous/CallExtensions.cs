@@ -23,7 +23,7 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance> Call<TInstance>(
             this EventActivityBinder<TInstance> source,
             Expression<Action<TInstance>> expression)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
         {
             return source.Add(new CallActivity<TInstance>(expression));
         }
@@ -31,7 +31,7 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Call<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source,
             Expression<Action<TInstance, TData>> expression)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
             where TData : class
         {
             return source.Add(new CallActivity<TInstance, TData>(expression));

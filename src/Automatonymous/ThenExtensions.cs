@@ -21,14 +21,14 @@ namespace Automatonymous
     {
         public static EventActivityBinder<TInstance> Then<TInstance>(
             this EventActivityBinder<TInstance> source, Action<TInstance> action)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
         {
             return source.Add(new ActionActivity<TInstance>(action));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Action<TInstance> action)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
             where TData : class
         {
             return source.Add(new ActionActivity<TInstance>(action));
@@ -36,19 +36,30 @@ namespace Automatonymous
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Action<TInstance, TData> action)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
             where TData : class
         {
-            return source.Add(new ActionActivity<TInstance, TData>(action));
+            var activity = new ActionActivity<TInstance, TData>(action);
+            var adapter = new DataActivityConverter<TInstance, TData>(activity);
+            return source.Add(adapter);
         }
 
-        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData, TActivity>(
-            this EventActivityBinder<TInstance, TData> source, Func<TActivity> activityFactory) 
-            where TActivity : Activity<TInstance,TData>
-            where TInstance:StateMachineInstance
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Func<Activity<TInstance, TData>> activityFactory)
+            where TInstance : class, StateMachineInstance
             where TData : class
         {
-            return source.Add(new FactoryEventActivity<TActivity, TInstance, TData>(activityFactory));
+            var activity = new FactoryEventActivity<TInstance, TData>(activityFactory);
+            return source.Add(activity);
+        }
+
+        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Func<Activity<TInstance>> activityFactory)
+            where TInstance : class, StateMachineInstance
+            where TData : class
+        {
+            var activity = new FactoryEventActivity<TInstance>(activityFactory);
+            return source.Add(activity);
         }
     }
 }

@@ -13,6 +13,7 @@
 namespace Automatonymous.Tests
 {
     using Impl;
+    using Impl.Activities;
     using NUnit.Framework;
 
 
@@ -106,6 +107,7 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Create)
                         .Then(() => new CalculateValueActivity(new LocalCalculator()))
+                        .Then(() => new ActionActivity<ClaimAdjustment>(x => { }))
                         .TransitionTo(Running));
             }
 

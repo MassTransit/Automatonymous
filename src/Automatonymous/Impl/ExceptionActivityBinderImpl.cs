@@ -23,7 +23,7 @@ namespace Automatonymous.Impl
 
     public class ExceptionActivityBinderImpl<TInstance> :
         ExceptionActivityBinder<TInstance>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;
@@ -71,7 +71,7 @@ namespace Automatonymous.Impl
     
     public class ExceptionActivityBinderImpl<TInstance, TData> :
         ExceptionActivityBinder<TInstance, TData>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;

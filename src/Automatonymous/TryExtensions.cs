@@ -17,13 +17,13 @@ namespace Automatonymous
     using Impl.Activities;
 
 
-    public static class ExceptionHandlingExtensions
+    public static class TryExtensions
     {
         public static EventActivityBinder<TInstance> Try<TInstance>(
             this EventActivityBinder<TInstance> source,
             Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> context,
             Func<ExceptionActivityBinder<TInstance>, ExceptionActivityBinder<TInstance>> handlers)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
         {
             EventActivityBinder<TInstance> contextBinder = new SimpleEventActivityBinder<TInstance>(
                 source.StateMachine, source.Event);
@@ -42,7 +42,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source,
             Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> context,
             Func<ExceptionActivityBinder<TInstance, TData>, ExceptionActivityBinder<TInstance, TData>> handlers)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
             where TData : class
         {
             EventActivityBinder<TInstance, TData> contextBinder = new DataEventActivityBinder<TInstance, TData>(

@@ -152,7 +152,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized, new Init());
         }
 
 
