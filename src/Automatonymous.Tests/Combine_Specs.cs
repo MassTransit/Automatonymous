@@ -21,7 +21,35 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_have_called_combined_event()
         {
+            _machine = new TestStateMachine();
+            _instance = new Instance();
+
+            _machine.RaiseEvent(_instance, _machine.First);
+            _machine.RaiseEvent(_instance, _machine.Second);
+
             Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public void Should_not_call_for_one_event()
+        {
+            _machine = new TestStateMachine();
+            _instance = new Instance();
+
+            _machine.RaiseEvent(_instance, _machine.First);
+
+            Assert.IsFalse(_instance.Called);
+        }
+
+        [Test]
+        public void Should_not_call_for_one_other_event()
+        {
+            _machine = new TestStateMachine();
+            _instance = new Instance();
+
+            _machine.RaiseEvent(_instance, _machine.Second);
+
+            Assert.IsFalse(_instance.Called);
         }
 
         TestStateMachine _machine;
@@ -55,8 +83,7 @@ namespace Automatonymous.Tests
                 Event(() => First);
                 Event(() => Second);
 
-                Event(() => Third, x => x.CompositeStatus, First.And(Second));
-                // support OR as well, let the language due deal with order of operations and grouping
+                Event(() => Third, x => x.CompositeStatus, First, Second);
 
                 Initially(
                           When(Third)

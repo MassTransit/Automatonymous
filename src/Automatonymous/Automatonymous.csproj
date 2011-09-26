@@ -40,7 +40,6 @@
     <Compile Include="AutomatonymousStateMachine.cs" />
     <Compile Include="CallExtensions.cs" />
     <Compile Include="CompositeEventStatus.cs" />
-    <Compile Include="EventExtensions.cs" />
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />

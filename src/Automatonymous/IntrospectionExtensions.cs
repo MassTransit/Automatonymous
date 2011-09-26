@@ -18,12 +18,13 @@ namespace Automatonymous
 
     public static class IntrospectionExtensions
     {
-        public static IEnumerable<Event> NextEvents<TInstance>(this AutomatonymousStateMachine<TInstance> machine, TInstance instance)
+        public static IEnumerable<Event> NextEvents<TInstance>(this AutomatonymousStateMachine<TInstance> machine,
+                                                               TInstance instance)
             where TInstance : class, StateMachineInstance
         {
-            if(machine == null)
+            if (machine == null)
                 throw new ArgumentNullException("machine");
-            if(instance == null)
+            if (instance == null)
                 throw new ArgumentNullException("instance");
 
             return machine.NextEvents(instance.CurrentState);
