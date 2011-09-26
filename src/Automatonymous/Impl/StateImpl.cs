@@ -21,10 +21,11 @@ namespace Automatonymous.Impl
         where TInstance : StateMachineInstance
     {
         readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
+        readonly string _name;
 
         public StateImpl(string name)
         {
-            Name = name;
+            _name = name;
 
             Enter = new SimpleEvent(name + ".Enter");
             Leave = new SimpleEvent(name + ".Leave");
@@ -32,7 +33,10 @@ namespace Automatonymous.Impl
             _activityCache = new DictionaryCache<Event, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
         }
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get { return _name; }
+        }
 
         public Event Enter { get; private set; }
         public Event Leave { get; private set; }
@@ -52,7 +56,7 @@ namespace Automatonymous.Impl
                 activities => activities.ForEach(activity => activity.Execute(instance)));
         }
 
-        public void Raise<TData>(TInstance instance, Event<TData> @event, TData value) 
+        public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
             where TData : class
         {
             _activityCache.WithValue(@event,
@@ -69,9 +73,14 @@ namespace Automatonymous.Impl
             get { return _activityCache.GetAllKeys(); }
         }
 
+        public int CompareTo(State other)
+        {
+            return _name.CompareTo(other.Name);
+        }
+
         public override string ToString()
         {
-            return string.Format("{0} (State)", Name);
+            return string.Format("{0} (State)", _name);
         }
     }
 }
