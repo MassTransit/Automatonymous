@@ -15,21 +15,56 @@ namespace Automatonymous.Impl
     public class SimpleEvent :
         Event
     {
+        readonly string _name;
+
         public SimpleEvent(string name)
         {
-            Name = name;
+            _name = name;
         }
 
-        public string Name { get; private set; }
+        public string Name
+        {
+            get { return _name; }
+        }
 
         public virtual void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }
 
+        public int CompareTo(Event other)
+        {
+            return _name.CompareTo(other.Name);
+        }
+
+        public bool Equals(SimpleEvent other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return Equals(other._name, _name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != typeof(SimpleEvent))
+                return false;
+            return Equals((SimpleEvent)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_name != null ? _name.GetHashCode() : 0);
+        }
+
         public override string ToString()
         {
-            return string.Format("{0} (Event)", Name);
+            return string.Format("{0} (Event)", _name);
         }
     }
 }

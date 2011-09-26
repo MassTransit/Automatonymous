@@ -12,9 +12,13 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
+    using System;
+
+
     public class DataEvent<TData> :
         SimpleEvent,
-        Event<TData>
+        Event<TData>,
+        IEquatable<DataEvent<TData>>
         where TData : class
     {
         public DataEvent(string name)
@@ -25,6 +29,34 @@ namespace Automatonymous.Impl
         public override void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        public bool Equals(DataEvent<TData> other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return Equals(other.Name, Name);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}<{1}> (Event)", Name, typeof(TData).Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            return Equals(obj as DataEvent<TData>);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode()*27 + typeof(TData).GetHashCode();
         }
     }
 }
