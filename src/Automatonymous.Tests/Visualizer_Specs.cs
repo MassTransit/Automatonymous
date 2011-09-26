@@ -15,6 +15,7 @@ namespace Automatonymous.Tests
     using System;
     using Graphing;
     using NUnit.Framework;
+    using Visualizer;
 
 
     [TestFixture]
@@ -24,7 +25,7 @@ namespace Automatonymous.Tests
         StateMachineGraph _graph;
 
         [TestFixtureSetUp]
-        void Setup()
+        public void Setup()
         {
             _machine = new InstanceStateMachine();
 
@@ -37,12 +38,12 @@ namespace Automatonymous.Tests
             Assert.IsNotNull(_graph);
         }
 
-//        [Test]
-//        [Explicit]
-//        public void Should_show_the_goods()
-//        {
-//            StateMachineDebugVisualizer.TestShowVisualizer(_graph);
-//        }
+        [Test]
+        [Explicit]
+        public void Should_show_the_goods()
+        {
+            StateMachineDebugVisualizer.TestShowVisualizer(_graph);
+        }
 
 
         class Instance :
