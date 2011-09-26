@@ -25,14 +25,19 @@ namespace Automatonymous.Impl
             _activity = activity;
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
+        {
+            _activity.Execute(instance);
+        }
+
+        public void Execute<TData>(TInstance instance, TData value)
         {
             _activity.Execute(instance, value);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
-            _activity.Inspect(inspector);
+            _activity.Accept(inspector);
         }
 
         public Event Event

@@ -22,7 +22,7 @@ namespace Automatonymous.Impl
 
         public string Name { get; private set; }
 
-        public virtual void Inspect(StateMachineInspector inspector)
+        public virtual void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }

@@ -43,7 +43,7 @@ namespace Automatonymous.Visualizer
         {
             while (machineType != null && machineType != typeof(object))
             {
-                if (machineType.IsGenericType && machineType.GetGenericTypeDefinition() == typeof(StateMachine<>))
+                if (machineType.IsGenericType && machineType.GetGenericTypeDefinition() == typeof(AutomatonymousStateMachine<>))
                 {
                     Type instanceType = machineType.GetGenericArguments()[0];
                     return instanceType;
@@ -56,11 +56,11 @@ namespace Automatonymous.Visualizer
         }
 
         StateMachineGraph CreateStateMachineGraph<TMachine, TInstance>(TMachine machine)
-            where TMachine : StateMachine<TInstance>
+            where TMachine : AutomatonymousStateMachine<TInstance>
             where TInstance : class, StateMachineInstance
         {
             var visitor = new GraphStateMachineVisitor<TInstance>();
-            machine.Inspect(visitor);
+            machine.Accept(visitor);
 
             return visitor.Graph;
         }

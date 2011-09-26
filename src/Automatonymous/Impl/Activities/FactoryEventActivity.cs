@@ -26,14 +26,21 @@ namespace Automatonymous.Impl.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
+        {
+            Activity<TInstance> activity = _activityFactory();
+
+            activity.Execute(instance);
+        }
+
+        public void Execute<TData>(TInstance instance, TData value)
         {
             Activity<TInstance> activity = _activityFactory();
 
             activity.Execute(instance, value);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }
@@ -59,7 +66,7 @@ namespace Automatonymous.Impl.Activities
             activity.Execute(instance, data);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }

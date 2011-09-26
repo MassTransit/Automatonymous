@@ -37,7 +37,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutomatonymousStateMachine.cs" />
     <Compile Include="CallExtensions.cs" />
+    <Compile Include="CompositeEventStatus.cs" />
+    <Compile Include="EventExtensions.cs" />
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
@@ -82,7 +85,7 @@
     <Compile Include="StateMachineInspector.cs" />
     <Compile Include="StateMachineInstance.cs" />
     <Compile Include="StateMachine.cs" />
-    <Compile Include="StateMachineNode.cs" />
+    <Compile Include="AcceptStateMachineInspector.cs" />
     <Compile Include="TransitionExtensions.cs" />
     <Compile Include="Graphing\Vertex.cs" />
   </ItemGroup>

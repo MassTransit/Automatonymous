@@ -22,7 +22,7 @@ namespace Automatonymous.Impl
         {
         }
 
-        public override void Inspect(StateMachineInspector inspector)
+        public override void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }

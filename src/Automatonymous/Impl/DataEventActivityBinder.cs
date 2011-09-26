@@ -27,20 +27,20 @@ namespace Automatonymous.Impl
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event<TData> _event;
         readonly Expression<Func<TData, bool>> _filterExpression;
-        readonly StateMachine<TInstance> _machine;
+        readonly AutomatonymousStateMachine<TInstance> _machine;
 
-        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event)
+        public DataEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event<TData> @event)
             : this(machine, @event, null, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
-        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
+        public DataEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event<TData> @event,
                                        Expression<Func<TData, bool>> filterExpression)
             : this(machine, @event, filterExpression, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
-        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
+        public DataEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event<TData> @event,
                                        Expression<Func<TData, bool>> filterExpression,
                                        IEnumerable<Activity<TInstance>> activities)
         {
@@ -72,7 +72,7 @@ namespace Automatonymous.Impl
                 _activities.Concat(Enumerable.Repeat(new DataActivityConverter<TInstance, TData>(activity), 1)));
         }
 
-        public StateMachine<TInstance> StateMachine
+        public AutomatonymousStateMachine<TInstance> StateMachine
         {
             get { return _machine; }
         }

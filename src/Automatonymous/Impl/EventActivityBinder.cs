@@ -19,7 +19,7 @@ namespace Automatonymous.Impl
         IEnumerable<EventActivity<TInstance>>
         where TInstance : class, StateMachineInstance
     {
-        StateMachine<TInstance> StateMachine { get; }
+        AutomatonymousStateMachine<TInstance> StateMachine { get; }
         Event Event { get; }
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
@@ -31,7 +31,7 @@ namespace Automatonymous.Impl
         where TInstance : class, StateMachineInstance
         where TData : class
     {
-        StateMachine<TInstance> StateMachine { get; }
+        AutomatonymousStateMachine<TInstance> StateMachine { get; }
         Event<TData> Event { get; }
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);

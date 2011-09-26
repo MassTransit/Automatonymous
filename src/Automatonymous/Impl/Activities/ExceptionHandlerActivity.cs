@@ -33,14 +33,19 @@ namespace Automatonymous.Impl.Activities
             _activities = new List<Activity<TInstance>>(activities);
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
+        {
+            _activities.ForEach(activity => activity.Execute(instance));
+        }
+
+        public void Execute<TData>(TInstance instance, TData value)
         {
             _activities.ForEach(activity => activity.Execute(instance, value));
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Inspect(inspector)); });
+            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Accept(inspector)); });
         }
 
         public Type ExceptionType

@@ -10,28 +10,13 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous
 {
-    public interface Activity :
-        AcceptStateMachineInspector
+    public static class EventExtensions
     {
-    }
-
-
-    public interface Activity<in TInstance> :
-        Activity
-        where TInstance : StateMachineInstance
-    {
-        void Execute(TInstance instance);
-        void Execute<TData>(TInstance instance, TData value);
-    }
-
-
-    public interface Activity<in TInstance, in TData> :
-        Activity
-        where TInstance : StateMachineInstance
-        where TData : class
-    {
-        void Execute(TInstance instance, TData data);
+        public static Event And(this Event left, Event right)
+        {
+            return left;
+        }
     }
 }

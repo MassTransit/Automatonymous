@@ -57,4 +57,4 @@ using Automatonymous.Visualizer;
 
 [assembly: DebuggerVisualizer(typeof(StateMachineDebugVisualizer), typeof(StateMachineVisualizerObjectSource),
     Description = "State Machine Visualizer",
-    Target = typeof(StateMachine<>))]
+    Target = typeof(AutomatonymousStateMachine<>))]

@@ -33,18 +33,23 @@ namespace Automatonymous.Impl.Activities
             get { return _toState; }
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
         {
             if (instance.CurrentState == _toState)
                 return;
 
-            instance.CurrentState.WithState<TInstance>(x => x.Raise(instance, x.Leave, null));
+            instance.CurrentState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
 
             instance.CurrentState = ToState;
-            _toState.Raise(instance, ToState.Enter, null);
+            _toState.Raise(instance, ToState.Enter);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Execute<TData>(TInstance instance, TData value)
+        {
+            Execute(instance);
+        }
+
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }

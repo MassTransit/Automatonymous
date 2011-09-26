@@ -37,16 +37,23 @@ namespace Automatonymous.Impl
         public Event Enter { get; private set; }
         public Event Leave { get; private set; }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
                 {
-                    key.Inspect(inspector);
-                    value.ForEach(activity => activity.Inspect(inspector));
+                    key.Accept(inspector);
+                    value.ForEach(activity => activity.Accept(inspector));
                 }));
         }
 
-        public void Raise(TInstance instance, Event @event, object value)
+        public void Raise(TInstance instance, Event @event)
+        {
+            _activityCache.WithValue(@event,
+                activities => activities.ForEach(activity => activity.Execute(instance)));
+        }
+
+        public void Raise<TData>(TInstance instance, Event<TData> @event, TData value) 
+            where TData : class
         {
             _activityCache.WithValue(@event,
                 activities => activities.ForEach(activity => activity.Execute(instance, value)));

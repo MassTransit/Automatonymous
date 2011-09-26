@@ -23,14 +23,14 @@ namespace Automatonymous.Impl
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event _event;
-        readonly StateMachine<TInstance> _machine;
+        readonly AutomatonymousStateMachine<TInstance> _machine;
 
-        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event)
+        public SimpleEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event @event)
             : this(machine, @event, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
-        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event,
+        public SimpleEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event @event,
                                          IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
@@ -49,7 +49,7 @@ namespace Automatonymous.Impl
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
         }
 
-        public StateMachine<TInstance> StateMachine
+        public AutomatonymousStateMachine<TInstance> StateMachine
         {
             get { return _machine; }
         }

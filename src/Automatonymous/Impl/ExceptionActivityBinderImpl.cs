@@ -25,14 +25,14 @@ namespace Automatonymous.Impl
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;
-        readonly StateMachine<TInstance> _machine;
+        readonly AutomatonymousStateMachine<TInstance> _machine;
 
-        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event)
+        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event)
             : this(machine, @event, Enumerable.Empty<ExceptionActivity<TInstance>>())
         {
         }
 
-        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event,
+        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event,
                                            IEnumerable<ExceptionActivity<TInstance>> activities)
         {
             _activities = activities;
@@ -73,14 +73,14 @@ namespace Automatonymous.Impl
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;
-        readonly StateMachine<TInstance> _machine;
+        readonly AutomatonymousStateMachine<TInstance> _machine;
 
-        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event)
+        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event)
             : this(machine, @event, Enumerable.Empty<ExceptionActivity<TInstance>>())
         {
         }
 
-        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event,
+        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event,
                                            IEnumerable<ExceptionActivity<TInstance>> activities)
         {
             _activities = activities;

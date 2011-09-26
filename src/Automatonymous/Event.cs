@@ -13,7 +13,7 @@
 namespace Automatonymous
 {
     public interface Event :
-        StateMachineNode
+        AcceptStateMachineInspector
     {
         string Name { get; }
     }

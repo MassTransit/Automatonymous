@@ -39,7 +39,29 @@ namespace Automatonymous.Impl.Activities
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
+        {
+            try
+            {
+                _activities.ForEach(activity => activity.Execute(instance));
+            }
+            catch (Exception ex)
+            {
+                Type exceptionType = ex.GetType();
+                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+                {
+                    if (_exceptionHandlers.WithValue(exceptionType,
+                        x => x.ForEach(activity => activity.Execute(instance, ex))))
+                        return;
+
+                    exceptionType = exceptionType.BaseType;
+                }
+
+                throw;
+            }
+        }
+
+        public void Execute<TData>(TInstance instance, TData value)
         {
             try
             {
@@ -61,15 +83,15 @@ namespace Automatonymous.Impl.Activities
             }
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, _ =>
                 {
                     _activities.ForEach(activity =>
                         {
-                            activity.Inspect(inspector);
+                            activity.Accept(inspector);
 
-                            _exceptionHandlers.Each((type, handler) => handler.ForEach(x => x.Inspect(inspector)));
+                            _exceptionHandlers.Each((type, handler) => handler.ForEach(x => x.Accept(inspector)));
                         });
                 });
         }
@@ -124,9 +146,9 @@ namespace Automatonymous.Impl.Activities
             }
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Inspect(inspector)); });
+            inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Accept(inspector)); });
         }
     }
 }

@@ -68,7 +68,7 @@ namespace Automatonymous.Tests
                 instance.Value = _calculator.Add(data.X, data.Y);
             }
 
-            public void Inspect(StateMachineInspector inspector)
+            public void Accept(StateMachineInspector inspector)
             {
                 inspector.Inspect(this, x => { });
             }
@@ -96,7 +96,7 @@ namespace Automatonymous.Tests
 
 
         class InstanceStateMachine :
-            StateMachine<ClaimAdjustment>
+            AutomatonymousStateMachine<ClaimAdjustment>
         {
             public InstanceStateMachine()
             {

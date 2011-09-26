@@ -53,7 +53,7 @@ namespace Automatonymous.Tests
 
 
         class InstanceStateMachine :
-            StateMachine<Instance>
+            AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
             {

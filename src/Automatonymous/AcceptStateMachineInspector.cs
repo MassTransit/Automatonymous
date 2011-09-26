@@ -12,8 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface StateMachineNode
+    public interface AcceptStateMachineInspector
     {
-        void Inspect(StateMachineInspector inspector);
+        void Accept(StateMachineInspector inspector);
     }
 }

@@ -27,7 +27,17 @@ namespace Automatonymous.Impl
             _activity = activity;
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Accept(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this, x => _activity.Accept(inspector));
+        }
+
+        public void Execute(TInstance instance)
+        {
+            throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
+        }
+
+        public void Execute<T>(TInstance instance, T value)
         {
             if (value == null)
                 throw new ArgumentNullException("value", "The data argument cannot be null");
@@ -40,11 +50,6 @@ namespace Automatonymous.Impl
             }
 
             _activity.Execute(instance, data);
-        }
-
-        public void Inspect(StateMachineInspector inspector)
-        {
-            inspector.Inspect(this, x => _activity.Inspect(inspector));
         }
     }
 }

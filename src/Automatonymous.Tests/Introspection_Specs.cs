@@ -68,7 +68,7 @@ namespace Automatonymous.Tests
         }
 
         class TestStateMachine :
-            StateMachine<Instance>
+            AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
             {

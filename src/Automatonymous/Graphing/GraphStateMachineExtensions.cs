@@ -14,12 +14,12 @@ namespace Automatonymous.Graphing
 {
     public static class GraphStateMachineExtensions
     {
-        public static StateMachineGraph GetGraph<TInstance>(this StateMachine<TInstance> machine)
+        public static StateMachineGraph GetGraph<TInstance>(this AutomatonymousStateMachine<TInstance> machine)
             where TInstance : class, StateMachineInstance
         {
             var inspector = new GraphStateMachineVisitor<TInstance>();
 
-            machine.Inspect(inspector);
+            machine.Accept(inspector);
 
             return inspector.Graph;
         }

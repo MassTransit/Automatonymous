@@ -41,21 +41,22 @@ namespace Automatonymous.Tests
         class Instance :
             StateMachineInstance
         {
-            public int CombinedEventState { get; set; }
+            public CompositeEventStatus CompositeStatus { get; set; }
             public bool Called { get; set; }
             public State CurrentState { get; set; }
         }
 
 
         class TestStateMachine :
-            StateMachine<Instance>
+            AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
             {
                 Event(() => First);
                 Event(() => Second);
 
-                Event(() => Third, x => x.CombinedEventState, First, Second);
+                Event(() => Third, x => x.CompositeStatus, First.And(Second));
+                // support OR as well, let the language due deal with order of operations and grouping
 
                 Initially(
                           When(Third)

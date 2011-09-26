@@ -34,12 +34,17 @@ namespace Automatonymous.Impl.Activities
             get { return _expression; }
         }
 
-        public void Execute(TInstance instance, object value)
+        public void Execute(TInstance instance)
         {
             _action(instance);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Execute<TData>(TInstance instance, TData value)
+        {
+            _action(instance);
+        }
+
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }
@@ -70,7 +75,7 @@ namespace Automatonymous.Impl.Activities
             _action(instance, data);
         }
 
-        public void Inspect(StateMachineInspector inspector)
+        public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }
