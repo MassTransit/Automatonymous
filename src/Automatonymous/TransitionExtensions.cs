@@ -27,7 +27,7 @@ namespace Automatonymous
         {
             State<TInstance> state = toState.For<TInstance>();
 
-            var activity = new TransitionActivity<TInstance>(state);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 
             return source.Add(activity);
         }
@@ -42,7 +42,7 @@ namespace Automatonymous
         {
             State<TInstance> state = toState.For<TInstance>();
 
-            var activity = new TransitionActivity<TInstance>(state);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 
             return source.Add(activity);
         }
@@ -57,7 +57,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
 
-            var activity = new TransitionActivity<TInstance>(state);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 
             return source.Add(activity);
         }
@@ -72,7 +72,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
 
-            var activity = new TransitionActivity<TInstance>(state);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 
             return source.Add(activity);
         }

@@ -44,6 +44,10 @@
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
+    <Compile Include="Impl\Activities\CompositeEventActivity.cs" />
+    <Compile Include="Impl\InitialIfNullStateAccessor.cs" />
+    <Compile Include="Impl\RawStateAccessor.cs" />
+    <Compile Include="StateAccessor.cs" />
     <Compile Include="TryExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="Impl\Activities\CallActivity.cs" />

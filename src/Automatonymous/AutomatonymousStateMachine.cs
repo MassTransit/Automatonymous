@@ -28,10 +28,9 @@ namespace Automatonymous
         StateMachine<TInstance>
         where TInstance : class, StateMachineInstance
     {
-        readonly State<TInstance> _anyState;
         readonly Cache<string, Event> _eventCache;
-        readonly Activity<TInstance> _initialActivity;
         readonly Cache<string, State<TInstance>> _stateCache;
+        StateAccessor<TInstance> _currentStateAccessor;
 
         protected AutomatonymousStateMachine()
         {
@@ -41,13 +40,17 @@ namespace Automatonymous
             State(() => Initial);
             State(() => Completed);
 
-            _initialActivity = new TransitionActivity<TInstance>(Initial);
-
-            _anyState = new StateImpl<TInstance>(".Any");
+            _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(x => x.CurrentState,
+                _stateCache[Initial.Name]);
         }
 
         public State Initial { get; private set; }
         public State Completed { get; private set; }
+
+        public StateAccessor<TInstance> CurrentStateAccessor
+        {
+            get { return _currentStateAccessor; }
+        }
 
         public void Accept(StateMachineInspector inspector)
         {
@@ -60,8 +63,6 @@ namespace Automatonymous
 
                     x.Accept(inspector);
                 });
-
-            _anyState.Accept(inspector);
 
             Completed.Accept(inspector);
         }
@@ -84,7 +85,6 @@ namespace Automatonymous
         public IEnumerable<Event> NextEvents(State state)
         {
             return _stateCache[state.Name].Events
-                .Concat(_anyState.Events)
                 .Distinct(new NameEqualityComparer());
         }
 
@@ -92,8 +92,9 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    _stateCache[instance.CurrentState.Name].Raise(instance, @event);
-                    _anyState.Raise(instance, @event);
+                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
+
+                    _stateCache[currentState.Name].Raise(instance, @event);
                 });
         }
 
@@ -102,8 +103,9 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    _stateCache[instance.CurrentState.Name].Raise(instance, @event, value);
-                    _anyState.Raise(instance, @event, value);
+                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
+
+                    _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
         }
 
@@ -111,9 +113,6 @@ namespace Automatonymous
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
-
-            if (instance.CurrentState == null)
-                _initialActivity.Execute(instance);
 
             callback(instance);
         }
@@ -154,24 +153,22 @@ namespace Automatonymous
 
             _eventCache[name] = @event;
 
-            CompositeEventStatus complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
+            var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
             {
                 int flag = 1 << i;
 
-                During(_anyState,
-                    When(events[i])
-                        .Then(instance =>
-                            {
-                                CompositeEventStatus value = trackingProperty.Get(instance);
-                                value.Set(flag);
+                var activity = new CompositeEventActivity<TInstance>(trackingProperty, flag, complete,
+                    instance => RaiseEvent(instance, @event));
 
-                                trackingProperty.Set(instance, value);
-                                if (complete.Equals(value))
-                                    RaiseEvent(instance, @event);
-                            }));
+                foreach (var state in _stateCache)
+                {
+                    During(state,
+                        When(events[i])
+                            .Then(() => activity));
+                }
             }
         }
 
@@ -220,7 +217,8 @@ namespace Automatonymous
 
         protected void Anytime(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            During(_anyState, activities);
+            foreach (var state in _stateCache)
+                During(state, activities);
         }
 
         protected EventActivityBinder<TInstance> When(Event @event)

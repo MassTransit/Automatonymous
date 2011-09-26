@@ -75,6 +75,14 @@ namespace Automatonymous.Graphing
                 return;
             }
 
+            var compositeActivity = activity as CompositeEventActivity<TInstance>;
+            if (compositeActivity != null)
+            {
+                InspectCompositeEventActivity(compositeActivity);
+                next(activity);
+                return;
+            }
+
             var exceptionActivity = activity as ExceptionActivity<TInstance>;
             if (exceptionActivity != null)
             {
@@ -83,6 +91,10 @@ namespace Automatonymous.Graphing
             }
 
             next(activity);
+        }
+
+        void InspectCompositeEventActivity(CompositeEventActivity<TInstance> compositeActivity)
+        {
         }
 
         void InspectExceptionActivity(ExceptionActivity<TInstance> exceptionActivity, Action<Activity> next)

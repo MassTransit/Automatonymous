@@ -112,4 +112,59 @@ namespace Automatonymous.Tests
             public Event Initialized { get; private set; }
         }
     }
+
+    [TestFixture]
+    public class When_hooking_the_initial_enter_state_event
+    {
+        [Test]
+        public void Should_call_the_activity()
+        {
+            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+        }
+
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [TestFixtureSetUp]
+        public void Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            _machine.RaiseEvent(_instance, _machine.Initialized);
+        }
+
+
+        class Instance :
+            StateMachineInstance
+        {
+            public State CurrentState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                State(() => Initializing);
+                State(() => Running);
+
+                Event(() => Initialized);
+
+                During(Initializing,
+                    When(Initialized)
+                        .TransitionTo(Running));
+
+                Anytime(
+                    When(Initial.Enter)
+                    .TransitionTo(Initializing));
+            }
+
+            public State Running { get; private set; }
+            public State Initializing { get; private set; }
+
+            public Event Initialized { get; private set; }
+        }
+    }
 }
