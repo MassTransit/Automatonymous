@@ -31,21 +31,21 @@ namespace Automatonymous
         readonly Cache<string, Event> _eventCache;
         readonly Cache<string, State<TInstance>> _stateCache;
         StateAccessor<TInstance> _currentStateAccessor;
+        readonly Observable<StateChange<TInstance>> _stateChangeObservable; 
 
         protected AutomatonymousStateMachine()
         {
             _stateCache = new DictionaryCache<string, State<TInstance>>();
             _eventCache = new DictionaryCache<string, Event>();
 
+            _stateChangeObservable = new Observable<StateChange<TInstance>>();
+
             State(() => Initial);
             State(() => Final);
 
             _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(x => x.CurrentState,
-                _stateCache[Initial.Name]);
+                _stateCache[Initial.Name], _stateChangeObservable);
         }
-
-        public State Initial { get; private set; }
-        public State Final { get; private set; }
 
         public StateAccessor<TInstance> CurrentStateAccessor
         {
@@ -66,6 +66,9 @@ namespace Automatonymous
 
             Final.Accept(inspector);
         }
+
+        public State Initial { get; private set; }
+        public State Final { get; private set; }
 
         public IEnumerable<State> States
         {
@@ -107,6 +110,11 @@ namespace Automatonymous
 
                     _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
+        }
+
+        public IDisposable Subscribe(IObserver<StateChange<TInstance>> observer)
+        {
+            return _stateChangeObservable.Subscribe(observer);
         }
 
         void WithInstance(TInstance instance, Action<TInstance> callback)

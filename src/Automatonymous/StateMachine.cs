@@ -14,6 +14,8 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
+    using Impl;
+
 
     /// <summary>
     /// A state machine definition
@@ -58,8 +60,9 @@ namespace Automatonymous
     /// A defined state machine that operations against the specified instance
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
-    public interface StateMachine<in TInstance> :
-        StateMachine
+    public interface StateMachine<TInstance> :
+        StateMachine,
+        IObservable<StateChange<TInstance>>
         where TInstance : class, StateMachineInstance
     {
         /// <summary>

@@ -54,6 +54,7 @@
     <Compile Include="Event_Specs.cs" />
     <Compile Include="Exception_Specs.cs" />
     <Compile Include="Introspection_Specs.cs" />
+    <Compile Include="Observable_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State_Specs.cs" />
     <Compile Include="Visualizer_Specs.cs" />

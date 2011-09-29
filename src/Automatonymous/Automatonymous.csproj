@@ -50,7 +50,10 @@
     <Compile Include="Impl\Activities\CompositeEventActivity.cs" />
     <Compile Include="Impl\InitialIfNullStateAccessor.cs" />
     <Compile Include="Impl\RawStateAccessor.cs" />
+    <Compile Include="Internal\Caching\ConcurrentCache.cs" />
+    <Compile Include="Internal\Observable.cs" />
     <Compile Include="StateAccessor.cs" />
+    <Compile Include="StateChange.cs" />
     <Compile Include="StateMachineExtensions.cs" />
     <Compile Include="TryExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
@@ -78,7 +81,6 @@
     <Compile Include="Impl\DataEvent.cs" />
     <Compile Include="Impl\EventActivityImpl.cs" />
     <Compile Include="Impl\SimpleEvent.cs" />
-    <Compile Include="Impl\State.cs" />
     <Compile Include="Impl\StateExtensions.cs" />
     <Compile Include="Impl\StateImpl.cs" />
     <Compile Include="Impl\Activities\TransitionActivity.cs" />

@@ -1,4 +1,4 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -10,21 +10,13 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous
 {
-    using System.Collections.Generic;
-
-
-    public interface State<TInstance> :
-        State
-        where TInstance : StateMachineInstance
+    public interface StateChange<TInstance>
+        where TInstance : class, StateMachineInstance
     {
-        void Raise(TInstance instance, Event @event);
-        void Raise<TData>(TInstance instance, Event<TData> @event, TData value) 
-            where TData : class;
-
-        void Bind(EventActivity<TInstance> activity);
-
-        IEnumerable<Event> Events { get; }
+        TInstance Instance { get; }
+        State<TInstance> Previous { get; }
+        State<TInstance> Current { get; }
     }
 }

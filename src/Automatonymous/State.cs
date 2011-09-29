@@ -13,6 +13,8 @@
 namespace Automatonymous
 {
     using System;
+    using System.Collections.Generic;
+    using Impl;
 
 
     public interface State :
@@ -23,5 +25,19 @@ namespace Automatonymous
 
         Event Enter { get; }
         Event Leave { get; }
+    }
+
+
+    public interface State<TInstance> :
+        State
+        where TInstance : StateMachineInstance
+    {
+        IEnumerable<Event> Events { get; }
+        void Raise(TInstance instance, Event @event);
+
+        void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
+            where TData : class;
+
+        void Bind(EventActivity<TInstance> activity);
     }
 }

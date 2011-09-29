@@ -20,12 +20,15 @@ namespace Automatonymous.Impl
 
     public class RawStateAccessor<TInstance> :
         StateAccessor<TInstance>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
+        readonly IObserver<StateChange<TInstance>> _observer;
         readonly FastProperty<TInstance, State> _property;
 
-        public RawStateAccessor(Expression<Func<TInstance, State>> currentStateExpression)
+        public RawStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
+                                IObserver<StateChange<TInstance>> observer)
         {
+            _observer = observer;
             PropertyInfo statePropertyInfo = currentStateExpression.GetPropertyInfo();
 
             _property = new FastProperty<TInstance, State>(statePropertyInfo);
@@ -38,7 +41,34 @@ namespace Automatonymous.Impl
 
         public void Set(TInstance instance, State<TInstance> state)
         {
+            if (state == null)
+                throw new ArgumentNullException("state");
+
+            State<TInstance> previous = Get(instance);
+            if (state.Equals(previous))
+                return;
+
             _property.Set(instance, state);
+
+            _observer.OnNext(new StateChangeImpl(instance, previous, state));
+        }
+
+
+        class StateChangeImpl :
+            StateChange<TInstance>
+        {
+            public StateChangeImpl(TInstance instance, State<TInstance> previous, State<TInstance> current)
+            {
+                Instance = instance;
+                Previous = previous;
+                Current = current;
+            }
+
+            public TInstance Instance { get; private set; }
+
+            public State<TInstance> Previous { get; private set; }
+
+            public State<TInstance> Current { get; private set; }
         }
     }
 }
