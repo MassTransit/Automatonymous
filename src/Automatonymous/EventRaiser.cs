@@ -12,22 +12,17 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System;
-    using System.Collections.Generic;
-
-
-    public static class IntrospectionExtensions
+    public interface EventRaiser<in TInstance>
+        where TInstance : class, StateMachineInstance
     {
-        public static IEnumerable<Event> NextEvents<TInstance>(this StateMachine<TInstance> machine,
-                                                               TInstance instance)
-            where TInstance : class, StateMachineInstance
-        {
-            if (machine == null)
-                throw new ArgumentNullException("machine");
-            if (instance == null)
-                throw new ArgumentNullException("instance");
+        void Raise(TInstance instance);
+    }
 
-            return machine.NextEvents(instance.CurrentState);
-        }
+
+    public interface EventRaiser<in TInstance, in TData>
+        where TInstance : class, StateMachineInstance
+        where TData : class
+    {
+        void Raise(TInstance instance, TData data);
     }
 }

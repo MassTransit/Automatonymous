@@ -19,11 +19,6 @@ namespace Automatonymous.Impl.Activities
         readonly StateAccessor<TInstance> _currentStateAccessor;
         readonly State<TInstance> _toState;
 
-        public TransitionActivity(State toState)
-        {
-            _toState = toState.For<TInstance>();
-        }
-
         public TransitionActivity(State<TInstance> toState, StateAccessor<TInstance> currentStateAccessor)
         {
             _toState = toState;
@@ -44,7 +39,8 @@ namespace Automatonymous.Impl.Activities
             currentState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
 
             _currentStateAccessor.Set(instance, _toState);
-            _toState.Raise(instance, _toState.Enter);
+
+            _toState.WithState<TInstance>(x => x.Raise(instance, x.Enter));
         }
 
         public void Execute<TData>(TInstance instance, TData value)

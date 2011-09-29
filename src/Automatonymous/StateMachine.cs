@@ -36,6 +36,16 @@ namespace Automatonymous
         Type InstanceType { get; }
 
         /// <summary>
+        /// The initial state of a new state machine instance
+        /// </summary>
+        State Initial { get; }
+
+        /// <summary>
+        /// The final state of a state machine instance
+        /// </summary>
+        State Final { get; }
+
+        /// <summary>
         /// The valid events that can be raised during the specified state
         /// </summary>
         /// <param name="state">The state to query</param>

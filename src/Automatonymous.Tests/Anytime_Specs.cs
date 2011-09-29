@@ -39,8 +39,8 @@ namespace Automatonymous.Tests
             _machine = new TestStateMachine();
             _instance = new Instance();
 
-            _machine.RaiseEvent(_instance, _machine.Hello);
-            _machine.RaiseEvent(_instance, _machine.EventA, new A
+            _machine.RaiseEvent(_instance, x => x.Hello);
+            _machine.RaiseEvent(_instance, x => x.EventA, new A
                 {
                     Value = "Test"
                 });

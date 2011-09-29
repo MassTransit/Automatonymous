@@ -45,6 +45,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventRaiser_Specs.cs" />
     <Compile Include="Activity_Specs.cs" />
     <Compile Include="Anytime_Specs.cs" />
     <Compile Include="Combine_Specs.cs" />

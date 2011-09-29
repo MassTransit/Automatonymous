@@ -38,9 +38,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventRaiserExtensions.cs" />
     <Compile Include="AutomatonymousStateMachine.cs" />
     <Compile Include="CallExtensions.cs" />
     <Compile Include="CompositeEventStatus.cs" />
+    <Compile Include="EventRaiser.cs" />
+    <Compile Include="EventRaiserImpl.cs" />
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
@@ -48,6 +51,7 @@
     <Compile Include="Impl\InitialIfNullStateAccessor.cs" />
     <Compile Include="Impl\RawStateAccessor.cs" />
     <Compile Include="StateAccessor.cs" />
+    <Compile Include="StateMachineExtensions.cs" />
     <Compile Include="TryExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="Impl\Activities\CallActivity.cs" />
