@@ -41,7 +41,7 @@ namespace Automatonymous.Tests
         {
             Assert.AreEqual(5, ((StateMachine)_machine).States.Count());
             Assert.Contains(_machine.Initial, _machine.States.ToList());
-            Assert.Contains(_machine.Completed, _machine.States.ToList());
+            Assert.Contains(_machine.Final, _machine.States.ToList());
             Assert.Contains(_machine.Greeted, _machine.States.ToList());
             Assert.Contains(_machine.Loved, _machine.States.ToList());
             Assert.Contains(_machine.Pissed, _machine.States.ToList());
@@ -108,7 +108,7 @@ namespace Automatonymous.Tests
                     When(Ignored)
                         .TransitionTo(Pissed));
 
-                DuringAny(When(YelledAt).TransitionTo(Completed));
+                DuringAny(When(YelledAt).TransitionTo(Final));
             }
 
             public State Greeted { get; set; }

@@ -7,9 +7,9 @@
     public class When_a_state_is_declared
     {
         [Test]
-        public void It_should_capture_the_name_of_completed()
+        public void It_should_capture_the_name_of_final()
         {
-            Assert.AreEqual("Completed", _machine.Completed.Name);
+            Assert.AreEqual("Final", _machine.Final.Name);
         }
 
         [Test]

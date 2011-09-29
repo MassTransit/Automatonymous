@@ -50,12 +50,12 @@ namespace Automatonymous
         /// <summary>
         /// Transition the state machine to the Completed state
         /// </summary>
-        public static EventActivityBinder<TInstance, TData> Complete<TInstance, TData>(
+        public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source)
             where TInstance : class, StateMachineInstance
             where TData : class
         {
-            State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
+            State<TInstance> state = source.StateMachine.Final.For<TInstance>();
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 
@@ -66,11 +66,11 @@ namespace Automatonymous
         /// <summary>
         /// Transition the state machine to the Completed state
         /// </summary>
-        public static EventActivityBinder<TInstance> Complete<TInstance>(
+        public static EventActivityBinder<TInstance> Finalize<TInstance>(
             this EventActivityBinder<TInstance> source)
             where TInstance : class, StateMachineInstance
         {
-            State<TInstance> state = source.StateMachine.Completed.For<TInstance>();
+            State<TInstance> state = source.StateMachine.Final.For<TInstance>();
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.CurrentStateAccessor);
 

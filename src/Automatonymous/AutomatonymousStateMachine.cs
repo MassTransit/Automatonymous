@@ -38,14 +38,14 @@ namespace Automatonymous
             _eventCache = new DictionaryCache<string, Event>();
 
             State(() => Initial);
-            State(() => Completed);
+            State(() => Final);
 
             _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(x => x.CurrentState,
                 _stateCache[Initial.Name]);
         }
 
         public State Initial { get; private set; }
-        public State Completed { get; private set; }
+        public State Final { get; private set; }
 
         public StateAccessor<TInstance> CurrentStateAccessor
         {
@@ -58,13 +58,13 @@ namespace Automatonymous
 
             _stateCache.Each(x =>
                 {
-                    if (x == Initial || x == Completed)
+                    if (x == Initial || x == Final)
                         return;
 
                     x.Accept(inspector);
                 });
 
-            Completed.Accept(inspector);
+            Final.Accept(inspector);
         }
 
         public IEnumerable<State> States
@@ -217,7 +217,7 @@ namespace Automatonymous
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
-            EventActivityBinder<TInstance> binder = When(Completed.Enter);
+            EventActivityBinder<TInstance> binder = When(Final.Enter);
 
             binder = activityCallback(binder);
 

@@ -127,7 +127,7 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_transition_to_the_proper_state()
         {
-            Assert.AreEqual(_machine.Completed, _instance.CurrentState);
+            Assert.AreEqual(_machine.Final, _instance.CurrentState);
         }
 
         Instance _instance;
@@ -164,7 +164,7 @@ namespace Automatonymous.Tests
 
                 Initially(
                           When(Initialized)
-                              .Complete());
+                              .Finalize());
 
                 Finally(x => x.Then(instance => instance.Value = Finalized));
             }

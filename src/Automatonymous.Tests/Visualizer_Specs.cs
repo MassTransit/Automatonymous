@@ -74,7 +74,7 @@ namespace Automatonymous.Tests
 
                 During(Running,
                     When(Finished)
-                        .TransitionTo(Completed),
+                        .TransitionTo(Final),
                     When(Suspend)
                         .TransitionTo(Suspended));
 

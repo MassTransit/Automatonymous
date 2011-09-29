@@ -73,10 +73,10 @@ namespace Automatonymous.Tests
                 DuringAny(
                     When(Hello)
                         .Then(instance => instance.HelloCalled = true)
-                        .Complete(),
+                        .Finalize(),
                     When(EventA)
                         .Then((instance, a) => instance.AValue = a.Value)
-                        .Complete());
+                        .Finalize());
             }
 
             public Event Hello { get; private set; }
