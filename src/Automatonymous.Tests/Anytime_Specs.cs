@@ -70,10 +70,10 @@ namespace Automatonymous.Tests
                 Event(() => Hello);
                 Event(() => EventA);
 
-                Anytime(
-                        When(Hello)
-                            .Then(instance => instance.HelloCalled = true)
-                            .Complete(),
+                DuringAny(
+                    When(Hello)
+                        .Then(instance => instance.HelloCalled = true)
+                        .Complete(),
                     When(EventA)
                         .Then((instance, a) => instance.AValue = a.Value)
                         .Complete());

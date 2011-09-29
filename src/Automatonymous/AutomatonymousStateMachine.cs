@@ -215,7 +215,16 @@ namespace Automatonymous
             During(_stateCache["Initial"], activities);
         }
 
-        protected void Anytime(params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
+        {
+            EventActivityBinder<TInstance> binder = When(Completed.Enter);
+
+            binder = activityCallback(binder);
+
+            DuringAny(binder);
+        }
+
+        protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
             foreach (var state in _stateCache)
                 During(state, activities);

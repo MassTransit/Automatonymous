@@ -86,8 +86,8 @@ namespace Automatonymous.Tests
                 Event(() => Third, x => x.CompositeStatus, First, Second);
 
                 Initially(
-                          When(Third)
-                              .Then(instance => instance.Called = true));
+                    When(Third)
+                        .Then(instance => instance.Called = true));
             }
 
             public Event First { get; private set; }

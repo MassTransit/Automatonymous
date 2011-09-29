@@ -64,6 +64,7 @@ namespace Automatonymous.Tests
         }
     }
 
+
     [TestFixture]
     public class When_specifying_an_event_activity_using_initially
     {
@@ -103,8 +104,8 @@ namespace Automatonymous.Tests
                 Event(() => Initialized);
 
                 Initially(
-                    When(Initialized)
-                        .TransitionTo(Running));
+                          When(Initialized)
+                              .TransitionTo(Running));
             }
 
             public State Running { get; private set; }
@@ -112,6 +113,68 @@ namespace Automatonymous.Tests
             public Event Initialized { get; private set; }
         }
     }
+
+
+    [TestFixture]
+    public class When_specifying_an_event_activity_using_finally
+    {
+        [Test]
+        public void Should_have_called_the_finally_activity()
+        {
+            Assert.AreEqual(InstanceStateMachine.Finalized, _instance.Value);
+        }
+
+        [Test]
+        public void Should_transition_to_the_proper_state()
+        {
+            Assert.AreEqual(_machine.Completed, _instance.CurrentState);
+        }
+
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [TestFixtureSetUp]
+        public void Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            _machine.RaiseEvent(_instance, _machine.Initialized);
+        }
+
+
+        class Instance :
+            StateMachineInstance
+        {
+            public string Value { get; set; }
+            public State CurrentState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public const string Finalized = "Finalized";
+
+            public InstanceStateMachine()
+            {
+                State(() => Running);
+
+                Event(() => Initialized);
+
+                Initially(
+                          When(Initialized)
+                              .Complete());
+
+                Finally(x => x.Then(instance => instance.Value = Finalized));
+            }
+
+            public State Running { get; private set; }
+
+            public Event Initialized { get; private set; }
+        }
+    }
+
 
     [TestFixture]
     public class When_hooking_the_initial_enter_state_event
@@ -156,9 +219,9 @@ namespace Automatonymous.Tests
                     When(Initialized)
                         .TransitionTo(Running));
 
-                Anytime(
-                    When(Initial.Enter)
-                    .TransitionTo(Initializing));
+                DuringAny(
+                          When(Initial.Enter)
+                              .TransitionTo(Initializing));
             }
 
             public State Running { get; private set; }
