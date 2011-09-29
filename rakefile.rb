@@ -108,7 +108,7 @@ nuspec :create_nuspec do |nuspec|
   nuspec.authors = 'Chris Patterson, Dru Sellers'
   nuspec.description = 'Automatonymous is a state machine library for .NET'
   nuspec.title = 'Automatonymous'
-  nuspec.projectUrl = 'http://masstransit-project.com'
+  nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "true"
