@@ -18,26 +18,18 @@ namespace Automatonymous.Tests
 
 
     [TestFixture]
-    public class Observing_state_machine_instance_state_changes
+    public class When_an_event_is_raised_on_an_instance
     {
+        [Test]
+        public void Should_have_raised_the_initialized_event()
+        {
+            Assert.AreEqual(_machine.Initialized, _observer.Events[0].Event);
+        }
+
         [Test]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(2, _observer.Events.Count);
-        }
-
-        [Test]
-        public void Should_have_first_moved_to_initial()
-        {
-            Assert.AreEqual(null, _observer.Events[0].Previous);
-            Assert.AreEqual(_machine.Initial, _observer.Events[0].Current);
-        }
-
-        [Test]
-        public void Should_have_second_switched_to_running()
-        {
-            Assert.AreEqual(_machine.Initial, _observer.Events[1].Previous);
-            Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
+            Assert.AreEqual(1, _observer.Events.Count);
         }
 
         Instance _instance;
@@ -51,22 +43,22 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
             _observer = new ChangeObserver();
 
-            using (var subscription = _machine.StateChanged.Subscribe(_observer))
-            {
+            using (IDisposable subscription = _machine.EventRaised(_machine.Initialized).Subscribe(_observer))
                 _machine.RaiseEvent(_instance, x => x.Initialized);
-            }
         }
 
 
         class ChangeObserver :
-            IObserver<StateChanged<Instance>>
+            IObserver<EventRaised<Instance>>
         {
             public ChangeObserver()
             {
-                Events = new List<StateChanged<Instance>>();
+                Events = new List<EventRaised<Instance>>();
             }
 
-            public void OnNext(StateChanged<Instance> value)
+            public IList<EventRaised<Instance>> Events { get; private set; }
+
+            public void OnNext(EventRaised<Instance> value)
             {
                 Events.Add(value);
             }
@@ -78,8 +70,6 @@ namespace Automatonymous.Tests
             public void OnCompleted()
             {
             }
-
-            public IList<StateChanged<Instance>> Events { get; private set; }
         }
 
 
@@ -107,7 +97,6 @@ namespace Automatonymous.Tests
             public State Running { get; private set; }
 
             public Event Initialized { get; private set; }
-
         }
     }
 }

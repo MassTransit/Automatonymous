@@ -12,20 +12,26 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
+    using System;
     using System.Collections.Generic;
     using Internal.Caching;
 
 
     public class StateImpl<TInstance> :
         State<TInstance>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
         readonly string _name;
+        readonly IObserver<EventRaised<TInstance>> _raisedObserver;
+        readonly IObserver<EventRaising<TInstance>> _raisingObserver;
 
-        public StateImpl(string name)
+        public StateImpl(string name, IObserver<EventRaising<TInstance>> raisingObserver,
+                         IObserver<EventRaised<TInstance>> raisedObserver)
         {
             _name = name;
+            _raisingObserver = raisingObserver;
+            _raisedObserver = raisedObserver;
 
             Enter = new SimpleEvent(name + ".Enter");
             Leave = new SimpleEvent(name + ".Leave");
@@ -52,16 +58,33 @@ namespace Automatonymous.Impl
 
         public void Raise(TInstance instance, Event @event)
         {
-            _activityCache.WithValue(@event,
-                activities => activities.ForEach(activity => activity.Execute(instance)));
+            _activityCache.WithValue(@event, activities =>
+                {
+                    var notification = new EventNotification(instance, @event);
+
+                    _raisingObserver.OnNext(notification);
+
+                    activities.ForEach(activity => activity.Execute(instance));
+
+                    _raisedObserver.OnNext(notification);
+                });
         }
 
         public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
             where TData : class
         {
-            _activityCache.WithValue(@event,
-                activities => activities.ForEach(activity => activity.Execute(instance, value)));
+            _activityCache.WithValue(@event, activities =>
+                {
+                    var notification = new EventNotification(instance, @event);
+
+                    _raisingObserver.OnNext(notification);
+
+                    activities.ForEach(activity => activity.Execute(instance, value));
+
+                    _raisedObserver.OnNext(notification);
+                });
         }
+
 
         public void Bind(EventActivity<TInstance> activity)
         {
@@ -81,6 +104,21 @@ namespace Automatonymous.Impl
         public override string ToString()
         {
             return string.Format("{0} (State)", _name);
+        }
+
+
+        class EventNotification :
+            EventRaising<TInstance>,
+            EventRaised<TInstance>
+        {
+            public EventNotification(TInstance instance, Event @event)
+            {
+                Instance = instance;
+                Event = @event;
+            }
+
+            public TInstance Instance { get; private set; }
+            public Event Event { get; private set; }
         }
     }
 }

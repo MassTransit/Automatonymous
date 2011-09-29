@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
-    using Impl;
 
 
     /// <summary>
@@ -65,6 +64,11 @@ namespace Automatonymous
         where TInstance : class, StateMachineInstance
     {
         /// <summary>
+        /// Exposes state change events to observers
+        /// </summary>
+        IObservable<StateChanged<TInstance>> StateChanged { get; }
+
+        /// <summary>
         /// Raise a simple event on the state machine instance
         /// </summary>
         /// <param name="instance">The state machine instance</param>
@@ -80,6 +84,18 @@ namespace Automatonymous
         void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
             where TData : class;
 
-        IObservable<StateChange<TInstance>> StateChanges { get; } 
+        /// <summary>
+        /// Exposes a raised event to observers before it is raised on the instance
+        /// </summary>
+        /// <param name="event"></param>
+        /// <returns></returns>
+        IObservable<EventRaising<TInstance>> EventRaising(Event @event);
+
+        /// <summary>
+        /// Exposes a raised event to observers after it is raised on the instance
+        /// </summary>
+        /// <param name="event"></param>
+        /// <returns></returns>
+        IObservable<EventRaised<TInstance>> EventRaised(Event @event);
     }
 }

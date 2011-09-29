@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface StateChange<TInstance>
+    public interface StateChanged<TInstance>
         where TInstance : class, StateMachineInstance
     {
         TInstance Instance { get; }

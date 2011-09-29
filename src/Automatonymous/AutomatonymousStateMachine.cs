@@ -28,23 +28,27 @@ namespace Automatonymous
         StateMachine<TInstance>
         where TInstance : class, StateMachineInstance
     {
-        readonly Cache<string, Event> _eventCache;
+        readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
         readonly Cache<string, State<TInstance>> _stateCache;
         StateAccessor<TInstance> _currentStateAccessor;
-        readonly Observable<StateChange<TInstance>> _stateChangeObservable; 
+        readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
+        readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
+        EventRaisedObserver<TInstance> _eventRaisedObserver;
 
         protected AutomatonymousStateMachine()
         {
             _stateCache = new DictionaryCache<string, State<TInstance>>();
-            _eventCache = new DictionaryCache<string, Event>();
+            _eventCache = new DictionaryCache<string, StateMachineEvent<TInstance>>();
 
-            _stateChangeObservable = new Observable<StateChange<TInstance>>();
+            _stateChangedObservable = new Observable<StateChanged<TInstance>>();
+            _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
+            _eventRaisedObserver = new EventRaisedObserver<TInstance>(_eventCache);
 
             State(() => Initial);
             State(() => Final);
 
             _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(x => x.CurrentState,
-                _stateCache[Initial.Name], _stateChangeObservable);
+                _stateCache[Initial.Name], _stateChangedObservable);
         }
 
         public StateAccessor<TInstance> CurrentStateAccessor
@@ -77,7 +81,7 @@ namespace Automatonymous
 
         public IEnumerable<Event> Events
         {
-            get { return _eventCache; }
+            get { return _eventCache.Select(x => x.Event); }
         }
 
         public Type InstanceType
@@ -112,9 +116,25 @@ namespace Automatonymous
                 });
         }
 
-        public IObservable<StateChange<TInstance>> StateChanges
+        public IObservable<StateChanged<TInstance>> StateChanged
         {
-            get { return _stateChangeObservable; }
+            get { return _stateChangedObservable; }
+        }
+
+        public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
+        {
+            if(!_eventCache.Has(@event.Name))
+                throw new ArgumentException("Unknown event: " + @event.Name, "event");
+
+            return _eventCache[@event.Name].EventRaising;
+        }
+
+        public IObservable<EventRaised<TInstance>> EventRaised(Event @event)
+        {
+            if(!_eventCache.Has(@event.Name))
+                throw new ArgumentException("Unknown event: " + @event.Name, "event");
+
+            return _eventCache[@event.Name].EventRaised;
         }
 
         void WithInstance(TInstance instance, Action<TInstance> callback)
@@ -136,7 +156,7 @@ namespace Automatonymous
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
 
-            _eventCache[name] = @event;
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
 
         protected void Event(Expression<Func<Event>> propertyExpression,
@@ -159,7 +179,7 @@ namespace Automatonymous
                 null,
                 null, null);
 
-            _eventCache[name] = @event;
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
@@ -192,7 +212,7 @@ namespace Automatonymous
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
 
-            _eventCache[name] = @event;
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
 
         protected void State(Expression<Func<State>> propertyExpression)
@@ -201,7 +221,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var state = new StateImpl<TInstance>(name);
+            var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
 
             property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);

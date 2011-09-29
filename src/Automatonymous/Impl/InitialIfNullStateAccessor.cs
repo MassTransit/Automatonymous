@@ -21,12 +21,12 @@ namespace Automatonymous.Impl
         StateAccessor<TInstance>
         where TInstance : class, StateMachineInstance
     {
-        readonly IObserver<StateChange<TInstance>> _observer;
+        readonly IObserver<StateChanged<TInstance>> _observer;
         readonly TransitionActivity<TInstance> _initialActivity;
         readonly StateAccessor<TInstance> _rawStateAccessor;
 
         public InitialIfNullStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
-                                          State<TInstance> initialState, IObserver<StateChange<TInstance>> observer)
+                                          State<TInstance> initialState, IObserver<StateChanged<TInstance>> observer)
         {
             _observer = observer;
             _rawStateAccessor = new RawStateAccessor<TInstance>(currentStateExpression, _observer);
