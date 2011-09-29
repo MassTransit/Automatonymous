@@ -112,9 +112,9 @@ namespace Automatonymous
                 });
         }
 
-        public IDisposable Subscribe(IObserver<StateChange<TInstance>> observer)
+        public IObservable<StateChange<TInstance>> StateChanges
         {
-            return _stateChangeObservable.Subscribe(observer);
+            get { return _stateChangeObservable; }
         }
 
         void WithInstance(TInstance instance, Action<TInstance> callback)

@@ -61,8 +61,7 @@ namespace Automatonymous
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     public interface StateMachine<TInstance> :
-        StateMachine,
-        IObservable<StateChange<TInstance>>
+        StateMachine
         where TInstance : class, StateMachineInstance
     {
         /// <summary>
@@ -80,5 +79,7 @@ namespace Automatonymous
         /// <param name="value">The data value associated with the event</param>
         void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
             where TData : class;
+
+        IObservable<StateChange<TInstance>> StateChanges { get; } 
     }
 }
