@@ -3,7 +3,7 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, Dru Sellers et al. All rights reser
 include FileTest
 require 'albacore'
 
-BUILD_NUMBER_BASE = '0.1.0'
+BUILD_NUMBER_BASE = '0.2.0'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
@@ -23,7 +23,7 @@ desc "Cleans, compiles, il-merges, unit tests, prepares examples, packages zip"
 task :all => [:default, :package]
 
 desc "**Default**, compiles and runs tests"
-task :default => [:clean, :compile, :tests]
+task :default => [:clean, :compile, :tests, :nuget]
 
 desc "Update the common version information for the build. You can call this task without building."
 assemblyinfo :global_version do |asm|
@@ -62,6 +62,7 @@ end
 desc "Cleans, versions, compiles the application and generates build_output/."
 task :compile => [:global_version, :build] do
 	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
+	copyOutputFiles File.join(props[:src], "MassTransit/MassTransit.AutomatonymousIntegration/bin/Release"), "MassTransit.AutomatonymousIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
 end
 
 desc "Only compiles the application."
@@ -98,8 +99,9 @@ zip :zip_output do |zip|
 end
 
 desc "Builds the nuget package"
-task :nuget => ['create_nuspec'] do
-	sh "lib/nuget pack #{props[:artifacts]}/automatonymous.nuspec /OutputDirectory #{props[:artifacts]}"
+task :nuget => ['create_nuspec', 'create_nuspec_masstransit'] do
+	sh "lib/nuget pack #{props[:artifacts]}/Automatonymous.nuspec /OutputDirectory #{props[:artifacts]}"
+	sh "lib/nuget pack #{props[:artifacts]}/MassTransit.Automatonymous.nuspec /OutputDirectory #{props[:artifacts]}"
 end
 
 nuspec :create_nuspec do |nuspec|
@@ -114,6 +116,22 @@ nuspec :create_nuspec do |nuspec|
   nuspec.requireLicenseAcceptance = "true"
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.nuspec')
   add_files props[:output], 'Automatonymous.{dll,pdb,xml}', nuspec
+end
+
+nuspec :create_nuspec_masstransit do |nuspec|
+  nuspec.id = 'MassTransit.Automatonymous'
+  nuspec.version = asm_version
+  nuspec.authors = 'Chris Patterson, Dru Sellers'
+  nuspec.description = 'Integration assembly to support Automatonymous sagas, a state machine library for .NET'
+  nuspec.title = 'MassTransit.Automatonymous'
+  nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
+  nuspec.language = "en-US"
+  nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
+  nuspec.requireLicenseAcceptance = "true"
+  nuspec.dependency "MassTransit", "2.0.0.5"
+  nuspec.dependency "Automatonymous", asm_version
+  nuspec.output_file = File.join(props[:artifacts], 'MassTransit.Automatonymous.nuspec')
+  add_files props[:output], 'MassTransit.AutomatonymousIntegration.{dll,pdb,xml}', nuspec
 end
 
 def project_outputs(props)
