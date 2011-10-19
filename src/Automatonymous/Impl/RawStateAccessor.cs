@@ -15,7 +15,7 @@ namespace Automatonymous.Impl
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
-    using Internal;
+    using Util;
 
 
     public class RawStateAccessor<TInstance> :

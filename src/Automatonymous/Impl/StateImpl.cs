@@ -14,7 +14,7 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
-    using Internal.Caching;
+    using Util.Caching;
 
 
     public class StateImpl<TInstance> :

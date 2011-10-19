@@ -10,14 +10,14 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace MassTransit.AutomatonymousIntegration.Pipeline
+namespace Automatonymous.Pipeline
 {
     using System;
     using System.Collections.Generic;
-    using Automatonymous;
     using Magnum.Extensions;
-    using Saga;
-    using Saga.Pipeline;
+    using MassTransit;
+    using MassTransit.Saga;
+    using MassTransit.Saga.Pipeline;
 
 
     public class CorrelatedStateMachineMessageSink<TInstance, TMessage> :

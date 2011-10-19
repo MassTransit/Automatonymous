@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
-    using Impl;
 
 
     public interface State :

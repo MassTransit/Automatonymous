@@ -12,13 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface EventRaising<TInstance>
-        where TInstance : class, StateMachineInstance
-    {
-        TInstance Instance { get; }
-        Event Event { get; }
-    }
-
     public interface EventRaised<TInstance>
         where TInstance : class, StateMachineInstance
     {

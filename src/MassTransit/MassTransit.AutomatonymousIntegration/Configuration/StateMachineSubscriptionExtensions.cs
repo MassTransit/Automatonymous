@@ -10,12 +10,10 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace MassTransit
+namespace Automatonymous
 {
-    using Automatonymous;
-    using AutomatonymousIntegration;
-    using AutomatonymousIntegration.SubscriptionConfigurators;
-    using Saga;
+    using MassTransit.Saga;
+    using MassTransit.SubscriptionConfigurators;
     using SubscriptionConfigurators;
 
 

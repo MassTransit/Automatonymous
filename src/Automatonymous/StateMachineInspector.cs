@@ -13,7 +13,6 @@
 namespace Automatonymous
 {
     using System;
-    using Impl;
 
 
     public interface StateMachineInspector

@@ -16,7 +16,6 @@ namespace MassTransit.AutomatonymousTests
     using System.Linq;
     using System.Threading;
     using Automatonymous;
-    using AutomatonymousIntegration;
     using Saga;
 
 

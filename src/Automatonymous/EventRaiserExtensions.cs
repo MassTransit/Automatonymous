@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using Impl;
+
+
     public static class EventRaiserExtensions
     {
         public static EventRaiser<TInstance> CreateEventRaiser<TInstance>(

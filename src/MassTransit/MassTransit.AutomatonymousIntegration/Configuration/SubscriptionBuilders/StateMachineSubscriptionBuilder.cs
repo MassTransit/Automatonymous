@@ -10,15 +10,15 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace MassTransit.AutomatonymousIntegration.SubscriptionBuilders
+namespace Automatonymous.SubscriptionBuilders
 {
     using System;
-    using Automatonymous;
+    using MassTransit;
     using MassTransit.Pipeline;
+    using MassTransit.Saga;
     using MassTransit.SubscriptionBuilders;
-    using Saga;
+    using MassTransit.Subscriptions;
     using SubscriptionConnectors;
-    using Subscriptions;
 
 
     public class StateMachineSubscriptionBuilder<TInstance> :

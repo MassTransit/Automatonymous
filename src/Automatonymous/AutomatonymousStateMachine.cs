@@ -17,10 +17,11 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using Activities;
+    using Binders;
     using Impl;
-    using Impl.Activities;
-    using Internal;
-    using Internal.Caching;
+    using Util;
+    using Util.Caching;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :

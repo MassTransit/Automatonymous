@@ -10,15 +10,15 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace MassTransit.AutomatonymousIntegration.SubscriptionConnectors
+namespace Automatonymous.SubscriptionConnectors
 {
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using Automatonymous;
     using Magnum.Extensions;
     using Magnum.Reflection;
-    using Saga;
+    using MassTransit;
+    using MassTransit.Saga;
 
 
     public interface StateMachineEventConnectorFactory
@@ -39,7 +39,8 @@ namespace MassTransit.AutomatonymousIntegration.SubscriptionConnectors
         readonly StateMachine<TInstance> _stateMachine;
         readonly IEnumerable<State> _states;
 
-        public StateMachineEventConnectorFactory(StateMachine<TInstance> stateMachine, ISagaRepository<TInstance> sagaRepository,
+        public StateMachineEventConnectorFactory(StateMachine<TInstance> stateMachine,
+                                                 ISagaRepository<TInstance> sagaRepository,
                                                  StateMachinePolicyFactory<TInstance> policyFactory,
                                                  Event<TMessage> @event, IEnumerable<State> states)
         {

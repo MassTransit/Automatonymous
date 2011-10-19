@@ -15,9 +15,9 @@ namespace Automatonymous.Graphing
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Activities;
     using Impl;
-    using Impl.Activities;
-    using Internal.Caching;
+    using Util.Caching;
 
 
     public class GraphStateMachineVisitor<TInstance> :

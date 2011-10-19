@@ -12,8 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using Activities;
     using Impl;
-    using Impl.Activities;
     using NUnit.Framework;
 
 

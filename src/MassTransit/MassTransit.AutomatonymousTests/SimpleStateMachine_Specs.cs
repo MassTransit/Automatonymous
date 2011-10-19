@@ -14,7 +14,6 @@ namespace MassTransit.AutomatonymousTests
 {
     using System;
     using Automatonymous;
-    using AutomatonymousIntegration;
     using Magnum.Extensions;
     using NUnit.Framework;
     using Saga;

@@ -13,7 +13,7 @@
 namespace Automatonymous.Impl
 {
     using System;
-    using Internal.Caching;
+    using Util.Caching;
 
 
     class EventRaisingObserver<TInstance> :

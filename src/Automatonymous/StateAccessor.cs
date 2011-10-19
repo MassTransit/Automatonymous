@@ -12,9 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using Impl;
-
-
     public interface StateAccessor<TInstance>
         where TInstance : StateMachineInstance
     {
