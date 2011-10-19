@@ -14,7 +14,6 @@ namespace Automatonymous.SubscriptionConfigurators
 {
     using System.Collections.Generic;
     using MassTransit.Configurators;
-    using MassTransit.Saga;
     using MassTransit.SubscriptionBuilders;
     using MassTransit.SubscriptionConfigurators;
     using SubscriptionBuilders;
@@ -26,14 +25,14 @@ namespace Automatonymous.SubscriptionConfigurators
         SubscriptionBuilderConfigurator
         where TInstance : class, SagaStateMachineInstance
     {
-        readonly ISagaRepository<TInstance> _sagaRepository;
+        readonly StateMachineSagaRepository<TInstance> _repository;
         readonly StateMachine<TInstance> _stateMachine;
 
         public StateMachineSubscriptionConfiguratorImpl(StateMachine<TInstance> stateMachine,
-                                                        ISagaRepository<TInstance> sagaRepository)
+                                                        StateMachineSagaRepository<TInstance> repository)
         {
             _stateMachine = stateMachine;
-            _sagaRepository = sagaRepository;
+            _repository = repository;
         }
 
         public IEnumerable<ValidationResult> Validate()
@@ -44,7 +43,7 @@ namespace Automatonymous.SubscriptionConfigurators
 
         public SubscriptionBuilder Configure()
         {
-            return new StateMachineSubscriptionBuilder<TInstance>(_stateMachine, _sagaRepository, ReferenceFactory);
+            return new StateMachineSubscriptionBuilder<TInstance>(_stateMachine, _repository, ReferenceFactory);
         }
     }
 }

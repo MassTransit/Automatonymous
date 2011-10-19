@@ -15,9 +15,9 @@ namespace Automatonymous.SubscriptionBuilders
     using System;
     using MassTransit;
     using MassTransit.Pipeline;
-    using MassTransit.Saga;
     using MassTransit.SubscriptionBuilders;
     using MassTransit.Subscriptions;
+    using RepositoryBuilders;
     using SubscriptionConnectors;
 
 
@@ -29,10 +29,10 @@ namespace Automatonymous.SubscriptionBuilders
         readonly Func<UnsubscribeAction, ISubscriptionReference> _referenceFactory;
 
         public StateMachineSubscriptionBuilder(StateMachine<TInstance> stateMachine,
-                                               ISagaRepository<TInstance> sagaRepository,
+                                               StateMachineSagaRepository<TInstance> repository,
                                                Func<UnsubscribeAction, ISubscriptionReference> referenceFactory)
         {
-            _connector = new StateMachineConnector<TInstance>(stateMachine, sagaRepository);
+            _connector = new StateMachineConnector<TInstance>(stateMachine, repository);
             _referenceFactory = referenceFactory;
         }
 

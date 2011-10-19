@@ -1,4 +1,4 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -15,35 +15,43 @@ namespace Automatonymous.SubscriptionConnectors
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using Magnum;
     using MassTransit;
     using MassTransit.Pipeline;
     using MassTransit.Saga;
+    using MassTransit.Saga.Pipeline;
     using Saga.Pipeline;
 
 
-    public class CorrelatedStateMachineSubscriptionConnector<TInstance, TMessage> :
+    public class ExpressionStateMachineSubscriptionConnector<TInstance, TMessage> :
         StateMachineSubscriptionConnector
         where TInstance : class, SagaStateMachineInstance
-        where TMessage : class, CorrelatedBy<Guid>
+        where TMessage : class
     {
         readonly Event<TMessage> _dataEvent;
         readonly ISagaPolicy<TInstance, TMessage> _policy;
         readonly ISagaRepository<TInstance> _sagaRepository;
+        readonly Expression<Func<TInstance, TMessage, bool>> _selector;
         readonly StateMachine<TInstance> _stateMachine;
 
-        public CorrelatedStateMachineSubscriptionConnector(StateMachine<TInstance> stateMachine,
+        public ExpressionStateMachineSubscriptionConnector(StateMachine<TInstance> stateMachine,
                                                            ISagaRepository<TInstance> sagaRepository,
                                                            Event<TMessage> dataEvent,
                                                            IEnumerable<State> states,
                                                            StateMachinePolicyFactory<TInstance> policyFactory,
-                                                           Expression<Func<TInstance, bool>> removeExpression)
+                                                           Expression<Func<TInstance, bool>> removeExpression,
+                                                           Expression<Func<TInstance, TMessage, bool>> selector)
         {
             _stateMachine = stateMachine;
             _sagaRepository = sagaRepository;
             _dataEvent = dataEvent;
+            _selector = selector;
 
-            _policy = policyFactory.GetPolicy<TMessage>(states, x => x.CorrelationId, removeExpression);
+            Func<TMessage, Guid> getNewSagaId = GenerateGetSagaIdFunction(selector);
+
+            _policy = policyFactory.GetPolicy(states, getNewSagaId, removeExpression);
         }
+
 
         public Type MessageType
         {
@@ -59,8 +67,18 @@ namespace Automatonymous.SubscriptionConnectors
 
         ISagaMessageSink<TInstance, TMessage> CreateSink()
         {
-            return new CorrelatedStateMachineMessageSink<TInstance, TMessage>(_stateMachine, _sagaRepository,
-                _policy, _dataEvent);
+            return new ExpressionStateMachineMessageSink<TInstance, TMessage>(_stateMachine, _sagaRepository,
+                _policy, _dataEvent, _selector);
+        }
+
+
+        static Func<TMessage, Guid> GenerateGetSagaIdFunction(Expression<Func<TInstance, TMessage, bool>> selector)
+        {
+            var visitor = new CorrelationExpressionToSagaIdVisitor<TInstance, TMessage>();
+
+            Expression<Func<TMessage, Guid>> exp = visitor.Build(selector);
+
+            return exp != null ? exp.Compile() : (x => CombGuid.Generate());
         }
     }
 }

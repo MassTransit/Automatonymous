@@ -18,7 +18,6 @@ namespace Automatonymous.SubscriptionConnectors
     using Magnum.Extensions;
     using Magnum.Reflection;
     using MassTransit;
-    using MassTransit.Saga;
 
 
     public interface StateMachineEventConnectorFactory
@@ -35,42 +34,50 @@ namespace Automatonymous.SubscriptionConnectors
         readonly Event<TMessage> _event;
         readonly StateMachinePolicyFactory<TInstance> _policyFactory;
         readonly Expression<Func<TInstance, bool>> _removeExpression;
-        readonly ISagaRepository<TInstance> _sagaRepository;
+        readonly StateMachineSagaRepository<TInstance> _repository;
         readonly StateMachine<TInstance> _stateMachine;
         readonly IEnumerable<State> _states;
 
         public StateMachineEventConnectorFactory(StateMachine<TInstance> stateMachine,
-                                                 ISagaRepository<TInstance> sagaRepository,
+                                                 StateMachineSagaRepository<TInstance> repository,
                                                  StateMachinePolicyFactory<TInstance> policyFactory,
                                                  Event<TMessage> @event, IEnumerable<State> states)
         {
             _stateMachine = stateMachine;
-            _sagaRepository = sagaRepository;
+            _repository = repository;
             _policyFactory = policyFactory;
             _event = @event;
             _states = states;
 
-            _removeExpression = x => false; // SagaStateMachine<TSaga>.GetCompletedExpression();
+            _removeExpression = repository.GetCompletedExpression();
         }
 
         public IEnumerable<StateMachineSubscriptionConnector> Create()
         {
             Expression<Func<TInstance, TMessage, bool>> expression;
-//            if (SagaStateMachine<TSaga>.TryGetCorrelationExpressionForEvent(_event, out expression))
-//			{
-//				yield return (SagaSubscriptionConnector) FastActivator.Create(typeof (PropertyStateMachineSubscriptionConnector<,>),
-//					new[] {typeof (TSaga), typeof (TMessage)},
-//					new object[] {_sagaRepository, _dataEvent, _states, _policyFactory, _removeExpression, expression});
-//			}
-//			else 
-            if (typeof(TMessage).Implements<CorrelatedBy<Guid>>())
+            if (_repository.TryGetCorrelationExpressionForEvent(_event, out expression))
+            {
+                yield return
+                    (StateMachineSubscriptionConnector)
+                    FastActivator.Create(typeof(ExpressionStateMachineSubscriptionConnector<,>),
+                        new[] {typeof(TInstance), typeof(TMessage)},
+                        new object[]
+                            {
+                                _stateMachine, _repository, _event, _states, _policyFactory,
+                                _removeExpression, expression
+                            });
+            }
+            else if (typeof(TMessage).Implements<CorrelatedBy<Guid>>())
             {
                 yield return
                     (StateMachineSubscriptionConnector)
                     FastActivator.Create(typeof(CorrelatedStateMachineSubscriptionConnector<,>),
                         new[] {typeof(TInstance), typeof(TMessage)},
                         new object[]
-                            {_stateMachine, _sagaRepository, _event, _states, _policyFactory, _removeExpression});
+                            {
+                                _stateMachine, _repository, _event, _states, _policyFactory,
+                                _removeExpression
+                            });
             }
             else
             {

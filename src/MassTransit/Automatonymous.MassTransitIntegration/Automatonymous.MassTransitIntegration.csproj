@@ -48,7 +48,14 @@
     <Compile Include="Activities\PublishActivity.cs" />
     <Compile Include="Activities\RespondActivity.cs" />
     <Compile Include="Activities\RetryLaterActivity.cs" />
+    <Compile Include="Configuration\BuilderConfigurators\StateMachineSagaRepositoryBuilderConfigurator.cs" />
     <Compile Include="Configuration\PublishExtensions.cs" />
+    <Compile Include="Configuration\RepositoryBuilders\StateMachineEventCorrelation.cs" />
+    <Compile Include="Configuration\RepositoryBuilders\StateMachineEventCorrelationImpl.cs" />
+    <Compile Include="Configuration\RepositoryBuilders\StateMachineSagaRepositoryBuilder.cs" />
+    <Compile Include="Configuration\RepositoryBuilders\StateMachineSagaRepositoryBuilderImpl.cs" />
+    <Compile Include="Configuration\RepositoryConfigurators\StateMachineSagaRepositoryConfigurator.cs" />
+    <Compile Include="Configuration\RepositoryConfigurators\StateMachineSagaRepositoryConfiguratorImpl.cs" />
     <Compile Include="Configuration\RespondExtensions.cs" />
     <Compile Include="Configuration\RetryLaterExtensions.cs" />
     <Compile Include="Configuration\StateMachinePolicyFactory.cs" />
@@ -58,11 +65,15 @@
     <Compile Include="Configuration\SubscriptionConfigurators\StateMachineSubscriptionConfigurator.cs" />
     <Compile Include="Configuration\SubscriptionConfigurators\StateMachineSubscriptionConfiguratorImpl.cs" />
     <Compile Include="Configuration\SubscriptionConnectors\CorrelatedStateMachineSubscriptionConnector.cs" />
+    <Compile Include="Configuration\SubscriptionConnectors\ExpressionStateMachineSubscriptionConnector.cs" />
     <Compile Include="Configuration\SubscriptionConnectors\StateMachineEventConnectorFactory.cs" />
     <Compile Include="Configuration\SubscriptionConnectors\StateMachineConnector.cs" />
     <Compile Include="Configuration\SubscriptionConnectors\StateMachineSubscriptionConnector.cs" />
-    <Compile Include="Pipeline\CorrelatedSagaStateMachineMessageSink.cs" />
     <Compile Include="SagaStateMachineInstance.cs" />
+    <Compile Include="Saga\Pipeline\CorrelatedSagaStateMachineMessageSink.cs" />
+    <Compile Include="Saga\Pipeline\ExpressionStateMachineMessageSink.cs" />
+    <Compile Include="StateMachineSagaRepository.cs" />
+    <Compile Include="AutomatonymousStateMachineSagaRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

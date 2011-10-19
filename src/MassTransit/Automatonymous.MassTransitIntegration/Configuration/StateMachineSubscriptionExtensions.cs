@@ -12,8 +12,10 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using System;
     using MassTransit.Saga;
     using MassTransit.SubscriptionConfigurators;
+    using RepositoryConfigurators;
     using SubscriptionConfigurators;
 
 
@@ -24,8 +26,33 @@ namespace Automatonymous
             ISagaRepository<TInstance> sagaRepository)
             where TInstance : class, SagaStateMachineInstance
         {
-            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine,
-                sagaRepository);
+            var stateMachineSagaRepositoryConfigurator =
+                new StateMachineSagaRepositoryConfiguratorImpl<TInstance>(stateMachine, sagaRepository);
+
+            var repository = stateMachineSagaRepositoryConfigurator.Configure();
+
+            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine, repository);
+
+            var busServiceConfigurator = new SubscriptionBusServiceBuilderConfiguratorImpl(stateMachineConfigurator);
+
+            configurator.AddConfigurator(busServiceConfigurator);
+
+            return stateMachineConfigurator;
+        }
+
+        public static StateMachineSubscriptionConfigurator<TInstance> StateMachineSaga<TInstance>(
+            this SubscriptionBusServiceConfigurator configurator, StateMachine<TInstance> stateMachine,
+            ISagaRepository<TInstance> sagaRepository, Action<StateMachineSagaRepositoryConfigurator<TInstance>> configureCallback)
+            where TInstance : class, SagaStateMachineInstance
+        {
+            var stateMachineSagaRepositoryConfigurator =
+                new StateMachineSagaRepositoryConfiguratorImpl<TInstance>(stateMachine, sagaRepository);
+
+            configureCallback(stateMachineSagaRepositoryConfigurator);
+
+            var repository = stateMachineSagaRepositoryConfigurator.Configure();
+
+            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine, repository);
 
             var busServiceConfigurator = new SubscriptionBusServiceBuilderConfiguratorImpl(stateMachineConfigurator);
 

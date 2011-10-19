@@ -19,7 +19,6 @@ namespace Automatonymous.SubscriptionConnectors
     using MassTransit;
     using MassTransit.Exceptions;
     using MassTransit.Pipeline;
-    using MassTransit.Saga;
 
 
     public interface StateMachineConnector
@@ -33,13 +32,14 @@ namespace Automatonymous.SubscriptionConnectors
         where T : class, SagaStateMachineInstance
     {
         readonly IEnumerable<StateMachineSubscriptionConnector> _connectors;
-        readonly ISagaRepository<T> _sagaRepository;
+        readonly StateMachineSagaRepository<T> _repository;
         readonly StateMachine<T> _stateMachine;
 
-        public StateMachineConnector(StateMachine<T> stateMachine, ISagaRepository<T> sagaRepository)
+        public StateMachineConnector(StateMachine<T> stateMachine,
+                                     StateMachineSagaRepository<T> repository)
         {
             _stateMachine = stateMachine;
-            _sagaRepository = sagaRepository;
+            _repository = repository;
 
             try
             {
@@ -87,7 +87,7 @@ namespace Automatonymous.SubscriptionConnectors
                     (StateMachineEventConnectorFactory)
                     FastActivator.Create(typeof(StateMachineEventConnectorFactory<,>),
                         new[] {typeof(T), messageType},
-                        new object[] {_stateMachine, _sagaRepository, policyFactory, @event, states});
+                        new object[] {_stateMachine, _repository, policyFactory, @event, states});
 
                 foreach (StateMachineSubscriptionConnector connector in factory.Create())
                     yield return connector;
