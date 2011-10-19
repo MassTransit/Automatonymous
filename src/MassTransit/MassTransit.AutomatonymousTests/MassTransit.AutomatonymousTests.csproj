@@ -53,8 +53,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FutureMessage.cs" />
     <Compile Include="Integration_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Publish_Specs.cs" />
+    <Compile Include="Respond_Specs.cs" />
     <Compile Include="SimpleStateMachine_Specs.cs" />
     <Compile Include="TestExtensions.cs" />
   </ItemGroup>
