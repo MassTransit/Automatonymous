@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Visualizer",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassTransit", "MassTransit", "{B4965117-C0CF-4B58-BDBB-42C34996D321}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.AutomatonymousIntegration", "MassTransit\MassTransit.AutomatonymousIntegration\MassTransit.AutomatonymousIntegration.csproj", "{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.MassTransitIntegration", "MassTransit\Automatonymous.MassTransitIntegration\Automatonymous.MassTransitIntegration.csproj", "{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.AutomatonymousTests", "MassTransit\MassTransit.AutomatonymousTests\MassTransit.AutomatonymousTests.csproj", "{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}"
 EndProject
