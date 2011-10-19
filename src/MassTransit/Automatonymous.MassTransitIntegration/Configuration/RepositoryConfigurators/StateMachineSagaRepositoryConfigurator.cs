@@ -17,9 +17,13 @@ namespace Automatonymous.RepositoryConfigurators
 
 
     public interface StateMachineSagaRepositoryConfigurator<TInstance>
-        where TInstance : SagaStateMachineInstance
+        where TInstance : class, SagaStateMachineInstance
     {
+        StateMachine<TInstance> StateMachine { get; }
+
         void Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
             where TData : class;
+
+        void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression);
     }
 }

@@ -60,6 +60,7 @@
     <Compile Include="Configuration\RetryLaterExtensions.cs" />
     <Compile Include="Configuration\StateMachinePolicyFactory.cs" />
     <Compile Include="Configuration\AutomatonymousStateMachinePolicyFactory.cs" />
+    <Compile Include="Configuration\StateMachineSagaRepositoryExtensions.cs" />
     <Compile Include="Configuration\StateMachineSubscriptionExtensions.cs" />
     <Compile Include="Configuration\SubscriptionBuilders\StateMachineSubscriptionBuilder.cs" />
     <Compile Include="Configuration\SubscriptionConfigurators\StateMachineSubscriptionConfigurator.cs" />

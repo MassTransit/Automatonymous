@@ -16,6 +16,7 @@ namespace MassTransit.AutomatonymousTests
     using System.Linq;
     using System.Threading;
     using Automatonymous;
+    using NUnit.Framework;
     using Saga;
 
 
@@ -37,6 +38,25 @@ namespace MassTransit.AutomatonymousTests
             }
 
             return null;
+        }
+
+
+        public static void ShouldNotContainSaga<TSaga>(this ISagaRepository<TSaga> repository, Guid sagaId,
+                                                     TimeSpan timeout)
+            where TSaga : class, ISaga
+        {
+            DateTime giveUpAt = DateTime.Now + timeout;
+
+            while (DateTime.Now < giveUpAt)
+            {
+                TSaga saga = repository.Where(x => x.CorrelationId == sagaId).FirstOrDefault();
+                if (saga == null)
+                    return;
+
+                Thread.Sleep(100);
+            }
+
+            Assert.Fail("The saga instance exists: " + sagaId);
         }
 
         public static TSaga ShouldContainSagaInState<TSaga>(this ISagaRepository<TSaga> repository, Guid sagaId,

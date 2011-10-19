@@ -28,6 +28,7 @@ namespace Automatonymous.RepositoryConfigurators
         readonly ISagaRepository<TInstance> _repository;
         readonly StateMachine<TInstance> _stateMachine;
         readonly Cache<Event, StateMachineEventCorrelation<TInstance>> _correlations;
+        Expression<Func<TInstance, bool>> _removeExpression;
 
         public StateMachineSagaRepositoryConfiguratorImpl(StateMachine<TInstance> stateMachine,
                                                           ISagaRepository<TInstance> repository)
@@ -35,13 +36,21 @@ namespace Automatonymous.RepositoryConfigurators
             _stateMachine = stateMachine;
             _repository = repository;
             _correlations = new DictionaryCache<Event, StateMachineEventCorrelation<TInstance>>();
+            _removeExpression = x => false;
         }
 
         public StateMachineSagaRepository<TInstance> Configure()
         {
             var builder = new StateMachineSagaRepositoryBuilderImpl<TInstance>(_stateMachine, _repository, _correlations);
 
+            builder.SetCompletedExpression(_removeExpression);
+
             return builder.Build();
+        }
+
+        public StateMachine<TInstance> StateMachine
+        {
+            get { return _stateMachine; }
         }
 
         public void Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression) 
@@ -50,6 +59,11 @@ namespace Automatonymous.RepositoryConfigurators
             var builder = new StateMachineEventCorrelationImpl<TInstance, TData>(@event, correlationExpression);
 
             _correlations[@event] = builder;
+        }
+
+        public void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression)
+        {
+            _removeExpression = removeExpression;
         }
     }
 }
