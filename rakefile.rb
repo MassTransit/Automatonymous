@@ -123,12 +123,12 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.version = asm_version
   nuspec.authors = 'Chris Patterson'
   nuspec.description = 'Integration assembly to support Automatonymous sagas, a state machine library for .NET'
-  nuspec.title = 'MassTransit.Automatonymous'
+  nuspec.title = 'Automatonymous.MassTransit'
   nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "true"
-  nuspec.dependency "MassTransit", "2.0.0.5"
+  nuspec.dependency "MassTransit", "2.0.1.0"
   nuspec.dependency "Automatonymous", asm_version
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
   add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
