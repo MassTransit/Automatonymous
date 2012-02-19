@@ -59,6 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State_Specs.cs" />
     <Compile Include="Visualizer_Specs.cs" />
+    <Compile Include="FilterExpression_Specs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

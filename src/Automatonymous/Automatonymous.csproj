@@ -42,6 +42,7 @@
     <Compile Include="Activities\CallActivity.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />
     <Compile Include="Activities\DataConverterActivity.cs" />
+    <Compile Include="Activities\ConditionalEventActivityImpl.cs" />
     <Compile Include="Activities\EventActivityImpl.cs" />
     <Compile Include="Activities\ExceptionActivity.cs" />
     <Compile Include="Activities\ExceptionHandlerActivity.cs" />

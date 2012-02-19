@@ -31,7 +31,7 @@ namespace Automatonymous.Binders
         readonly AutomatonymousStateMachine<TInstance> _machine;
 
         public DataEventActivityBinder(AutomatonymousStateMachine<TInstance> machine, Event<TData> @event)
-            : this(machine, @event, null, Enumerable.Empty<Activity<TInstance>>())
+            : this(machine, @event, x => true, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
@@ -80,7 +80,7 @@ namespace Automatonymous.Binders
 
         public IEnumerator<EventActivity<TInstance>> GetEnumerator()
         {
-            return _activities.Select(x => new EventActivityImpl<TInstance>(_event, x)).GetEnumerator();
+            return _activities.Select(x => new ConditionalEventActivityImpl<TInstance, TData>(_event, x, _filterExpression)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
