@@ -39,10 +39,20 @@ namespace Automatonymous.Activities
 
         public void Execute<TEventData>(TInstance instance, TEventData value)
         {
-            if (_filterExpression(value as TData) == false)
+            if (value == null)
+                throw new ArgumentNullException("value", "The data argument cannot be null");
+
+            var data = value as TData;
+            if (data == null)
+            {
+                string message = "Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name;
+                throw new ArgumentException(message, "value");
+            }
+
+            if (_filterExpression(data) == false)
                 return;
 
-            _activity.Execute(instance, value);
+            _activity.Execute(instance, data);
         }
 
         public void Accept(StateMachineInspector inspector)

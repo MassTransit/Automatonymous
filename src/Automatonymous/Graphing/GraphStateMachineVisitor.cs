@@ -16,7 +16,6 @@ namespace Automatonymous.Graphing
     using System.Collections.Generic;
     using System.Linq;
     using Activities;
-    using Impl;
     using Util.Caching;
 
 
@@ -62,7 +61,11 @@ namespace Automatonymous.Graphing
 
         public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next) where TData : class
         {
-            Inspect((Event)@event, x => next(@event));
+            _currentEvent = _events[@event];
+
+            _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
+
+            next(@event);
         }
 
         public void Inspect(Activity activity, Action<Activity> next)
@@ -129,7 +132,7 @@ namespace Automatonymous.Graphing
                 .GetInterfaces()
                 .Where(x => x.IsGenericType)
                 .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
-                .Select(x => x.GetGenericArguments().Single())
+                .Select(x => x.GetGenericArguments()[0])
                 .DefaultIfEmpty(typeof(Event))
                 .Single();
 

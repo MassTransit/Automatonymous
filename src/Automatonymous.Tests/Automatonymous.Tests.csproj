@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventObservable_Specs.cs" />
-    <Compile Include="EventRaiser_Specs.cs" />
+    <Compile Include="EventLift_Specs.cs" />
     <Compile Include="Activity_Specs.cs" />
     <Compile Include="Anytime_Specs.cs" />
     <Compile Include="Combine_Specs.cs" />

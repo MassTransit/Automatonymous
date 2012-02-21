@@ -55,17 +55,6 @@ namespace Automatonymous.Tests
         TestStateMachine _machine;
         Instance _instance;
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
-        {
-            _machine = new TestStateMachine();
-            _instance = new Instance();
-
-            _machine.RaiseEvent(_instance, _machine.First);
-            _machine.RaiseEvent(_instance, _machine.Second);
-        }
-
-
         class Instance :
             StateMachineInstance
         {

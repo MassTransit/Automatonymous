@@ -33,9 +33,9 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var activator = _machine.CreateEventLift(_machine.Initialized);
+            var eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            activator.Raise(_instance);
+            eventLift.Raise(_instance);
         }
 
 
@@ -84,9 +84,9 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var activator = _machine.CreateEventLift(_machine.Initialized);
+            var eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            activator.Raise(_instance, new Init());
+            eventLift.Raise(_instance, new Init());
         }
 
 

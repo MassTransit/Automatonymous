@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Visualizer
 {
+    using System;
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.Linq;
@@ -24,7 +25,7 @@ namespace Automatonymous.Visualizer
 
     public class StateMachineGraphGenerator
     {
-        public Microsoft.Glee.Drawing.Graph CreateGraph(StateMachineGraph data)
+        public Graph CreateGraph(StateMachineGraph data)
         {
             var graph = new AdjacencyGraph<Vertex, Edge<Vertex>>();
 
@@ -37,14 +38,14 @@ namespace Automatonymous.Visualizer
             glee.EdgeAdded += EdgeStyler;
             glee.Compute();
 
-            Microsoft.Glee.Drawing.Graph gleeGraph = glee.GleeGraph;
+            Graph gleeGraph = glee.GleeGraph;
 
             return gleeGraph;
         }
 
         public void SaveGraphToFile(StateMachineGraph data, int width, int height, string filename)
         {
-            Microsoft.Glee.Drawing.Graph gleeGraph = CreateGraph(data);
+            Graph gleeGraph = CreateGraph(data);
 
             var renderer = new GraphRenderer(gleeGraph);
             renderer.CalculateLayout();
@@ -60,39 +61,35 @@ namespace Automatonymous.Visualizer
             args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.White;
             args.Node.Attr.Fontsize = 8;
             args.Node.Attr.FontName = "Arial";
-            args.Node.Attr.Padding = 1.2;
+            args.Node.Attr.Padding = 1.1;
 
             if (args.Vertex.VertexType == typeof(Event))
             {
-                if (args.Vertex.Title.EndsWith("Exception"))
-                {
-                    args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Red;
-                    args.Node.Attr.Shape = Shape.Box;
-                }
-                else
-                {
-                    args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Yellow;
-                    args.Node.Attr.Shape = Shape.Ellipse;
-                }
-                args.Node.Attr.Label = args.Vertex.Title;
                 args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.Black;
+                args.Node.Attr.Shape = Shape.Plaintext;
+
+                args.Node.Attr.Label = args.Vertex.Title;
+
+                if (args.Vertex.TargetType != typeof(Event) && args.Vertex.TargetType != typeof(Exception))
+                    args.Node.Attr.Label += "<" + args.Vertex.TargetType.Name + ">";
             }
             else
             {
                 switch (args.Vertex.Title)
                 {
                     case "Initial":
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Black;
+                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Green;
                         break;
-                    case "Completed":
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Black;
+                    case "Final":
+                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Crimson;
                         break;
                     default:
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Blue;
+                        args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.Black;
+                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Cyan;
                         break;
                 }
                 args.Node.Attr.Label = args.Vertex.Title;
-                args.Node.Attr.Shape = Shape.Circle;
+                args.Node.Attr.Shape = Shape.Ellipse;
             }
         }
 

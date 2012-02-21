@@ -66,6 +66,7 @@ namespace Automatonymous.Tests
                 Event(() => Finished);
                 Event(() => Suspend);
                 Event(() => Resume);
+                Event(() => Restart);
 
                 During(Initial,
                     When(Initialized)
@@ -81,6 +82,10 @@ namespace Automatonymous.Tests
                 During(Suspended,
                     When(Resume)
                         .TransitionTo(Running));
+
+                During(Failed,
+                    When(Restart, x => x.Name != null)
+                        .TransitionTo(Running));
             }
 
             public State Running { get; private set; }
@@ -91,6 +96,13 @@ namespace Automatonymous.Tests
             public Event Suspend { get; private set; }
             public Event Resume { get; private set; }
             public Event Finished { get; private set; }
+
+            public Event<RestartData> Restart { get; private set; }
+        }
+
+        class RestartData
+        {
+            public string Name { get; set; }
         }
     }
 }

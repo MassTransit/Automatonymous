@@ -22,9 +22,9 @@ namespace Automatonymous
             Event @event)
             where TInstance : class, StateMachineInstance
         {
-            var activator = new EventLiftImpl<TInstance>(stateMachine, @event);
+            var eventLift = new EventLiftImpl<TInstance>(stateMachine, @event);
 
-            return activator;
+            return eventLift;
         }
 
         public static EventLift<TInstance, TData> CreateEventLift<TInstance, TData>(
@@ -33,9 +33,9 @@ namespace Automatonymous
             where TInstance : class, StateMachineInstance
             where TData : class
         {
-            var activator = new EventLiftImpl<TInstance, TData>(stateMachine, @event);
+            var eventLift = new EventLiftImpl<TInstance, TData>(stateMachine, @event);
 
-            return activator;
+            return eventLift;
         }
     }
 }
