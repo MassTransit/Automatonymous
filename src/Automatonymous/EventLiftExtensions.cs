@@ -15,25 +15,25 @@ namespace Automatonymous
     using Impl;
 
 
-    public static class EventRaiserExtensions
+    public static class EventLiftExtensions
     {
-        public static EventRaiser<TInstance> CreateEventRaiser<TInstance>(
+        public static EventLift<TInstance> CreateEventLift<TInstance>(
             this StateMachine<TInstance> stateMachine,
             Event @event)
             where TInstance : class, StateMachineInstance
         {
-            var activator = new EventRaiserImpl<TInstance>(stateMachine, @event);
+            var activator = new EventLiftImpl<TInstance>(stateMachine, @event);
 
             return activator;
         }
 
-        public static EventRaiser<TInstance, TData> CreateEventRaiser<TInstance, TData>(
+        public static EventLift<TInstance, TData> CreateEventLift<TInstance, TData>(
             this StateMachine<TInstance> stateMachine,
             Event<TData> @event)
             where TInstance : class, StateMachineInstance
             where TData : class
         {
-            var activator = new EventRaiserImpl<TInstance, TData>(stateMachine, @event);
+            var activator = new EventLiftImpl<TInstance, TData>(stateMachine, @event);
 
             return activator;
         }

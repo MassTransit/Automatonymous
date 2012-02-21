@@ -16,7 +16,7 @@ namespace Automatonymous.Tests
 
 
     [TestFixture]
-    public class When_using_an_event_raiser
+    public class When_using_an_instance_lift
     {
         [Test]
         public void Should_raise_the_event()
@@ -33,9 +33,9 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var activator = _machine.CreateEventRaiser(_machine.Initialized);
+            var instanceLift = _machine.CreateInstanceLift(_instance);
 
-            activator.Raise(_instance);
+            instanceLift.Raise(_machine.Initialized);
         }
 
 
@@ -67,7 +67,7 @@ namespace Automatonymous.Tests
     }
 
     [TestFixture]
-    public class When_using_an_event_raiser_with_data
+    public class When_using_an_instance_lift_with_data
     {
         [Test]
         public void Should_raise_the_event()
@@ -84,9 +84,9 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var activator = _machine.CreateEventRaiser(_machine.Initialized);
+            var instanceLift = _machine.CreateInstanceLift(_instance);
 
-            activator.Raise(_instance, new Init());
+            instanceLift.Raise(_machine.Initialized, new Init());
         }
 
 

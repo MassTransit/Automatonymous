@@ -18,7 +18,7 @@ namespace Automatonymous
     public static class StateExtensions
     {
         public static State<TInstance> For<TInstance>(this State state)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
         {
             if (state == null)
                 throw new ArgumentNullException("state");
@@ -31,7 +31,7 @@ namespace Automatonymous
         }
 
         public static void WithState<TInstance>(this State state, Action<State<TInstance>> callback)
-            where TInstance : StateMachineInstance
+            where TInstance : class, StateMachineInstance
         {
             if (state == null)
                 return;

@@ -4,6 +4,8 @@ build_output/*
 **/*.suo
 **/**/*.suo
 **/*.user
+**/**/*.user
+
 bin
 obj
 _ReSharper*
@@ -16,6 +18,7 @@ _ReSharper*
 *.swp
 *.bak
 *.orig
+*.user
 
 TestResult.xml
 submit.xml

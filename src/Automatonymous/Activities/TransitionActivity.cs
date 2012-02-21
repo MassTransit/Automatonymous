@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     public class TransitionActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly StateAccessor<TInstance> _currentStateAccessor;
         readonly State<TInstance> _toState;

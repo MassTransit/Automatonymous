@@ -12,14 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface EventRaiser<in TInstance>
+    public interface EventLift<in TInstance>
         where TInstance : class, StateMachineInstance
     {
         void Raise(TInstance instance);
     }
 
 
-    public interface EventRaiser<in TInstance, in TData>
+    public interface EventLift<in TInstance, in TData>
         where TInstance : class, StateMachineInstance
         where TData : class
     {

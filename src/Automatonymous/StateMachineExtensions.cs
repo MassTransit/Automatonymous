@@ -17,6 +17,14 @@ namespace Automatonymous
 
     public static class StateMachineExtensions
     {
+        /// <summary>
+        /// Raise a simple event on the state machine
+        /// </summary>
+        /// <typeparam name="T">The state machine type</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="eventSelector">Selector to the event on the state machine</param>
         public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
                                                     Func<T, Event> eventSelector)
             where T : StateMachine<TInstance>
@@ -27,6 +35,16 @@ namespace Automatonymous
             stateMachine.RaiseEvent(instance, @event);
         }
 
+        /// <summary>
+        /// Raise a simple event on the state machine
+        /// </summary>
+        /// <typeparam name="T">The state machine type</typeparam>
+        /// <typeparam name="TData">The data type of the event</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="eventSelector">Selector to the event on the state machine</param>
+        /// <param name="data">The data for the event</param>
         public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
                                                            Func<T, Event<TData>> eventSelector, TData data)
             where T : StateMachine<TInstance>
@@ -36,6 +54,34 @@ namespace Automatonymous
             Event<TData> @event = eventSelector(stateMachine);
 
             stateMachine.RaiseEvent(instance, @event, data);
+        }
+
+        /// <summary>
+        /// Returns an instance-specific version of the state machine (smart cast essentially)
+        /// </summary>
+        /// <typeparam name="TInstance">The instance type requested</typeparam>
+        /// <param name="stateMachine">The untyped state machine interface</param>
+        /// <returns>The typed static machine reference</returns>
+        public static StateMachine<TInstance> For<TInstance>(this StateMachine stateMachine)
+            where TInstance : class, StateMachineInstance
+        {
+            if (stateMachine == null)
+                throw new ArgumentNullException("stateMachine");
+
+            var result = stateMachine as StateMachine<TInstance>;
+            if (result == null)
+                throw new ArgumentException("The state machine is not of the instance type: " + typeof(TInstance).Name);
+
+            return result;
+        }
+
+        public static void WithStateMachine<TInstance>(this StateMachine stateMachine,
+                                                       Action<StateMachine<TInstance>> callback)
+            where TInstance : class, StateMachineInstance
+        {
+            StateMachine<TInstance> machine = stateMachine.For<TInstance>();
+
+            callback(machine);
         }
     }
 }

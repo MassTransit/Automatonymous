@@ -22,7 +22,7 @@ namespace Automatonymous.Graphing
 
     public class GraphStateMachineVisitor<TInstance> :
         StateMachineInspector
-        where TInstance : StateMachineInstance
+        where TInstance : class, StateMachineInstance
     {
         readonly List<Edge> _edges = new List<Edge>();
         readonly Cache<Event, Vertex> _events;

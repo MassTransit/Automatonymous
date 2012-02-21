@@ -12,14 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    public class EventRaiserImpl<TInstance> :
-        EventRaiser<TInstance>
+    public class EventLiftImpl<TInstance> :
+        EventLift<TInstance>
         where TInstance : class, StateMachineInstance
     {
         readonly Event _event;
         readonly StateMachine<TInstance> _stateMachine;
 
-        public EventRaiserImpl(StateMachine<TInstance> stateMachine, Event @event)
+        public EventLiftImpl(StateMachine<TInstance> stateMachine, Event @event)
         {
             _stateMachine = stateMachine;
             _event = @event;
@@ -32,15 +32,15 @@ namespace Automatonymous.Impl
     }
 
 
-    public class EventRaiserImpl<TInstance, TData> :
-        EventRaiser<TInstance, TData>
+    public class EventLiftImpl<TInstance, TData> :
+        EventLift<TInstance, TData>
         where TInstance : class, StateMachineInstance
         where TData : class
     {
         readonly Event<TData> _event;
         readonly StateMachine<TInstance> _stateMachine;
 
-        public EventRaiserImpl(StateMachine<TInstance> stateMachine, Event<TData> @event)
+        public EventLiftImpl(StateMachine<TInstance> stateMachine, Event<TData> @event)
         {
             _stateMachine = stateMachine;
             _event = @event;
