@@ -32,13 +32,13 @@
     <DocumentationFile>bin\Release\Automatonymous.MassTransitIntegration.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magnum, Version=2.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Magnum, Version=2.0.0.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Magnum.2.0.0.2\lib\NET40\Magnum.dll</HintPath>
+      <HintPath>..\..\packages\Magnum.2.0.0.4\lib\NET40\Magnum.dll</HintPath>
     </Reference>
-    <Reference Include="MassTransit, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MassTransit, Version=2.1.408.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MassTransit.2.0.1.0\lib\net40\MassTransit.dll</HintPath>
+      <HintPath>..\..\packages\MassTransit.2.1.0\lib\net40\MassTransit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

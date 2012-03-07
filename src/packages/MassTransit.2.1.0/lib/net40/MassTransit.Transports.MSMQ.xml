@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MassTransit.Transports.Msmq</name>
+    </assembly>
+    <members>
+        <member name="T:MassTransit.Transports.Msmq.IEndpointManagement">
+            <summary>
+            Provides a management interface to an endpoint
+            Since this has more than one method, these may get broken up
+            into individual interfaces such as ICreateEndpoint, ICountEndpoint, etc.
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.IEndpointManagement.Create(System.Boolean)">
+            <summary>
+            Creates the endpoint if it does not exist using the specified transaction mode
+            </summary>
+            <param name="transactional"></param>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.IEndpointManagement.Count">
+            <summary>
+            Returns the number of messages waiting to be received on the endpoint
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.IEndpointManagement.Count(System.Int64)">
+            <summary>
+            Returns the number of messages waiting to be received or the limit if the limit is received
+            </summary>
+            <param name="limit"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.IEndpointManagement.Purge">
+            <summary>
+            Purge all messages from the endpoint
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.IEndpointManagement.MessageTypes">
+            <summary>
+            Returns a dictionary containing the message types and the number of messages for each type. 
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IEndpointManagement.Exists">
+            <summary>
+            Returns true if the endpoint exists
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IEndpointManagement.IsTransactional">
+            <summary>
+            Returns true if the endpoint supports transactions
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IMsmqEndpointAddress.InboundFormatName">
+            <summary>
+            The format name used to receive messages
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IMsmqEndpointAddress.InboundUri">
+            <summary>
+            The URI of the inbound address
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IMsmqEndpointAddress.LocalName">
+            <summary>
+            The name of the queue in local format (.\private$\name)
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IMsmqEndpointAddress.MulticastAddress">
+            <summary>
+            If specified, the multicast address to bind to the queue
+            </summary>
+        </member>
+        <member name="P:MassTransit.Transports.Msmq.IMsmqEndpointAddress.OutboundFormatName">
+            <summary>
+            The format name used to send messages (may be different if multicast MSMQ is used)
+            </summary>
+        </member>
+        <member name="T:MassTransit.Transports.Msmq.Management.OSHelperExtensions">
+            <summary>
+            Provides extensions to <see cref="T:System.OperatingSystem"/> and <see cref="T:System.Diagnostics.Process"/>
+            that detects whether the process and the OS are 64 bit.
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.Management.OSHelperExtensions.IsWin64BitOS(System.OperatingSystem)">
+            <summary>
+            The function determines whether the current operating system is a
+            64-bit operating system.
+            </summary>
+            <returns>
+            The function returns true if the operating system is 64-bit;
+            otherwise, it returns false.
+            </returns>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.Management.OSHelperExtensions.Is64BitProc(System.Diagnostics.Process)">
+            <summary>
+            Checks if the process is 64 bit
+            </summary>
+            <returns>
+            The function returns true if the process is 64-bit;
+            otherwise, it returns false.
+            </returns>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.Management.OSHelperExtensions.DoesWin32MethodExist(System.String,System.String)">
+            <summary>
+            The function determins whether a method exists in the export
+            table of a certain module.
+            </summary>
+            <param name="moduleName">The name of the module</param>
+            <param name="methodName">The name of the method</param>
+            <returns>
+            The function returns true if the method specified by methodName
+            exists in the export table of the module specified by moduleName.
+            </returns>
+        </member>
+        <member name="M:MassTransit.ManagementExtensions.VerifyMsmqConfiguration(MassTransit.BusConfigurators.ServiceBusConfigurator)">
+            <summary>
+            Will force an installation of MSMQ if it is not installed
+            </summary>
+            <param name="configurator"></param>
+        </member>
+        <member name="M:MassTransit.ManagementExtensions.VerifyMsDtcConfiguration(MassTransit.BusConfigurators.ServiceBusConfigurator)">
+            <summary>
+            This method will verify that the MS DTC is installed and properly configured. If
+            the configuration is invalid or the MS DTC is not installed, it will be installed,
+            configured, and/or started.
+            </summary>
+            <param name="configurator"></param>
+        </member>
+        <member name="T:MassTransit.Transports.Msmq.Management.MsDtcManagement">
+            <summary>
+            Manages the configuration of the MS DTC, since this screws a lot of 
+            people up a lot of the time when dealing with MSSQL and MSMQ. This is 
+            in MSMQ since none of the other queue transports support the DTC.
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.MsmqUriExtensions.GetLocalName(System.Uri)">
+            <summary>
+            The name of the queue in local format (.\private$\name)
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.MsmqUriExtensions.GetInboundFormatName(System.Uri)">
+            <summary>
+            The format name used to talk to MSMQ
+            </summary>
+        </member>
+        <member name="M:MassTransit.Transports.Msmq.MsmqUriExtensions.GetInboundUri(System.Uri)">
+            <summary>
+            The format name used to talk to MSMQ
+            </summary>
+        </member>
+        <member name="T:MassTransit.Transports.Msmq.Testing.MsmqBusScenarioBuilder">
+            <summary>
+            Scenario builder for MSMQ transport.
+            </summary>
+        </member>
+    </members>
+</doc>

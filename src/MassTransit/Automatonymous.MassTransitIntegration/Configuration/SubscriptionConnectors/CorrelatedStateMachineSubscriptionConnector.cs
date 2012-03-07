@@ -17,6 +17,7 @@ namespace Automatonymous.SubscriptionConnectors
     using System.Linq.Expressions;
     using MassTransit;
     using MassTransit.Pipeline;
+    using MassTransit.Pipeline.Configuration;
     using MassTransit.Saga;
     using Saga.Pipeline;
 
