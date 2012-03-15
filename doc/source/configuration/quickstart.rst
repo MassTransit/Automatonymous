@@ -1,82 +1,107 @@
-Show me the code!
-=================
+Automatonymous Quick Start
+==========================
 
-All right, all right, already. Here you go. Below is a functional setup of
-MassTransit. 
+So you've got the chops and want to get started quickly using Automatonymous. Maybe
+you are a bad ass and can't be bothered with reading documentation, or perhaps you
+are already familiar with the Magnum StateMachine and want to see what things have
+changed. Either way, here it is, your first state machine configured using Automatonymous.
 
 .. sourcecode:: csharp
     :linenos:
-    
-    public class YourMessage { public string Text { get; set; } }
-    public class Program
+
+
+	class Relationship :
+    	StateMachineInstance
     {
-        public static void Main()
+        public State CurrentState { get; set; }
+    }
+
+    class RelationshipStateMachine :
+        AutomatonymousStateMachine<Relationship>
+    {
+        public RelationshipStateMachine()
         {
-            Bus.Initialize(sbc =>
-            {
-                sbc.UseMsmq();
-                sbc.VerifyMsmqConfiguration();
-                sbc.UseMulticastSubscriptionClient();
-                sbc.ReceiveFrom("msmq://localhost/test_queue");
-                sbc.Subscribe(subs=>
-                {
-                    subs.Handler<YourMessage>(msg=>Console.WriteLine(msg.Text));
-                });
-            });
-            
-            Bus.Instance.Publish(new YourMessage{Text = "Hi"});
+        	Event(() => Hello);
+        	Event(() => PissOff);
+
+			State(() => Friend);
+			State(() => Enemy);
+
+			Initially(
+				When(Hello)
+					.TransitionTo(Friend),
+				When(PissOff)
+					.TransitionTo(Enemy)
+			);
         }
+
+		public State Friend { get; private set; }
+		public State Enemy { get; private set; }
+
+        public Event Hello { get; private set; }
+		public Event PissOff { get; private set; }
     }
 
 
-So what is all of this doing?
-"""""""""""""""""""""""""""""""""""
+Seriously?
+""""""""""
 
-If we are going to create a messaging system, we need to create a message. ``YourMessage``
-is a .Net class that will represent our message. Notice that it's just a plain
-C# class (or POCO).
+Okay, so two classes are defined above, one that represents the state (``Relationship``)
+and the other that defines the behavior of the state machine (``RelationshipStateMachine``).
+For each state machine that is defined, it is expected that there will be at least one instance.
+In Automatonymous, state is separate from behavior, allowing many instances to be managed using
+a single state machine.
 
-Next up, we need a program to run our code. Here we have a standard issue
-command line ``Main`` method. To setup the bus we start with the static
-class ``Bus`` and its ``Initialize`` method. This method takes a lambda whose
-first and only argument is a class that will let you configure every aspect
-of the bus.
+.. note:: 
 
-One of your first decisions is going to be "What transport do I want to run on?"
-Here we have choosen MSMQ (``sbc.UseMsmq()``) because its easy to install on a
-Windows machines (``sbc.VerifyMsmqConfiguration()``), will do just that
-and its most likely what you will use.
-
-After that we have the ``sbc.UseMulticastSubscriptionClient()`` this tells the
-bus to pass subscription information around using PGM over MSMQ giving us a
-way to talk to all of the other bus instances on the network. This eliminates
-the need for a central control point.
-
-Now we have the ``sbc.ReceiveFrom("msmq://localhost/test_queue)`` line which
-tells us to listen for new messages at the local, private, msmq queue 'test_queue'.
-So anytime a message is placed into that queue the framework will process the
-message and deliver it to any consumers subscribed on the bus.
-
-Lastly, in the configuration, we have the Subscribe lambda, where we have
-configured a single ``Handler`` for our message which will be activated which
-each message of type ``YourMessage`` and will print to the console.
-
-And now we have a bus that is configured and can do things. So now we can grab
-the singleton instance of the service bus and call the ``Publish`` method on it.
+	For some object-oriented purists, this may be causing the hair to raise on the back of your neck.
+	Chill out, it's not the end of the world here. If you have a penchant for encapsulating 
+	behavior with data (practices such as domain model, DDD, etc.), recognize that programming language
+	constructs are the only thing in your way here.
 
 
-But Singletons are Evil!
-""""""""""""""""""""""""""""""""""""
+Tracking State
+""""""""""""""
 
-If you shudder at the thought of a singleton in your code, that's ok - we have
-you covered too. Instead of using ``Bus.Initialize`` you can use the code below:
+State is managed in Automatonymous using a class, shown above as the ``Relationship``. Instances
+must implement the ``StateMachineInstance`` interface so that the current state can be stored along
+with any other properties used by your application.
 
-.. sourcecode:: csharp
-    :linenos:
-    
-    var bus = ServiceBusFactory.New(sbc =>
-    {
-        sbc.UseMsmq();
-        sbc.UseMulticastSubscriptionClient();
-        sbc.ReceiveFrom("msmq://localhost/test_queue");
-    });
+
+Defining Behavior
+"""""""""""""""""
+
+Behavior is defined using a class that inherits from ``AutomatonymousStateMachine``. The class is generic,
+and the state type associated with the behavior must be specified. This allows the state machine configuration
+to use the state for a better configuration experience.
+
+.. note::
+
+	It also makes Intellisense work better.
+	
+
+In a state machine, states must be defined along with the events that can be raised. In the constructor, 
+each state and event must be explicitly defined. As each state or event is defined, the specified property
+is initialized with the appropriate object type (either a State or an Event), which is why a lambda method
+is used to specify the property.
+
+.. note:
+
+	Configuration of a state machine is done using an internal DSL, using an approach known as Object Scoping,
+	and is explained in Martin Fowler's Domain Specific Languages book.
+	
+
+Creating Instances
+""""""""""""""""""
+
+
+Creating the State Machine
+""""""""""""""""""""""""""
+
+
+Raising Events
+""""""""""""""
+
+
+
+

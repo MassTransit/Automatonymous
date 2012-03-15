@@ -1,13 +1,16 @@
-MassTransit Installation
-""""""""""""""""""""""""
+Installing Automatonymous
+"""""""""""""""""""""""""
 
-This section of the online docs will explain how to get MassTransit into
-your project. It will also show you were to get help, how to report bugs, etc.
-Hopefully, you will find it useful as you explore the MassTransit framework.
+The easiest way to install Automatonymous is with NuGet. Open the package manager
+and add Automatonymous to your project and the proper references will be added for you.
+
+
+Requirements
+============
+
+Automatonymous requires the full version of the .NET 4.0 framework. If you are not seeing
+the namespace in your project, make sure you are not using the client framework. 
 
 .. toctree::
 
-    prerequisites.rst
     install.rst
-    help.rst
-    bugs.rst
