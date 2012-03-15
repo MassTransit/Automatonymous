@@ -102,6 +102,11 @@ Creating the State Machine
 Raising Events
 """"""""""""""
 
+.. sourcecode:: csharp
 
+	var relationship = new Relationship();
+	var machine = new RelationshipStateMachine();
+	
+	machine.RaiseEvent(relationship, machine.Hello);
 
 
