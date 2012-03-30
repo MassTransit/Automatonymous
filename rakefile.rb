@@ -3,7 +3,7 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
 include FileTest
 require 'albacore'
 
-BUILD_NUMBER_BASE = '0.4.1'
+BUILD_NUMBER_BASE = '0.4.2'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
