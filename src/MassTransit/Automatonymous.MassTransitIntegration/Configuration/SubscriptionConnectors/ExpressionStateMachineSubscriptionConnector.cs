@@ -79,7 +79,7 @@ namespace Automatonymous.SubscriptionConnectors
 
             Expression<Func<TMessage, Guid>> exp = visitor.Build(selector);
 
-            return exp != null ? exp.Compile() : (x => CombGuid.Generate());
+            return exp != null ? exp.Compile() : (x => NewId.NextGuid());
         }
     }
 }

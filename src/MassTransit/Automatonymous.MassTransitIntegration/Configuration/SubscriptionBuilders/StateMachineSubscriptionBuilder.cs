@@ -17,7 +17,6 @@ namespace Automatonymous.SubscriptionBuilders
     using MassTransit.Pipeline;
     using MassTransit.SubscriptionBuilders;
     using MassTransit.Subscriptions;
-    using RepositoryBuilders;
     using SubscriptionConnectors;
 
 
