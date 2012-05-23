@@ -19,7 +19,7 @@ namespace Automatonymous
     {
         public static InstanceLift<T> CreateInstanceLift<T, TInstance>(this T stateMachine, TInstance instance)
             where T : StateMachine<TInstance>
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             var instanceLift = new InstanceLiftImpl<T, TInstance>(stateMachine, instance);
 

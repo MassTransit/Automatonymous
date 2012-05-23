@@ -18,7 +18,7 @@ namespace Automatonymous.Impl
     public class InstanceLiftImpl<T, TInstance> :
         InstanceLift<T>
         where T : StateMachine<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly TInstance _instance;
         readonly T _stateMachine;

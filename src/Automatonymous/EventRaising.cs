@@ -13,7 +13,7 @@
 namespace Automatonymous
 {
     public interface EventRaising<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         TInstance Instance { get; }
         Event Event { get; }

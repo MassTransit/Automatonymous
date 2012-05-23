@@ -17,7 +17,7 @@ namespace Automatonymous.Binders
 
     public interface EventActivityBinder<TInstance> :
         IEnumerable<EventActivity<TInstance>>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         AutomatonymousStateMachine<TInstance> StateMachine { get; }
         Event Event { get; }
@@ -28,7 +28,7 @@ namespace Automatonymous.Binders
 
     public interface EventActivityBinder<TInstance, TData> :
         IEnumerable<EventActivity<TInstance>>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
         where TData : class
     {
         AutomatonymousStateMachine<TInstance> StateMachine { get; }

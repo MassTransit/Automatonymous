@@ -19,7 +19,7 @@ namespace Automatonymous.Impl
 
     public class StateImpl<TInstance> :
         State<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
         readonly string _name;

@@ -18,7 +18,6 @@ namespace Automatonymous.Activities
 
     public class ExceptionHandlerActivity<TInstance, TException> :
         ExceptionActivity<TInstance>
-        where TInstance : StateMachineInstance
         where TException : class
     {
         readonly List<Activity<TInstance>> _activities;

@@ -18,7 +18,6 @@ namespace Automatonymous.Activities
 
     public class CompositeEventActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly CompositeEventStatus _complete;
         readonly Action<TInstance> _completeCallback;

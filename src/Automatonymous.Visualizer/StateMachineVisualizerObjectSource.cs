@@ -57,7 +57,7 @@ namespace Automatonymous.Visualizer
 
         StateMachineGraph CreateStateMachineGraph<TMachine, TInstance>(TMachine machine)
             where TMachine : AutomatonymousStateMachine<TInstance>
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             var visitor = new GraphStateMachineVisitor<TInstance>();
             machine.Accept(visitor);

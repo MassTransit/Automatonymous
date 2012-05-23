@@ -14,7 +14,6 @@ namespace Automatonymous.Activities
 {
     public class EventActivityImpl<TInstance> :
         EventActivity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly Activity<TInstance> _activity;
         readonly Event _event;

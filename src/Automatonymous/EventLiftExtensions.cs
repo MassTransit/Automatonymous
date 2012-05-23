@@ -20,7 +20,7 @@ namespace Automatonymous
         public static EventLift<TInstance> CreateEventLift<TInstance>(
             this StateMachine<TInstance> stateMachine,
             Event @event)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             var eventLift = new EventLiftImpl<TInstance>(stateMachine, @event);
 
@@ -30,7 +30,7 @@ namespace Automatonymous
         public static EventLift<TInstance, TData> CreateEventLift<TInstance, TData>(
             this StateMachine<TInstance> stateMachine,
             Event<TData> @event)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
             where TData : class
         {
             var eventLift = new EventLiftImpl<TInstance, TData>(stateMachine, @event);

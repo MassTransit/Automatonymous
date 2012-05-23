@@ -18,7 +18,7 @@ namespace Automatonymous.Impl
 
     class EventRaisingObserver<TInstance> :
         IObserver<EventRaising<TInstance>>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
 

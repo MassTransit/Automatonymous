@@ -53,8 +53,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public bool HelloCalled { get; set; }
             public string AValue { get; set; }
@@ -66,7 +65,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 Event(() => Hello);
                 Event(() => EventA);
 

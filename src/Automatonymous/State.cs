@@ -29,7 +29,6 @@ namespace Automatonymous
 
     public interface State<TInstance> :
         State
-        where TInstance : StateMachineInstance
     {
         IEnumerable<Event> Events { get; }
         void Raise(TInstance instance, Event @event);

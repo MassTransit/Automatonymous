@@ -17,7 +17,6 @@ namespace Automatonymous.Activities
 
     public class DataConverterActivity<TInstance, TData> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
         where TData : class
     {
         readonly Activity<TInstance, TData> _activity;

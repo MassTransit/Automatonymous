@@ -13,7 +13,6 @@
 namespace Automatonymous
 {
     public interface StateAccessor<TInstance>
-        where TInstance : StateMachineInstance
     {
         State<TInstance> Get(TInstance instance);
         void Set(TInstance instance, State<TInstance> state);
