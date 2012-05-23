@@ -101,7 +101,9 @@ namespace MassTransit.AutomatonymousTests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Running);
                 Event(() => Started);
                 Event(() => Stopped);

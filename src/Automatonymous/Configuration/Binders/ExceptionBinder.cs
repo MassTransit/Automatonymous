@@ -18,7 +18,6 @@ namespace Automatonymous.Binders
 
     public interface ExceptionBinder<TInstance> :
         IEnumerable<ExceptionActivity<TInstance>>
-        where TInstance : StateMachineInstance
     {
     }
 }

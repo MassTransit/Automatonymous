@@ -37,8 +37,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -48,7 +47,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Running);
 
                 Event(() => Initialized);
@@ -87,8 +88,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -98,7 +98,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Running);
 
                 Event(() => Initialized);
@@ -143,8 +145,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public string Value { get; set; }
             public State CurrentState { get; set; }
@@ -157,7 +158,9 @@ namespace Automatonymous.Tests
             public const string Finalized = "Finalized";
 
             public InstanceStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Running);
 
                 Event(() => Initialized);
@@ -198,8 +201,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -209,7 +211,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Initializing);
                 State(() => Running);
 

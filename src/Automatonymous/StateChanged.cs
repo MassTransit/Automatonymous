@@ -13,7 +13,7 @@
 namespace Automatonymous
 {
     public interface StateChanged<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         TInstance Instance { get; }
         State<TInstance> Previous { get; }

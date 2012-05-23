@@ -43,7 +43,12 @@ namespace Automatonymous.Tests
             Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
         }
 
-        TestStateMachine _machine;
+		TestStateMachine _machine;
+		
+		class Instance
+		{
+			public State CurrentState { get; set; }
+		}
 
         [TestFixtureSetUp]
         public void A_state_is_declared()
@@ -58,10 +63,12 @@ namespace Automatonymous.Tests
 
 
         class TestStateMachine :
-            AutomatonymousStateMachine<StateMachineInstance>
+            AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 Event(() => Hello);
                 Event(() => EventA);
             }

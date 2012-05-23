@@ -27,8 +27,13 @@
         [Test]
         public void Should_be_an_instance_of_the_proper_type()
         {
-            Assert.IsInstanceOf<StateImpl<StateMachineInstance>>(_machine.Initial);
+			Assert.IsInstanceOf<StateImpl<Instance>>(_machine.Initial);
         }
+
+		class Instance
+		{
+			public State CurrentState { get; set; }
+		}
 
         TestStateMachine _machine;
 
@@ -39,10 +44,12 @@
         }
 
         class TestStateMachine :
-            AutomatonymousStateMachine<StateMachineInstance>
+			AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceStatePropertyAccessor(x => x.CurrentState);
+
                 State(() => Running);
             }
 

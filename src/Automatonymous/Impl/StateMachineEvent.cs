@@ -16,7 +16,7 @@ namespace Automatonymous.Impl
 
 
     class StateMachineEvent<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly Event _event;
         readonly Observable<EventRaised<TInstance>> _eventRaisedObservable;

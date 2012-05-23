@@ -15,7 +15,7 @@ namespace Automatonymous.Graphing
     public static class GraphStateMachineExtensions
     {
         public static StateMachineGraph GetGraph<TInstance>(this AutomatonymousStateMachine<TInstance> machine)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             var inspector = new GraphStateMachineVisitor<TInstance>();
 

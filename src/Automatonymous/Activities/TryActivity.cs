@@ -20,7 +20,6 @@ namespace Automatonymous.Activities
 
     public class TryActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly List<Activity<TInstance>> _activities;
         readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
@@ -100,7 +99,6 @@ namespace Automatonymous.Activities
 
     public class TryActivity<TInstance, TData> :
         Activity<TInstance, TData>
-        where TInstance : StateMachineInstance
         where TData : class
     {
         readonly List<Activity<TInstance>> _activities;

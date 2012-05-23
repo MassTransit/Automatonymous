@@ -60,7 +60,7 @@ namespace MassTransit.AutomatonymousTests
         }
 
         public static TSaga ShouldContainSagaInState<TSaga>(this ISagaRepository<TSaga> repository, Guid sagaId,
-                                                            State state, TimeSpan timeout)
+                                                            State state, StateMachine<TSaga> machine, TimeSpan timeout)
             where TSaga : class, SagaStateMachineInstance
         {
             DateTime giveUpAt = DateTime.Now + timeout;
@@ -68,7 +68,7 @@ namespace MassTransit.AutomatonymousTests
             while (DateTime.Now < giveUpAt)
             {
                 TSaga saga = repository.ShouldContainSaga(sagaId, timeout);
-                if (saga.CurrentState == state)
+                if (machine.CurrentStateAccessor.Get(saga) == state)
                     return saga;
 
                 Thread.Sleep(100);

@@ -16,7 +16,6 @@ namespace Automatonymous
 
 
     public interface SagaStateMachineInstance :
-        StateMachineInstance,
         ISaga
     {
     }

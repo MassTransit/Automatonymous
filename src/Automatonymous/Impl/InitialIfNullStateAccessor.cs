@@ -19,7 +19,7 @@ namespace Automatonymous.Impl
 
     public class InitialIfNullStateAccessor<TInstance> :
         StateAccessor<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly IObserver<StateChanged<TInstance>> _observer;
         readonly TransitionActivity<TInstance> _initialActivity;
