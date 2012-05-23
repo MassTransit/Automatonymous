@@ -17,7 +17,7 @@ namespace Automatonymous.SubscriptionConfigurators
 
     public interface StateMachineSubscriptionConfigurator<TInstance> :
         SubscriptionConfigurator<StateMachineSubscriptionConfigurator<TInstance>>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
     }
 }

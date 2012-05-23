@@ -58,8 +58,7 @@ namespace Automatonymous.Tests
         TestStateMachine _machine;
         Instance _instance;
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public CompositeEventStatus CompositeStatus { get; set; }
             public bool Called { get; set; }
@@ -72,6 +71,7 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
+                InstanceState(x => x.CurrentState);
                 State(() => Waiting);
 
                 Event(() => Start);

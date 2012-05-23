@@ -18,7 +18,6 @@ namespace Automatonymous.Activities
 
     public class CallActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly Action<TInstance> _action;
         readonly Expression<Action<TInstance>> _expression;
@@ -53,7 +52,6 @@ namespace Automatonymous.Activities
 
     public class CallActivity<TInstance, TData> :
         Activity<TInstance, TData>
-        where TInstance : StateMachineInstance
     {
         readonly Action<TInstance, TData> _action;
         readonly Expression<Action<TInstance, TData>> _expression;

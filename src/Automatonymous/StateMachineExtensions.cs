@@ -28,7 +28,7 @@ namespace Automatonymous
         public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
                                                     Func<T, Event> eventSelector)
             where T : StateMachine<TInstance>
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             Event @event = eventSelector(stateMachine);
 
@@ -48,7 +48,7 @@ namespace Automatonymous
         public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
                                                            Func<T, Event<TData>> eventSelector, TData data)
             where T : StateMachine<TInstance>
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             Event<TData> @event = eventSelector(stateMachine);
 
@@ -62,7 +62,7 @@ namespace Automatonymous
         /// <param name="stateMachine">The untyped state machine interface</param>
         /// <returns>The typed static machine reference</returns>
         public static StateMachine<TInstance> For<TInstance>(this StateMachine stateMachine)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             if (stateMachine == null)
                 throw new ArgumentNullException("stateMachine");
@@ -76,7 +76,7 @@ namespace Automatonymous
 
         public static void WithStateMachine<TInstance>(this StateMachine stateMachine,
                                                        Action<StateMachine<TInstance>> callback)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             StateMachine<TInstance> machine = stateMachine.For<TInstance>();
 

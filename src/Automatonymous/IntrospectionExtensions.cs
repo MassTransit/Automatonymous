@@ -20,14 +20,14 @@ namespace Automatonymous
     {
         public static IEnumerable<Event> NextEvents<TInstance>(this StateMachine<TInstance> machine,
                                                                TInstance instance)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             if (machine == null)
                 throw new ArgumentNullException("machine");
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            return machine.NextEvents(instance.CurrentState);
+            return machine.NextEvents(machine.CurrentStateAccessor.Get(instance));
         }
     }
 }

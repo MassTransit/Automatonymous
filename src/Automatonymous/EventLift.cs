@@ -13,14 +13,14 @@
 namespace Automatonymous
 {
     public interface EventLift<in TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         void Raise(TInstance instance);
     }
 
 
     public interface EventLift<in TInstance, in TData>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         void Raise(TInstance instance, TData data);
     }

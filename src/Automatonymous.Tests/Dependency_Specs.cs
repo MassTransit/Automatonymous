@@ -77,12 +77,12 @@ namespace Automatonymous.Tests
 
         interface ClaimAdjustment :
             ClaimModel
-        {
+		{
+			State CurrentState { get; set; }
         }
 
 
-        interface ClaimModel :
-            StateMachineInstance
+        interface ClaimModel
         {
             string Value { get; set; }
         }
@@ -99,7 +99,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<ClaimAdjustment>
         {
             public InstanceStateMachine()
-            {
+			{
+				InstanceState(x => x.CurrentState);
+
                 State(() => Running);
 
                 Event(() => Create);

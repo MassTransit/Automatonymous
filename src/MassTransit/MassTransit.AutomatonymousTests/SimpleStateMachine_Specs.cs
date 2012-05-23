@@ -42,7 +42,7 @@ namespace MassTransit.AutomatonymousTests
                     CorrelationId = sagaId
                 });
 
-            instance = _repository.ShouldContainSagaInState(sagaId, _machine.Final, 8.Seconds());
+            instance = _repository.ShouldContainSagaInState(sagaId, _machine.Final, _machine, 8.Seconds());
             Assert.IsNotNull(instance);
         }
 
@@ -99,7 +99,9 @@ namespace MassTransit.AutomatonymousTests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceState(x => x.CurrentState);
+
                 State(() => Running);
                 Event(() => Started);
                 Event(() => Stopped);

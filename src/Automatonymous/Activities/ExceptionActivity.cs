@@ -17,7 +17,6 @@ namespace Automatonymous.Activities
 
     public interface ExceptionActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         Type ExceptionType { get; }
 

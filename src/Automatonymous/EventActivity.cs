@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     public interface EventActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         Event Event { get; }
     }

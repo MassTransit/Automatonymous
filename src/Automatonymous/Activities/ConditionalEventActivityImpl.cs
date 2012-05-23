@@ -18,7 +18,6 @@ namespace Automatonymous.Activities
 
     public class ConditionalEventActivityImpl<TInstance, TData> :
         EventActivity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly Activity<TInstance> _activity;
         readonly Event _event;

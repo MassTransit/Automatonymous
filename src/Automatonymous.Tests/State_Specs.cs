@@ -40,7 +40,12 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_be_an_instance_of_the_proper_type()
         {
-            Assert.IsInstanceOf<StateImpl<StateMachineInstance>>(_machine.Initial);
+            Assert.IsInstanceOf<StateImpl<Instance>>(_machine.Initial);
+        }
+
+        class Instance
+        {
+            public State CurrentState { get; set; }
         }
 
         TestStateMachine _machine;
@@ -53,10 +58,12 @@ namespace Automatonymous.Tests
 
 
         class TestStateMachine :
-            AutomatonymousStateMachine<StateMachineInstance>
+            AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
             {
+                InstanceState(x => x.CurrentState);
+
                 State(() => Running);
             }
 
@@ -96,8 +103,7 @@ namespace Automatonymous.Tests
         /// the current state. This makes it easier to save the instance using
         /// an ORM that doesn't support user types (cough, EF, cough).
         /// </summary>
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             StateMachine<Instance> _machine;
 
@@ -117,7 +123,7 @@ namespace Automatonymous.Tests
             /// the State value. Notice that the string being null/empty is
             /// the same as the Initial state.
             /// </summary>
-            State StateMachineInstance.CurrentState
+            public State AutomatonymousState
             {
                 get
                 {
@@ -136,6 +142,8 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
+                InstanceState(x => x.AutomatonymousState);
+
                 State(() => Running);
                 Event(() => Started);
 

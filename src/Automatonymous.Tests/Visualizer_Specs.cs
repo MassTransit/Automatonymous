@@ -46,8 +46,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -58,6 +57,8 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
+            	InstanceState(x => x.CurrentState);
+
                 State(() => Running);
                 State(() => Suspended);
                 State(() => Failed);

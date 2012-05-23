@@ -80,7 +80,9 @@ namespace MassTransit.AutomatonymousTests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-            {
+			{
+				InstanceState(x => x.CurrentState);
+
                 State(() => Running);
                 Event(() => Started);
 

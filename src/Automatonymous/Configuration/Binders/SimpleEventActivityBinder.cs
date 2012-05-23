@@ -20,7 +20,7 @@ namespace Automatonymous.Binders
 
     public class SimpleEventActivityBinder<TInstance> :
         EventActivityBinder<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event _event;

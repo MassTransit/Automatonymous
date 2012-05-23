@@ -21,7 +21,7 @@ namespace Automatonymous.Impl
 
     public class RawStateAccessor<TInstance> :
         StateAccessor<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly IObserver<StateChanged<TInstance>> _observer;
         readonly ReadWriteProperty<TInstance, State> _property;

@@ -17,7 +17,6 @@ namespace Automatonymous.Activities
 
     public class FactoryEventActivity<TInstance> :
         Activity<TInstance>
-        where TInstance : StateMachineInstance
     {
         readonly Func<Activity<TInstance>> _activityFactory;
 
@@ -49,7 +48,6 @@ namespace Automatonymous.Activities
 
     public class FactoryEventActivity<TInstance, TData> :
         Activity<TInstance, TData>
-        where TInstance : StateMachineInstance
     {
         readonly Func<Activity<TInstance, TData>> _activityFactory;
 

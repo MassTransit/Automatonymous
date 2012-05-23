@@ -20,7 +20,6 @@ namespace Automatonymous
 
     public interface Activity<in TInstance> :
         Activity
-        where TInstance : StateMachineInstance
     {
         void Execute(TInstance instance);
         void Execute<TData>(TInstance instance, TData value);
@@ -29,7 +28,6 @@ namespace Automatonymous
 
     public interface Activity<in TInstance, in TData> :
         Activity
-        where TInstance : StateMachineInstance
     {
         void Execute(TInstance instance, TData data);
     }

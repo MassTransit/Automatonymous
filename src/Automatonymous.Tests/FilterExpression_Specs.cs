@@ -33,8 +33,7 @@ namespace Automatonymous.Tests
             Assert.AreEqual(machine.False, instance.CurrentState);
         }
 
-        class Instance :
-            StateMachineInstance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -43,7 +42,9 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-            {
+			{
+				InstanceState(x => x.CurrentState);
+
                 State(() => True);
                 State(() => False);
 

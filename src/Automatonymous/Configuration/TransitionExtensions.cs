@@ -23,7 +23,7 @@ namespace Automatonymous
         /// </summary>
         public static EventActivityBinder<TInstance> TransitionTo<TInstance>(
             this EventActivityBinder<TInstance> source, State toState)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             State<TInstance> state = toState.For<TInstance>();
 
@@ -37,7 +37,7 @@ namespace Automatonymous
         /// </summary>
         public static EventActivityBinder<TInstance, TData> TransitionTo<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, State toState)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             State<TInstance> state = toState.For<TInstance>();
 
@@ -51,7 +51,7 @@ namespace Automatonymous
         /// </summary>
         public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             State<TInstance> state = source.StateMachine.Final.For<TInstance>();
 
@@ -66,7 +66,7 @@ namespace Automatonymous
         /// </summary>
         public static EventActivityBinder<TInstance> Finalize<TInstance>(
             this EventActivityBinder<TInstance> source)
-            where TInstance : class, StateMachineInstance
+            where TInstance : class
         {
             State<TInstance> state = source.StateMachine.Final.For<TInstance>();
 

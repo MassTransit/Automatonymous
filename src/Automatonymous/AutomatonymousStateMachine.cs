@@ -28,7 +28,7 @@ namespace Automatonymous
     public abstract class AutomatonymousStateMachine<TInstance> :
         AcceptStateMachineInspector,
         StateMachine<TInstance>
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
@@ -48,14 +48,6 @@ namespace Automatonymous
 
             State(() => Initial);
             State(() => Final);
-
-            _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(x => x.CurrentState,
-                _stateCache[Initial.Name], _stateChangedObservable);
-        }
-
-        public StateAccessor<TInstance> CurrentStateAccessor
-        {
-            get { return _currentStateAccessor; }
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -71,6 +63,11 @@ namespace Automatonymous
                 });
 
             Final.Accept(inspector);
+        }
+
+        public StateAccessor<TInstance> CurrentStateAccessor
+        {
+            get { return _currentStateAccessor; }
         }
 
         public State Initial { get; private set; }
@@ -151,6 +148,18 @@ namespace Automatonymous
                 throw new ArgumentException("Unknown event: " + @event.Name, "event");
 
             return _eventCache[@event.Name].EventRaised;
+        }
+
+        /// <summary>
+        /// Declares what property holds the TInstance's state on the current instance of the state machine
+        /// </summary>
+        /// <param name="instanceStateProperty"></param>
+        /// <remarks>Setting the state accessor more than once will cause the property managed by the state machine to change each time.
+        /// Please note, the state machine can only manage one property at a given time per instance, and the best practice is to manage one property per machine.</remarks>
+        protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
+        {
+            _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
+                _stateCache[Initial.Name], _stateChangedObservable);
         }
 
         void WithInstance(TInstance instance, Action<TInstance> callback)

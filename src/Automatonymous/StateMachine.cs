@@ -14,9 +14,10 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq.Expressions;
 
 
-    /// <summary>
+	/// <summary>
     /// A state machine definition
     /// </summary>
     public interface StateMachine
@@ -75,7 +76,7 @@ namespace Automatonymous
     /// <typeparam name="TInstance"></typeparam>
     public interface StateMachine<TInstance> :
         StateMachine
-        where TInstance : class, StateMachineInstance
+        where TInstance : class
     {
         /// <summary>
         /// Returns the state requested bound to the instance
@@ -117,5 +118,10 @@ namespace Automatonymous
         /// <param name="event"></param>
         /// <returns></returns>
         IObservable<EventRaised<TInstance>> EventRaised(Event @event);
+
+    	/// <summary>
+    	/// Exposes the current state on the given instance
+    	/// </summary>
+		StateAccessor<TInstance> CurrentStateAccessor { get; }
     }
 }
