@@ -79,6 +79,8 @@ namespace Automatonymous.SubscriptionConnectors
                     continue;
 
                 Type messageType = dataEventInterfaceType.GetGenericArguments()[0];
+                if (messageType.IsValueType)
+                    continue;
 
                 IEnumerable<State> states =
                     _stateMachine.States.Where(state => _stateMachine.NextEvents(state).Contains(@event));
