@@ -76,9 +76,24 @@ namespace Automatonymous
         public State Initial { get; private set; }
         public State Final { get; private set; }
 
+        State StateMachine.GetState(string name)
+        {
+            return _stateCache[name];
+        }
+
+        State<TInstance> StateMachine<TInstance>.GetState(string name)
+        {
+            return _stateCache[name];
+        }
+
         public IEnumerable<State> States
         {
             get { return _stateCache; }
+        }
+
+        Event StateMachine.GetEvent(string name)
+        {
+            return _eventCache[name].Event;
         }
 
         public IEnumerable<Event> Events

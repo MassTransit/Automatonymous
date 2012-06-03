@@ -22,9 +22,23 @@ namespace Automatonymous
     public interface StateMachine
     {
         /// <summary>
+        /// Returns the event requested
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Event GetEvent(string name);
+
+        /// <summary>
         /// The events defined in the state machine
         /// </summary>
         IEnumerable<Event> Events { get; }
+
+        /// <summary>
+        /// Returns the state requested
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        State GetState(string name);
 
         /// <summary>
         /// The states defined in the state machine
@@ -63,6 +77,13 @@ namespace Automatonymous
         StateMachine
         where TInstance : class, StateMachineInstance
     {
+        /// <summary>
+        /// Returns the state requested bound to the instance
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        new State<TInstance> GetState(string name);
+
         /// <summary>
         /// Exposes state change events to observers
         /// </summary>
