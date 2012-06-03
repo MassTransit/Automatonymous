@@ -16,7 +16,7 @@ namespace Automatonymous.Graphing
     using System.Collections.Generic;
     using System.Linq;
     using Activities;
-    using Util.Caching;
+    using Internals.Caching;
 
 
     public class GraphStateMachineVisitor<TInstance> :
@@ -59,7 +59,7 @@ namespace Automatonymous.Graphing
             next(@event);
         }
 
-        public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next) where TData : class
+        public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next)
         {
             _currentEvent = _events[@event];
 

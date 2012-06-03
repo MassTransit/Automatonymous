@@ -14,8 +14,8 @@ namespace Automatonymous.RepositoryBuilders
 {
     using System;
     using System.Linq.Expressions;
+    using Internals.Caching;
     using MassTransit.Saga;
-    using Util.Caching;
 
 
     class StateMachineSagaRepositoryBuilderImpl<TInstance> :
@@ -28,9 +28,7 @@ namespace Automatonymous.RepositoryBuilders
         Expression<Func<TInstance, bool>> _completedExpression;
 
         public StateMachineSagaRepositoryBuilderImpl(StateMachine<TInstance> stateMachine,
-                                                     ISagaRepository<TInstance> repository,
-                                                     Cache<Event, StateMachineEventCorrelation<TInstance>>
-                                                         correlations)
+            ISagaRepository<TInstance> repository, Cache<Event, StateMachineEventCorrelation<TInstance>> correlations)
         {
             _stateMachine = stateMachine;
             _repository = repository;
@@ -50,7 +48,8 @@ namespace Automatonymous.RepositoryBuilders
 
         public StateMachineSagaRepository<TInstance> Build()
         {
-            return new AutomatonymousStateMachineSagaRepository<TInstance>(_repository, _completedExpression, _correlations);
+            return new AutomatonymousStateMachineSagaRepository<TInstance>(_repository, _completedExpression,
+                _correlations);
         }
     }
 }

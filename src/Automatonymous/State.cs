@@ -34,8 +34,7 @@ namespace Automatonymous
         IEnumerable<Event> Events { get; }
         void Raise(TInstance instance, Event @event);
 
-        void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
-            where TData : class;
+        void Raise<TData>(TInstance instance, Event<TData> @event, TData value);
 
         void Bind(EventActivity<TInstance> activity);
     }

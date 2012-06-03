@@ -31,7 +31,6 @@ namespace Automatonymous
             this StateMachine<TInstance> stateMachine,
             Event<TData> @event)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             var eventLift = new EventLiftImpl<TInstance, TData>(stateMachine, @event);
 

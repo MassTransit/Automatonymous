@@ -43,6 +43,12 @@ namespace Automatonymous.Tests
             Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
         }
 
+        [Test]
+        public void It_should_create_the_event_for_the_value_type()
+        {
+            Assert.IsInstanceOf<DataEvent<int>>(_machine.EventInt);
+        }
+
         TestStateMachine _machine;
 
         [TestFixtureSetUp]
@@ -64,10 +70,12 @@ namespace Automatonymous.Tests
             {
                 Event(() => Hello);
                 Event(() => EventA);
+                Event(() => EventInt);
             }
 
             public Event Hello { get; private set; }
             public Event<A> EventA { get; private set; }
+            public Event<int> EventInt { get; private set; }
         }
     }
 }

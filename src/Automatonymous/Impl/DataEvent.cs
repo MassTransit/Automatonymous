@@ -19,7 +19,6 @@ namespace Automatonymous.Impl
         SimpleEvent,
         Event<TData>,
         IEquatable<DataEvent<TData>>
-        where TData : class
     {
         public DataEvent(string name)
             : base(name)

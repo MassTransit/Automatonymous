@@ -1,0 +1,3 @@
+[submodule "src/Automatonymous/Internals"]
+	path = src/Automatonymous/Internals
+	url = https://github.com/phatboyg/Internals

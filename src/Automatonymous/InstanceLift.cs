@@ -20,12 +20,10 @@ namespace Automatonymous
     {
         void Raise(Event @event);
 
-        void Raise<TData>(Event<TData> @event, TData value)
-            where TData : class;
+        void Raise<TData>(Event<TData> @event, TData value);
 
         void Raise(Func<T, Event> eventSelector);
 
-        void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data)
-            where TData : class;
+        void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data);
     }
 }

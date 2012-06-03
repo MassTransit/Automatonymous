@@ -38,7 +38,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> TransitionTo<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, State toState)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             State<TInstance> state = toState.For<TInstance>();
 
@@ -53,7 +52,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             State<TInstance> state = source.StateMachine.Final.For<TInstance>();
 

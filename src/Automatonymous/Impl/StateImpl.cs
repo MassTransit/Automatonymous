@@ -14,7 +14,7 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
-    using Util.Caching;
+    using Internals.Caching;
 
 
     public class StateImpl<TInstance> :
@@ -27,7 +27,7 @@ namespace Automatonymous.Impl
         readonly IObserver<EventRaising<TInstance>> _raisingObserver;
 
         public StateImpl(string name, IObserver<EventRaising<TInstance>> raisingObserver,
-                         IObserver<EventRaised<TInstance>> raisedObserver)
+            IObserver<EventRaised<TInstance>> raisedObserver)
         {
             _name = name;
             _raisingObserver = raisingObserver;
@@ -71,7 +71,6 @@ namespace Automatonymous.Impl
         }
 
         public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
-            where TData : class
         {
             _activityCache.WithValue(@event, activities =>
                 {

@@ -15,11 +15,11 @@ namespace Automatonymous
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using Internals.Caching;
     using MassTransit;
     using MassTransit.Pipeline;
     using MassTransit.Saga;
     using RepositoryBuilders;
-    using Util.Caching;
 
 
     public class AutomatonymousStateMachineSagaRepository<TInstance> :
@@ -31,9 +31,8 @@ namespace Automatonymous
         ISagaRepository<TInstance> _repository;
 
         public AutomatonymousStateMachineSagaRepository(ISagaRepository<TInstance> repository,
-                                                        Expression<Func<TInstance, bool>> completedExpression,
-                                                        IEnumerable<StateMachineEventCorrelation<TInstance>>
-                                                            correlations)
+            Expression<Func<TInstance, bool>> completedExpression,
+            IEnumerable<StateMachineEventCorrelation<TInstance>> correlations)
         {
             _repository = repository;
             _completedExpression = completedExpression;
@@ -43,10 +42,7 @@ namespace Automatonymous
         }
 
         public IEnumerable<Action<IConsumeContext<TMessage>>> GetSaga<TMessage>(IConsumeContext<TMessage> context,
-                                                                                Guid sagaId,
-                                                                                InstanceHandlerSelector
-                                                                                    <TInstance, TMessage> selector,
-                                                                                ISagaPolicy<TInstance, TMessage> policy)
+            Guid sagaId, InstanceHandlerSelector<TInstance, TMessage> selector, ISagaPolicy<TInstance, TMessage> policy)
             where TMessage : class
         {
             return _repository.GetSaga(context, sagaId, selector, policy);
@@ -73,7 +69,7 @@ namespace Automatonymous
         }
 
         public bool TryGetCorrelationExpressionForEvent<TData>(Event<TData> @event,
-                                                               out Expression<Func<TInstance, TData, bool>> expression)
+            out Expression<Func<TInstance, TData, bool>> expression)
             where TData : class
         {
             expression = _correlations.WithValue(@event, correlation => correlation.GetCorrelationExpression<TData>(),

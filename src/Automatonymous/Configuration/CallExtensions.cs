@@ -32,7 +32,6 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source,
             Expression<Action<TInstance, TData>> expression)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             return source.Add(new CallActivity<TInstance, TData>(expression));
         }

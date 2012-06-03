@@ -15,17 +15,17 @@ namespace Automatonymous.Activities
     using System;
     using System.Linq.Expressions;
 
+
     public class ConditionalEventActivityImpl<TInstance, TData> :
         EventActivity<TInstance>
         where TInstance : StateMachineInstance
-        where TData : class
     {
         readonly Activity<TInstance> _activity;
-        readonly Func<TData, bool> _filterExpression;
         readonly Event _event;
+        readonly Func<TData, bool> _filterExpression;
 
         public ConditionalEventActivityImpl(Event @event, Activity<TInstance> activity,
-                                 Expression<Func<TData, bool>> filterExpression)
+            Expression<Func<TData, bool>> filterExpression)
         {
             _event = @event;
             _activity = activity;
@@ -39,20 +39,21 @@ namespace Automatonymous.Activities
 
         public void Execute<TEventData>(TInstance instance, TEventData value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
-
-            var data = value as TData;
-            if (data == null)
+            if(!(value is TData))
             {
-                string message = "Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name;
+                string message = "Expected: " + typeof(TData).FullName + ", Received: " + value.GetType().FullName;
                 throw new ArgumentException(message, "value");
             }
 
-            if (_filterExpression(data) == false)
+            object data = value;
+
+            if (data == null)
+                throw new ArgumentNullException("value", "The data argument cannot be null");
+
+            if (_filterExpression((TData)data) == false)
                 return;
 
-            _activity.Execute(instance, data);
+            _activity.Execute(instance, (TData)data);
         }
 
         public void Accept(StateMachineInspector inspector)

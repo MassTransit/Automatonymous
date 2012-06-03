@@ -48,7 +48,6 @@ namespace Automatonymous
         public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
                                                            Func<T, Event<TData>> eventSelector, TData data)
             where T : StateMachine<TInstance>
-            where TData : class
             where TInstance : class, StateMachineInstance
         {
             Event<TData> @event = eventSelector(stateMachine);

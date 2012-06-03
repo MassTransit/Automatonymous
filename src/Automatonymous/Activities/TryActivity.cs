@@ -15,7 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Util.Caching;
+    using Internals.Caching;
 
 
     public class TryActivity<TInstance> :
@@ -101,7 +101,6 @@ namespace Automatonymous.Activities
     public class TryActivity<TInstance, TData> :
         Activity<TInstance, TData>
         where TInstance : StateMachineInstance
-        where TData : class
     {
         readonly List<Activity<TInstance>> _activities;
         readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;

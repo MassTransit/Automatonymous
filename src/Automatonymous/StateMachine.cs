@@ -81,8 +81,7 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
         /// <param name="value">The data value associated with the event</param>
-        void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
-            where TData : class;
+        void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value);
 
         /// <summary>
         /// Exposes a raised event to observers before it is raised on the instance

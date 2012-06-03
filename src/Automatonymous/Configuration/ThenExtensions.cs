@@ -29,7 +29,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Action<TInstance> action)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             return source.Add(new ActionActivity<TInstance>(action));
         }
@@ -37,7 +36,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Action<TInstance, TData> action)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             var activity = new ActionActivity<TInstance, TData>(action);
             var adapter = new DataConverterActivity<TInstance, TData>(activity);
@@ -55,7 +53,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Func<Activity<TInstance, TData>> activityFactory)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             var activity = new FactoryEventActivity<TInstance, TData>(activityFactory);
             return source.Add(activity);
@@ -64,7 +61,6 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Func<Activity<TInstance>> activityFactory)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             var activity = new FactoryEventActivity<TInstance>(activityFactory);
             return source.Add(activity);

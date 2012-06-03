@@ -43,7 +43,6 @@ namespace Automatonymous
             Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> context,
             Func<ExceptionActivityBinder<TInstance, TData>, ExceptionActivityBinder<TInstance, TData>> handlers)
             where TInstance : class, StateMachineInstance
-            where TData : class
         {
             EventActivityBinder<TInstance, TData> contextBinder = new DataEventActivityBinder<TInstance, TData>(
                 source.StateMachine, source.Event);

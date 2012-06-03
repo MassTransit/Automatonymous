@@ -30,6 +30,12 @@ namespace Automatonymous.Tests
             Assert.AreEqual(_machine.Running, _instance.CurrentState);
         }
 
+        [Test]
+        public void Should_capture_passed_value()
+        {
+            Assert.AreEqual(47, _instance.OtherValue);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -43,6 +49,8 @@ namespace Automatonymous.Tests
                 {
                     Value = "Hello"
                 });
+
+            _machine.RaiseEvent(_instance, _machine.PassedValue, 47);
         }
 
 
@@ -50,6 +58,7 @@ namespace Automatonymous.Tests
             StateMachineInstance
         {
             public string Value { get; set; }
+            public int OtherValue { get; set; }
             public State CurrentState { get; set; }
         }
 
@@ -68,16 +77,22 @@ namespace Automatonymous.Tests
                 State(() => Running);
 
                 Event(() => Initialized);
+                Event(() => PassedValue);
 
                 During(Initial,
                        When(Initialized)
                             .Then((instance, data) => instance.Value = data.Value)
                             .TransitionTo(Running));
+
+                During(Running,
+                    When(PassedValue)
+                        .Then((instance, data) => instance.OtherValue = data));
             }
 
             public State Running { get; private set; }
 
             public Event<Init> Initialized { get; private set; }
+            public Event<int> PassedValue { get; private set; }
         }
     }
 }

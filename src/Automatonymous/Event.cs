@@ -25,7 +25,6 @@ namespace Automatonymous
 
     public interface Event<TData> :
         Event
-        where TData : class
     {
     }
 }

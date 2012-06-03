@@ -15,9 +15,9 @@ namespace Automatonymous.RepositoryConfigurators
     using System;
     using System.Linq.Expressions;
     using BuilderConfigurators;
+    using Internals.Caching;
     using MassTransit.Saga;
     using RepositoryBuilders;
-    using Util.Caching;
 
 
     public class StateMachineSagaRepositoryConfiguratorImpl<TInstance> :
@@ -25,13 +25,13 @@ namespace Automatonymous.RepositoryConfigurators
         StateMachineSagaRepositoryBuilderConfigurator<TInstance>
         where TInstance : class, SagaStateMachineInstance
     {
+        readonly Cache<Event, StateMachineEventCorrelation<TInstance>> _correlations;
         readonly ISagaRepository<TInstance> _repository;
         readonly StateMachine<TInstance> _stateMachine;
-        readonly Cache<Event, StateMachineEventCorrelation<TInstance>> _correlations;
         Expression<Func<TInstance, bool>> _removeExpression;
 
         public StateMachineSagaRepositoryConfiguratorImpl(StateMachine<TInstance> stateMachine,
-                                                          ISagaRepository<TInstance> repository)
+            ISagaRepository<TInstance> repository)
         {
             _stateMachine = stateMachine;
             _repository = repository;
@@ -39,21 +39,12 @@ namespace Automatonymous.RepositoryConfigurators
             _removeExpression = x => false;
         }
 
-        public StateMachineSagaRepository<TInstance> Configure()
-        {
-            var builder = new StateMachineSagaRepositoryBuilderImpl<TInstance>(_stateMachine, _repository, _correlations);
-
-            builder.SetCompletedExpression(_removeExpression);
-
-            return builder.Build();
-        }
-
         public StateMachine<TInstance> StateMachine
         {
             get { return _stateMachine; }
         }
 
-        public void Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression) 
+        public void Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
             where TData : class
         {
             var builder = new StateMachineEventCorrelationImpl<TInstance, TData>(@event, correlationExpression);
@@ -64,6 +55,15 @@ namespace Automatonymous.RepositoryConfigurators
         public void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression)
         {
             _removeExpression = removeExpression;
+        }
+
+        public StateMachineSagaRepository<TInstance> Configure()
+        {
+            var builder = new StateMachineSagaRepositoryBuilderImpl<TInstance>(_stateMachine, _repository, _correlations);
+
+            builder.SetCompletedExpression(_removeExpression);
+
+            return builder.Build();
         }
     }
 }

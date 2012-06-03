@@ -21,7 +21,6 @@ namespace Automatonymous
 
     public interface EventLift<in TInstance, in TData>
         where TInstance : class, StateMachineInstance
-        where TData : class
     {
         void Raise(TInstance instance, TData data);
     }

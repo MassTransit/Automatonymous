@@ -13,7 +13,8 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using Util;
+    using System.Reflection;
+    using Internals.Reflection;
 
 
     public class CompositeEventActivity<TInstance> :
@@ -23,12 +24,14 @@ namespace Automatonymous.Activities
         readonly CompositeEventStatus _complete;
         readonly Action<TInstance> _completeCallback;
         readonly int _flag;
-        readonly FastProperty<TInstance, CompositeEventStatus> _property;
+        readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
 
-        public CompositeEventActivity(FastProperty<TInstance, CompositeEventStatus> property, int flag,
+        public CompositeEventActivity(PropertyInfo propertyInfo, int flag,
                                       CompositeEventStatus complete, Action<TInstance> completeCallback)
         {
-            _property = property;
+
+            _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
+;
             _flag = flag;
             _complete = complete;
             _completeCallback = completeCallback;

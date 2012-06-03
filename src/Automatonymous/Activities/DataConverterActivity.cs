@@ -18,7 +18,6 @@ namespace Automatonymous.Activities
     public class DataConverterActivity<TInstance, TData> :
         Activity<TInstance>
         where TInstance : StateMachineInstance
-        where TData : class
     {
         readonly Activity<TInstance, TData> _activity;
 
@@ -39,17 +38,18 @@ namespace Automatonymous.Activities
 
         public void Execute<T>(TInstance instance, T value)
         {
-            if (value == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
-
-            var data = value as TData;
-            if (data == null)
+            if (!(value is TData))
             {
-                string message = "Expected: " + typeof(TData).Name + ", Received: " + value.GetType().Name;
+                string message = "Expected: " + typeof(TData).FullName + ", Received: " + value.GetType().FullName;
                 throw new ArgumentException(message, "value");
             }
 
-            _activity.Execute(instance, data);
+            object data = value;
+
+            if (data == null)
+                throw new ArgumentNullException("value", "The data argument cannot be null");
+
+            _activity.Execute(instance, (TData)data);
         }
     }
 }

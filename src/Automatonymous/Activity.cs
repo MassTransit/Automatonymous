@@ -30,7 +30,6 @@ namespace Automatonymous
     public interface Activity<in TInstance, in TData> :
         Activity
         where TInstance : StateMachineInstance
-        where TData : class
     {
         void Execute(TInstance instance, TData data);
     }

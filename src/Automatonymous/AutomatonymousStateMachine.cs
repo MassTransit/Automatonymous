@@ -20,8 +20,9 @@ namespace Automatonymous
     using Activities;
     using Binders;
     using Impl;
-    using Util;
-    using Util.Caching;
+    using Internals.Caching;
+    using Internals.Extensions;
+    using Internals.Primitives;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
@@ -107,7 +108,6 @@ namespace Automatonymous
         }
 
         public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
-            where TData : class
         {
             WithInstance(instance, x =>
                 {
@@ -170,7 +170,6 @@ namespace Automatonymous
             PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
             PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
-            var trackingProperty = new FastProperty<TInstance, CompositeEventStatus>(trackingPropertyInfo);
 
             string name = eventProperty.Name;
 
@@ -189,7 +188,7 @@ namespace Automatonymous
             {
                 int flag = 1 << i;
 
-                var activity = new CompositeEventActivity<TInstance>(trackingProperty, flag, complete,
+                var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
                     instance => RaiseEvent(instance, @event));
 
                 foreach (var state in _stateCache)
@@ -202,7 +201,6 @@ namespace Automatonymous
         }
 
         protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-            where T : class
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
@@ -265,14 +263,12 @@ namespace Automatonymous
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
-            where TData : class
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event);
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
                                                                     Expression<Func<TData, bool>> filterExpression)
-            where TData : class
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
         }

@@ -35,7 +35,6 @@ namespace Automatonymous.Impl
     public class EventLiftImpl<TInstance, TData> :
         EventLift<TInstance, TData>
         where TInstance : class, StateMachineInstance
-        where TData : class
     {
         readonly Event<TData> _event;
         readonly StateMachine<TInstance> _stateMachine;

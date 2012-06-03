@@ -35,7 +35,6 @@ namespace Automatonymous.Impl
         }
 
         public void Raise<TData>(Event<TData> @event, TData value)
-            where TData : class
         {
             _stateMachine.RaiseEvent(_instance, @event, value);
         }
@@ -48,7 +47,6 @@ namespace Automatonymous.Impl
         }
 
         public void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data)
-            where TData : class
         {
             Event<TData> @event = eventSelector(_stateMachine);
 

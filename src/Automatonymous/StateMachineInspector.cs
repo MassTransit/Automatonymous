@@ -21,8 +21,7 @@ namespace Automatonymous
 
         void Inspect(Event @event, Action<Event> next);
 
-        void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next)
-            where TData : class;
+        void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next);
 
         void Inspect(Activity activity, Action<Activity> next);
     }

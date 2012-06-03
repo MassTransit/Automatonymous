@@ -15,7 +15,8 @@ namespace Automatonymous.Impl
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
-    using Util;
+    using Internals.Extensions;
+    using Internals.Reflection;
 
 
     public class RawStateAccessor<TInstance> :
@@ -23,7 +24,7 @@ namespace Automatonymous.Impl
         where TInstance : class, StateMachineInstance
     {
         readonly IObserver<StateChanged<TInstance>> _observer;
-        readonly FastProperty<TInstance, State> _property;
+        readonly ReadWriteProperty<TInstance, State> _property;
 
         public RawStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
                                 IObserver<StateChanged<TInstance>> observer)
@@ -31,7 +32,7 @@ namespace Automatonymous.Impl
             _observer = observer;
             PropertyInfo statePropertyInfo = currentStateExpression.GetPropertyInfo();
 
-            _property = new FastProperty<TInstance, State>(statePropertyInfo);
+            _property = new ReadWriteProperty<TInstance, State>(statePropertyInfo);
         }
 
         public State<TInstance> Get(TInstance instance)
