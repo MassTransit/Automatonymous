@@ -23,7 +23,7 @@ desc "Cleans, compiles, il-merges, unit tests, prepares examples, packages zip"
 task :all => [:default, :package]
 
 desc "**Default**, compiles and runs tests"
-task :default => [:clean, :compile, :tests, :nuget]
+task :default => [:clean, :nuget_restore, :compile, :tests, :nuget]
 
 desc "Update the common version information for the build. You can call this task without building."
 assemblyinfo :global_version do |asm|
@@ -83,8 +83,7 @@ end
 
 desc "Runs unit tests"
 nunit :tests => [:compile] do |nunit|
-
-          nunit.command = File.join('src', 'packages','NUnit.2.5.10.11092', 'tools', 'nunit-console.exe')
+          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.0.12051', 'tools', 'nunit-console.exe')
           nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results.xml')}\""
           nunit.assemblies = FileList["tests/Automatonymous.Tests.dll"]
 end
@@ -97,6 +96,13 @@ zip :zip_output do |zip|
 	zip.output_file = "Automatonymous-#{BUILD_NUMBER_BASE}.zip"
 	zip.output_path = [props[:artifacts]]
 end
+
+desc "Restore NuGet Packages"
+task :nuget_restore do
+  sh "lib/nuget install #{File.join(props[:src],"Automatonymous.Tests","packages.config")} -o #{File.join(props[:src],"packages")}"
+  sh "lib/nuget install #{File.join(props[:src],"MassTransit","MassTransit.Automatonymous.Tests","packages.config")} -o #{File.join(props[:src],"packages")}"
+end
+
 
 desc "Builds the nuget package"
 task :nuget => ['create_nuspec', 'create_nuspec_masstransit'] do

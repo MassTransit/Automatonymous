@@ -21,6 +21,8 @@ _ReSharper*
 *.orig
 *.user
 
+packages
+
 TestResult.xml
 submit.xml
 src/tests/*

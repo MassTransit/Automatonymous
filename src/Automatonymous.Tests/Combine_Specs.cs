@@ -23,6 +23,7 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
+            _machine.RaiseEvent(_instance, _machine.Start);
 
             _machine.RaiseEvent(_instance, _machine.First);
             _machine.RaiseEvent(_instance, _machine.Second);
@@ -35,6 +36,7 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
+            _machine.RaiseEvent(_instance, _machine.Start);
 
             _machine.RaiseEvent(_instance, _machine.First);
 
@@ -46,6 +48,7 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
+            _machine.RaiseEvent(_instance, _machine.Start);
 
             _machine.RaiseEvent(_instance, _machine.Second);
 
@@ -69,15 +72,25 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
+                State(() => Waiting);
+
+                Event(() => Start);
                 Event(() => First);
                 Event(() => Second);
-
                 Event(() => Third, x => x.CompositeStatus, First, Second);
 
                 Initially(
+                    When(Start)
+                        .TransitionTo(Waiting));
+
+                During(Waiting,
                     When(Third)
                         .Then(instance => instance.Called = true));
             }
+
+            public State Waiting { get; private set; }
+
+            public Event Start { get; private set; }
 
             public Event First { get; private set; }
             public Event Second { get; private set; }
