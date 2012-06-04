@@ -89,6 +89,13 @@ namespace Automatonymous.Tests
         }
 
 
+        /// <summary>
+        /// For this instance, the state is actually stored as a string. Therefore,
+        /// it is important that the StateMachine property is initialized when the
+        /// instance is hydrated, as it is used to get the State for the name of
+        /// the current state. This makes it easier to save the instance using
+        /// an ORM that doesn't support user types (cough, EF, cough).
+        /// </summary>
         class Instance :
             StateMachineInstance
         {
@@ -99,8 +106,17 @@ namespace Automatonymous.Tests
                 set { _machine = value; }
             }
 
-            public string CurrentState { get; set; }
+            /// <summary>
+            /// The CurrentState is exposed as a string for the ORM
+            /// </summary>
+            public string CurrentState { get; private set; }
 
+            /// <summary>
+            /// The implicit implementation of the CurrentState property
+            /// of StateMachineInstance is used by Automatonymous to get/set
+            /// the State value. Notice that the string being null/empty is
+            /// the same as the Initial state.
+            /// </summary>
             State StateMachineInstance.CurrentState
             {
                 get

@@ -31,10 +31,10 @@ namespace Automatonymous
         where TInstance : class, StateMachineInstance
     {
         readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
-        readonly Cache<string, State<TInstance>> _stateCache;
-        StateAccessor<TInstance> _currentStateAccessor;
-        readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
+        readonly Cache<string, State<TInstance>> _stateCache;
+        readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
+        StateAccessor<TInstance> _currentStateAccessor;
         EventRaisedObserver<TInstance> _eventRaisedObserver;
 
         protected AutomatonymousStateMachine()
@@ -139,7 +139,7 @@ namespace Automatonymous
 
         public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
         {
-            if(!_eventCache.Has(@event.Name))
+            if (!_eventCache.Has(@event.Name))
                 throw new ArgumentException("Unknown event: " + @event.Name, "event");
 
             return _eventCache[@event.Name].EventRaising;
@@ -147,7 +147,7 @@ namespace Automatonymous
 
         public IObservable<EventRaised<TInstance>> EventRaised(Event @event)
         {
-            if(!_eventCache.Has(@event.Name))
+            if (!_eventCache.Has(@event.Name))
                 throw new ArgumentException("Unknown event: " + @event.Name, "event");
 
             return _eventCache[@event.Name].EventRaised;
@@ -175,9 +175,17 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
 
+        /// <summary>
+        /// Adds a composite event to the state machine. A composite event is triggered when all
+        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// state since it would cause extra instances of the state machine to be created
+        /// </summary>
+        /// <param name="propertyExpression">The composite event</param>
+        /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
+        /// <param name="events">The events that must be raised before the composite event is raised</param>
         protected void Event(Expression<Func<Event>> propertyExpression,
-                             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
-                             params Event[] events)
+            Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
+            params Event[] events)
         {
             if (events.Length > 31)
                 throw new ArgumentException("No more than 31 events can be combined into a single event");
@@ -185,14 +193,12 @@ namespace Automatonymous
             PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
             PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
-
             string name = eventProperty.Name;
 
             var @event = new SimpleEvent(name);
 
             eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null,
-                null, null);
+                null, null, null);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
@@ -206,7 +212,7 @@ namespace Automatonymous
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
                     instance => RaiseEvent(instance, @event));
 
-                foreach (var state in _stateCache)
+                foreach (var state in _stateCache.Where(x => x != Initial))
                 {
                     During(state,
                         When(events[i])
@@ -283,7 +289,7 @@ namespace Automatonymous
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
-                                                                    Expression<Func<TData, bool>> filterExpression)
+            Expression<Func<TData, bool>> filterExpression)
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
         }
