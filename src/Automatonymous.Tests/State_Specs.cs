@@ -122,7 +122,7 @@ namespace Automatonymous.Tests
                 get
                 {
                     if(string.IsNullOrEmpty(CurrentState))
-                        return _machine.Initial;
+                        return null;
 
                     return _machine.GetState(CurrentState);
                 }
