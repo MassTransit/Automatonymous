@@ -100,7 +100,8 @@ end
 desc "Restore NuGet Packages"
 task :nuget_restore do
   sh "lib/nuget install #{File.join(props[:src],"Automatonymous.Tests","packages.config")} -o #{File.join(props[:src],"packages")}"
-  sh "lib/nuget install #{File.join(props[:src],"MassTransit","MassTransit.Automatonymous.Tests","packages.config")} -o #{File.join(props[:src],"packages")}"
+  sh "lib/nuget install #{File.join(props[:src],"MassTransit","MassTransit.AutomatonymousTests","packages.config")} -o #{File.join(props[:src],"packages")}"
+  sh "lib/nuget install #{File.join(props[:src],"MassTransit","Automatonymous.MassTransitIntegration","packages.config")} -o #{File.join(props[:src],"packages")}"
 end
 
 
