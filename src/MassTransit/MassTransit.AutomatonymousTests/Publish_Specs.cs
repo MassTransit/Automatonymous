@@ -73,8 +73,8 @@ namespace MassTransit.AutomatonymousTests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Running);
                 Event(() => Started);
@@ -98,7 +98,7 @@ namespace MassTransit.AutomatonymousTests
         {
             public Start()
             {
-                CorrelationId = CombGuid.Generate();
+                CorrelationId = NewId.NextGuid();
             }
 
             public Guid CorrelationId { get; set; }
