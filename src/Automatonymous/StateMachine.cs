@@ -122,6 +122,6 @@ namespace Automatonymous
     	/// <summary>
     	/// Exposes the current state on the given instance
     	/// </summary>
-		StateAccessor<TInstance> CurrentStateAccessor { get; }
+		StateAccessor<TInstance> InstanceStateAccessor { get; }
     }
 }

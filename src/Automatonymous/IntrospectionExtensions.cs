@@ -27,7 +27,7 @@ namespace Automatonymous
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            return machine.NextEvents(machine.CurrentStateAccessor.Get(instance));
+            return machine.NextEvents(machine.InstanceStateAccessor.Get(instance));
         }
     }
 }

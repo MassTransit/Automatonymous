@@ -31,11 +31,11 @@ namespace Automatonymous
         where TInstance : class
     {
         readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
+        readonly EventRaisedObserver<TInstance> _eventRaisedObserver;
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
         readonly Cache<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
-        StateAccessor<TInstance> _currentStateAccessor;
-        EventRaisedObserver<TInstance> _eventRaisedObserver;
+        StateAccessor<TInstance> _instanceStateAccessor;
 
         protected AutomatonymousStateMachine()
         {
@@ -48,6 +48,9 @@ namespace Automatonymous
 
             State(() => Initial);
             State(() => Final);
+
+            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name],
+                _stateChangedObservable);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -65,9 +68,9 @@ namespace Automatonymous
             Final.Accept(inspector);
         }
 
-        public StateAccessor<TInstance> CurrentStateAccessor
+        public StateAccessor<TInstance> InstanceStateAccessor
         {
-            get { return _currentStateAccessor; }
+            get { return _instanceStateAccessor; }
         }
 
         public State Initial { get; private set; }
@@ -113,7 +116,7 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
+                    State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
                     _stateCache[currentState.Name].Raise(instance, @event);
                 });
@@ -123,7 +126,7 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
+                    State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
                     _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
@@ -158,7 +161,7 @@ namespace Automatonymous
         /// Please note, the state machine can only manage one property at a given time per instance, and the best practice is to manage one property per machine.</remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
-            _currentStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 

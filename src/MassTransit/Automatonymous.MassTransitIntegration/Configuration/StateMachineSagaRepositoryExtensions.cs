@@ -32,7 +32,7 @@ namespace Automatonymous
         {
             State state = stateSelector(configurator.StateMachine);
 
-            configurator.RemoveWhen(x => configurator.StateMachine.CurrentStateAccessor.Get(x) == state);
+            configurator.RemoveWhen(x => configurator.StateMachine.InstanceStateAccessor.Get(x) == state);
 
             return configurator;
         }

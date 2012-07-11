@@ -72,6 +72,7 @@
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
+    <Compile Include="Impl\DefaultInstanceStateAccessor.cs" />
     <Compile Include="Impl\EventRaisedObserver.cs" />
     <Compile Include="Impl\EventLiftImpl.cs" />
     <Compile Include="Impl\EventRaisingObserver.cs" />
