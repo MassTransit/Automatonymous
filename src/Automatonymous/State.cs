@@ -23,7 +23,21 @@ namespace Automatonymous
         string Name { get; }
 
         Event Enter { get; }
+
+        /// <summary>
+        /// Raised when the state is about to be left
+        /// </summary>
         Event Leave { get; }
+
+        /// <summary>
+        /// Raised just before the state is about to change to a new state
+        /// </summary>
+        Event<State> BeforeEnter { get; }
+
+        /// <summary>
+        /// Raised just after the state has been left and a new state is selected
+        /// </summary>
+        Event<State> AfterLeave { get; }
     }
 
 

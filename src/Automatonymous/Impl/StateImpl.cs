@@ -36,6 +36,9 @@ namespace Automatonymous.Impl
             Enter = new SimpleEvent(name + ".Enter");
             Leave = new SimpleEvent(name + ".Leave");
 
+            BeforeEnter = new DataEvent<State>(name + ".BeforeEnter");
+            AfterLeave = new DataEvent<State>(name + ".AfterLeave");
+
             _activityCache = new DictionaryCache<Event, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
         }
 
@@ -46,6 +49,9 @@ namespace Automatonymous.Impl
 
         public Event Enter { get; private set; }
         public Event Leave { get; private set; }
+        
+        public Event<State> BeforeEnter { get; private set; }
+        public Event<State> AfterLeave { get; private set; }
 
         public void Accept(StateMachineInspector inspector)
         {
@@ -97,7 +103,7 @@ namespace Automatonymous.Impl
 
         public int CompareTo(State other)
         {
-            return _name.CompareTo(other.Name);
+            return string.CompareOrdinal(_name, other.Name);
         }
 
         public override string ToString()

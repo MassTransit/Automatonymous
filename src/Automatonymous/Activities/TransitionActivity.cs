@@ -32,14 +32,16 @@ namespace Automatonymous.Activities
 
         public void Execute(TInstance instance)
         {
-            State currentState = _currentStateAccessor.Get(instance);
-            if (currentState == _toState)
+            State lastState = _currentStateAccessor.Get(instance);
+            if (lastState == _toState)
                 return;
 
-            currentState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
+            lastState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
+            _toState.WithState<TInstance>(x => x.Raise(instance, x.BeforeEnter, lastState));
 
             _currentStateAccessor.Set(instance, _toState);
 
+            lastState.WithState<TInstance>(x => x.Raise(instance, x.AfterLeave, _toState));
             _toState.WithState<TInstance>(x => x.Raise(instance, x.Enter));
         }
 

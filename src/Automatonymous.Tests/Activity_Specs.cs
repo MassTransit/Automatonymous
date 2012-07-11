@@ -47,8 +47,8 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Running);
 
@@ -98,16 +98,16 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Running);
 
                 Event(() => Initialized);
 
                 Initially(
-                          When(Initialized)
-                              .TransitionTo(Running));
+                    When(Initialized)
+                        .TransitionTo(Running));
             }
 
             public State Running { get; private set; }
@@ -158,16 +158,16 @@ namespace Automatonymous.Tests
             public const string Finalized = "Finalized";
 
             public InstanceStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Running);
 
                 Event(() => Initialized);
 
                 Initially(
-                          When(Initialized)
-                              .Finalize());
+                    When(Initialized)
+                        .Finalize());
 
                 Finally(x => x.Then(instance => instance.Value = Finalized));
             }
@@ -188,6 +188,18 @@ namespace Automatonymous.Tests
             Assert.AreEqual(_machine.Running, _instance.CurrentState);
         }
 
+        [Test]
+        public void Should_have_triggered_the_before_enter_event()
+        {
+            Assert.AreEqual(_machine.Initial, _instance.EnteredState);
+        }
+
+        [Test]
+        public void Should_have_triggered_the_after_leave_event()
+        {
+            Assert.AreEqual(_machine.Initializing, _instance.LeftState);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -204,6 +216,8 @@ namespace Automatonymous.Tests
         class Instance
         {
             public State CurrentState { get; set; }
+            public State EnteredState { get; set; }
+            public State LeftState { get; set; }
         }
 
 
@@ -211,8 +225,8 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Initializing);
                 State(() => Running);
@@ -224,8 +238,12 @@ namespace Automatonymous.Tests
                         .TransitionTo(Running));
 
                 DuringAny(
-                          When(Initial.Enter)
-                              .TransitionTo(Initializing));
+                    When(Initial.Enter)
+                        .TransitionTo(Initializing),
+                    When(Initial.AfterLeave)
+                        .Then((instance, state) => instance.LeftState = state),
+                    When(Initializing.BeforeEnter)
+                        .Then((instance, state) => instance.EnteredState = state));
             }
 
             public State Running { get; private set; }
