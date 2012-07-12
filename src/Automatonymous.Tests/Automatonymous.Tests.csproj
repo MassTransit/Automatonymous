@@ -52,6 +52,7 @@
     <Compile Include="Dependency_Specs.cs" />
     <Compile Include="Event_Specs.cs" />
     <Compile Include="Exception_Specs.cs" />
+    <Compile Include="Group_Specs.cs" />
     <Compile Include="InstanceLift_Specs.cs" />
     <Compile Include="Introspection_Specs.cs" />
     <Compile Include="Observable_Specs.cs" />

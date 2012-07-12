@@ -68,7 +68,7 @@ namespace Automatonymous
             Final.Accept(inspector);
         }
 
-        public StateAccessor<TInstance> InstanceStateAccessor
+        StateAccessor<TInstance> StateMachine<TInstance>.InstanceStateAccessor
         {
             get { return _instanceStateAccessor; }
         }
@@ -101,7 +101,7 @@ namespace Automatonymous
             get { return _eventCache.Select(x => x.Event); }
         }
 
-        public Type InstanceType
+        Type StateMachine.InstanceType
         {
             get { return typeof(TInstance); }
         }
@@ -116,7 +116,7 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    State<TInstance> currentState = InstanceStateAccessor.Get(instance);
+                    State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
 
                     _stateCache[currentState.Name].Raise(instance, @event);
                 });
@@ -126,7 +126,7 @@ namespace Automatonymous
         {
             WithInstance(instance, x =>
                 {
-                    State<TInstance> currentState = InstanceStateAccessor.Get(instance);
+                    State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
 
                     _stateCache[currentState.Name].Raise(instance, @event, value);
                 });

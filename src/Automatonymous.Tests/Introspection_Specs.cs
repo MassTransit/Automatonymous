@@ -23,7 +23,7 @@ namespace Automatonymous.Tests
         [Test]
         public void The_machine_shoud_report_its_instance_type()
         {
-            Assert.AreEqual(typeof(Instance), _machine.InstanceType);
+            Assert.AreEqual(typeof(Instance), ((StateMachine<Instance>)_machine).InstanceType);
         }
 
         [Test]

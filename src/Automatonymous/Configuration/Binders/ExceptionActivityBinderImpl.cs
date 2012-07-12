@@ -26,14 +26,14 @@ namespace Automatonymous.Binders
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;
-        readonly AutomatonymousStateMachine<TInstance> _machine;
+        readonly StateMachine<TInstance> _machine;
 
-        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event)
+        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event)
             : this(machine, @event, Enumerable.Empty<ExceptionActivity<TInstance>>())
         {
         }
 
-        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event,
+        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event,
                                            IEnumerable<ExceptionActivity<TInstance>> activities)
         {
             _activities = activities;
@@ -74,14 +74,14 @@ namespace Automatonymous.Binders
     {
         readonly IEnumerable<ExceptionActivity<TInstance>> _activities;
         readonly Event _event;
-        readonly AutomatonymousStateMachine<TInstance> _machine;
+        readonly StateMachine<TInstance> _machine;
 
-        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event)
+        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event)
             : this(machine, @event, Enumerable.Empty<ExceptionActivity<TInstance>>())
         {
         }
 
-        public ExceptionActivityBinderImpl(AutomatonymousStateMachine<TInstance> machine, Event @event,
+        public ExceptionActivityBinderImpl(StateMachine<TInstance> machine, Event @event,
                                            IEnumerable<ExceptionActivity<TInstance>> activities)
         {
             _activities = activities;

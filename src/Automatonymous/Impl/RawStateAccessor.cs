@@ -32,7 +32,7 @@ namespace Automatonymous.Impl
             _observer = observer;
             PropertyInfo statePropertyInfo = currentStateExpression.GetPropertyInfo();
 
-            _property = new ReadWriteProperty<TInstance, State>(statePropertyInfo);
+            _property = new ReadWriteProperty<TInstance, State>(statePropertyInfo, true);
         }
 
         public State<TInstance> Get(TInstance instance)

@@ -19,7 +19,7 @@ namespace Automatonymous.Binders
         IEnumerable<EventActivity<TInstance>>
         where TInstance : class
     {
-        AutomatonymousStateMachine<TInstance> StateMachine { get; }
+        StateMachine<TInstance> StateMachine { get; }
         Event Event { get; }
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
@@ -30,7 +30,7 @@ namespace Automatonymous.Binders
         IEnumerable<EventActivity<TInstance>>
         where TInstance : class
     {
-        AutomatonymousStateMachine<TInstance> StateMachine { get; }
+        StateMachine<TInstance> StateMachine { get; }
         Event<TData> Event { get; }
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
