@@ -47,10 +47,10 @@ changed. Either way, here it is, your first state machine configured using Autom
         public Event<Person> Introduce { get; private set; }
     }
 
-	class Person
-	{
-		public string Name { get; set; }
-	}
+    class Person
+    {
+        public string Name { get; set; }
+    }
 
 
 Seriously?
@@ -148,7 +148,7 @@ For example, using an event lift, the state machine is removed.
 
     var eventLift = machine.CreateEventLift(machine.Hello);
 
-	// elsewhere in the code, the lift can be used    
+    // elsewhere in the code, the lift can be used    
     eventLift.Raise(relationship);
 
 The instance can also be lifted, making it possible to raise an event without any instance type knowledge.
@@ -156,9 +156,9 @@ The instance can also be lifted, making it possible to raise an event without an
 .. sourcecode:: csharp
 
     var instanceLift = machine.CreateInstanceLift(relationship);
-	var helloEvent = machine.Hello;
+    var helloEvent = machine.Hello;
 
-	// elsewhere in the code, the lift can be used
+    // elsewhere in the code, the lift can be used
     instanceLift.Raise(helloEvent);
 
 Lifts are commonly used by plumbing code to avoid dynamic methods or delegates, making code
