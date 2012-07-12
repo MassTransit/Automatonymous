@@ -159,8 +159,6 @@ namespace Automatonymous.Tests
 
             public InstanceStateMachine()
             {
-                InstanceState(x => x.CurrentState);
-
                 State(() => Running);
 
                 Event(() => Initialized);
@@ -185,7 +183,13 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_call_the_activity()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.AreEqual(_machine.Final, _instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_have_triggered_the_after_leave_event()
+        {
+            Assert.AreEqual(_machine.Initializing, _instance.LeftState);
         }
 
         [Test]
@@ -195,9 +199,9 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public void Should_have_triggered_the_after_leave_event()
+        public void Should_have_trigger_the_final_before_enter_event()
         {
-            Assert.AreEqual(_machine.Initializing, _instance.LeftState);
+            Assert.AreEqual(_machine.Running, _instance.FinalState);
         }
 
         Instance _instance;
@@ -218,6 +222,7 @@ namespace Automatonymous.Tests
             public State CurrentState { get; set; }
             public State EnteredState { get; set; }
             public State LeftState { get; set; }
+            public State FinalState { get; set; }
         }
 
 
@@ -243,7 +248,11 @@ namespace Automatonymous.Tests
                     When(Initial.AfterLeave)
                         .Then((instance, state) => instance.LeftState = state),
                     When(Initializing.BeforeEnter)
-                        .Then((instance, state) => instance.EnteredState = state));
+                        .Then((instance, state) => instance.EnteredState = state),
+                    When(Running.Enter)
+                        .Finalize(),
+                    When(Final.BeforeEnter)
+                        .Then((instance, state) => instance.FinalState = state));
             }
 
             public State Running { get; private set; }

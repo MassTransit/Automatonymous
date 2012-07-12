@@ -40,12 +40,6 @@ namespace Automatonymous.Tests
             Assert.AreEqual(3, _observer.Events.Count);
         }
 
-        [Test]
-        public void Should_complete_the_observer_when_finalized()
-        {
-            Assert.IsTrue(_observer.Completed);
-        }
-
         Instance _instance;
         InstanceStateMachine _machine;
         ChangeObserver _observer;

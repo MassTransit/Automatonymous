@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface EventActivity<TInstance> :
+    public interface EventActivity<in TInstance> :
         Activity<TInstance>
     {
         Event Event { get; }

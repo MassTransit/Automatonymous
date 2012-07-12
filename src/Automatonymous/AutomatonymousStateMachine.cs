@@ -272,7 +272,35 @@ namespace Automatonymous
 
         protected void Initially(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            During(_stateCache["Initial"], activities);
+            During(Initial, activities);
+        }
+
+        protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            IEnumerable<State<TInstance>> states = _stateCache.Where(x => x != Initial && x != Final);
+
+            // we only add DuringAny event handlers to non-initial and non-final states to avoid
+            // reviving finalized state machine instances or creating new ones accidentally.
+            foreach (var state in states)
+                During(state, activities);
+
+            BindTransitionEvents(Initial, activities);
+            BindTransitionEvents(Final, activities);
+        }
+
+        void BindTransitionEvents(State state, IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            IEnumerable<EventActivity<TInstance>> eventActivities = activities
+                .SelectMany(activity => activity.Where(x => IsTransitionEvent(state, x.Event)));
+
+            foreach (var eventActivity in eventActivities)
+                During(state, new[] {eventActivity});
+        }
+
+        bool IsTransitionEvent(State state, Event eevent)
+        {
+            return eevent == state.Enter || eevent == state.BeforeEnter
+                   || eevent == state.AfterLeave || eevent == state.Leave;
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
@@ -282,12 +310,6 @@ namespace Automatonymous
             binder = activityCallback(binder);
 
             DuringAny(binder);
-        }
-
-        protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
-        {
-            foreach (var state in _stateCache)
-                During(state, activities);
         }
 
         protected EventActivityBinder<TInstance> When(Event @event)

@@ -19,31 +19,49 @@ namespace Automatonymous.Tests
     public class Anytime_events
     {
         [Test]
+        public void Should_not_be_handled_on_initial()
+        {
+            var instance = new Instance();
+
+            _machine.RaiseEvent(instance, x => x.Hello);
+
+            Assert.IsFalse(instance.HelloCalled);
+            Assert.AreEqual(_machine.Initial, instance.CurrentState);
+        }
+
+        [Test]
         public void Should_be_called_regardless_of_state()
         {
-            Assert.IsTrue(_instance.HelloCalled);
+            var instance = new Instance();
+
+            _machine.RaiseEvent(instance, x => x.Init);
+            _machine.RaiseEvent(instance, x => x.Hello);
+
+            Assert.IsTrue(instance.HelloCalled);
+            Assert.AreEqual(_machine.Final, instance.CurrentState);
         }
 
         [Test]
         public void Should_have_value_of_event_data()
         {
-            Assert.AreEqual("Test", _instance.AValue);
+            var instance = new Instance();
+
+            _machine.RaiseEvent(instance, x => x.Init);
+            _machine.RaiseEvent(instance, x => x.EventA, new A
+            {
+                Value = "Test"
+            });
+
+            Assert.AreEqual("Test", instance.AValue);
+            Assert.AreEqual(_machine.Final, instance.CurrentState);
         }
 
         TestStateMachine _machine;
-        Instance _instance;
 
         [TestFixtureSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();
-            _instance = new Instance();
-
-            _machine.RaiseEvent(_instance, x => x.Hello);
-            _machine.RaiseEvent(_instance, x => x.EventA, new A
-                {
-                    Value = "Test"
-                });
         }
 
 
@@ -65,11 +83,16 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                State(() => Ready);
 
+                Event(() => Init);
                 Event(() => Hello);
                 Event(() => EventA);
+
+                Initially(
+                    When(Init)
+                    .TransitionTo(Ready));
 
                 DuringAny(
                     When(Hello)
@@ -80,6 +103,9 @@ namespace Automatonymous.Tests
                         .Finalize());
             }
 
+            public State Ready { get; private set; }
+
+            public Event Init { get; private set; }
             public Event Hello { get; private set; }
             public Event<A> EventA { get; private set; }
         }
