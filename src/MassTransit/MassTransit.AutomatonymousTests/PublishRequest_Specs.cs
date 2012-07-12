@@ -20,22 +20,21 @@ namespace MassTransit.AutomatonymousTests
     using SubscriptionConfigurators;
 
 
-    [TestFixture]
-    public class Publishing_a_message_from_a_saga_state_machine :
+    [TestFixture, Explicit("Still figuring out the request syntax")]
+    public class Publishing_a_request_from_a_saga_state_machine :
         MassTransitTestFixture
     {
         [Test]
         public void Should_receive_the_published_message()
         {
-            var messageReceived = new FutureMessage<StartupComplete>();
+            var messageReceived = new FutureMessage<RequestAuthorization>();
 
-            Bus.SubscribeHandler<StartupComplete>(messageReceived.Set);
+            Bus.SubscribeHandler<RequestAuthorization>(messageReceived.Set);
 
-            var message = new Start();
+            var message = new ScheduleAppointment();
             Bus.Publish(message);
 
             Assert.IsTrue(messageReceived.IsAvailable(8.Seconds()));
-            Assert.AreEqual(message.CorrelationId, messageReceived.Message.TransactionId);
         }
 
         protected override void ConfigureSubscriptions(SubscriptionBusServiceConfigurator configurator)
@@ -80,33 +79,49 @@ namespace MassTransit.AutomatonymousTests
 
                 Initially(
                     When(Started)
-                        .Publish((instance, msg) => new StartupComplete
+                        .PublishRequest((instance, msg) => new RequestAuthorization
                             {
-                                TransactionId = msg.CorrelationId
-                            })
+                                User = msg.User
+                            },
+                            (instance, message, x) =>
+                                {
+                                    x.HandleTimeout(30.Seconds(), () => { });
+                                    x.Handle<AuthorizationGranted>(m => { });
+                                })
                         .TransitionTo(Running));
             }
 
             public State Running { get; private set; }
-            public Event<Start> Started { get; private set; }
+            public Event<ScheduleAppointment> Started { get; private set; }
         }
 
 
-        class Start :
+        class ScheduleAppointment :
             CorrelatedBy<Guid>
         {
-            public Start()
+            public ScheduleAppointment()
             {
                 CorrelationId = NewId.NextGuid();
             }
 
-            public Guid CorrelationId { get; set; }
+            public string User { get; set; }
+            public Guid CorrelationId { get; private set; }
         }
 
 
-        class StartupComplete
+        class RequestAuthorization
         {
-            public Guid TransactionId { get; set; }
+            public string User { get; set; }
+        }
+
+
+        class AuthorizationGranted
+        {
+        }
+
+
+        class AuthorizationDenied
+        {
         }
     }
 }

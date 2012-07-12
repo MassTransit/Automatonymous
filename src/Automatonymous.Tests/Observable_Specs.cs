@@ -21,12 +21,6 @@ namespace Automatonymous.Tests
     public class Observing_state_machine_instance_state_changes
     {
         [Test]
-        public void Should_raise_the_event()
-        {
-            Assert.AreEqual(2, _observer.Events.Count);
-        }
-
-        [Test]
         public void Should_have_first_moved_to_initial()
         {
             Assert.AreEqual(null, _observer.Events[0].Previous);
@@ -40,6 +34,18 @@ namespace Automatonymous.Tests
             Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
         }
 
+        [Test]
+        public void Should_raise_the_event()
+        {
+            Assert.AreEqual(3, _observer.Events.Count);
+        }
+
+        [Test]
+        public void Should_complete_the_observer_when_finalized()
+        {
+            Assert.IsTrue(_observer.Completed);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
         ChangeObserver _observer;
@@ -51,9 +57,10 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
             _observer = new ChangeObserver();
 
-            using (var subscription = _machine.StateChanged.Subscribe(_observer))
+            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
             {
                 _machine.RaiseEvent(_instance, x => x.Initialized);
+                _machine.RaiseEvent(_instance, x => x.Finish);
             }
         }
 
@@ -66,6 +73,9 @@ namespace Automatonymous.Tests
                 Events = new List<StateChanged<Instance>>();
             }
 
+            public IList<StateChanged<Instance>> Events { get; private set; }
+            public bool Completed { get; private set; }
+
             public void OnNext(StateChanged<Instance> value)
             {
                 Events.Add(value);
@@ -77,9 +87,8 @@ namespace Automatonymous.Tests
 
             public void OnCompleted()
             {
+                Completed = true;
             }
-
-            public IList<StateChanged<Instance>> Events { get; private set; }
         }
 
 
@@ -93,22 +102,25 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public InstanceStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
-
+            {
                 State(() => Running);
 
                 Event(() => Initialized);
+                Event(() => Finish);
 
                 During(Initial,
                     When(Initialized)
                         .TransitionTo(Running));
+
+                During(Running,
+                    When(Finish)
+                        .Finalize());
             }
 
             public State Running { get; private set; }
 
             public Event Initialized { get; private set; }
-
+            public Event Finish { get; private set; }
         }
     }
 }
