@@ -12,7 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.SubscriptionBuilders
 {
-    using System;
     using MassTransit;
     using MassTransit.Pipeline;
     using MassTransit.SubscriptionBuilders;
@@ -25,11 +24,11 @@ namespace Automatonymous.SubscriptionBuilders
         where TInstance : class, SagaStateMachineInstance
     {
         readonly StateMachineConnector<TInstance> _connector;
-        readonly Func<UnsubscribeAction, ISubscriptionReference> _referenceFactory;
+        readonly ReferenceFactory _referenceFactory;
 
         public StateMachineSubscriptionBuilder(StateMachine<TInstance> stateMachine,
-                                               StateMachineSagaRepository<TInstance> repository,
-                                               Func<UnsubscribeAction, ISubscriptionReference> referenceFactory)
+            StateMachineSagaRepository<TInstance> repository,
+            ReferenceFactory referenceFactory)
         {
             _connector = new StateMachineConnector<TInstance>(stateMachine, repository);
             _referenceFactory = referenceFactory;

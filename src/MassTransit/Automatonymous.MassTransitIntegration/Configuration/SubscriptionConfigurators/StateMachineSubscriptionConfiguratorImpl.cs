@@ -29,7 +29,7 @@ namespace Automatonymous.SubscriptionConfigurators
         readonly StateMachine<TInstance> _stateMachine;
 
         public StateMachineSubscriptionConfiguratorImpl(StateMachine<TInstance> stateMachine,
-                                                        StateMachineSagaRepository<TInstance> repository)
+            StateMachineSagaRepository<TInstance> repository)
         {
             _stateMachine = stateMachine;
             _repository = repository;
