@@ -3,12 +3,12 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
 include FileTest
 require 'albacore'
 
-BUILD_NUMBER_BASE = '0.5.4'
+BUILD_NUMBER_BASE = '0.6.1'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
 
-asm_version = BUILD_NUMBER_BASE + "-prerelease"
+asm_version = BUILD_NUMBER_BASE
 
 props = {
   :src => File.expand_path("src"),
@@ -82,7 +82,7 @@ end
 
 desc "Runs unit tests"
 nunit :tests => [:compile] do |nunit|
-          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.0.12051', 'tools', 'nunit-console.exe')
+          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.1', 'tools', 'nunit-console.exe')
           nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results.xml')}\""
           nunit.assemblies = FileList["tests/Automatonymous.Tests.dll"]
 end
@@ -134,7 +134,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "true"
-  nuspec.dependency "MassTransit", "2.5.3-prerelease"
+  nuspec.dependency "MassTransit", "2.6.1"
   nuspec.dependency "Automatonymous", asm_version
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
   add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
