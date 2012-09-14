@@ -26,9 +26,9 @@ namespace Automatonymous
         StateMachineSagaRepository<TInstance>
         where TInstance : class, SagaStateMachineInstance
     {
-        Expression<Func<TInstance, bool>> _completedExpression;
-        Cache<Event, StateMachineEventCorrelation<TInstance>> _correlations;
-        ISagaRepository<TInstance> _repository;
+        readonly Expression<Func<TInstance, bool>> _completedExpression;
+        readonly Cache<Event, StateMachineEventCorrelation<TInstance>> _correlations;
+        readonly ISagaRepository<TInstance> _repository;
 
         public AutomatonymousStateMachineSagaRepository(ISagaRepository<TInstance> repository,
             Expression<Func<TInstance, bool>> completedExpression,
@@ -72,10 +72,15 @@ namespace Automatonymous
             out Expression<Func<TInstance, TData, bool>> expression)
             where TData : class
         {
-            expression = _correlations.WithValue(@event, correlation => correlation.GetCorrelationExpression<TData>(),
-                null);
+            StateMachineEventCorrelation<TInstance> correlation;
+            if (_correlations.TryGetValue(@event, out correlation))
+            {
+                expression = correlation.GetCorrelationExpression<TData>();
+                return true;
+            }
 
-            return expression != null;
+            expression = null;
+            return false;
         }
 
         public Expression<Func<TInstance, bool>> GetCompletedExpression()

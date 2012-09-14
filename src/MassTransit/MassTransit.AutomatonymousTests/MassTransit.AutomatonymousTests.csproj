@@ -39,11 +39,11 @@
     </Reference>
     <Reference Include="MassTransit, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MassTransit.2.6.1\lib\net40\MassTransit.dll</HintPath>
+      <HintPath>..\..\packages\MassTransit.2.6.3\lib\net40\MassTransit.dll</HintPath>
     </Reference>
     <Reference Include="MassTransit.Transports.MSMQ, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\MassTransit.2.6.1\lib\net40\MassTransit.Transports.MSMQ.dll</HintPath>
+      <HintPath>..\..\packages\MassTransit.2.6.3\lib\net40\MassTransit.Transports.MSMQ.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.1.12217, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
