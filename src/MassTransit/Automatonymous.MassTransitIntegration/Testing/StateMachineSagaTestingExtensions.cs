@@ -17,16 +17,16 @@ namespace MassTransit.Testing
     using TestInstanceConfigurators;
 
 
-    public static class AutomatonymousTestingExtensions
+    public static class StateMachineSagaTestingExtensions
     {
-        public static void UseStateMachine<TScenario, TSaga, TStateMachine>(
+        public static void UseStateMachineBuilder<TScenario, TSaga, TStateMachine>(
             this SagaTestInstanceConfigurator<TScenario, TSaga> configurator, TStateMachine stateMachine)
             where TSaga : class, SagaStateMachineInstance
             where TScenario : TestScenario
             where TStateMachine : StateMachine<TSaga>
         {
             configurator.UseBuilder(scenario =>
-                                    new AutomatonymousSagaTestBuilder<TScenario, TSaga, TStateMachine>(scenario,
+                                    new StateMachineSagaTestBuilder<TScenario, TSaga, TStateMachine>(scenario,
                                         stateMachine));
         }
     }

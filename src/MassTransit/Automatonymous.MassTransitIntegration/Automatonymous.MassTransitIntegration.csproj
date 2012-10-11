@@ -53,10 +53,10 @@
     <Compile Include="Activities\PublishActivity.cs" />
     <Compile Include="Activities\RespondActivity.cs" />
     <Compile Include="Activities\RetryLaterActivity.cs" />
-    <Compile Include="Testing\AutomatonymousSagaTestBuilder.cs" />
-    <Compile Include="Testing\AutomatonymousSagaTestInstance.cs" />
-    <Compile Include="Testing\AutomatonymousSagaTestSubjectImpl.cs" />
-    <Compile Include="Testing\AutomatonymousTestingExtensions.cs" />
+    <Compile Include="Testing\StateMachineSagaTestBuilder.cs" />
+    <Compile Include="Testing\StateMachineSagaTestInstance.cs" />
+    <Compile Include="Testing\StateMachineSagaTestSubjectImpl.cs" />
+    <Compile Include="Testing\StateMachineSagaTestingExtensions.cs" />
     <Compile Include="Configuration\BuilderConfigurators\StateMachineSagaRepositoryBuilderConfigurator.cs" />
     <Compile Include="Configuration\PublishExtensions.cs" />
     <Compile Include="Configuration\RepositoryBuilders\StateMachineEventCorrelation.cs" />

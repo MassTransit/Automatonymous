@@ -21,22 +21,22 @@ namespace MassTransit.Testing
     using TestActions;
 
 
-    public class AutomatonymousSagaTestInstance<TScenario, TSaga, TStateMachine> :
+    public class StateMachineSagaTestInstance<TScenario, TSaga, TStateMachine> :
         TestInstance<TScenario>,
         SagaTest<TScenario, TSaga>
         where TSaga : class, SagaStateMachineInstance
         where TScenario : TestScenario
         where TStateMachine : StateMachine<TSaga>
     {
-        readonly AutomatonymousSagaTestSubjectImpl<TScenario, TSaga, TStateMachine> _subject;
+        readonly StateMachineSagaTestSubjectImpl<TScenario, TSaga, TStateMachine> _subject;
 
         bool _disposed;
 
-        public AutomatonymousSagaTestInstance(TScenario scenario, IList<TestAction<TScenario>> actions,
+        public StateMachineSagaTestInstance(TScenario scenario, IList<TestAction<TScenario>> actions,
             ISagaRepository<TSaga> sagaRepository, TStateMachine stateMachine)
             : base(scenario, actions)
         {
-            _subject = new AutomatonymousSagaTestSubjectImpl<TScenario, TSaga, TStateMachine>(sagaRepository,
+            _subject = new StateMachineSagaTestSubjectImpl<TScenario, TSaga, TStateMachine>(sagaRepository,
                 stateMachine);
         }
 
@@ -64,7 +64,7 @@ namespace MassTransit.Testing
             _disposed = true;
         }
 
-        ~AutomatonymousSagaTestInstance()
+        ~StateMachineSagaTestInstance()
         {
             Dispose(false);
         }

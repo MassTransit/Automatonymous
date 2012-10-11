@@ -22,7 +22,7 @@ namespace MassTransit.Testing
     using TestDecorators;
 
 
-    public class AutomatonymousSagaTestSubjectImpl<TScenario, TSaga, TStateMachine> :
+    public class StateMachineSagaTestSubjectImpl<TScenario, TSaga, TStateMachine> :
         SagaTestSubject<TSaga>
         where TSaga : class, SagaStateMachineInstance
         where TScenario : TestScenario
@@ -36,7 +36,7 @@ namespace MassTransit.Testing
         bool _disposed;
         UnsubscribeAction _unsubscribe;
 
-        public AutomatonymousSagaTestSubjectImpl(ISagaRepository<TSaga> sagaRepository, TStateMachine stateMachine)
+        public StateMachineSagaTestSubjectImpl(ISagaRepository<TSaga> sagaRepository, TStateMachine stateMachine)
         {
             _sagaRepository = sagaRepository;
             _stateMachine = stateMachine;
@@ -113,7 +113,7 @@ namespace MassTransit.Testing
             _disposed = true;
         }
 
-        ~AutomatonymousSagaTestSubjectImpl()
+        ~StateMachineSagaTestSubjectImpl()
         {
             Dispose(false);
         }

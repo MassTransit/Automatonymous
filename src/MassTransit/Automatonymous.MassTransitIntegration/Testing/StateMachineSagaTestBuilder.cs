@@ -20,7 +20,7 @@ namespace MassTransit.Testing
     using TestActions;
 
 
-    public class AutomatonymousSagaTestBuilder<TScenario, TSaga, TStateMachine> :
+    public class StateMachineSagaTestBuilder<TScenario, TSaga, TStateMachine> :
         SagaTestBuilder<TScenario, TSaga>
         where TSaga : class, SagaStateMachineInstance
         where TScenario : TestScenario
@@ -31,7 +31,7 @@ namespace MassTransit.Testing
         readonly TStateMachine _stateMachine;
         ISagaRepository<TSaga> _sagaRepository;
 
-        public AutomatonymousSagaTestBuilder(TScenario scenario, TStateMachine stateMachine)
+        public StateMachineSagaTestBuilder(TScenario scenario, TStateMachine stateMachine)
         {
             _scenario = scenario;
             _stateMachine = stateMachine;
@@ -44,7 +44,7 @@ namespace MassTransit.Testing
             if (_sagaRepository == null)
                 _sagaRepository = new InMemorySagaRepository<TSaga>();
 
-            var test = new AutomatonymousSagaTestInstance<TScenario, TSaga, TStateMachine>(_scenario, _actions,
+            var test = new StateMachineSagaTestInstance<TScenario, TSaga, TStateMachine>(_scenario, _actions,
                 _sagaRepository, _stateMachine);
 
             return test;

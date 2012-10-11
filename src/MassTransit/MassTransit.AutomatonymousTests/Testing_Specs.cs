@@ -28,7 +28,7 @@ namespace MassTransit.AutomatonymousTests
 
             SagaTest<BusTestScenario, Instance> test = TestFactory.ForSaga<Instance>().New(x =>
                 {
-                    x.UseStateMachine(_machine);
+                    x.UseStateMachineBuilder(_machine);
 
                     x.Publish(new Start
                         {
