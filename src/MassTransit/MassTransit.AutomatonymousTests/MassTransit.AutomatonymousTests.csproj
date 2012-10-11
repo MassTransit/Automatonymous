@@ -61,6 +61,7 @@
     <Compile Include="Respond_Specs.cs" />
     <Compile Include="SimpleStateMachine_Specs.cs" />
     <Compile Include="TestExtensions.cs" />
+    <Compile Include="Testing_Specs.cs" />
     <Compile Include="UncorrelatedMessage_Specs.cs" />
   </ItemGroup>
   <ItemGroup>

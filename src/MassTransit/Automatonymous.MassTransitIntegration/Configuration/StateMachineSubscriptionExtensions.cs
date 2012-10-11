@@ -13,10 +13,12 @@
 namespace Automatonymous
 {
     using System;
+    using MassTransit;
     using MassTransit.Saga;
     using MassTransit.SubscriptionConfigurators;
     using RepositoryConfigurators;
     using SubscriptionConfigurators;
+    using SubscriptionConnectors;
 
 
     public static class StateMachineSubscriptionExtensions
@@ -29,9 +31,10 @@ namespace Automatonymous
             var stateMachineSagaRepositoryConfigurator =
                 new StateMachineSagaRepositoryConfiguratorImpl<TInstance>(stateMachine, sagaRepository);
 
-            var repository = stateMachineSagaRepositoryConfigurator.Configure();
+            StateMachineSagaRepository<TInstance> repository = stateMachineSagaRepositoryConfigurator.Configure();
 
-            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine, repository);
+            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine,
+                repository);
 
             var busServiceConfigurator = new SubscriptionBusServiceBuilderConfiguratorImpl(stateMachineConfigurator);
 
@@ -42,7 +45,8 @@ namespace Automatonymous
 
         public static StateMachineSubscriptionConfigurator<TInstance> StateMachineSaga<TInstance>(
             this SubscriptionBusServiceConfigurator configurator, StateMachine<TInstance> stateMachine,
-            ISagaRepository<TInstance> sagaRepository, Action<StateMachineSagaRepositoryConfigurator<TInstance>> configureCallback)
+            ISagaRepository<TInstance> sagaRepository,
+            Action<StateMachineSagaRepositoryConfigurator<TInstance>> configureCallback)
             where TInstance : class, SagaStateMachineInstance
         {
             var stateMachineSagaRepositoryConfigurator =
@@ -50,15 +54,48 @@ namespace Automatonymous
 
             configureCallback(stateMachineSagaRepositoryConfigurator);
 
-            var repository = stateMachineSagaRepositoryConfigurator.Configure();
+            StateMachineSagaRepository<TInstance> repository = stateMachineSagaRepositoryConfigurator.Configure();
 
-            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine, repository);
+            var stateMachineConfigurator = new StateMachineSubscriptionConfiguratorImpl<TInstance>(stateMachine,
+                repository);
 
             var busServiceConfigurator = new SubscriptionBusServiceBuilderConfiguratorImpl(stateMachineConfigurator);
 
             configurator.AddConfigurator(busServiceConfigurator);
 
             return stateMachineConfigurator;
+        }
+
+        public static UnsubscribeAction SubscribeStateMachineSaga<TInstance>(
+            this IServiceBus bus, StateMachine<TInstance> stateMachine, ISagaRepository<TInstance> sagaRepository)
+            where TInstance : class, SagaStateMachineInstance
+        {
+            var stateMachineSagaRepositoryConfigurator =
+                new StateMachineSagaRepositoryConfiguratorImpl<TInstance>(stateMachine, sagaRepository);
+
+            StateMachineSagaRepository<TInstance> repository = stateMachineSagaRepositoryConfigurator.Configure();
+
+            var connector = new StateMachineConnector<TInstance>(stateMachine, repository);
+
+            return bus.Configure(x => connector.Connect(x));
+        }
+
+        public static UnsubscribeAction SubscribeStateMachineSaga<TInstance>(
+            this IServiceBus bus, StateMachine<TInstance> stateMachine,
+            ISagaRepository<TInstance> sagaRepository,
+            Action<StateMachineSagaRepositoryConfigurator<TInstance>> configureCallback)
+            where TInstance : class, SagaStateMachineInstance
+        {
+            var stateMachineSagaRepositoryConfigurator =
+                new StateMachineSagaRepositoryConfiguratorImpl<TInstance>(stateMachine, sagaRepository);
+
+            configureCallback(stateMachineSagaRepositoryConfigurator);
+
+            StateMachineSagaRepository<TInstance> repository = stateMachineSagaRepositoryConfigurator.Configure();
+
+            var connector = new StateMachineConnector<TInstance>(stateMachine, repository);
+
+            return bus.Configure(x => connector.Connect(x));
         }
     }
 }
