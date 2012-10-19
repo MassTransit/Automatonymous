@@ -42,6 +42,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncActivity_Specs.cs" />
     <Compile Include="Declarative_Specs.cs" />
     <Compile Include="EventObservable_Specs.cs" />
     <Compile Include="EventLift_Specs.cs" />
