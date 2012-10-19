@@ -16,6 +16,7 @@ namespace Automatonymous.Activities
     using System.Collections.Generic;
     using System.Linq;
     using Internals.Caching;
+    using System.Reflection;
 
 
     public class TryActivity<TInstance> :
@@ -47,13 +48,21 @@ namespace Automatonymous.Activities
             catch (Exception ex)
             {
                 Type exceptionType = ex.GetType();
+#if !NETFX_CORE
                 while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
                 {
                     if (_exceptionHandlers.WithValue(exceptionType,
                         x => x.ForEach(activity => activity.Execute(instance, ex))))
                         return;
 
+#if !NETFX_CORE
                     exceptionType = exceptionType.BaseType;
+#else
+                    exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
                 }
 
                 throw;
@@ -69,13 +78,21 @@ namespace Automatonymous.Activities
             catch (Exception ex)
             {
                 Type exceptionType = ex.GetType();
+#if !NETFX_CORE
                 while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
                 {
                     if (_exceptionHandlers.WithValue(exceptionType,
                         x => x.ForEach(activity => activity.Execute(instance, ex))))
                         return;
 
+#if !NETFX_CORE
                     exceptionType = exceptionType.BaseType;
+#else
+                    exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
                 }
 
                 throw;
@@ -125,7 +142,11 @@ namespace Automatonymous.Activities
             catch (Exception ex)
             {
                 Type exceptionType = ex.GetType();
+#if !NETFX_CORE
                 while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
                 {
                     if (_exceptionHandlers.WithValue(exceptionType, x =>
                         {
@@ -136,7 +157,11 @@ namespace Automatonymous.Activities
                         }))
                         return;
 
+#if !NETFX_CORE
                     exceptionType = exceptionType.BaseType;
+#else
+                    exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
                 }
 
                 throw;
