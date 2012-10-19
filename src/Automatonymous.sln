@@ -4,20 +4,38 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous", "Automatonymous\Automatonymous.csproj", "{FD8F92EB-5818-4C59-8859-19D3A74F979B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests", "Automatonymous.Tests\Automatonymous.Tests.csproj", "{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{16AD746E-0996-4A4C-8219-3D18EEFE91C3} = {16AD746E-0996-4A4C-8219-3D18EEFE91C3}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Visualizer", "Automatonymous.Visualizer\Automatonymous.Visualizer.csproj", "{CD346A24-EEBB-493C-AAC0-E9896340B66A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{16AD746E-0996-4A4C-8219-3D18EEFE91C3} = {16AD746E-0996-4A4C-8219-3D18EEFE91C3}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassTransit", "MassTransit", "{B4965117-C0CF-4B58-BDBB-42C34996D321}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.MassTransitIntegration", "MassTransit\Automatonymous.MassTransitIntegration\Automatonymous.MassTransitIntegration.csproj", "{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.AutomatonymousTests", "MassTransit\MassTransit.AutomatonymousTests\MassTransit.AutomatonymousTests.csproj", "{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{16AD746E-0996-4A4C-8219-3D18EEFE91C3} = {16AD746E-0996-4A4C-8219-3D18EEFE91C3}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{873F772E-31A3-42DA-AA54-C2DA547F6491}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B} = {FD8F92EB-5818-4C59-8859-19D3A74F979B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous-NetCore45", "Automatonymous\Automatonymous-NetCore45.csproj", "{16AD746E-0996-4A4C-8219-3D18EEFE91C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B} = {FD8F92EB-5818-4C59-8859-19D3A74F979B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests-NetCore45", "Automatonymous.Tests\Automatonymous.Tests-NetCore45.csproj", "{E8C9E7ED-AB5E-4236-A08B-EDA9A4E8953B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B} = {FD8F92EB-5818-4C59-8859-19D3A74F979B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RegularDotNet", "RegularDotNet", "{C48D6A19-8486-4844-86B2-7A433C674A4C}"
 EndProject
