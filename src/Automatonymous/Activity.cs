@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using System.Threading.Tasks;
+
+
     public interface Activity :
         AcceptStateMachineInspector
     {
@@ -21,14 +24,14 @@ namespace Automatonymous
     public interface Activity<in TInstance> :
         Activity
     {
-        void Execute(TInstance instance);
-        void Execute<TData>(TInstance instance, TData value);
+        Task Execute(TInstance instance);
+        Task Execute<TData>(TInstance instance, TData value);
     }
 
 
     public interface Activity<in TInstance, in TData> :
         Activity
     {
-        void Execute(TInstance instance, TData data);
+        Task Execute(TInstance instance, TData data);
     }
 }
