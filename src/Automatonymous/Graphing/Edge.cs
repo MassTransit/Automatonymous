@@ -15,7 +15,9 @@ namespace Automatonymous.Graphing
     using System;
 
 
+#if !NETFX_CORE
     [Serializable]
+#endif
     public class Edge
     {
         public Edge(Vertex from, Vertex to, string title)
