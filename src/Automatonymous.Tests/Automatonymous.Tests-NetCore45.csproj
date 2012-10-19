@@ -9,8 +9,8 @@
     <ProjectGuid>{E8C9E7ED-AB5E-4236-A08B-EDA9A4E8953B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Automatonymous.Tests_NetCore45</RootNamespace>
-    <AssemblyName>Automatonymous.Tests-NetCore45</AssemblyName>
+    <RootNamespace>Automatonymous.Tests</RootNamespace>
+    <AssemblyName>Automatonymous.Tests</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
