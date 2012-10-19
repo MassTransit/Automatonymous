@@ -65,10 +65,6 @@
       <Project>{CD346A24-EEBB-493C-AAC0-E9896340B66A}</Project>
       <Name>Automatonymous.Visualizer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
-      <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
-      <Name>Automatonymous</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -28,7 +28,7 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_capture_the_exception_type()
         {
-            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+            Assert.AreEqual(typeof(InvalidOperationException), _instance.ExceptionType);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Initialized)
                         .Try(x => x.Then(instance => instance.Called = true)
-                                      .Then(_ => { throw new ApplicationException("Boom!"); })
+                                      .Then(_ => { throw new InvalidOperationException("Boom!"); })
                                       .Then(instance => instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
                                 {
@@ -124,7 +124,7 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_capture_the_exception_type()
         {
-            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+            Assert.AreEqual(typeof(InvalidOperationException), _instance.ExceptionType);
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Initialized)
                         .Try(x => x.Then(instance => instance.Called = true)
-                                      .Then(_ => { throw new ApplicationException("Boom!"); })
+                                      .Then(_ => { throw new InvalidOperationException("Boom!"); })
                                       .Then(instance => instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
                                 {
