@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActionActivity.cs" />
+    <Compile Include="Activities\AsyncActionActivity.cs" />
     <Compile Include="Activities\CallActivity.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />
     <Compile Include="Activities\DataConverterActivity.cs" />

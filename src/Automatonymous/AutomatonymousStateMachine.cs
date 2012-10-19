@@ -17,6 +17,7 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Activities;
     using Binders;
     using Impl;
@@ -130,6 +131,23 @@ namespace Automatonymous
 
                     _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
+        }
+
+        public Task RaiseEventAsync(TInstance instance, Event @event)
+        {
+            if (instance == null)
+                throw new ArgumentNullException("instance");
+
+            var currentState = InstanceStateAccessor.Get(instance);
+
+            _stateCache[currentState.Name].Raise(instance, @event);
+
+            return Task.Factory.StartNew(() => { });
+        }
+
+        public Task RaiseEventAsync<TData>(TInstance instance, Event<TData> @event)
+        {
+            throw new NotImplementedException();
         }
 
         public IObservable<StateChanged<TInstance>> StateChanged

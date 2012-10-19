@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading.Tasks;
     using Activities;
     using Binders;
 
@@ -24,6 +25,13 @@ namespace Automatonymous
             where TInstance : class
         {
             return source.Add(new ActionActivity<TInstance>(action));
+        }
+
+        public static EventActivityBinder<TInstance> ThenAsync<TInstance>(
+            this EventActivityBinder<TInstance> source, Func<TInstance, Task> action)
+            where TInstance : class
+        {
+            return source.Add(new AsyncActionActivity<TInstance>(action));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
