@@ -15,7 +15,7 @@ namespace Automatonymous.Tests
     using System;
     using Graphing;
     using NUnit.Framework;
-    using Visualizer;
+    //using Visualizer;
 
 
     [TestFixture]
@@ -38,12 +38,13 @@ namespace Automatonymous.Tests
             Assert.IsNotNull(_graph);
         }
 
-        [Test]
-        [Explicit]
-        public void Should_show_the_goods()
-        {
-            StateMachineDebugVisualizer.TestShowVisualizer(_graph);
-        }
+        // oh noes, the visualizzzer doesn't work in FULL SCREEN METRO STYLEZ
+        //[Test]
+        //[Explicit]
+        //public void Should_show_the_goods()
+        //{
+        //    StateMachineDebugVisualizer.TestShowVisualizer(_graph);
+        //}
 
 
         class Instance

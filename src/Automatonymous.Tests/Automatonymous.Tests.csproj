@@ -66,7 +66,7 @@
       <Name>Automatonymous.Visualizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
-      <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
+      <Project>{fd8f92eb-5818-4c59-8859-19d3a74f979b}</Project>
       <Name>Automatonymous</Name>
     </ProjectReference>
   </ItemGroup>

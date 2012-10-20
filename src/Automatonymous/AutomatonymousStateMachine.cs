@@ -181,8 +181,12 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
+#if !NETFX_CORE
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
+#else
+            property.SetValue(this, @event);
+#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -209,8 +213,12 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
+#if !NETFX_CORE
             eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
                 null, null, null);
+#else
+            eventProperty.SetValue(this, @event);
+#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
@@ -241,8 +249,12 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
+#if !NETFX_CORE
             property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
+#else
+            property.SetValue(this, @event);
+#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -254,9 +266,12 @@ namespace Automatonymous
             string name = property.Name;
 
             var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
-
+#if !NETFX_CORE
             property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
                 null, null);
+#else
+            property.SetValue(this, state);
+#endif
 
             _stateCache[name] = state;
         }

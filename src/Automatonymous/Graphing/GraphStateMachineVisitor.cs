@@ -17,6 +17,8 @@ namespace Automatonymous.Graphing
     using System.Linq;
     using Activities;
     using Internals.Caching;
+    using Internals.Extensions;
+    using System.Reflection;
 
 
     public class GraphStateMachineVisitor<TInstance> :
@@ -125,6 +127,7 @@ namespace Automatonymous.Graphing
             return new Vertex(typeof(State), typeof(State), state.Name);
         }
 
+#if !NETFX_CORE
         static Vertex GetEventVertex(Event @event)
         {
             Type targetType = @event
@@ -138,5 +141,20 @@ namespace Automatonymous.Graphing
 
             return new Vertex(typeof(Event), targetType, @event.Name);
         }
+#else        
+        static Vertex GetEventVertex(Event @event)
+        {
+            Type targetType = @event
+                .GetType()
+                .GetTypeInfo().ImplementedInterfaces
+                .Where(x => x.IsConstructedGenericType)
+                .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
+                .Select(x => x.GenericTypeArguments[0])
+                .DefaultIfEmpty(typeof(Event))
+                .Single();
+
+            return new Vertex(typeof(Event), targetType, @event.Name);
+        }
+#endif
     }
 }
