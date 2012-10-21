@@ -14,6 +14,7 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
 
     public interface State :
@@ -45,9 +46,10 @@ namespace Automatonymous
         State
     {
         IEnumerable<Event> Events { get; }
-        void Raise(TInstance instance, Event @event);
 
-        void Raise<TData>(TInstance instance, Event<TData> @event, TData value);
+        Task Raise(TInstance instance, Event @event);
+
+        Task Raise<TData>(TInstance instance, Event<TData> @event, TData value);
 
         void Bind(EventActivity<TInstance> activity);
     }

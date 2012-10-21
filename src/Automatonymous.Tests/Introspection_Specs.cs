@@ -63,7 +63,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new TestStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Hello);
+            _machine.RaiseEvent(_instance, _machine.Hello).Wait();
         }
 
 

@@ -113,36 +113,34 @@ namespace Automatonymous
                 .Distinct(new NameEqualityComparer());
         }
 
-        public void RaiseEvent(TInstance instance, Event @event)
+        public async Task RaiseEvent(TInstance instance, Event @event)
         {
-            WithInstance(instance, x =>
+            await WithInstance(instance, async x =>
                 {
                     State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
-                    _stateCache[currentState.Name].Raise(instance, @event);
+                    await _stateCache[currentState.Name].Raise(instance, @event);
                 });
         }
 
-        public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
+        public async Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
         {
-            WithInstance(instance, x =>
+            await WithInstance(instance, async x =>
                 {
                     State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
-                    _stateCache[currentState.Name].Raise(instance, @event, value);
+                    await _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
         }
 
-        public Task RaiseEventAsync(TInstance instance, Event @event)
+        public async Task RaiseEventAsync(TInstance instance, Event @event)
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
             var currentState = InstanceStateAccessor.Get(instance);
 
-            _stateCache[currentState.Name].Raise(instance, @event);
-
-            return Task.Factory.StartNew(() => { });
+            await _stateCache[currentState.Name].Raise(instance, @event);
         }
 
         public Task RaiseEventAsync<TData>(TInstance instance, Event<TData> @event)
@@ -183,12 +181,12 @@ namespace Automatonymous
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
-        void WithInstance(TInstance instance, Action<TInstance> callback)
+        Task WithInstance(TInstance instance, Func<TInstance, Task> callback)
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            callback(instance);
+            return callback(instance);
         }
 
         protected void Event(Expression<Func<Event>> propertyExpression)
@@ -199,12 +197,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-#if !NETFX_CORE
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
-#else
             property.SetValue(this, @event);
-#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -231,12 +224,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-#if !NETFX_CORE
-            eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, null, null);
-#else
             eventProperty.SetValue(this, @event);
-#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
@@ -248,7 +236,7 @@ namespace Automatonymous
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    instance => RaiseEvent(instance, @event));
+                    async instance => await RaiseEvent(instance, @event));
 
                 foreach (var state in _stateCache.Where(x => x != Initial))
                 {
@@ -267,12 +255,7 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
-#if !NETFX_CORE
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
-#else
             property.SetValue(this, @event);
-#endif
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -284,12 +267,8 @@ namespace Automatonymous
             string name = property.Name;
 
             var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
-#if !NETFX_CORE
-            property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
-#else
+
             property.SetValue(this, state);
-#endif
 
             _stateCache[name] = state;
         }

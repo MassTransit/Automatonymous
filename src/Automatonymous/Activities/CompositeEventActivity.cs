@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Internals.Reflection;
 
 
@@ -21,16 +22,15 @@ namespace Automatonymous.Activities
         Activity<TInstance>
     {
         readonly CompositeEventStatus _complete;
-        readonly Action<TInstance> _completeCallback;
+        readonly Func<TInstance, Task> _completeCallback;
         readonly int _flag;
         readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
 
         public CompositeEventActivity(PropertyInfo propertyInfo, int flag,
-                                      CompositeEventStatus complete, Action<TInstance> completeCallback)
+                                      CompositeEventStatus complete, Func<TInstance, Task> completeCallback)
         {
 
             _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
-;
             _flag = flag;
             _complete = complete;
             _completeCallback = completeCallback;
@@ -41,7 +41,7 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
             CompositeEventStatus value = _property.Get(instance);
             value.Set(_flag);
@@ -49,10 +49,10 @@ namespace Automatonymous.Activities
             _property.Set(instance, value);
 
             if (value.Equals(_complete))
-                _completeCallback(instance);
+                await _completeCallback(instance);
         }
 
-        public void Execute<TData>(TInstance instance, TData ignored)
+        public async Task Execute<TData>(TInstance instance, TData ignored)
         {
             CompositeEventStatus value = _property.Get(instance);
             value.Set(_flag);
@@ -60,7 +60,7 @@ namespace Automatonymous.Activities
             _property.Set(instance, value);
 
             if (value.Equals(_complete))
-                _completeCallback(instance);
+                await _completeCallback(instance);
         }
     }
 }

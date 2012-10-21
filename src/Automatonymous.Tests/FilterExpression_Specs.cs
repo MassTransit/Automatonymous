@@ -23,13 +23,13 @@ namespace Automatonymous.Tests
             var instance = new Instance();
             var machine = new InstanceStateMachine();
 
-            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = true });
+            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = true }).Wait();
             Assert.AreEqual(machine.True, instance.CurrentState);
 
             // reset
             instance.CurrentState = machine.Initial;
 
-            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = false });
+            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = false }).Wait();
             Assert.AreEqual(machine.False, instance.CurrentState);
         }
 

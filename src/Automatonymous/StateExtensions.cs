@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public static class StateExtensions
@@ -30,7 +31,7 @@ namespace Automatonymous
             return result;
         }
 
-        public static void WithState<TInstance>(this State state, Action<State<TInstance>> callback)
+        public static async Task WithState<TInstance>(this State state, Func<State<TInstance>, Task> callback)
             where TInstance : class
         {
             if (state == null)
@@ -40,7 +41,7 @@ namespace Automatonymous
             if (result == null)
                 throw new ArgumentException("The state is invalid: " + state.Name);
 
-            callback(result);
+            await callback(result);
         }
     }
 }

@@ -40,12 +40,12 @@ namespace Automatonymous.Tests
 			_top.RaiseEvent(_instance, _top.Initialized, new Init
 			{
 				Value = "Hello"
-			});
+			}).Wait();
 
 			_bottom.RaiseEvent(_instance, _bottom.Initialized, new Init
 			{
 				Value = "Goodbye"
-			});
+			}).Wait();
 		}
 
 		class MyState

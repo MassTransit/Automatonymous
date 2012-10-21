@@ -15,9 +15,10 @@ namespace Automatonymous
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
 
-	/// <summary>
+    /// <summary>
     /// A state machine definition
     /// </summary>
     public interface StateMachine
@@ -95,7 +96,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
-        void RaiseEvent(TInstance instance, Event @event);
+        Task RaiseEvent(TInstance instance, Event @event);
 
         /// <summary>
         /// Raise a data event on the state machine instance
@@ -103,7 +104,7 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
         /// <param name="value">The data value associated with the event</param>
-        void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value);
+        Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value);
 
         /// <summary>
         /// Exposes a raised event to observers before it is raised on the instance

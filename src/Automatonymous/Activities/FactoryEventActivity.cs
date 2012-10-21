@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public class FactoryEventActivity<TInstance> :
@@ -25,18 +26,18 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
             Activity<TInstance> activity = _activityFactory();
 
-            activity.Execute(instance);
+           await  activity.Execute(instance);
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public async Task Execute<TData>(TInstance instance, TData value)
         {
             Activity<TInstance> activity = _activityFactory();
 
-            activity.Execute(instance, value);
+            await activity.Execute(instance, value);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -56,11 +57,11 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public async Task Execute(TInstance instance, TData data)
         {
             Activity<TInstance, TData> activity = _activityFactory();
 
-            activity.Execute(instance, data);
+            await activity.Execute(instance, data);
         }
 
         public void Accept(StateMachineInspector inspector)

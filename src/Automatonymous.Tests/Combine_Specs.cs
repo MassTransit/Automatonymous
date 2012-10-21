@@ -23,10 +23,10 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            _machine.RaiseEvent(_instance, _machine.Start).Wait();
 
-            _machine.RaiseEvent(_instance, _machine.First);
-            _machine.RaiseEvent(_instance, _machine.Second);
+            _machine.RaiseEvent(_instance, _machine.First).Wait();
+            _machine.RaiseEvent(_instance, _machine.Second).Wait();
 
             Assert.IsTrue(_instance.Called);
         }
@@ -36,9 +36,9 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            _machine.RaiseEvent(_instance, _machine.Start).Wait();
 
-            _machine.RaiseEvent(_instance, _machine.First);
+            _machine.RaiseEvent(_instance, _machine.First).Wait();
 
             Assert.IsFalse(_instance.Called);
         }
@@ -48,9 +48,9 @@ namespace Automatonymous.Tests
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            _machine.RaiseEvent(_instance, _machine.Start).Wait();
 
-            _machine.RaiseEvent(_instance, _machine.Second);
+            _machine.RaiseEvent(_instance, _machine.Second).Wait();
 
             Assert.IsFalse(_instance.Called);
         }

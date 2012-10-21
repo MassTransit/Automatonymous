@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using System.Threading.Tasks;
+
+
     public class EventActivityImpl<TInstance> :
         EventActivity<TInstance>
     {
@@ -24,14 +27,14 @@ namespace Automatonymous.Activities
             _activity = activity;
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
-            _activity.Execute(instance);
+            await _activity.Execute(instance);
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public async Task Execute<TData>(TInstance instance, TData value)
         {
-            _activity.Execute(instance, value);
+            await _activity.Execute(instance, value);
         }
 
         public void Accept(StateMachineInspector inspector)

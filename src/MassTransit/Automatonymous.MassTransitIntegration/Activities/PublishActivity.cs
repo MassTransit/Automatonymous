@@ -55,7 +55,7 @@ namespace Automatonymous.Activities
 
 
     public class PublishActivity<TInstance, TData, TMessage> :
-        Activity<TInstance, TData>
+        Automatonymous.Activity<TInstance, TData>
         where TInstance : SagaStateMachineInstance
         where TData : class
         where TMessage : class

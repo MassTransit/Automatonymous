@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public class DataConverterActivity<TInstance, TData> :
@@ -30,12 +31,12 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => _activity.Accept(inspector));
         }
 
-        public void Execute(TInstance instance)
+        public Task Execute(TInstance instance)
         {
             throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
         }
 
-        public void Execute<T>(TInstance instance, T value)
+        public async Task Execute<T>(TInstance instance, T value)
         {
             if (!(value is TData))
             {
@@ -48,7 +49,7 @@ namespace Automatonymous.Activities
             if (data == null)
                 throw new ArgumentNullException("value", "The data argument cannot be null");
 
-            _activity.Execute(instance, (TData)data);
+            await _activity.Execute(instance, (TData)data);
         }
     }
 }

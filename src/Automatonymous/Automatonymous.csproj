@@ -36,6 +36,9 @@
     <DocumentationFile>bin\Release\Automatonymous.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CompilerServices.AsyncTargetingPack.Net4">
+      <HintPath>..\packages\Microsoft.CompilerServices.AsyncTargetingPack.1.0.0\lib\net40\Microsoft.CompilerServices.AsyncTargetingPack.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -52,6 +55,7 @@
     <Compile Include="Activities\FactoryEventActivity.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activities\TryActivity.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Activity.cs" />
     <Compile Include="Configuration\Binders\DataEventActivityBinder.cs" />
     <Compile Include="Configuration\Binders\EventActivityBinder.cs" />
@@ -103,7 +107,9 @@
     <Compile Include="Graphing\Vertex.cs" />
     <Compile Include="Internals\**\*.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -48,9 +48,9 @@ namespace Automatonymous.Tests
             _machine.RaiseEvent(_instance, _machine.Initialized, new Init
                 {
                     Value = "Hello"
-                });
+                }).Wait();
 
-            _machine.RaiseEvent(_instance, _machine.PassedValue, 47);
+            _machine.RaiseEvent(_instance, _machine.PassedValue, 47).Wait();
         }
 
 

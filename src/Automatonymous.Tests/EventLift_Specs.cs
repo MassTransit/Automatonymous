@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -35,7 +36,7 @@ namespace Automatonymous.Tests
 
             var eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            eventLift.Raise(_instance);
+            eventLift.Raise(_instance).Wait();
         }
 
 
@@ -85,7 +86,7 @@ namespace Automatonymous.Tests
 
             var eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            eventLift.Raise(_instance, new Init());
+            eventLift.Raise(_instance, new Init()).Wait();
         }
 
 
