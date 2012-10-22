@@ -24,10 +24,10 @@ namespace Automatonymous.Activities
         where TMessage : class
     {
         readonly Func<TInstance, TData, TMessage> _messageFactory;
-        readonly Action<TInstance, TData, RequestConfigurator<TMessage>> _configurator;
+        readonly Action<TInstance, TData, InlineRequestConfigurator<TMessage>> _configurator;
 
         public PublishRequestActivity(Func<TInstance, TData, TMessage> messageFactory,
-            Action<TInstance, TData, RequestConfigurator<TMessage>> configurator)
+            Action<TInstance, TData, InlineRequestConfigurator<TMessage>> configurator)
         {
             _messageFactory = messageFactory;
             _configurator = configurator;

@@ -22,7 +22,7 @@ namespace Automatonymous
     {
         public static EventActivityBinder<TInstance, TData> PublishRequest<TInstance, TData, TMessage>(
             this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, TMessage> messageFactory,
-            Action<TInstance, TData, RequestConfigurator<TMessage>> configurator)
+            Action<TInstance, TData, InlineRequestConfigurator<TMessage>> configurator)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
             where TMessage : class
