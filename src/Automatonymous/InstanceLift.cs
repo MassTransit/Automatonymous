@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public interface InstanceLift<T>
@@ -20,10 +21,18 @@ namespace Automatonymous
     {
         void Raise(Event @event);
 
+        Task RaiseAsync(Event @event);
+
         void Raise<TData>(Event<TData> @event, TData value);
+        
+        Task RaiseAsync<TData>(Event<TData> @event, TData value);
 
         void Raise(Func<T, Event> eventSelector);
 
+        Task RaiseAsync(Func<T, Event> eventSelector);
+
         void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data);
+
+        Task RaiseAsync<TData>(Func<T, Event<TData>> eventSelector, TData data);
     }
 }

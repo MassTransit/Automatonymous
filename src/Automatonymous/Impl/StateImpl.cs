@@ -14,6 +14,7 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Internals.Caching;
 
 
@@ -49,7 +50,7 @@ namespace Automatonymous.Impl
 
         public Event Enter { get; private set; }
         public Event Leave { get; private set; }
-        
+
         public Event<State> BeforeEnter { get; private set; }
         public Event<State> AfterLeave { get; private set; }
 
@@ -64,30 +65,108 @@ namespace Automatonymous.Impl
 
         public void Raise(TInstance instance, Event @event)
         {
-            _activityCache.WithValue(@event, activities =>
+            List<Activity<TInstance>> activities;
+            if (!_activityCache.TryGetValue(@event, out activities))
+                return;
+
+            var notification = new EventNotification(instance, @event);
+
+            _raisingObserver.OnNext(notification);
+
+            activities.ForEach(activity => activity.Execute(instance));
+
+            _raisedObserver.OnNext(notification);
+        }
+
+        public Task<TInstance> RaiseAsync(TInstance instance, Event @event)
+        {
+            List<Activity<TInstance>> activities;
+            if (!_activityCache.TryGetValue(@event, out activities))
+                return CreateCompletedTask(instance);
+
+            var notification = new EventNotification(instance, @event);
+
+            Task<TInstance> task = Task<TInstance>.Factory.StartNew(() =>
+            {
+                _raisingObserver.OnNext(notification);
+                return instance;
+            });
+
+            activities.ForEach(activity =>
+            {
+                var asyncActivity = activity as AsyncActivity<TInstance>;
+                if (asyncActivity != null)
+                    task = ChainTask(task, () => asyncActivity.ExecuteAsync(instance));
+                else
                 {
-                    var notification = new EventNotification(instance, @event);
+                    task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
+                    {
+                        activity.Execute(instance);
+                        return instance;
+                    }));
+                }
+            });
 
-                    _raisingObserver.OnNext(notification);
+            task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
+            {
+                _raisedObserver.OnNext(notification);
+                return instance;
+            }));
 
-                    activities.ForEach(activity => activity.Execute(instance));
-
-                    _raisedObserver.OnNext(notification);
-                });
+            return task;
         }
 
         public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
         {
-            _activityCache.WithValue(@event, activities =>
+            List<Activity<TInstance>> activities;
+            if (!_activityCache.TryGetValue(@event, out activities))
+                return;
+
+            var notification = new EventNotification(instance, @event);
+
+            _raisingObserver.OnNext(notification);
+
+            activities.ForEach(activity => activity.Execute(instance, value));
+
+            _raisedObserver.OnNext(notification);
+        }
+
+        public Task<TInstance> RaiseAsync<TData>(TInstance instance, Event<TData> @event, TData value)
+        {
+            List<Activity<TInstance>> activities;
+            if (!_activityCache.TryGetValue(@event, out activities))
+                return CreateCompletedTask(instance);
+
+            var notification = new EventNotification(instance, @event);
+
+            Task<TInstance> task = Task<TInstance>.Factory.StartNew(() =>
                 {
-                    var notification = new EventNotification(instance, @event);
-
                     _raisingObserver.OnNext(notification);
-
-                    activities.ForEach(activity => activity.Execute(instance, value));
-
-                    _raisedObserver.OnNext(notification);
+                    return instance;
                 });
+
+            activities.ForEach(activity =>
+                {
+                    var asyncActivity = activity as AsyncActivity<TInstance>;
+                    if (asyncActivity != null)
+                        task = ChainTask(task, () => asyncActivity.ExecuteAsync(instance, value));
+                    else
+                    {
+                        task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
+                            {
+                                activity.Execute(instance, value);
+                                return instance;
+                            }));
+                    }
+                });
+
+            task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
+                {
+                    _raisedObserver.OnNext(notification);
+                    return instance;
+                }));
+
+            return task;
         }
 
 
@@ -106,9 +185,60 @@ namespace Automatonymous.Impl
             return string.CompareOrdinal(_name, other.Name);
         }
 
+        static Task<TInstance> CreateCompletedTask(TInstance instance)
+        {
+            var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
+            source.SetResult(instance);
+            Task<TInstance> task = source.Task;
+            return task;
+        }
+
         public override string ToString()
         {
             return string.Format("{0} (State)", _name);
+        }
+
+        static Task<TInstance> ChainTask(Task<TInstance> first, Func<Task<TInstance>> next)
+        {
+            if (first == null)
+                throw new ArgumentNullException("first");
+            if (next == null)
+                throw new ArgumentNullException("next");
+
+            var source = new TaskCompletionSource<TInstance>();
+            first.ContinueWith(antecedent =>
+                {
+                    if (first.IsFaulted)
+                        source.TrySetException(first.Exception.InnerExceptions);
+                    else if (first.IsCanceled)
+                        source.TrySetCanceled();
+                    else
+                    {
+                        try
+                        {
+                            Task<TInstance> t = next();
+                            if (t == null)
+                                source.TrySetCanceled();
+                            else
+                            {
+                                t.ContinueWith(x =>
+                                    {
+                                        if (t.IsFaulted)
+                                            source.TrySetException(t.Exception.InnerExceptions);
+                                        else if (t.IsCanceled)
+                                            source.TrySetCanceled();
+                                        else
+                                            source.TrySetResult(null);
+                                    }, TaskContinuationOptions.ExecuteSynchronously);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            source.TrySetException(ex);
+                        }
+                    }
+                }, TaskContinuationOptions.ExecuteSynchronously);
+            return source.Task;
         }
 
 

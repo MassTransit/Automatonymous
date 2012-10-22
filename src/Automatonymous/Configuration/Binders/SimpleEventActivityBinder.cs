@@ -32,7 +32,7 @@ namespace Automatonymous.Binders
         }
 
         public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event,
-                                         IEnumerable<Activity<TInstance>> activities)
+            IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
             _activities = activities;
@@ -50,6 +50,12 @@ namespace Automatonymous.Binders
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
         }
 
+        public EventActivityBinder<TInstance> Add(AsyncActivity<TInstance> activity)
+        {
+            return new SimpleEventActivityBinder<TInstance>(_machine, _event,
+                _activities.Concat(Enumerable.Repeat(activity, 1)));
+        }
+
         public StateMachine<TInstance> StateMachine
         {
             get { return _machine; }
@@ -57,12 +63,21 @@ namespace Automatonymous.Binders
 
         public IEnumerator<EventActivity<TInstance>> GetEnumerator()
         {
-            return _activities.Select(x => new EventActivityImpl<TInstance>(_event, x)).GetEnumerator();
+            return _activities.Select(CreateEventActivity).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        EventActivity<TInstance> CreateEventActivity(Activity<TInstance> activity)
+        {
+            var asyncActivity = activity as AsyncActivity<TInstance>;
+            if (asyncActivity != null)
+                return new AsyncEventActivityImpl<TInstance>(_event, asyncActivity);
+
+            return new EventActivityImpl<TInstance>(_event, activity);
         }
     }
 }

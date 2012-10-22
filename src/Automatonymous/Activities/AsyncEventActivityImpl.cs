@@ -12,23 +12,19 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using System;
-    using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
 
-    public class ConditionalEventActivityImpl<TInstance, TData> :
-        EventActivity<TInstance>
+    public class AsyncEventActivityImpl<TInstance> :
+        AsyncEventActivity<TInstance>
     {
-        readonly Activity<TInstance> _activity;
+        readonly AsyncActivity<TInstance> _activity;
         readonly Event _event;
-        readonly Func<TData, bool> _filterExpression;
 
-        public ConditionalEventActivityImpl(Event @event, Activity<TInstance> activity,
-            Expression<Func<TData, bool>> filterExpression)
+        public AsyncEventActivityImpl(Event @event, AsyncActivity<TInstance> activity)
         {
             _event = @event;
             _activity = activity;
-            _filterExpression = filterExpression.Compile();
         }
 
         public void Execute(TInstance instance)
@@ -36,23 +32,9 @@ namespace Automatonymous.Activities
             _activity.Execute(instance);
         }
 
-        public void Execute<TEventData>(TInstance instance, TEventData value)
+        public void Execute<TData>(TInstance instance, TData value)
         {
-            if (!(value is TData))
-            {
-                string message = "Expected: " + typeof(TData).FullName + ", Received: " + value.GetType().FullName;
-                throw new ArgumentException(message, "value");
-            }
-
-            object data = value;
-
-            if (data == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
-
-            if (_filterExpression((TData)data) == false)
-                return;
-
-            _activity.Execute(instance, (TData)data);
+            _activity.Execute(instance, value);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -63,6 +45,16 @@ namespace Automatonymous.Activities
         public Event Event
         {
             get { return _event; }
+        }
+
+        public Task<TInstance> ExecuteAsync(TInstance instance)
+        {
+            return _activity.ExecuteAsync(instance);
+        }
+
+        public Task<TInstance> ExecuteAsync<TData>(TInstance instance, TData value)
+        {
+            return _activity.ExecuteAsync(instance, value);
         }
     }
 }

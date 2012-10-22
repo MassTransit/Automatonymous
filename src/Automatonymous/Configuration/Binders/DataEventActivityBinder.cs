@@ -35,14 +35,14 @@ namespace Automatonymous.Binders
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-                                       Expression<Func<TData, bool>> filterExpression)
+            Expression<Func<TData, bool>> filterExpression)
             : this(machine, @event, filterExpression, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-                                       Expression<Func<TData, bool>> filterExpression,
-                                       IEnumerable<Activity<TInstance>> activities)
+            Expression<Func<TData, bool>> filterExpression,
+            IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
             _activities = activities;
@@ -66,10 +66,22 @@ namespace Automatonymous.Binders
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
         }
 
+        public EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance> activity)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
+                _activities.Concat(Enumerable.Repeat(activity, 1)));
+        }
+
         public EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity)
         {
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
                 _activities.Concat(Enumerable.Repeat(new DataConverterActivity<TInstance, TData>(activity), 1)));
+        }
+
+        public EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance, TData> activity)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
+                _activities.Concat(Enumerable.Repeat(new AsyncDataConverterActivity<TInstance, TData>(activity), 1)));
         }
 
         public StateMachine<TInstance> StateMachine
@@ -80,20 +92,32 @@ namespace Automatonymous.Binders
         public IEnumerator<EventActivity<TInstance>> GetEnumerator()
         {
             if (_filterExpression == null)
-            {
-                return _activities
-                    .Select(x => new EventActivityImpl<TInstance>(_event, x))
-                    .GetEnumerator();
-            }
+                return _activities.Select(CreateEventActivity).GetEnumerator();
 
-            return _activities
-                .Select(x => new ConditionalEventActivityImpl<TInstance, TData>(_event, x, _filterExpression))
-                .GetEnumerator();
+            return _activities.Select(CreateConditionalEventActivity).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        EventActivity<TInstance> CreateConditionalEventActivity(Activity<TInstance> activity)
+        {
+            var asyncActivity = activity as AsyncActivity<TInstance>;
+            if (asyncActivity != null)
+                return new AsyncConditionalEventActivityImpl<TInstance, TData>(_event, asyncActivity, _filterExpression);
+
+            return new ConditionalEventActivityImpl<TInstance, TData>(_event, activity, _filterExpression);
+        }
+
+        EventActivity<TInstance> CreateEventActivity(Activity<TInstance> activity)
+        {
+            var asyncActivity = activity as AsyncActivity<TInstance>;
+            if (asyncActivity != null)
+                return new AsyncEventActivityImpl<TInstance>(_event, asyncActivity);
+
+            return new EventActivityImpl<TInstance>(_event, activity);
         }
     }
 }

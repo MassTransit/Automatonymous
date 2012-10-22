@@ -23,6 +23,8 @@ namespace Automatonymous.Binders
         Event Event { get; }
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
+
+        EventActivityBinder<TInstance> Add(AsyncActivity<TInstance> activity);
     }
 
 
@@ -35,6 +37,10 @@ namespace Automatonymous.Binders
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
 
+        EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance> activity);
+
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
+
+        EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance, TData> activity);
     }
 }

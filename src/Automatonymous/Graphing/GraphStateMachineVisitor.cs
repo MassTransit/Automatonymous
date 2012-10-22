@@ -15,6 +15,7 @@ namespace Automatonymous.Graphing
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Activities;
     using Internals.Caching;
 
@@ -129,6 +130,7 @@ namespace Automatonymous.Graphing
         {
             Type targetType = @event
                 .GetType()
+                .GetTypeInfo()
                 .GetInterfaces()
                 .Where(x => x.IsGenericType)
                 .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))

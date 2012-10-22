@@ -15,9 +15,10 @@ namespace Automatonymous
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
 
-	/// <summary>
+    /// <summary>
     /// A state machine definition
     /// </summary>
     public interface StateMachine
@@ -98,12 +99,29 @@ namespace Automatonymous
         void RaiseEvent(TInstance instance, Event @event);
 
         /// <summary>
+        /// Raise a simple event on the state machine instance asynchronously
+        /// </summary>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="event">The event to raise</param>
+        /// <returns>Task for the instance once completed</returns>
+        Task<TInstance> RaiseEventAsync(TInstance instance, Event @event);
+
+        /// <summary>
         /// Raise a data event on the state machine instance
         /// </summary>
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
         /// <param name="value">The data value associated with the event</param>
         void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value);
+
+        /// <summary>
+        /// Raise a data event on the state machine instance asynchronously
+        /// </summary>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="event">The event to raise</param>
+        /// <param name="value">The data value associated with the event</param>
+        /// <returns>Task for the instance once completed</returns>
+        Task<TInstance> RaiseEventAsync<TData>(TInstance instance, Event<TData> @event, TData value);
 
         /// <summary>
         /// Exposes a raised event to observers before it is raised on the instance
@@ -119,9 +137,9 @@ namespace Automatonymous
         /// <returns></returns>
         IObservable<EventRaised<TInstance>> EventRaised(Event @event);
 
-    	/// <summary>
-    	/// Exposes the current state on the given instance
-    	/// </summary>
-		StateAccessor<TInstance> InstanceStateAccessor { get; }
+        /// <summary>
+        /// Exposes the current state on the given instance
+        /// </summary>
+        StateAccessor<TInstance> InstanceStateAccessor { get; }
     }
 }

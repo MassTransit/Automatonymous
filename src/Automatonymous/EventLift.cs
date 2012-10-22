@@ -12,16 +12,23 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface EventLift<in TInstance>
+    using System.Threading.Tasks;
+
+
+    public interface EventLift<TInstance>
         where TInstance : class
     {
         void Raise(TInstance instance);
+
+        Task<TInstance> RaiseAsync(TInstance instance);
     }
 
 
-    public interface EventLift<in TInstance, in TData>
+    public interface EventLift<TInstance, in TData>
         where TInstance : class
     {
         void Raise(TInstance instance, TData data);
+
+        Task<TInstance> RaiseAsync(TInstance instance, TData data);
     }
 }

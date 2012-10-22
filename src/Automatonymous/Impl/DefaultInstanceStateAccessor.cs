@@ -17,6 +17,7 @@ namespace Automatonymous.Impl
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using Internals.Extensions;
 
 
     /// <summary>
@@ -58,7 +59,8 @@ namespace Automatonymous.Impl
         StateAccessor<TInstance> CreateDefaultAccessor()
         {
             List<PropertyInfo> states = typeof(TInstance)
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+                .GetTypeInfo()
+                .GetAllProperties()
                 .Where(x => x.PropertyType == typeof(State))
                 .Where(x => x.GetGetMethod(true) != null)
                 .Where(x => x.GetSetMethod(true) != null)

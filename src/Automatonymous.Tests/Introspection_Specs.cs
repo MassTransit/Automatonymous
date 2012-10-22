@@ -76,7 +76,7 @@ namespace Automatonymous.Tests
         {
         }
 
-		class Instance
+        class Instance
         {
             public State CurrentState { get; set; }
         }
@@ -86,8 +86,8 @@ namespace Automatonymous.Tests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 Event(() => Hello);
                 Event(() => YelledAt);

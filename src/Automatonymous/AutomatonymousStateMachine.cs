@@ -17,6 +17,7 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Activities;
     using Binders;
     using Impl;
@@ -114,22 +115,50 @@ namespace Automatonymous
 
         public void RaiseEvent(TInstance instance, Event @event)
         {
-            WithInstance(instance, x =>
-                {
-                    State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+            if (instance == null)
+                throw new ArgumentNullException("instance");
 
-                    _stateCache[currentState.Name].Raise(instance, @event);
-                });
+            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+
+            _stateCache[currentState.Name].Raise(instance, @event);
+        }
+
+        public Task<TInstance> RaiseEventAsync(TInstance instance, Event @event)
+        {
+            if (instance == null)
+            {
+                var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
+                source.SetException(new ArgumentNullException("instance"));
+                return source.Task;
+            }
+
+            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+
+            return _stateCache[currentState.Name].RaiseAsync(instance, @event);
         }
 
         public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
         {
-            WithInstance(instance, x =>
-                {
-                    State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+            if (instance == null)
+                throw new ArgumentNullException("instance");
 
-                    _stateCache[currentState.Name].Raise(instance, @event, value);
-                });
+            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+
+            _stateCache[currentState.Name].Raise(instance, @event, value);
+        }
+
+        public Task<TInstance> RaiseEventAsync<TData>(TInstance instance, Event<TData> @event, TData value)
+        {
+            if (instance == null)
+            {
+                var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
+                source.SetException(new ArgumentNullException("instance"));
+                return source.Task;
+            }
+
+            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
+
+            return _stateCache[currentState.Name].RaiseAsync(instance, @event, value);
         }
 
         public IObservable<StateChanged<TInstance>> StateChanged
@@ -165,14 +194,6 @@ namespace Automatonymous
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
-        void WithInstance(TInstance instance, Action<TInstance> callback)
-        {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
-
-            callback(instance);
-        }
-
         protected void Event(Expression<Func<Event>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
@@ -181,8 +202,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -209,8 +229,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-            eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, null, null);
+            eventProperty.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
@@ -241,8 +260,7 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -255,8 +273,7 @@ namespace Automatonymous
 
             var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
 
-            property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, state);
 
             _stateCache[name] = state;
         }
