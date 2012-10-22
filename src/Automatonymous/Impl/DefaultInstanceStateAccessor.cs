@@ -57,12 +57,21 @@ namespace Automatonymous.Impl
 
         StateAccessor<TInstance> CreateDefaultAccessor()
         {
+#if !NETFX_CORE
             List<PropertyInfo> states = typeof(TInstance)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
                 .Where(x => x.PropertyType == typeof(State))
                 .Where(x => x.GetGetMethod(true) != null)
                 .Where(x => x.GetSetMethod(true) != null)
                 .ToList();
+#else
+            List<PropertyInfo> states = typeof(TInstance).GetTypeInfo()
+                .DeclaredProperties
+                .Where(x => x.PropertyType == typeof(State))
+                .Where(x => x.GetMethod != null)
+                .Where(x => x.SetMethod != null)
+                .ToList();
+#endif
 
             if (states.Count > 1)
             {

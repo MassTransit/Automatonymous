@@ -17,7 +17,7 @@ namespace Automatonymous
     using Activities;
     using Binders;
 
-
+    // TODO: call never used in tests
     public static class CallExtensions
     {
         public static EventActivityBinder<TInstance> Call<TInstance>(

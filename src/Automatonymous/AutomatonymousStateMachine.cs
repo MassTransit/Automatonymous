@@ -1,4 +1,4 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers, Henrik Feldt
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -17,6 +17,7 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Activities;
     using Binders;
     using Impl;
@@ -24,7 +25,25 @@ namespace Automatonymous
     using Internals.Extensions;
     using Internals.Primitives;
 
-
+    /// <summary>
+    /// <para>The automatonymous state machine provides methods
+    /// for triggering events (that cause state transitions to
+    /// occur), inspecting the machine by using the Accept-methods,
+    /// as well as programmatically inspecting its events and states.</para>
+    /// 
+    /// <para>The When-methods allow state machine implementors
+    /// to specify activities to trigger, by calling on the returned
+    /// EventActivityBinder.</para>
+    /// 
+    /// <para>DuringAny allows state machine implementors
+    /// to bind to events irregardless of the current state
+    /// at which the event occurs.</para>
+    /// 
+    /// <para>Finally, there's the Finally method (pun intended),
+    /// which comes together with Initially method; both of which
+    /// deal with the end and start of the state machine, respectively.</para>
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
     public abstract class AutomatonymousStateMachine<TInstance> :
         AcceptStateMachineInspector,
         StateMachine<TInstance>
@@ -37,6 +56,12 @@ namespace Automatonymous
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         StateAccessor<TInstance> _instanceStateAccessor;
 
+        /// <summary>
+        /// This c'tor initializes the state machine internal state, that keeps
+        /// track of what states there are. Without calling any of the methods
+        /// on this object, there are already the <see cref="Initial"/> and
+        /// <see cref="Final"/> states.
+        /// </summary>
         protected AutomatonymousStateMachine()
         {
             _stateCache = new DictionaryCache<string, State<TInstance>>();
@@ -53,6 +78,10 @@ namespace Automatonymous
                 _stateChangedObservable);
         }
 
+        /// <summary>
+        /// Accepts an inspector on which Accept is called for each of the states.
+        /// </summary>
+        /// <param name="inspector">Instance to thread through all state machine states.</param>
         public void Accept(StateMachineInspector inspector)
         {
             Initial.Accept(inspector);
@@ -68,6 +97,10 @@ namespace Automatonymous
             Final.Accept(inspector);
         }
 
+        /// <summary>
+        /// Gets the instance state accessor which can be used to
+        /// get the state of the machine.
+        /// </summary>
         public StateAccessor<TInstance> InstanceStateAccessor
         {
             get { return _instanceStateAccessor; }
@@ -112,23 +145,23 @@ namespace Automatonymous
                 .Distinct(new NameEqualityComparer());
         }
 
-        public void RaiseEvent(TInstance instance, Event @event)
+        public async Task RaiseEvent(TInstance instance, Event @event)
         {
-            WithInstance(instance, x =>
+            await WithInstance(instance, async x =>
                 {
                     State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
-                    _stateCache[currentState.Name].Raise(instance, @event);
+                    await _stateCache[currentState.Name].Raise(instance, @event);
                 });
         }
 
-        public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
+        public async Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
         {
-            WithInstance(instance, x =>
+            await WithInstance(instance, async x =>
                 {
                     State<TInstance> currentState = InstanceStateAccessor.Get(instance);
 
-                    _stateCache[currentState.Name].Raise(instance, @event, value);
+                    await _stateCache[currentState.Name].Raise(instance, @event, value);
                 });
         }
 
@@ -157,20 +190,23 @@ namespace Automatonymous
         /// Declares what property holds the TInstance's state on the current instance of the state machine
         /// </summary>
         /// <param name="instanceStateProperty"></param>
-        /// <remarks>Setting the state accessor more than once will cause the property managed by the state machine to change each time.
-        /// Please note, the state machine can only manage one property at a given time per instance, and the best practice is to manage one property per machine.</remarks>
+        /// <remarks>Setting the state accessor more than once will cause the 
+        /// property managed by the state machine to change each time.
+        /// Please note, the state machine can only manage one property at a 
+        /// given time per instance, and the best practice is to manage one 
+        /// property per machine.</remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
             _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
-        void WithInstance(TInstance instance, Action<TInstance> callback)
+        Task WithInstance(TInstance instance, Func<TInstance, Task> callback)
         {
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            callback(instance);
+            return callback(instance);
         }
 
         protected void Event(Expression<Func<Event>> propertyExpression)
@@ -181,8 +217,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -209,8 +244,7 @@ namespace Automatonymous
 
             var @event = new SimpleEvent(name);
 
-            eventProperty.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
-                null, null, null);
+            eventProperty.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
@@ -222,7 +256,7 @@ namespace Automatonymous
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    instance => RaiseEvent(instance, @event));
+                    async instance => await RaiseEvent(instance, @event));
 
                 foreach (var state in _stateCache.Where(x => x != Initial))
                 {
@@ -241,8 +275,7 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
-            property.SetValue(this, @event, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
         }
@@ -255,8 +288,7 @@ namespace Automatonymous
 
             var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
 
-            property.SetValue(this, state, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null,
-                null, null);
+            property.SetValue(this, state);
 
             _stateCache[name] = state;
         }

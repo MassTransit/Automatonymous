@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public static class StateMachineExtensions
@@ -25,14 +26,14 @@ namespace Automatonymous
         /// <param name="stateMachine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
-        public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
+        public static async Task RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
                                                     Func<T, Event> eventSelector)
             where T : StateMachine<TInstance>
             where TInstance : class
         {
             Event @event = eventSelector(stateMachine);
 
-            stateMachine.RaiseEvent(instance, @event);
+            await stateMachine.RaiseEvent(instance, @event);
         }
 
         /// <summary>
@@ -45,14 +46,14 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
         /// <param name="data">The data for the event</param>
-        public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
+        public static async Task RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
                                                            Func<T, Event<TData>> eventSelector, TData data)
             where T : StateMachine<TInstance>
             where TInstance : class
         {
             Event<TData> @event = eventSelector(stateMachine);
 
-            stateMachine.RaiseEvent(instance, @event, data);
+            await stateMachine.RaiseEvent(instance, @event, data);
         }
 
         /// <summary>
@@ -74,13 +75,13 @@ namespace Automatonymous
             return result;
         }
 
-        public static void WithStateMachine<TInstance>(this StateMachine stateMachine,
-                                                       Action<StateMachine<TInstance>> callback)
+        public static async Task WithStateMachine<TInstance>(this StateMachine stateMachine,
+                                                       Func<StateMachine<TInstance>, Task> callback)
             where TInstance : class
         {
             StateMachine<TInstance> machine = stateMachine.For<TInstance>();
 
-            callback(machine);
+            await callback(machine);
         }
     }
 }

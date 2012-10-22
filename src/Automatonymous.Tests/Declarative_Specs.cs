@@ -12,25 +12,24 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-	using NUnit.Framework;
+	using Xunit;
 
 
-	[TestFixture]
+	
 	public class When_an_instance_has_multiple_states
 	{
-		[Test]
+		[Fact]
 		public void Should_handle_both_states()
 		{
-			Assert.AreEqual(_top.Greeted, _instance.Top);
-			Assert.AreEqual(_bottom.Ignored, _instance.Bottom);
+			Assert.Equal(_top.Greeted, _instance.Top);
+			Assert.Equal(_bottom.Ignored, _instance.Bottom);
 		}
 
 		MyState _instance;
 		TopInstanceStateMachine _top;
 		BottomInstanceStateMachine _bottom;
 
-		[TestFixtureSetUp]
-		public void Specifying_an_event_activity_with_data()
+        public When_an_instance_has_multiple_states()
 		{
 			_instance = new MyState();
 
@@ -40,12 +39,12 @@ namespace Automatonymous.Tests
 			_top.RaiseEvent(_instance, _top.Initialized, new Init
 			{
 				Value = "Hello"
-			});
+			}).Wait();
 
 			_bottom.RaiseEvent(_instance, _bottom.Initialized, new Init
 			{
 				Value = "Goodbye"
-			});
+			}).Wait();
 		}
 
 		class MyState

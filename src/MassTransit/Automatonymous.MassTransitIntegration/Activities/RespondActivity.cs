@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
     using MassTransit;
     using MassTransit.Context;
 
@@ -23,6 +24,7 @@ namespace Automatonymous.Activities
         where TData : class
         where TMessage : class
     {
+        readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<ISendContext<TMessage>> _contextCallback;
         readonly Func<TInstance, TData, TMessage> _messageFactory;
 
@@ -33,13 +35,15 @@ namespace Automatonymous.Activities
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public Task Execute(TInstance instance, TData data)
         {
             IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
 
             TMessage message = _messageFactory(instance, data);
 
             context.Respond(message, _contextCallback);
+
+            return _finishedTask;
         }
 
         public void Accept(StateMachineInspector inspector)

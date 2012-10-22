@@ -13,34 +13,34 @@
 namespace Automatonymous.Tests
 {
     using Impl;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_a_state_is_declared
     {
-        [Test]
+        [Fact]
         public void It_should_capture_the_name_of_final()
         {
-            Assert.AreEqual("Final", _machine.Final.Name);
+            Assert.Equal("Final", _machine.Final.Name);
         }
 
-        [Test]
+        [Fact]
         public void It_should_capture_the_name_of_initial()
         {
-            Assert.AreEqual("Initial", _machine.Initial.Name);
+            Assert.Equal("Initial", _machine.Initial.Name);
         }
 
-        [Test]
+        [Fact]
         public void It_should_capture_the_name_of_running()
         {
-            Assert.AreEqual("Running", _machine.Running.Name);
+            Assert.Equal("Running", _machine.Running.Name);
         }
 
-        [Test]
+        [Fact]
         public void Should_be_an_instance_of_the_proper_type()
         {
-            Assert.IsInstanceOf<StateImpl<Instance>>(_machine.Initial);
+            Assert.IsType<StateImpl<Instance>>(_machine.Initial);
         }
 
         class Instance
@@ -50,8 +50,7 @@ namespace Automatonymous.Tests
 
         TestStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
+        public When_a_state_is_declared()
         {
             _machine = new TestStateMachine();
         }
@@ -72,21 +71,19 @@ namespace Automatonymous.Tests
     }
 
 
-    [TestFixture]
+    
     public class When_a_state_is_stored_another_way
     {
-        [Test]
+        [Fact]
         public void It_should_get_the_name_right()
         {
-            Assert.AreEqual("Running", _instance.CurrentState);
+            Assert.Equal("Running", _instance.CurrentState);
         }
-
 
         TestStateMachine _machine;
         Instance _instance;
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
+        public When_a_state_is_stored_another_way()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();

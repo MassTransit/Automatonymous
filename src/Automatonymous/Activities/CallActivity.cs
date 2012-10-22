@@ -14,11 +14,13 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
 
     public class CallActivity<TInstance> :
         Activity<TInstance>
     {
+        readonly Task _task = Task.Factory.StartNew(() => { });
         readonly Action<TInstance> _action;
         readonly Expression<Action<TInstance>> _expression;
 
@@ -33,14 +35,16 @@ namespace Automatonymous.Activities
             get { return _expression; }
         }
 
-        public void Execute(TInstance instance)
+        public Task Execute(TInstance instance)
         {
             _action(instance);
+            return _task;
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public Task Execute<TData>(TInstance instance, TData value)
         {
             _action(instance);
+            return _task;
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -53,6 +57,7 @@ namespace Automatonymous.Activities
     public class CallActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
+        readonly Task _task = Task.Factory.StartNew(() => { });
         readonly Action<TInstance, TData> _action;
         readonly Expression<Action<TInstance, TData>> _expression;
 
@@ -67,9 +72,10 @@ namespace Automatonymous.Activities
             get { return _expression; }
         }
 
-        public void Execute(TInstance instance, TData data)
+        public Task Execute(TInstance instance, TData data)
         {
             _action(instance, data);
+            return _task;
         }
 
         public void Accept(StateMachineInspector inspector)

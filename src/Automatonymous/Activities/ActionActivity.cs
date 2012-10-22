@@ -1,4 +1,4 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers, Henrik Feldt
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,11 +13,14 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public class ActionActivity<TInstance> :
         Activity<TInstance>
     {
+        // pre-computed task per-instance of this activity
+        readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<TInstance> _action;
 
         public ActionActivity(Action<TInstance> action)
@@ -25,14 +28,16 @@ namespace Automatonymous.Activities
             _action = action;
         }
 
-        public void Execute(TInstance instance)
+        public Task Execute(TInstance instance)
         {
             _action(instance);
+            return _finishedTask;
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public Task Execute<TData>(TInstance instance, TData value)
         {
             _action(instance);
+            return _finishedTask;
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -45,6 +50,8 @@ namespace Automatonymous.Activities
     public class ActionActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
+        // pre-computed task per-instance of this activity
+        readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<TInstance, TData> _action;
 
         public ActionActivity(Action<TInstance, TData> action)
@@ -52,9 +59,10 @@ namespace Automatonymous.Activities
             _action = action;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public Task Execute(TInstance instance, TData data)
         {
             _action(instance, data);
+            return _finishedTask;
         }
 
         public void Accept(StateMachineInspector inspector)

@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
 
 
     public class ConditionalEventActivityImpl<TInstance, TData> :
@@ -31,12 +32,12 @@ namespace Automatonymous.Activities
             _filterExpression = filterExpression.Compile();
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
-            _activity.Execute(instance);
+            await _activity.Execute(instance);
         }
 
-        public void Execute<TEventData>(TInstance instance, TEventData value)
+        public async Task Execute<TEventData>(TInstance instance, TEventData value)
         {
             if(!(value is TData))
             {
@@ -52,7 +53,7 @@ namespace Automatonymous.Activities
             if (_filterExpression((TData)data) == false)
                 return;
 
-            _activity.Execute(instance, (TData)data);
+            await _activity.Execute(instance, (TData)data);
         }
 
         public void Accept(StateMachineInspector inspector)

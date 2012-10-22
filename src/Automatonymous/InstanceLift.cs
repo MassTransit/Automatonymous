@@ -13,17 +13,18 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public interface InstanceLift<T>
         where T : StateMachine
     {
-        void Raise(Event @event);
+        Task Raise(Event @event);
 
-        void Raise<TData>(Event<TData> @event, TData value);
+        Task Raise<TData>(Event<TData> @event, TData value);
 
-        void Raise(Func<T, Event> eventSelector);
+        Task Raise(Func<T, Event> eventSelector);
 
-        void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data);
+        Task Raise<TData>(Func<T, Event<TData>> eventSelector, TData data);
     }
 }

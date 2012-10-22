@@ -12,25 +12,25 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading.Tasks;
     using Activities;
     using Impl;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class Having_a_dependency_available
     {
-        [Test]
+        [Fact]
         public void Should_capture_the_value()
         {
-            Assert.AreEqual("79", _claim.Value);
+            Assert.Equal("79", _claim.Value);
         }
 
         ClaimAdjustmentInstance _claim;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public Having_a_dependency_available()
         {
             _claim = new ClaimAdjustmentInstance();
             _machine = new InstanceStateMachine();
@@ -41,7 +41,7 @@ namespace Automatonymous.Tests
                     Y = 23,
                 };
 
-            _machine.RaiseEvent(_claim, _machine.Create, data);
+            _machine.RaiseEvent(_claim, _machine.Create, data).Wait();
         }
 
 
@@ -56,6 +56,7 @@ namespace Automatonymous.Tests
         class CalculateValueActivity :
             Activity<ClaimAdjustment, CreateClaim>
         {
+            readonly Task _task = Task.Factory.StartNew(() => { });
             readonly CalculatorService _calculator;
 
             public CalculateValueActivity(CalculatorService calculator)
@@ -63,9 +64,10 @@ namespace Automatonymous.Tests
                 _calculator = calculator;
             }
 
-            public void Execute(ClaimAdjustment instance, CreateClaim data)
+            public Task Execute(ClaimAdjustment instance, CreateClaim data)
             {
                 instance.Value = _calculator.Add(data.X, data.Y);
+                return _task;
             }
 
             public void Accept(StateMachineInspector inspector)

@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
     using MassTransit;
 
 
@@ -21,6 +22,7 @@ namespace Automatonymous.Activities
         where TInstance : SagaStateMachineInstance
         where TMessage : class
     {
+        readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<IPublishContext<TMessage>> _contextCallback;
         readonly Func<TInstance, TMessage> _messageFactory;
 
@@ -31,16 +33,18 @@ namespace Automatonymous.Activities
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance)
+        public Task Execute(TInstance instance)
         {
             TMessage message = _messageFactory(instance);
             instance.Bus.Publish(message, _contextCallback);
+            return _finishedTask;
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public Task Execute<TData>(TInstance instance, TData value)
         {
             TMessage message = _messageFactory(instance);
             instance.Bus.Publish(message, _contextCallback);
+            return _finishedTask;
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -51,11 +55,12 @@ namespace Automatonymous.Activities
 
 
     public class PublishActivity<TInstance, TData, TMessage> :
-        Activity<TInstance, TData>
+        Automatonymous.Activity<TInstance, TData>
         where TInstance : SagaStateMachineInstance
         where TData : class
         where TMessage : class
     {
+        readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<IPublishContext<TMessage>> _contextCallback;
         readonly Func<TInstance, TData, TMessage> _messageFactory;
 
@@ -66,10 +71,11 @@ namespace Automatonymous.Activities
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public Task Execute(TInstance instance, TData data)
         {
             TMessage message = _messageFactory(instance, data);
             instance.Bus.Publish(message, _contextCallback);
+            return _finishedTask;
         }
 
         public void Accept(StateMachineInspector inspector)

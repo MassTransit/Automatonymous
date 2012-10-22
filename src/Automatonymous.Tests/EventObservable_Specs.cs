@@ -14,30 +14,29 @@ namespace Automatonymous.Tests
 {
     using System;
     using System.Collections.Generic;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_an_event_is_raised_on_an_instance
     {
-        [Test]
+        [Fact]
         public void Should_have_raised_the_initialized_event()
         {
-            Assert.AreEqual(_machine.Initialized, _observer.Events[0].Event);
+            Assert.Equal(_machine.Initialized, _observer.Events[0].Event);
         }
 
-        [Test]
+        [Fact]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(1, _observer.Events.Count);
+            Assert.Equal(1, _observer.Events.Count);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
         ChangeObserver _observer;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_an_event_is_raised_on_an_instance()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

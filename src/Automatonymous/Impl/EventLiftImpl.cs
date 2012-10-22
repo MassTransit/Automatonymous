@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
+    using System.Threading.Tasks;
+
+
     public class EventLiftImpl<TInstance> :
         EventLift<TInstance>
         where TInstance : class
@@ -25,9 +28,9 @@ namespace Automatonymous.Impl
             _event = @event;
         }
 
-        public void Raise(TInstance instance)
+        public async Task Raise(TInstance instance)
         {
-            _stateMachine.RaiseEvent(instance, _event);
+            await _stateMachine.RaiseEvent(instance, _event);
         }
     }
 
@@ -45,9 +48,9 @@ namespace Automatonymous.Impl
             _event = @event;
         }
 
-        public void Raise(TInstance instance, TData data)
+        public async Task Raise(TInstance instance, TData data)
         {
-            _stateMachine.RaiseEvent(instance, _event, data);
+            await _stateMachine.RaiseEvent(instance, _event, data);
         }
     }
 }

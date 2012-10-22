@@ -13,6 +13,7 @@
 namespace Automatonymous.Impl
 {
     using System;
+    using System.Threading.Tasks;
 
 
     public class InstanceLiftImpl<T, TInstance> :
@@ -29,28 +30,28 @@ namespace Automatonymous.Impl
             _instance = instance;
         }
 
-        public void Raise(Event @event)
+        public async Task Raise(Event @event)
         {
-            _stateMachine.RaiseEvent(_instance, @event);
+            await _stateMachine.RaiseEvent(_instance, @event);
         }
 
-        public void Raise<TData>(Event<TData> @event, TData value)
+        public async Task Raise<TData>(Event<TData> @event, TData value)
         {
-            _stateMachine.RaiseEvent(_instance, @event, value);
+            await _stateMachine.RaiseEvent(_instance, @event, value);
         }
 
-        public void Raise(Func<T, Event> eventSelector)
+        public async Task Raise(Func<T, Event> eventSelector)
         {
             Event @event = eventSelector(_stateMachine);
 
-            _stateMachine.RaiseEvent(_instance, @event);
+            await _stateMachine.RaiseEvent(_instance, @event);
         }
 
-        public void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data)
+        public async Task Raise<TData>(Func<T, Event<TData>> eventSelector, TData data)
         {
             Event<TData> @event = eventSelector(_stateMachine);
 
-            _stateMachine.RaiseEvent(_instance, @event, data);
+            await _stateMachine.RaiseEvent(_instance, @event, data);
         }
     }
 }

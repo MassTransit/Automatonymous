@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using System.Threading.Tasks;
+
+
     public class TransitionActivity<TInstance> :
         Activity<TInstance>
         where TInstance : class
@@ -30,24 +33,24 @@ namespace Automatonymous.Activities
             get { return _toState; }
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
             State lastState = _currentStateAccessor.Get(instance);
             if (lastState == _toState)
                 return;
 
-            lastState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
-            _toState.WithState<TInstance>(x => x.Raise(instance, x.BeforeEnter, lastState));
+            await lastState.WithState<TInstance>(async x => await x.Raise(instance, x.Leave));
+            await _toState.WithState<TInstance>(async x => await x.Raise(instance, x.BeforeEnter, lastState));
 
             _currentStateAccessor.Set(instance, _toState);
 
-            lastState.WithState<TInstance>(x => x.Raise(instance, x.AfterLeave, _toState));
-            _toState.WithState<TInstance>(x => x.Raise(instance, x.Enter));
+            await lastState.WithState<TInstance>(async x => await x.Raise(instance, x.AfterLeave, _toState));
+            await _toState.WithState<TInstance>(async x => await x.Raise(instance, x.Enter));
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public async Task Execute<TData>(TInstance instance, TData value)
         {
-            Execute(instance);
+            await Execute(instance);
         }
 
         public void Accept(StateMachineInspector inspector)

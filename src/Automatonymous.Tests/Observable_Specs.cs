@@ -14,38 +14,37 @@ namespace Automatonymous.Tests
 {
     using System;
     using System.Collections.Generic;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class Observing_state_machine_instance_state_changes
     {
-        [Test]
+        [Fact]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(2, _observer.Events.Count);
+            Assert.Equal(2, _observer.Events.Count);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_first_moved_to_initial()
         {
-            Assert.AreEqual(null, _observer.Events[0].Previous);
-            Assert.AreEqual(_machine.Initial, _observer.Events[0].Current);
+            Assert.Equal(null, _observer.Events[0].Previous);
+            Assert.Equal(_machine.Initial, _observer.Events[0].Current);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_second_switched_to_running()
         {
-            Assert.AreEqual(_machine.Initial, _observer.Events[1].Previous);
-            Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
+            Assert.Equal(_machine.Initial, _observer.Events[1].Previous);
+            Assert.Equal(_machine.Running, _observer.Events[1].Current);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
         ChangeObserver _observer;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public Observing_state_machine_instance_state_changes()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

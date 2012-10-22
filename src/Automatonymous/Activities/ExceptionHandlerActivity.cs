@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
 
     public class ExceptionHandlerActivity<TInstance, TException> :
@@ -32,14 +33,16 @@ namespace Automatonymous.Activities
             _activities = new List<Activity<TInstance>>(activities);
         }
 
-        public void Execute(TInstance instance)
+        public async Task Execute(TInstance instance)
         {
-            _activities.ForEach(activity => activity.Execute(instance));
+            foreach (var activity in _activities)
+                await activity.Execute(instance);
         }
 
-        public void Execute<TData>(TInstance instance, TData value)
+        public async Task Execute<TData>(TInstance instance, TData value)
         {
-            _activities.ForEach(activity => activity.Execute(instance, value));
+            foreach (var activity in _activities)
+                await activity.Execute(instance, value);
         }
 
         public void Accept(StateMachineInspector inspector)

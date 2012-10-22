@@ -14,6 +14,7 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Internals.Caching;
 
 
@@ -62,34 +63,33 @@ namespace Automatonymous.Impl
                 }));
         }
 
-        public void Raise(TInstance instance, Event @event)
+        public async Task Raise(TInstance instance, Event @event)
         {
-            _activityCache.WithValue(@event, activities =>
+            await _activityCache.WithValue(@event, async activities =>
                 {
                     var notification = new EventNotification(instance, @event);
 
                     _raisingObserver.OnNext(notification);
 
-                    activities.ForEach(activity => activity.Execute(instance));
+                    await activities.ForEachAsync(async activity => await activity.Execute(instance));
 
                     _raisedObserver.OnNext(notification);
                 });
         }
 
-        public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
+        public async Task Raise<TData>(TInstance instance, Event<TData> @event, TData value)
         {
-            _activityCache.WithValue(@event, activities =>
+            await _activityCache.WithValue(@event, async activities =>
                 {
                     var notification = new EventNotification(instance, @event);
 
                     _raisingObserver.OnNext(notification);
 
-                    activities.ForEach(activity => activity.Execute(instance, value));
+                    await activities.ForEachAsync(async activity => await activity.Execute(instance, value));
 
                     _raisedObserver.OnNext(notification);
                 });
         }
-
 
         public void Bind(EventActivity<TInstance> activity)
         {
