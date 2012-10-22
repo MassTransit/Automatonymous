@@ -55,7 +55,6 @@
     <Compile Include="Activities\FactoryEventActivity.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activities\TryActivity.cs" />
-    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Activity.cs" />
     <Compile Include="Configuration\Binders\DataEventActivityBinder.cs" />
     <Compile Include="Configuration\Binders\EventActivityBinder.cs" />

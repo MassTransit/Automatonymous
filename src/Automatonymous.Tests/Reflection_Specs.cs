@@ -31,7 +31,7 @@
     }
 
     [TestFixture]
-    public class when_getting_static_properties
+    public class When_getting_static_properties
     {
         [Test]
         public void can_get_property_on_stand_alone_class()

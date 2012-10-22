@@ -12,9 +12,19 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    /// <summary>
+    /// Gets and sets the actual state.
+    /// </summary>
+    /// <typeparam name="TInstance">The state instance type</typeparam>
     public interface StateAccessor<TInstance>
     {
+        /// <summary>
+        /// Gets the state that the accessor is pointing to.
+        /// </summary>
+        /// <param name="instance">The state instance</param>
+        /// <returns>The state that the machine is in</returns>
         State<TInstance> Get(TInstance instance);
+
         void Set(TInstance instance, State<TInstance> state);
     }
 }

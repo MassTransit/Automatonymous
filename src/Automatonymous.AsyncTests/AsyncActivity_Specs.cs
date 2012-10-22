@@ -15,12 +15,12 @@ namespace Automatonymous.Tests
     using System.Threading.Tasks;
     using Xunit;
 
-    public class When_calling_async_methods_smoke
+    public class When_returning_and_awaiting_Task
     {
         [Fact]
-        public async Task smoke()
+        public async Task AssertIsTrue()
         {
-            await do_something();
+            Assert.Equal(0.0, await Do());
         }
 
         [Fact]
@@ -35,9 +35,9 @@ namespace Automatonymous.Tests
             }
         }
 
-        static Task<int> do_something()
+        static Task<double> Do()
         {
-            return Task.FromResult(11);
+            return Task.FromResult(0.0);
         }
 
         static Task throw_exception()
@@ -45,8 +45,7 @@ namespace Automatonymous.Tests
             throw new InvalidOperationException("oh noes");
         }
     }
-
-
+    
     public class When_calling_raise_async
     {
         Instance _instance;
@@ -61,7 +60,7 @@ namespace Automatonymous.Tests
         [Fact]
         public async Task Should_transition_to_the_proper_state()
         {
-            await _machine.RaiseEventAsync(_instance, _machine.Initialized);
+            await _machine.RaiseEvent(_instance, _machine.Initialized);
             Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
@@ -93,35 +92,39 @@ namespace Automatonymous.Tests
     }
 
 
-    class When_specifying_an_async_activity
+    public class When_specifying_an_async_activity
     {
-        Instance _instance;
-        InstanceStateMachine _machine;
+        readonly Instance _instance;
+        readonly InstanceStateMachine _machine;
+        readonly Task _because;
 
         public When_specifying_an_async_activity()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
+            _because = _machine.RaiseEvent(_instance, _machine.Initialized);
         }
 
         [Fact]
         public async Task Should_transition_to_the_proper_state()
         {
-            await _machine.RaiseEventAsync(_instance, _machine.Initialized);
+            await _because;
             Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
         [Fact]
         public async Task Should_have_called_service()
         {
-            await _machine.RaiseEventAsync(_instance, _machine.Initialized);
-
+            await _because;
+            Assert.True(_machine.CalledAsyncServiceMethod);
         }
+
 
         class Instance
         {
             public State CurrentState { get; set; }
         }
+
 
         class InstanceStateMachine :
             AutomatonymousStateMachine<Instance>
@@ -146,7 +149,7 @@ namespace Automatonymous.Tests
 
             public Event Initialized { get; private set; }
 
-            public bool CalledAsyncMethod
+            public bool CalledAsyncServiceMethod
             {
                 get { return _wasCalled; }
             }
@@ -158,4 +161,83 @@ namespace Automatonymous.Tests
             }
         }
     }
+
+
+    public class When_hooking_the_initial_enter_state_event_async
+    {
+        [Fact]
+        public void Should_call_the_activity()
+        {
+            Assert.Equal(_machine.Running, _instance.CurrentState);
+        }
+
+        [Fact]
+        public void Should_have_triggered_the_before_enter_event()
+        {
+            Assert.Equal(_machine.Initial, _instance.EnteredState);
+        }
+
+        [Fact]
+        public void Should_have_triggered_the_after_leave_event()
+        {
+            Assert.Equal(_machine.Initializing, _instance.LeftState);
+        }
+
+        readonly Instance _instance;
+        readonly InstanceStateMachine _machine;
+        readonly Task _because;
+
+        public When_hooking_the_initial_enter_state_event_async()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            _because = _machine.RaiseEvent(_instance, _machine.Initialized);
+        }
+
+
+        class Instance
+        {
+            public State CurrentState { get; set; }
+            public State EnteredState { get; set; }
+            public State LeftState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                InstanceState(x => x.CurrentState);
+
+                State(() => Initializing);
+                State(() => Running);
+
+                Event(() => Initialized);
+
+                During(Initializing,
+                    When(Initialized)
+                        .TransitionTo(Running));
+
+                DuringAny(
+                    When(Initial.Enter)
+                        .TransitionTo(Initializing),
+                    When(Initial.AfterLeave)
+                        .ThenAsync(async (instance, state) =>
+                            {
+                                instance.LeftState = state;
+                                await Task.Delay(10);
+                            }),
+                    When(Initializing.BeforeEnter)
+                        .Then((instance, state) => instance.EnteredState = state));
+            }
+
+            public State Running { get; private set; }
+            public State Initializing { get; private set; }
+
+            public Event Initialized { get; private set; }
+        }
+    }
+
 }

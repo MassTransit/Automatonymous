@@ -1,4 +1,4 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers, Henrik Feldt
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -19,6 +19,7 @@ namespace Automatonymous.Activities
     public class ActionActivity<TInstance> :
         Activity<TInstance>
     {
+        // pre-computed task per-instance of this activity
         readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<TInstance> _action;
 
@@ -49,6 +50,7 @@ namespace Automatonymous.Activities
     public class ActionActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
+        // pre-computed task per-instance of this activity
         readonly Task _finishedTask = Task.Factory.StartNew(() => { });
         readonly Action<TInstance, TData> _action;
 

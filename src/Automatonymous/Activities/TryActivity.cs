@@ -1,4 +1,4 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers, Henrik Feldt
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -29,12 +29,14 @@ namespace Automatonymous.Activities
         /// <param name="exceptionType"></param>
         /// <param name="instance"></param>
         /// <param name="exceptionHandlers"></param>
-        /// <param name="dataFactory">Factory for creating the argument to Execture</param>
+        /// <param name="dataFactory">Factory for creating the argument to Execture.
+        /// Takes an exception instance, the currently-looked-at exception type (one of,
+        /// the original exception's type, or one of its consecutive base types.</param>
         /// <returns>if there was *some* exception handler that was found</returns>
         public static async Task<bool> ExecuteOnException<TInstance, TData>(
             Exception ex, Type exceptionType, TInstance instance,
             Cache<Type, List<ExceptionActivity<TInstance>>> exceptionHandlers,
-            Func<Exception, TData> dataFactory = null)
+            Func<Exception, Type, TData> dataFactory = null)
         {
             if (exceptionType == null)
                 return false;
@@ -51,7 +53,7 @@ namespace Automatonymous.Activities
                     if (dataFactory == null)
                         await activity.Execute(instance, ex);
                     else
-                        await activity.Execute(instance, dataFactory(ex));
+                        await activity.Execute(instance, dataFactory(ex, exceptionType));
 
                 return true;
             }
@@ -173,9 +175,9 @@ namespace Automatonymous.Activities
 
             var exceptionType = caught.GetType();
             if (!await TryActivity.ExecuteOnException(caught, exceptionType, instance, _exceptionHandlers,
-                ex =>
+                (ex, currExType) =>
                     {
-                        var tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
+                        var tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), currExType);
                         return Activator.CreateInstance(tupleType, data, ex);
                     }))
                 throw caught;

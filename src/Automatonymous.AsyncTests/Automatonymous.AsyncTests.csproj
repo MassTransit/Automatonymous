@@ -113,7 +113,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="AsyncActivity_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Automatonymous.Tests\**\*_Specs.cs" />
   </ItemGroup>

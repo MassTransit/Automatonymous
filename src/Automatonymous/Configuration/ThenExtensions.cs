@@ -1,4 +1,4 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers, Henrik Feldt
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -17,7 +17,9 @@ namespace Automatonymous
     using Activities;
     using Binders;
 
-
+    /// <summary>
+    /// Extensions for chaining actions onto <see cref="EventActivity{TInstance}"/>.
+    /// </summary>
     public static class ThenExtensions
     {
         public static EventActivityBinder<TInstance> Then<TInstance>(
@@ -27,11 +29,25 @@ namespace Automatonymous
             return source.Add(new ActionActivity<TInstance>(action));
         }
 
+        /// <summary>
+        /// After the specified event, run the asynchronous func passed as a parameter.
+        /// </summary>
+        /// <typeparam name="TInstance">Instance of state for the state machine</typeparam>
+        /// <param name="source">The activity binder that is fed from 
+        /// <see cref="AutomatonymousStateMachine{TInstance}.When"/>.</param>
+        /// <param name="func">An async lambda taking the state instance</param>
+        /// <example>
+        /// ...
+        /// When(Initial.AfterLeave)
+        ///     .ThenAsync(async (instance) => await Task.Delay(10)),
+        /// ...
+        /// </example>
+        /// <returns>A chainable activity binder</returns>
         public static EventActivityBinder<TInstance> ThenAsync<TInstance>(
-            this EventActivityBinder<TInstance> source, Func<TInstance, Task> action)
+            this EventActivityBinder<TInstance> source, Func<TInstance, Task> func)
             where TInstance : class
         {
-            return source.Add(new AsyncActionActivity<TInstance>(action));
+            return source.Add(new AsyncActionActivity<TInstance>(func));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
@@ -39,6 +55,31 @@ namespace Automatonymous
             where TInstance : class
         {
             return source.Add(new ActionActivity<TInstance>(action));
+        }
+
+        /// <summary>
+        /// After the specified event, run the asynchronous func passed as a parameter.
+        /// </summary>
+        /// <typeparam name="TInstance">The type of the state instance</typeparam>
+        /// <typeparam name="TData">The type of the data passed to the RaiseEvent function</typeparam>
+        /// <param name="source">The activity binder that is fed from 
+        /// <see cref="AutomatonymousStateMachine{TInstance}.When"/>.</param>
+        /// <param name="func">An async lambda taking the state instance</param>        
+        /// <example>
+        /// When(Initial.AfterLeave)
+        ///     .ThenAsync(async (instance, state) =>
+        ///         {
+        ///             instance.LeftState = state;
+        ///             await Task.Delay(10);
+        ///         }),
+        /// ...
+        /// </example>
+        /// <returns></returns>
+        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, Task> func)
+            where TInstance : class
+        {
+            return source.Add(new AsyncActionActivity<TInstance, TData>(func));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(

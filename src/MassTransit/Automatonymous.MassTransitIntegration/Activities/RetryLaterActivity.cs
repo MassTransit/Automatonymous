@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using System.Threading.Tasks;
     using MassTransit;
     using MassTransit.Context;
 
@@ -21,11 +22,15 @@ namespace Automatonymous.Activities
         where TInstance : SagaStateMachineInstance
         where TData : class
     {
-        public void Execute(TInstance instance, TData data)
+        readonly Task _done = Task.Factory.StartNew(() => { });
+
+        public Task Execute(TInstance instance, TData data)
         {
             IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
 
             context.RetryLater();
+
+            return _done;
         }
 
         public void Accept(StateMachineInspector inspector)
