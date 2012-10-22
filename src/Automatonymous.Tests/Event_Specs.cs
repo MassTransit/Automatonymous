@@ -13,40 +13,40 @@
 namespace Automatonymous.Tests
 {
     using Impl;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_an_event_is_declared
     {
-        [Test]
+        [Fact]
         public void It_should_capture_a_simple_event_name()
         {
-            Assert.AreEqual("Hello", _machine.Hello.Name);
+            Assert.Equal("Hello", _machine.Hello.Name);
         }
 
-        [Test]
+        [Fact]
         public void It_should_capture_the_data_event_name()
         {
-            Assert.AreEqual("EventA", _machine.EventA.Name);
+            Assert.Equal("EventA", _machine.EventA.Name);
         }
 
-        [Test]
+        [Fact]
         public void It_should_create_the_proper_event_type_for_data_events()
         {
-            Assert.IsInstanceOf<DataEvent<A>>(_machine.EventA);
+            Assert.IsType<DataEvent<A>>(_machine.EventA);
         }
 
-        [Test]
+        [Fact]
         public void It_should_create_the_proper_event_type_for_simple_events()
         {
-            Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
+            Assert.IsType<SimpleEvent>(_machine.Hello);
         }
 
-        [Test]
+        [Fact]
         public void It_should_create_the_event_for_the_value_type()
         {
-            Assert.IsInstanceOf<DataEvent<int>>(_machine.EventInt);
+            Assert.IsType<DataEvent<int>>(_machine.EventInt);
         }
 
         TestStateMachine _machine;
@@ -56,8 +56,7 @@ namespace Automatonymous.Tests
             public State CurrentState { get; set; }
         }
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
+        public When_an_event_is_declared()
         {
             _machine = new TestStateMachine();
         }

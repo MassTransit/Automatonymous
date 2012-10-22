@@ -12,25 +12,25 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using NUnit.Framework;
+    using Xunit;
 
-    [TestFixture]
+    
     public class When_specifying_a_conditional_event_activity
     {
-        [Test]
+        [Fact]
         public void Should_transition_to_the_proper_state()
         {
             var instance = new Instance();
             var machine = new InstanceStateMachine();
 
             machine.RaiseEvent(instance, machine.Thing, new Data { Condition = true }).Wait();
-            Assert.AreEqual(machine.True, instance.CurrentState);
+            Assert.Equal(machine.True, instance.CurrentState);
 
             // reset
             instance.CurrentState = machine.Initial;
 
             machine.RaiseEvent(instance, machine.Thing, new Data { Condition = false }).Wait();
-            Assert.AreEqual(machine.False, instance.CurrentState);
+            Assert.Equal(machine.False, instance.CurrentState);
         }
 
         class Instance

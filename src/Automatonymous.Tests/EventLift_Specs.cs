@@ -13,23 +13,22 @@
 namespace Automatonymous.Tests
 {
     using System.Threading.Tasks;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_using_an_event_raiser
     {
-        [Test]
+        [Fact]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_using_an_event_raiser()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
@@ -66,20 +65,19 @@ namespace Automatonymous.Tests
         }
     }
 
-    [TestFixture]
+    
     public class When_using_an_event_raiser_with_data
     {
-        [Test]
+        [Fact]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_using_an_event_raiser_with_data()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

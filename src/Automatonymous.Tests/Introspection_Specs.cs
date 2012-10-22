@@ -14,32 +14,32 @@ namespace Automatonymous.Tests
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class Introspection_Specs
     {
-        [Test]
+        [Fact]
         public void The_machine_shoud_report_its_instance_type()
         {
-            Assert.AreEqual(typeof(Instance), _machine.InstanceType);
+            Assert.Equal(typeof(Instance), _machine.InstanceType);
         }
 
-        [Test]
+        [Fact]
         public void The_machine_should_expose_all_events()
         {
-            Assert.AreEqual(4, ((StateMachine)_machine).Events.Count());
+            Assert.Equal(4, ((StateMachine)_machine).Events.Count());
             Assert.Contains(_machine.Ignored, _machine.Events.ToList());
             Assert.Contains(_machine.Handshake, _machine.Events.ToList());
             Assert.Contains(_machine.Hello, _machine.Events.ToList());
             Assert.Contains(_machine.YelledAt, _machine.Events.ToList());
         }
 
-        [Test]
+        [Fact]
         public void The_machine_should_expose_all_states()
         {
-            Assert.AreEqual(5, ((StateMachine)_machine).States.Count());
+            Assert.Equal(5, ((StateMachine)_machine).States.Count());
             Assert.Contains(_machine.Initial, _machine.States.ToList());
             Assert.Contains(_machine.Final, _machine.States.ToList());
             Assert.Contains(_machine.Greeted, _machine.States.ToList());
@@ -47,18 +47,17 @@ namespace Automatonymous.Tests
             Assert.Contains(_machine.Pissed, _machine.States.ToList());
         }
 
-        [Test]
+        [Fact]
         public void The_next_events_should_be_known()
         {
             IEnumerable<Event> events = _machine.NextEvents(_instance);
-            Assert.AreEqual(3, events.Count());
+            Assert.Equal(3, events.Count());
         }
 
         Instance _instance;
         TestStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
+        public Introspection_Specs()
         {
             _instance = new Instance();
             _machine = new TestStateMachine();

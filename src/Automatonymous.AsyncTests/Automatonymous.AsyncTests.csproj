@@ -122,7 +122,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="Automatonymous.AsyncTests_TemporaryKey.pfx" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\UnitTestLogo.png">
@@ -137,11 +136,6 @@
     <Content Include="Images\UnitTestStoreLogo.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Automatonymous\Automatonymous-NetCore45.csproj">

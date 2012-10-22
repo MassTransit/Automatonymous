@@ -14,32 +14,31 @@ namespace Automatonymous.Tests
 {
     using System;
     using Graphing;
-    using NUnit.Framework;
+    using Xunit;
     //using Visualizer;
 
 
-    [TestFixture]
+    
     public class When_visualizing_a_state_machine
     {
         InstanceStateMachine _machine;
         StateMachineGraph _graph;
 
-        [TestFixtureSetUp]
-        public void Setup()
+        public When_visualizing_a_state_machine()
         {
             _machine = new InstanceStateMachine();
 
             _graph = _machine.GetGraph();
         }
 
-        [Test]
+        [Fact]
         public void Should_parse_the_graph()
         {
-            Assert.IsNotNull(_graph);
+            Assert.NotNull(_graph);
         }
 
         // oh noes, the visualizzzer doesn't work in FULL SCREEN METRO STYLEZ
-        //[Test]
+        //[Fact]
         //[Explicit]
         //public void Should_show_the_goods()
         //{

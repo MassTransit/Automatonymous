@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using NUnit.Framework;
+    using Xunit;
     using System.Reflection;
 
     class SuperTarget
@@ -30,51 +30,51 @@
         public static string ZupMan { set; private get; }
     }
 
-    [TestFixture]
+    
     public class When_getting_static_properties
     {
-        [Test]
+        [Fact]
         public void can_get_property_on_stand_alone_class()
         {
             var props = GetAllStaticProperties(typeof(SuperTarget));
-            Assert.That(props.Count(), Is.EqualTo(1));
-            Assert.That(props.First().Name, Is.EqualTo("StaticProp"));
+            Assert.Equal(1, props.Count());
+            Assert.Equal("StaticProp", props.First().Name);
         }
 
-        [Test]
+        [Fact]
         public void can_get_single_property_on_super_from_sub()
         {
             var props = GetAllStaticProperties(typeof(SubTarget));
-            Assert.That(props.Count(), Is.EqualTo(1));
-            Assert.That(props.First().Name, Is.EqualTo("StaticProp"));
+            Assert.Equal(1, props.Count());
+            Assert.Equal("StaticProp", props.First().Name);
         }
 
-        [Test]
+        [Fact]
         public void can_get_private_static_properties()
         {
             var props = GetAllStaticProperties(typeof(PrivateStatics));
-            Assert.That(props.Count(), Is.EqualTo(2));
+            Assert.Equal(2, props.Count());
             var names = props.Select(x => x.Name);
-            CollectionAssert.Contains(names, "CanWeGetPrivates");
-            CollectionAssert.Contains(names, "StaticProp");
+            Assert.Contains("CanWeGetPrivates", names);
+            Assert.Contains("StaticProp", names);
         }
 
-        [Test]
+        [Fact]
         public void can_get_even_with_private_getter()
         {
             var props = GetAllStaticProperties(typeof(StaticsNoGetter));
-            Assert.That(props.Count(), Is.EqualTo(2));
+            Assert.Equal(2, props.Count());
             var names = props.Select(x => x.Name);
-            CollectionAssert.Contains(names, "ZupMan");
-            CollectionAssert.Contains(names, "StaticProp");
+            Assert.Contains("ZupMan", names);
+            Assert.Contains("StaticProp", names);
         }
 
-        [Test]
+        [Fact]
         public void can_get_with_no_hierarchy()
         {
             var props = GetAllStaticProperties(typeof(StaticsNoGetter), false);
-            Assert.That(props.Count(), Is.EqualTo(1));
-            Assert.That(props.First().Name, Is.EqualTo("ZupMan"));
+            Assert.Equal(1, props.Count());
+            Assert.Equal("ZupMan", props.First().Name);
         }
 
         static IEnumerable<PropertyInfo> GetAllStaticProperties(Type type, 

@@ -13,47 +13,46 @@
 namespace Automatonymous.Tests
 {
     using System;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_an_action_throws_an_exception
     {
-        [Test]
+        [Fact]
         public void Should_capture_the_exception_message()
         {
-            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+            Assert.Equal("Boom!", _instance.ExceptionMessage);
         }
 
-        [Test]
+        [Fact]
         public void Should_capture_the_exception_type()
         {
-            Assert.AreEqual(typeof(InvalidOperationException), _instance.ExceptionType);
+            Assert.Equal(typeof(InvalidOperationException), _instance.ExceptionType);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_called_the_exception_handler()
         {
-            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+            Assert.Equal(_machine.Failed, _instance.CurrentState);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_called_the_first_action()
         {
-            Assert.IsTrue(_instance.Called);
+            Assert.True(_instance.Called);
         }
 
-        [Test]
+        [Fact]
         public void Should_not_have_called_the_second_action()
         {
-            Assert.IsTrue(_instance.NotCalled);
+            Assert.True(_instance.NotCalled);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_an_action_throws_an_exception()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
@@ -112,44 +111,43 @@ namespace Automatonymous.Tests
     }
 
 
-    [TestFixture]
+    
     public class When_an_action_throws_an_exception_on_data_events
     {
-        [Test]
+        [Fact]
         public void Should_capture_the_exception_message()
         {
-            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+            Assert.Equal("Boom!", _instance.ExceptionMessage);
         }
 
-        [Test]
+        [Fact]
         public void Should_capture_the_exception_type()
         {
-            Assert.AreEqual(typeof(InvalidOperationException), _instance.ExceptionType);
+            Assert.Equal(typeof(InvalidOperationException), _instance.ExceptionType);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_called_the_exception_handler()
         {
-            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+            Assert.Equal(_machine.Failed, _instance.CurrentState);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_called_the_first_action()
         {
-            Assert.IsTrue(_instance.Called);
+            Assert.True(_instance.Called);
         }
 
-        [Test]
+        [Fact]
         public void Should_not_have_called_the_second_action()
         {
-            Assert.IsTrue(_instance.NotCalled);
+            Assert.True(_instance.NotCalled);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_an_action_throws_an_exception_on_data_events()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

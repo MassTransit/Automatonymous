@@ -12,29 +12,28 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class Anytime_events
     {
-        [Test]
+        [Fact]
         public void Should_be_called_regardless_of_state()
         {
-            Assert.IsTrue(_instance.HelloCalled);
+            Assert.True(_instance.HelloCalled);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_value_of_event_data()
         {
-            Assert.AreEqual("Test", _instance.AValue);
+            Assert.Equal("Test", _instance.AValue);
         }
 
         TestStateMachine _machine;
         Instance _instance;
 
-        [TestFixtureSetUp]
-        public void A_state_is_declared()
+        public Anytime_events()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();

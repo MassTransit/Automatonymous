@@ -12,35 +12,34 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_specifying_an_event_activity_with_data
     {
-        [Test]
+        [Fact]
         public void Should_have_the_proper_value()
         {
-            Assert.AreEqual("Hello", _instance.Value);
+            Assert.Equal("Hello", _instance.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_transition_to_the_proper_state()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
-        [Test]
+        [Fact]
         public void Should_capture_passed_value()
         {
-            Assert.AreEqual(47, _instance.OtherValue);
+            Assert.Equal(47, _instance.OtherValue);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity_with_data()
+        public When_specifying_an_event_activity_with_data()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

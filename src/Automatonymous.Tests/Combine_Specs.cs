@@ -12,13 +12,13 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_combining_events_into_a_single_event
     {
-        [Test]
+        [Fact]
         public void Should_have_called_combined_event()
         {
             _machine = new TestStateMachine();
@@ -28,10 +28,10 @@ namespace Automatonymous.Tests
             _machine.RaiseEvent(_instance, _machine.First).Wait();
             _machine.RaiseEvent(_instance, _machine.Second).Wait();
 
-            Assert.IsTrue(_instance.Called);
+            Assert.True(_instance.Called);
         }
 
-        [Test]
+        [Fact]
         public void Should_not_call_for_one_event()
         {
             _machine = new TestStateMachine();
@@ -40,10 +40,10 @@ namespace Automatonymous.Tests
 
             _machine.RaiseEvent(_instance, _machine.First).Wait();
 
-            Assert.IsFalse(_instance.Called);
+            Assert.False(_instance.Called);
         }
 
-        [Test]
+        [Fact]
         public void Should_not_call_for_one_other_event()
         {
             _machine = new TestStateMachine();
@@ -52,7 +52,7 @@ namespace Automatonymous.Tests
 
             _machine.RaiseEvent(_instance, _machine.Second).Wait();
 
-            Assert.IsFalse(_instance.Called);
+            Assert.False(_instance.Called);
         }
 
         TestStateMachine _machine;

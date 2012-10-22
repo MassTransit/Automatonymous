@@ -12,23 +12,22 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class When_specifying_an_event_activity
     {
-        [Test]
+        [Fact]
         public void Should_transition_to_the_proper_state()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_specifying_an_event_activity()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
@@ -66,20 +65,19 @@ namespace Automatonymous.Tests
     }
 
 
-    [TestFixture]
+    
     public class When_specifying_an_event_activity_using_initially
     {
-        [Test]
+        [Fact]
         public void Should_transition_to_the_proper_state()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_specifying_an_event_activity_using_initially()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
@@ -117,26 +115,25 @@ namespace Automatonymous.Tests
     }
 
 
-    [TestFixture]
+    
     public class When_specifying_an_event_activity_using_finally
     {
-        [Test]
+        [Fact]
         public void Should_have_called_the_finally_activity()
         {
-            Assert.AreEqual(InstanceStateMachine.Finalized, _instance.Value);
+            Assert.Equal(InstanceStateMachine.Finalized, _instance.Value);
         }
 
-        [Test]
+        [Fact]
         public void Should_transition_to_the_proper_state()
         {
-            Assert.AreEqual(_machine.Final, _instance.CurrentState);
+            Assert.Equal(_machine.Final, _instance.CurrentState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_specifying_an_event_activity_using_finally()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
@@ -179,32 +176,31 @@ namespace Automatonymous.Tests
     }
 
 
-    [TestFixture]
+    
     public class When_hooking_the_initial_enter_state_event
     {
-        [Test]
+        [Fact]
         public void Should_call_the_activity()
         {
-            Assert.AreEqual(_machine.Running, _instance.CurrentState);
+            Assert.Equal(_machine.Running, _instance.CurrentState);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_triggered_the_before_enter_event()
         {
-            Assert.AreEqual(_machine.Initial, _instance.EnteredState);
+            Assert.Equal(_machine.Initial, _instance.EnteredState);
         }
 
-        [Test]
+        [Fact]
         public void Should_have_triggered_the_after_leave_event()
         {
-            Assert.AreEqual(_machine.Initializing, _instance.LeftState);
+            Assert.Equal(_machine.Initializing, _instance.LeftState);
         }
 
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public When_hooking_the_initial_enter_state_event()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();

@@ -15,23 +15,22 @@ namespace Automatonymous.Tests
     using System.Threading.Tasks;
     using Activities;
     using Impl;
-    using NUnit.Framework;
+    using Xunit;
 
 
-    [TestFixture]
+    
     public class Having_a_dependency_available
     {
-        [Test]
+        [Fact]
         public void Should_capture_the_value()
         {
-            Assert.AreEqual("79", _claim.Value);
+            Assert.Equal("79", _claim.Value);
         }
 
         ClaimAdjustmentInstance _claim;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public Having_a_dependency_available()
         {
             _claim = new ClaimAdjustmentInstance();
             _machine = new InstanceStateMachine();
