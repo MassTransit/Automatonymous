@@ -8,6 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{16AD746E-0996-4A4C-8219-3D18EEFE91C3}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Automatonymous</RootNamespace>
     <AssemblyName>Automatonymous</AssemblyName>
@@ -102,8 +103,10 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" />
-  </ItemGroup>
+    <Compile Include="**\*.cs" Exclude="obj\**\*.cs;bin\**\*.cs" />
+    <Compile Include="..\SolutionVersion.cs">
+      <Link>SolutionVersion.cs</Link>
+    </Compile>  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>

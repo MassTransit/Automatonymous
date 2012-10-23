@@ -3,7 +3,7 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
 include FileTest
 require 'albacore'
 
-BUILD_NUMBER_BASE = '0.6.3'
+BUILD_NUMBER_BASE = '0.6.4'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
@@ -22,7 +22,7 @@ desc "Cleans, compiles, il-merges, unit tests, prepares examples, packages zip"
 task :all => [:default, :package]
 
 desc "**Default**, compiles and runs tests"
-task :default => [:clean, :nuget_restore, :compile, :tests, :nuget]
+task :default => [:clean, :nuget_restore, :compile, :tests, :compile_net45fx, :nuget]
 
 desc "Update the common version information for the build. You can call this task without building."
 assemblyinfo :global_version do |asm|
@@ -60,17 +60,30 @@ end
 
 desc "Cleans, versions, compiles the application and generates build_output/."
 task :compile => [:global_version, :build] do
-	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
-	copyOutputFiles File.join(props[:src], "MassTransit/Automatonymous.MassTransitIntegration/bin/Release"), "Automatonymous.MassTransitIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
+  copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
+  copyOutputFiles File.join(props[:src], "MassTransit/Automatonymous.MassTransitIntegration/bin/Release"), "Automatonymous.MassTransitIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
+end
+
+desc "Cleans, versions, compiles the application and generates build_output/."
+task :compile_net45fx => [:global_version, :build_net45fx] do
+	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'win8')
 end
 
 desc "Only compiles the application."
 msbuild :build do |msb|
+  msb.properties :Configuration => "Release",
+    :Platform => 'Any CPU'
+  msb.use :net4
+  msb.targets :Clean, :Build
+  msb.solution = 'src/Automatonymous.sln'
+end
+
+desc "Only compiles the application for .NET 4.5 FX CORE."
+msbuild :build_net45fx do |msb|
 	msb.properties :Configuration => "Release",
 		:Platform => 'Any CPU'
-	msb.use :net4
 	msb.targets :Clean, :Build
-	msb.solution = 'src/Automatonymous.sln'
+	msb.solution = 'src/Automatonymous-NetCore45.sln'
 end
 
 def copyOutputFiles(fromDir, filePattern, outDir)
@@ -159,7 +172,7 @@ def get_commit_hash_and_date
 end
 
 def add_files stage, what_dlls, nuspec
-  [['net40', 'net-4.0']].each{|fw|
+  [['net40', 'net-4.0'], ['.NETCore45', 'win8']].each{|fw|
     takeFrom = File.join(stage, fw[1], what_dlls)
     Dir.glob(takeFrom).each do |f|
       nuspec.file(f.gsub("/", "\\"), "lib\\#{fw[0]}")

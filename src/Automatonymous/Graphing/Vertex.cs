@@ -14,8 +14,9 @@ namespace Automatonymous.Graphing
 {
     using System;
 
-
+#if !NETFX_CORE
     [Serializable]
+#endif
     public class Vertex
     {
         public Vertex(Type type, Type targetType, string title)

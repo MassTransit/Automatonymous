@@ -16,7 +16,9 @@ namespace Automatonymous
     using System.Runtime.Serialization;
 
 
+#if !NETFX_CORE
     [Serializable]
+#endif
     public class AutomatonymousException :
         Exception
     {
@@ -44,9 +46,11 @@ namespace Automatonymous
         {
         }
 
+#if !NETFX_CORE
         protected AutomatonymousException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

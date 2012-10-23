@@ -15,7 +15,9 @@ namespace Automatonymous
     using System;
 
 
+#if !NETFX_CORE
     [Serializable]
+#endif
     public struct CompositeEventStatus :
         IComparable<CompositeEventStatus>
     {

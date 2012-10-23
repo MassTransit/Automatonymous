@@ -132,9 +132,9 @@ namespace Automatonymous.Graphing
                 .GetType()
                 .GetTypeInfo()
                 .GetInterfaces()
-                .Where(x => x.IsGenericType)
+                .Where(x => x.GetTypeInfo().IsGenericType)
                 .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
-                .Select(x => x.GetGenericArguments()[0])
+                .Select(x => x.GetTypeInfo().GetGenericArguments()[0])
                 .DefaultIfEmpty(typeof(Event))
                 .Single();
 
