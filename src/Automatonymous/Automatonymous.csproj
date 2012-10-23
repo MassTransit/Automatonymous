@@ -107,6 +107,9 @@
     <Compile Include="AcceptStateMachineInspector.cs" />
     <Compile Include="Graphing\Vertex.cs" />
     <Compile Include="Internals\**\*.cs" />
+    <Compile Include="..\SolutionVersion.cs">
+      <Link>SolutionVersion.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
