@@ -27,9 +27,10 @@ namespace MassTransit.AutomatonymousTests
         [Test]
         public void Should_create_the_saga_with_any_id()
         {
+            Guid serviceId = NewId.NextGuid();
             var responseReceived = new FutureMessage<StartupComplete>();
 
-            Bus.PublishRequest(new Start("A"), x =>
+            Bus.PublishRequest(new Start("A", serviceId), x =>
                 {
                     x.Handle<StartupComplete>(responseReceived.Set);
                     x.HandleTimeout(8.Seconds(), () => { });
@@ -37,6 +38,8 @@ namespace MassTransit.AutomatonymousTests
 
             Assert.IsTrue(responseReceived.IsAvailable(0.Seconds()));
             Assert.AreEqual("A", responseReceived.Message.ServiceName);
+
+            Assert.AreEqual(serviceId, responseReceived.Message.ServiceId);
 
             Assert.IsNotNull(_repository.ShouldContainSaga(responseReceived.Message.ServiceId, 1.Seconds()));
         }
@@ -48,7 +51,8 @@ namespace MassTransit.AutomatonymousTests
 
             configurator.StateMachineSaga(_machine, _repository, x =>
                 {
-                    x.Correlate(_machine.Started, (i, d) => i.ServiceName == d.ServiceName);
+                    x.Correlate(_machine.Started, (i, d) => i.ServiceName == d.ServiceName)
+                        .SelectCorrelationId(msg => msg.ServiceId);
                 });
         }
 
@@ -80,8 +84,8 @@ namespace MassTransit.AutomatonymousTests
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
-			{
-				InstanceState(x => x.CurrentState);
+            {
+                InstanceState(x => x.CurrentState);
 
                 State(() => Running);
                 Event(() => Started);
@@ -100,9 +104,10 @@ namespace MassTransit.AutomatonymousTests
 
         class Start
         {
-            public Start(string serviceName)
+            public Start(string serviceName, Guid serviceId)
             {
                 ServiceName = serviceName;
+                ServiceId = serviceId;
             }
 
             public Start()
@@ -110,6 +115,7 @@ namespace MassTransit.AutomatonymousTests
             }
 
             public string ServiceName { get; set; }
+            public Guid ServiceId { get; set; }
         }
 
 

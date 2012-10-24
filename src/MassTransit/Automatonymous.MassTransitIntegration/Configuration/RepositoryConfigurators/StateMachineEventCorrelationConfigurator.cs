@@ -1,4 +1,4 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+// Copyright 2011 Chris Patterson, Dru Sellers
 //  
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,18 +13,13 @@
 namespace Automatonymous.RepositoryConfigurators
 {
     using System;
-    using System.Linq.Expressions;
 
 
-    public interface StateMachineSagaRepositoryConfigurator<TInstance>
+    public interface StateMachineEventCorrelationConfigurator<TInstance, TData>
         where TInstance : class, SagaStateMachineInstance
+        where TData : class
     {
-        StateMachine<TInstance> StateMachine { get; }
-
-        StateMachineEventCorrelationConfigurator<TInstance, TData> 
-            Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
-            where TData : class;
-
-        void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression);
+        StateMachineEventCorrelationConfigurator<TInstance, TData>
+            SelectCorrelationId(Func<TData, Guid> correlationIdSelector);
     }
 }

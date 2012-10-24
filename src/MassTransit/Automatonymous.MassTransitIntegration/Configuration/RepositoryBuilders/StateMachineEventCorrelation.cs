@@ -16,11 +16,35 @@ namespace Automatonymous.RepositoryBuilders
     using System.Linq.Expressions;
 
 
+    /// <summary>
+    /// A correlation for a data event to the state machine where the default correlation
+    /// id is not present or not desired.
+    /// </summary>
+    /// <typeparam name="TInstance">The state machine instance type</typeparam>
     public interface StateMachineEventCorrelation<TInstance>
         where TInstance : SagaStateMachineInstance
     {
+        /// <summary>
+        /// The event for this correlation type
+        /// </summary>
         Event Event { get; }
 
-        Expression<Func<TInstance, TMessage, bool>> GetCorrelationExpression<TMessage>();
+        /// <summary>
+        /// The correlation expression which can be used to query some storage medium
+        /// </summary>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <returns></returns>
+        Expression<Func<TInstance, TMessage, bool>> GetCorrelationExpression<TMessage>()
+            where TMessage : class;
+
+        /// <summary>
+        /// Returns the correlationId that should be used for creating a new saga instance from
+        /// this message
+        /// </summary>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Guid GetCorrelationId<TMessage>(TMessage message)
+            where TMessage : class;
     }
 }

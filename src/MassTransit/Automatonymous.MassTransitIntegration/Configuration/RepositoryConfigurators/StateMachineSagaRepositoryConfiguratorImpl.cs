@@ -44,17 +44,20 @@ namespace Automatonymous.RepositoryConfigurators
             get { return _stateMachine; }
         }
 
-        public void Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
-            where TData : class
-        {
-            var builder = new StateMachineEventCorrelationImpl<TInstance, TData>(@event, correlationExpression);
-
-            _correlations[@event] = builder;
-        }
-
         public void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression)
         {
             _removeExpression = removeExpression;
+        }
+
+        public StateMachineEventCorrelationConfigurator<TInstance, TData> Correlate<TData>(Event<TData> @event,
+            Expression<Func<TInstance, TData, bool>> correlationExpression)
+            where TData : class
+        {
+            var correlation = new StateMachineEventCorrelationImpl<TInstance, TData>(@event, correlationExpression);
+
+            _correlations[@event] = correlation;
+
+            return correlation;
         }
 
         public StateMachineSagaRepository<TInstance> Configure()

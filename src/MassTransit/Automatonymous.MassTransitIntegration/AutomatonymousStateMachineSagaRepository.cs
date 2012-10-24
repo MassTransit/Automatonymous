@@ -69,17 +69,19 @@ namespace Automatonymous
         }
 
         public bool TryGetCorrelationExpressionForEvent<TData>(Event<TData> @event,
-            out Expression<Func<TInstance, TData, bool>> expression)
-            where TData : class
+            out Expression<Func<TInstance, TData, bool>> correlationExpression,
+            out Func<TData, Guid> correlationIdSelector) where TData : class
         {
             StateMachineEventCorrelation<TInstance> correlation;
             if (_correlations.TryGetValue(@event, out correlation))
             {
-                expression = correlation.GetCorrelationExpression<TData>();
+                correlationExpression = correlation.GetCorrelationExpression<TData>();
+                correlationIdSelector = x => correlation.GetCorrelationId(x);
                 return true;
             }
 
-            expression = null;
+            correlationExpression = null;
+            correlationIdSelector = null;
             return false;
         }
 

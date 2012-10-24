@@ -55,7 +55,8 @@ namespace Automatonymous.SubscriptionConnectors
         public IEnumerable<StateMachineSubscriptionConnector> Create()
         {
             Expression<Func<TInstance, TMessage, bool>> expression;
-            if (_repository.TryGetCorrelationExpressionForEvent(_event, out expression))
+            Func<TMessage, Guid> selector;
+            if (_repository.TryGetCorrelationExpressionForEvent(_event, out expression, out selector))
             {
                 yield return
                     (StateMachineSubscriptionConnector)
@@ -64,7 +65,7 @@ namespace Automatonymous.SubscriptionConnectors
                         new object[]
                             {
                                 _stateMachine, _repository, _event, _states, _policyFactory,
-                                _removeExpression, expression
+                                _removeExpression, expression, selector
                             });
             }
             else if (typeof(TMessage).Implements<CorrelatedBy<Guid>>())

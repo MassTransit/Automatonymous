@@ -14,20 +14,27 @@ namespace Automatonymous.RepositoryBuilders
 {
     using System;
     using System.Linq.Expressions;
-    using MassTransit.Util;
+    using Internals.Extensions;
+    using MassTransit;
+    using MassTransit.Saga.Pipeline;
+    using RepositoryConfigurators;
 
 
-    public class StateMachineEventCorrelationImpl<TInstance, TData>
-        : StateMachineEventCorrelation<TInstance>
-        where TInstance : SagaStateMachineInstance
+    public class StateMachineEventCorrelationImpl<TInstance, TData> :
+        StateMachineEventCorrelationConfigurator<TInstance, TData>,
+        StateMachineEventCorrelation<TInstance>
+        where TInstance : class, SagaStateMachineInstance
         where TData : class
     {
         readonly Expression<Func<TInstance, TData, bool>> _correlationExpression;
+        Func<TData, Guid> _correlationIdSelector;
         Event<TData> _event;
 
-        public StateMachineEventCorrelationImpl(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
+        public StateMachineEventCorrelationImpl(Event<TData> @event,
+            Expression<Func<TInstance, TData, bool>> correlationExpression)
         {
             _correlationExpression = correlationExpression;
+            _correlationIdSelector = GenerateCorrelationIdSelector(correlationExpression);
             _event = @event;
         }
 
@@ -37,8 +44,52 @@ namespace Automatonymous.RepositoryBuilders
         }
 
         public Expression<Func<TInstance, TMessage, bool>> GetCorrelationExpression<TMessage>()
+            where TMessage : class
         {
-            return _correlationExpression.TranslateTo<Expression<Func<TInstance, TMessage, bool>>>();
+            var self = this as StateMachineEventCorrelationImpl<TInstance, TMessage>;
+            if (self == null)
+            {
+                throw new ArgumentException("The correlation is for messages of type " + typeof(TData).GetTypeName() +
+                                            " but the method type is " + typeof(TMessage).GetTypeName());
+            }
+
+            return self._correlationExpression;
+        }
+
+        public Guid GetCorrelationId<TMessage>(TMessage message)
+            where TMessage : class
+        {
+            if (message == null)
+                throw new ArgumentNullException("message");
+
+            var self = this as StateMachineEventCorrelationImpl<TInstance, TMessage>;
+            if (self == null)
+            {
+                throw new ArgumentException("The correlation is for messages of type " + typeof(TData).GetTypeName() +
+                                            " but the method type is " + typeof(TMessage).GetTypeName());
+            }
+
+            return self._correlationIdSelector(message);
+        }
+
+        public StateMachineEventCorrelationConfigurator<TInstance, TData> SelectCorrelationId(
+            Func<TData, Guid> correlationIdSelector)
+        {
+            if (correlationIdSelector == null)
+                throw new ArgumentNullException("correlationIdSelector");
+
+            _correlationIdSelector = correlationIdSelector;
+
+            return this;
+        }
+
+        static Func<TData, Guid> GenerateCorrelationIdSelector(Expression<Func<TInstance, TData, bool>> selector)
+        {
+            var visitor = new CorrelationExpressionToSagaIdVisitor<TInstance, TData>();
+
+            Expression<Func<TData, Guid>> exp = visitor.Build(selector);
+
+            return exp != null ? exp.Compile() : (x => NewId.NextGuid());
         }
     }
 }

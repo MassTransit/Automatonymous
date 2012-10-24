@@ -15,12 +15,10 @@ namespace Automatonymous.SubscriptionConnectors
     using System;
     using System.Collections.Generic;
     using System.Linq.Expressions;
-    using Magnum;
     using MassTransit;
     using MassTransit.Pipeline;
     using MassTransit.Pipeline.Configuration;
     using MassTransit.Saga;
-    using MassTransit.Saga.Pipeline;
     using Saga.Pipeline;
 
 
@@ -36,23 +34,21 @@ namespace Automatonymous.SubscriptionConnectors
         readonly StateMachine<TInstance> _stateMachine;
 
         public ExpressionStateMachineSubscriptionConnector(StateMachine<TInstance> stateMachine,
-                                                           ISagaRepository<TInstance> sagaRepository,
-                                                           Event<TMessage> dataEvent,
-                                                           IEnumerable<State> states,
-                                                           StateMachinePolicyFactory<TInstance> policyFactory,
-                                                           Expression<Func<TInstance, bool>> removeExpression,
-                                                           Expression<Func<TInstance, TMessage, bool>> selector)
+            ISagaRepository<TInstance> sagaRepository,
+            Event<TMessage> dataEvent,
+            IEnumerable<State> states,
+            StateMachinePolicyFactory<TInstance> policyFactory,
+            Expression<Func<TInstance, bool>> removeExpression,
+            Expression<Func<TInstance, TMessage, bool>> selector,
+            Func<TMessage, Guid> correlationIdSelector)
         {
             _stateMachine = stateMachine;
             _sagaRepository = sagaRepository;
             _dataEvent = dataEvent;
             _selector = selector;
 
-            Func<TMessage, Guid> getNewSagaId = GenerateGetSagaIdFunction(selector);
-
-            _policy = policyFactory.GetPolicy(states, getNewSagaId, removeExpression);
+            _policy = policyFactory.GetPolicy(states, correlationIdSelector, removeExpression);
         }
-
 
         public Type MessageType
         {
@@ -70,16 +66,6 @@ namespace Automatonymous.SubscriptionConnectors
         {
             return new ExpressionStateMachineMessageSink<TInstance, TMessage>(_stateMachine, _sagaRepository,
                 _policy, _dataEvent, _selector);
-        }
-
-
-        static Func<TMessage, Guid> GenerateGetSagaIdFunction(Expression<Func<TInstance, TMessage, bool>> selector)
-        {
-            var visitor = new CorrelationExpressionToSagaIdVisitor<TInstance, TMessage>();
-
-            Expression<Func<TMessage, Guid>> exp = visitor.Build(selector);
-
-            return exp != null ? exp.Compile() : (x => NewId.NextGuid());
         }
     }
 }

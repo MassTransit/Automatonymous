@@ -21,10 +21,25 @@ namespace Automatonymous
         ISagaRepository<TInstance>
         where TInstance : class, SagaStateMachineInstance
     {
+        /// <summary>
+        /// Requests a correlation expression and identifier selector for the
+        /// event type.
+        /// </summary>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="event">The event requested</param>
+        /// <param name="correlationExpression">The expression to correlate a message to a state machine instance</param>
+        /// <param name="correlationIdSelector">The function to return a correlation id from the message</param>
+        /// <returns>True if a correlation is specified, otherwise false</returns>
         bool TryGetCorrelationExpressionForEvent<TData>(Event<TData> @event,
-                                                        out Expression<Func<TInstance, TData, bool>> expression)
+            out Expression<Func<TInstance, TData, bool>> correlationExpression,
+            out Func<TData, Guid> correlationIdSelector)
             where TData : class;
 
+        /// <summary>
+        /// Returns the completed expression for the state machine, so that completed
+        /// instances can be removed from the repository.
+        /// </summary>
+        /// <returns>The completed expression</returns>
         Expression<Func<TInstance, bool>> GetCompletedExpression();
     }
 }
