@@ -3,7 +3,7 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
 include FileTest
 require 'albacore'
 
-BUILD_NUMBER_BASE = '0.6.5'
+BUILD_NUMBER_BASE = '0.7.0'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
@@ -15,7 +15,8 @@ props = {
   :output => File.expand_path("build_output"),
   :artifacts => File.expand_path("build_artifacts"),
   :projects => ["Automatonymous"],
-  :lib => File.expand_path("lib")
+  :lib => File.expand_path("lib"),
+  :keyfile => File.expand_path("Automatonymous.snk")
 }
 
 desc "Cleans, compiles, il-merges, unit tests, prepares examples, packages zip"
@@ -75,6 +76,8 @@ msbuild :build do |msb|
     :Platform => 'Any CPU'
   msb.use :net4
   msb.targets :Clean, :Build
+  msb.properties[:SignAssembly] = 'true'
+  msb.properties[:AssemblyOriginatorKeyFile] = props[:keyfile]
   msb.solution = 'src/Automatonymous.sln'
 end
 
@@ -83,6 +86,8 @@ msbuild :build_net45fx do |msb|
 	msb.properties :Configuration => "Release",
 		:Platform => 'Any CPU'
 	msb.targets :Clean, :Build
+  msb.properties[:SignAssembly] = 'true'
+  msb.properties[:AssemblyOriginatorKeyFile] = props[:keyfile]
 	msb.solution = 'src/Automatonymous-NetCore45.sln'
 end
 
@@ -147,7 +152,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "true"
-  nuspec.dependency "MassTransit", "2.6.3"
+  nuspec.dependency "MassTransit", "2.7.0"
   nuspec.dependency "Automatonymous", asm_version
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
   add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
