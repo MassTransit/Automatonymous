@@ -52,6 +52,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompositeEvent_Specs.cs" />
     <Compile Include="FutureMessage.cs" />
     <Compile Include="Integration_Specs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
