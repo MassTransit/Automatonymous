@@ -20,7 +20,7 @@
             });
         }
         
-        public static void CombinedEventProperty<T, TMachine>(this IClassMapper<T> mapper, Expression<Func<T, State>> combinedEventProperty)
+        public static void CombinedEventProperty<T, TMachine>(this IClassMapper<T> mapper, Expression<Func<T, Event>> combinedEventProperty)
             where T : class
             where TMachine : StateMachine, new()
         {
