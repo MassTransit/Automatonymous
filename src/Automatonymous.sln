@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous", "Automatonymous\Automatonymous.csproj", "{FD8F92EB-5818-4C59-8859-19D3A74F979B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests", "Automatonymous.Tests\Automatonymous.Tests.csproj", "{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}"
@@ -12,6 +12,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.MassTransitIntegration", "MassTransit\Automatonymous.MassTransitIntegration\Automatonymous.MassTransitIntegration.csproj", "{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.AutomatonymousTests", "MassTransit\MassTransit.AutomatonymousTests\MassTransit.AutomatonymousTests.csproj", "{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.NHibernateIntegration", "Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj", "{C0932502-0847-4966-8D0A-2CA80B1669ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NHibernate", "NHibernate", "{9D51129A-6050-40F6-A776-6C7C621438DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.AutomatonymousTests", "NHibernate.AutomatonymousTests\NHibernate.AutomatonymousTests.csproj", "{06A25528-1537-4E70-85E2-CC979B924417}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,14 @@ Global
 		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3} = {B4965117-C0CF-4B58-BDBB-42C34996D321}
 		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6} = {B4965117-C0CF-4B58-BDBB-42C34996D321}
+		{C0932502-0847-4966-8D0A-2CA80B1669ED} = {9D51129A-6050-40F6-A776-6C7C621438DA}
+		{06A25528-1537-4E70-85E2-CC979B924417} = {9D51129A-6050-40F6-A776-6C7C621438DA}
 	EndGlobalSection
 EndGlobal
