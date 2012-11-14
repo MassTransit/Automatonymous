@@ -26,11 +26,9 @@ namespace Automatonymous.Activities
         readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
 
         public CompositeEventActivity(PropertyInfo propertyInfo, int flag,
-                                      CompositeEventStatus complete, Action<TInstance> completeCallback)
+            CompositeEventStatus complete, Action<TInstance> completeCallback)
         {
-
             _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
-;
             _flag = flag;
             _complete = complete;
             _completeCallback = completeCallback;

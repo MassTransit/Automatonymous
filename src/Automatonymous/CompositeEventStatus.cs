@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     using System;
 
-
 #if !NETFX_CORE
     [Serializable]
 #endif
@@ -26,6 +25,11 @@ namespace Automatonymous
         public CompositeEventStatus(int bits)
         {
             _bits = bits;
+        }
+
+        public int Bits
+        {
+            get { return _bits; }
         }
 
         public int CompareTo(CompositeEventStatus other)
