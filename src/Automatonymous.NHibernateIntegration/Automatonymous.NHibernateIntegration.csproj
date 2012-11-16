@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}</ProjectGuid>
+    <ProjectGuid>{C0932502-0847-4966-8D0A-2CA80B1669ED}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Automatonymous.Tests</RootNamespace>
-    <AssemblyName>Automatonymous.Tests</AssemblyName>
+    <RootNamespace>Automatonymous.NHibernateIntegration</RootNamespace>
+    <AssemblyName>Automatonymous.NHibernateIntegration</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -19,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\tests\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,55 +26,43 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\tests\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="nunit.framework, Version=2.6.1.12217, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.3.3.2.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
-    <Compile Include="AsyncActivity_Specs.cs" />
-    <Compile Include="Declarative_Specs.cs" />
-    <Compile Include="EventObservable_Specs.cs" />
-    <Compile Include="EventLift_Specs.cs" />
-    <Compile Include="Activity_Specs.cs" />
-    <Compile Include="Anytime_Specs.cs" />
-    <Compile Include="Combine_Specs.cs" />
-    <Compile Include="DataActivity_Specs.cs" />
-    <Compile Include="Dependency_Specs.cs" />
-    <Compile Include="Event_Specs.cs" />
-    <Compile Include="Exception_Specs.cs" />
-    <Compile Include="Group_Specs.cs" />
-    <Compile Include="InstanceLift_Specs.cs" />
-    <Compile Include="Introspection_Specs.cs" />
-    <Compile Include="Observable_Specs.cs" />
-    <Compile Include="State_Specs.cs" />
-    <Compile Include="Visualizer_Specs.cs" />
-    <Compile Include="FilterExpression_Specs.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Automatonymous.Visualizer\Automatonymous.Visualizer.csproj">
-      <Project>{CD346A24-EEBB-493C-AAC0-E9896340B66A}</Project>
-      <Name>Automatonymous.Visualizer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
-      <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
-      <Name>Automatonymous</Name>
-    </ProjectReference>
+    <Compile Include="AutomatonymousNHibernateExtensions.cs" />
+    <Compile Include="AutomatonymousStateUserType.cs" />
+    <Compile Include="CompositeEventStateUserType.cs" />
+    <Compile Include="IntStateUserTypeConverter.cs" />
+    <Compile Include="NHibernateSessionFactoryProvider.cs" />
+    <Compile Include="SqlServerSessionFactoryProvider.cs" />
+    <Compile Include="StringStateUserTypeConverter.cs" />
+    <Compile Include="StateUserTypeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
+      <Project>{fd8f92eb-5818-4c59-8859-19d3a74f979b}</Project>
+      <Name>Automatonymous</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
