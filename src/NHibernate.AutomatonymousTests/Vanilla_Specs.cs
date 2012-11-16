@@ -1,79 +1,128 @@
-﻿using System;
-
+﻿// Copyright 2011 Chris Patterson, Dru Sellers
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// this file except in compliance with the License. You may obtain a copy of the 
+// License at 
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0 
+// 
+// Unless required by applicable law or agreed to in writing, software distributed 
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+// specific language governing permissions and limitations under the License.
 namespace NHibernate.AutomatonymousTests
 {
+    using System;
     using Automatonymous;
-    using Cfg;
-    using Dialect;
-    using Mapping.ByCode;
+    using Automatonymous.RepositoryBuilders;
     using MassTransit;
+    using MassTransit.NHibernateIntegration;
     using MassTransit.NHibernateIntegration.Saga;
     using MassTransit.Saga;
     using MassTransit.Testing;
-    using Automatonymous.NHibernateIntegration;
     using NUnit.Framework;
 
 
-    class NHibernateTestFactory
-    {
-        public static ISagaRepository<When_using_NHibernateRepository.ShoppingChore> CreateRepositoryFor(StateMachine<When_using_NHibernateRepository.ShoppingChore> machine)
-        {
-            var cfg = new Configuration();
-            cfg.DataBaseIntegration(c =>
-                {
-                    c.Dialect<SQLiteDialect>();
-                    c.ConnectionString = "Data Source=:memory:;Version=3;New=True;Pooling=True;Max Pool Size=1;";
-                    c.SchemaAction = SchemaAutoAction.Create;
-                });
-            var mapper = new ModelMapper();
-            mapper.Class<When_using_NHibernateRepository.ShoppingChore>(c =>
-                {
-                    c.StateProperty<When_using_NHibernateRepository.ShoppingChore, When_using_NHibernateRepository.SuperShopper>(
-                        x => x.CurrentState);
-
-                    // Id
-                    // CompositeStateProperty
-
-                    // download SQLite!
-                });
-
-            cfg.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
-
-            return new NHibernateSagaRepository<When_using_NHibernateRepository.ShoppingChore>(cfg.BuildSessionFactory());
-        }
-    }
-
+    [TestFixture]
     public class When_using_NHibernateRepository
     {
-        SuperShopper machine;
-        SagaTest<BusTestScenario, ShoppingChore> test;
-
         [Test]
-        public void Should_receive_ExitFrontDoor()
+        public void Should_have_heard_girlfriend_yelling()
         {
-            Assert.That(test.Received.Any<GirlfriendYelling>(),
-                Is.True);
+            Assert.IsTrue(_test.Received.Any<GirlfriendYelling>());
         }
 
-        public When_using_NHibernateRepository()
-        {
-            machine = new SuperShopper();
-            test = TestFactory.ForSaga<ShoppingChore>().New(x =>
-                {
-                    x.UseStateMachineBuilder(machine);
+        SuperShopper _machine;
+        SagaTest<BusTestScenario, ShoppingChore> _test;
+        ISessionFactory _sessionFactory;
+        ISagaRepository<ShoppingChore> _repository;
+        ISagaRepository<ShoppingChore> _stateMachineRepository;
 
-                    x.UseSagaRepository(NHibernateTestFactory.CreateRepositoryFor(machine));
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            _machine = new SuperShopper();
+            _sessionFactory = new SqlLiteSessionFactoryProvider(typeof(ShoppingChoreMap)).GetSessionFactory();
+            _repository = new NHibernateSagaRepository<ShoppingChore>(_sessionFactory);
+            _stateMachineRepository = new AutomatonymousStateMachineSagaRepository<ShoppingChore>(_repository,
+                x => x.CurrentState == _machine.Final, new StateMachineEventCorrelation<ShoppingChore>[] {});
+
+            _test = TestFactory.ForSaga<ShoppingChore>().New(x =>
+                {
+                    x.UseStateMachineBuilder(_machine);
+
+                    x.UseSagaRepository(_stateMachineRepository);
 
                     x.Publish(new GirlfriendYelling
-                        {
-                            CorrelationId = "GET GOING ALREADY! I'm not having this discussion again!"
-                        });
+                                  {
+                                      CorrelationId = NewId.NextGuid()
+                                  });
                 });
 
-            test.Execute();
+            _test.Execute();
         }
 
-        internal class SuperShopper
+        [TestFixtureTearDown]
+        public void Teardown()
+        {
+            _test.Dispose();
+            _sessionFactory.Dispose();
+        }
+
+
+        class ShoppingChoreMap :
+            SagaClassMapping<ShoppingChore>
+        {
+            public ShoppingChoreMap()
+            {
+                Lazy(false);
+                Table("ShoppingChore");
+
+                this.StateProperty<ShoppingChore, SuperShopper>(x => x.CurrentState);
+
+                //this.CompositeEventProperty(x => x.);
+            }
+        }
+
+
+        /// <summary>
+        ///     Why to exit the door to go shopping
+        /// </summary>
+        class GirlfriendYelling
+            : CorrelatedBy<Guid>
+        {
+            public Guid CorrelationId { get; set; }
+        }
+
+
+        class GotHitByACar
+            : CorrelatedBy<Guid>
+        {
+            public Guid CorrelationId { get; set; }
+        }
+
+
+        class ShoppingChore
+            : SagaStateMachineInstance
+        {
+            [Obsolete("for serialization")]
+            protected ShoppingChore()
+            {
+            }
+
+            public ShoppingChore(Guid correlationId)
+            {
+                CorrelationId = correlationId;
+            }
+
+            public State CurrentState { get; set; }
+
+            public Guid CorrelationId { get; set; }
+            public IServiceBus Bus { get; set; }
+        }
+
+
+        class SuperShopper
             : AutomatonymousStateMachine<ShoppingChore>
         {
             public SuperShopper()
@@ -99,42 +148,5 @@ namespace NHibernate.AutomatonymousTests
 
             public State OnTheWayToTheStore { get; private set; }
         }
-
-
-        internal class ShoppingChore
-            : SagaStateMachineInstance
-        {
-            [Obsolete("for serialization")]
-            protected ShoppingChore()
-            {
-            }
-
-            public ShoppingChore(Guid correlationId)
-            {
-                CorrelationId = correlationId;
-            }
-
-            public Guid CorrelationId { get; set; }
-            public IServiceBus Bus { get; set; }
-            public State CurrentState { get; set; }
-        }
-
-        /// <summary>
-        /// Why to exit the door to go shopping
-        /// </summary>
-        internal class GirlfriendYelling
-            : CorrelatedBy<string>
-        {
-            public string CorrelationId { get; set; }
-        }
-
-
-        internal class GotHitByACar
-            : CorrelatedBy<string>
-        {
-            public string CorrelationId { get; set; }
-        }
     }
-
-
 }

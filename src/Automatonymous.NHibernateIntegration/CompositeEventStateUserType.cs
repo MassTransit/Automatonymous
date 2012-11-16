@@ -14,17 +14,15 @@ namespace Automatonymous.NHibernateIntegration
 {
     using System;
     using System.Data;
+    using NHibernate;
     using NHibernate.SqlTypes;
     using NHibernate.UserTypes;
 
 
-    public class AutomatonymousStateUserType<T> :
+    public class CompositeEventStateUserType :
         IUserType
-        where T : StateMachine, new()
     {
-// ReSharper disable StaticFieldInGenericType
-        static StateUserTypeConverter _converter;
-// ReSharper restore StaticFieldInGenericType
+        static readonly SqlType[] _types = new[] {NHibernateUtil.Int32.SqlType};
 
         bool IUserType.Equals(object x, object y)
         {
@@ -41,16 +39,24 @@ namespace Automatonymous.NHibernateIntegration
 
         public object NullSafeGet(IDataReader rs, string[] names, object owner)
         {
-            StateUserTypeConverter converter = GetConverter();
+            var value = (Int32)NHibernateUtil.Int32.NullSafeGet(rs, names);
 
-            return converter.Get(rs, names);
+            var status = new CompositeEventStatus(value);
+
+            return status;
         }
 
         public void NullSafeSet(IDbCommand cmd, object value, int index)
         {
-            StateUserTypeConverter converter = GetConverter();
+            if (value == null)
+            {
+                NHibernateUtil.Int32.NullSafeSet(cmd, 0, index);
+                return;
+            }
 
-            converter.Set(cmd, value, index);
+            int setValue = ((CompositeEventStatus)value).Bits;
+
+            NHibernateUtil.Int32.NullSafeSet(cmd, setValue, index);
         }
 
         public object DeepCopy(object value)
@@ -75,12 +81,7 @@ namespace Automatonymous.NHibernateIntegration
 
         public SqlType[] SqlTypes
         {
-            get
-            {
-                StateUserTypeConverter converter = GetConverter();
-
-                return converter.Types;
-            }
+            get { return _types; }
         }
 
         public Type ReturnedType
@@ -91,21 +92,6 @@ namespace Automatonymous.NHibernateIntegration
         public bool IsMutable
         {
             get { return false; }
-        }
-
-        public static void SaveAsInt32(T machine, params State[] states)
-        {
-            _converter = new IntStateUserTypeConverter<T>(machine, states);
-        }
-
-        public static void SetStateUserTypeConverter(StateUserTypeConverter converter)
-        {
-            _converter = converter;
-        }
-
-        StateUserTypeConverter GetConverter()
-        {
-            return _converter ?? (_converter = new StringStateUserTypeConverter<T>());
         }
     }
 }
