@@ -156,7 +156,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.7.0"
+  nuspec.dependency "MassTransit", "2.7.1"
   nuspec.dependency "Automatonymous", asm_version
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
   add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
