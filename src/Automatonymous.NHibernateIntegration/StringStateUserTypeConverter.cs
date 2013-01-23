@@ -17,7 +17,10 @@ namespace Automatonymous.NHibernateIntegration
     using NHibernate;
     using NHibernate.SqlTypes;
 
-
+    /// <summary>
+    /// The default storage
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class StringStateUserTypeConverter<T> :
         StateUserTypeConverter
         where T : StateMachine, new()

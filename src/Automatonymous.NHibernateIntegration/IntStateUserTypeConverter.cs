@@ -20,12 +20,19 @@ namespace Automatonymous.NHibernateIntegration
     using NHibernate;
     using NHibernate.SqlTypes;
 
-
+    /// <summary>
+    /// Converts a State to an int, based on the given ordered array of states, for storage
+    /// using NHibernate. If a new state is added, it must be added to the *end* of the array
+    /// to avoid renumbering previously persisted state machine instances.
+    /// </summary>
+    /// <typeparam name="T">The state machine type</typeparam>
     public class IntStateUserTypeConverter<T> :
         StateUserTypeConverter
         where T : StateMachine, new()
     {
+// ReSharper disable StaticFieldInGenericType
         static readonly SqlType[] _types = new[] {NHibernateUtil.Int32.SqlType};
+// ReSharper restore StaticFieldInGenericType
         readonly T _machine;
         readonly Cache<State, int> _stateToValueCache;
         readonly Cache<int, State> _valueToStateCache;

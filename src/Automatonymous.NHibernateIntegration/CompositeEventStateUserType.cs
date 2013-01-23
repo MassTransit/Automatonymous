@@ -18,7 +18,10 @@ namespace Automatonymous.NHibernateIntegration
     using NHibernate.SqlTypes;
     using NHibernate.UserTypes;
 
-
+    /// <summary>
+    /// Used to map a CompositeEventStatus property to an int for storage by 
+    /// NHibernate.
+    /// </summary>
     public class CompositeEventStateUserType :
         IUserType
     {
@@ -39,9 +42,11 @@ namespace Automatonymous.NHibernateIntegration
 
         public object NullSafeGet(IDataReader rs, string[] names, object owner)
         {
-            var value = (Int32)NHibernateUtil.Int32.NullSafeGet(rs, names);
+            object value = NHibernateUtil.Int32.NullSafeGet(rs, names);
+            if (value == null)
+                return new CompositeEventStatus();
 
-            var status = new CompositeEventStatus(value);
+            var status = new CompositeEventStatus((Int32)value);
 
             return status;
         }
