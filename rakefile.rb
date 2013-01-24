@@ -3,6 +3,12 @@ COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
 include FileTest
 require 'albacore'
 
+internal_files = Dir[File.join(File.expand_path("src"), 'Automatonymous/Internals/**/*.cs')]
+if(!internal_files.any?)
+  #you didn't git submodule update --init - here let me help you
+  sh 'git submodule update --init' unless internal_files.any?
+end
+
 BUILD_NUMBER_BASE = '0.7.1'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
