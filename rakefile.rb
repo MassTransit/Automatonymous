@@ -107,7 +107,7 @@ end
 
 desc "Runs unit tests"
 nunit :tests => [:compile] do |nunit|
-          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.1', 'tools', 'nunit-console.exe')
+          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.2', 'tools', 'nunit-console.exe')
           nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results.xml')}\""
           nunit.assemblies = FileList["tests/Automatonymous.Tests.dll", File.join(props[:src], "MassTransit/MassTransit.AutomatonymousTests/bin/Release", "MassTransit.AutomatonymousTests.dll"), File.join(props[:src], "NHibernate.AutomatonymousTests/bin/Release", "NHibernate.AutomatonymousTests.dll")]
 end
@@ -121,20 +121,39 @@ zip :zip_output do |zip|
 	zip.output_path = [props[:artifacts]]
 end
 
-desc "Restore NuGet Packages"
-task :nuget_restore do
-  sh "lib/nuget install #{File.join(props[:src],"Automatonymous.Tests","packages.config")} -o #{File.join(props[:src],"packages")}"
-  sh "lib/nuget install #{File.join(props[:src],"MassTransit","MassTransit.AutomatonymousTests","packages.config")} -o #{File.join(props[:src],"packages")}"
-  sh "lib/nuget install #{File.join(props[:src],"MassTransit","Automatonymous.MassTransitIntegration","packages.config")} -o #{File.join(props[:src],"packages")}"
-  sh "lib/nuget install #{File.join(props[:src],"Automatonymous.NHibernateIntegration","packages.config")} -o #{File.join(props[:src],"packages")}"
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "Automatonymous.Tests", "Automatonymous.Tests.csproj")
 end
 
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "MassTransit", "MassTransit.AutomatonymousTests", "MassTransit.AutomatonymousTests.csproj")
+end
+
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "MassTransit", "Automatonymous.MassTransitIntegration", "Automatonymous.MassTransitIntegration.csproj")
+end
+
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "Automatonymous.NHibernateIntegration", "Automatonymous.NHibernateIntegration.csproj")
+end
 
 desc "Builds the nuget package"
 task :nuget => ['create_nuspec', 'create_nuspec_masstransit', 'create_nuspec_nhibernate'] do
-	sh "lib/nuget pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
-  sh "lib/nuget pack #{props[:artifacts]}/Automatonymous.MassTransit.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
-	sh "lib/nuget pack #{props[:artifacts]}/Automatonymous.NHibernate.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+  sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.MassTransit.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.NHibernate.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
 end
 
 nuspec :create_nuspec do |nuspec|
