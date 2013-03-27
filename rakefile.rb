@@ -9,7 +9,7 @@ if(!internal_files.any?)
   sh 'git submodule update --init' unless internal_files.any?
 end
 
-BUILD_NUMBER_BASE = '0.7.1'
+BUILD_NUMBER_BASE = '0.7.2'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
