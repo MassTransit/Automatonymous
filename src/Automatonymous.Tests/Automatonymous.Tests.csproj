@@ -60,7 +60,9 @@
     <Compile Include="InstanceLift_Specs.cs" />
     <Compile Include="Introspection_Specs.cs" />
     <Compile Include="Observable_Specs.cs" />
+    <Compile Include="StateChangeObserver.cs" />
     <Compile Include="State_Specs.cs" />
+    <Compile Include="Transition_Specs.cs" />
     <Compile Include="Visualizer_Specs.cs" />
     <Compile Include="FilterExpression_Specs.cs" />
   </ItemGroup>

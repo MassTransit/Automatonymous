@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -32,17 +32,19 @@ namespace Automatonymous.Activities
 
         public void Execute(TInstance instance)
         {
-            State lastState = _currentStateAccessor.Get(instance);
+            State<TInstance> lastState = _currentStateAccessor.Get(instance);
             if (lastState == _toState)
                 return;
 
-            lastState.WithState<TInstance>(x => x.Raise(instance, x.Leave));
-            _toState.WithState<TInstance>(x => x.Raise(instance, x.BeforeEnter, lastState));
+            if (lastState != null)
+                lastState.Raise(instance, lastState.Leave);
+            _toState.Raise(instance, _toState.BeforeEnter, lastState);
 
             _currentStateAccessor.Set(instance, _toState);
 
-            lastState.WithState<TInstance>(x => x.Raise(instance, x.AfterLeave, _toState));
-            _toState.WithState<TInstance>(x => x.Raise(instance, x.Enter));
+            if (lastState != null)
+                lastState.Raise(instance, lastState.AfterLeave, _toState);
+            _toState.Raise(instance, _toState.Enter);
         }
 
         public void Execute<TData>(TInstance instance, TData value)

@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -18,7 +18,7 @@ namespace Automatonymous
     public static class StateMachineExtensions
     {
         /// <summary>
-        /// Raise a simple event on the state machine
+        ///     Raise a simple event on the state machine
         /// </summary>
         /// <typeparam name="T">The state machine type</typeparam>
         /// <typeparam name="TInstance">The instance type</typeparam>
@@ -26,7 +26,7 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
         public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
-                                                    Func<T, Event> eventSelector)
+            Func<T, Event> eventSelector)
             where T : StateMachine<TInstance>
             where TInstance : class
         {
@@ -36,7 +36,7 @@ namespace Automatonymous
         }
 
         /// <summary>
-        /// Raise a simple event on the state machine
+        ///     Raise a simple event on the state machine
         /// </summary>
         /// <typeparam name="T">The state machine type</typeparam>
         /// <typeparam name="TData">The data type of the event</typeparam>
@@ -46,7 +46,7 @@ namespace Automatonymous
         /// <param name="eventSelector">Selector to the event on the state machine</param>
         /// <param name="data">The data for the event</param>
         public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
-                                                           Func<T, Event<TData>> eventSelector, TData data)
+            Func<T, Event<TData>> eventSelector, TData data)
             where T : StateMachine<TInstance>
             where TInstance : class
         {
@@ -56,7 +56,7 @@ namespace Automatonymous
         }
 
         /// <summary>
-        /// Returns an instance-specific version of the state machine (smart cast essentially)
+        ///     Returns an instance-specific version of the state machine (smart cast essentially)
         /// </summary>
         /// <typeparam name="TInstance">The instance type requested</typeparam>
         /// <param name="stateMachine">The untyped state machine interface</param>
@@ -75,12 +75,41 @@ namespace Automatonymous
         }
 
         public static void WithStateMachine<TInstance>(this StateMachine stateMachine,
-                                                       Action<StateMachine<TInstance>> callback)
+            Action<StateMachine<TInstance>> callback)
             where TInstance : class
         {
             StateMachine<TInstance> machine = stateMachine.For<TInstance>();
 
             callback(machine);
+        }
+
+        /// <summary>
+        ///     Transition a state machine instance to a specific state, producing any events related
+        ///     to the transaction such as leaving the previous state and entering the target state
+        /// </summary>
+        /// <typeparam name="TInstance">The state instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state instance</param>
+        /// <param name="state">The target state</param>
+        public static void TransitionToState<TInstance>(this StateMachine<TInstance> stateMachine, TInstance instance,
+            State state)
+            where TInstance : class
+        {
+            State<TInstance> toState = state.For<TInstance>();
+
+            State<TInstance> lastState = stateMachine.InstanceStateAccessor.Get(instance);
+            if (lastState == toState)
+                return;
+
+            if (lastState != null)
+                lastState.Raise(instance, lastState.Leave);
+            toState.Raise(instance, toState.BeforeEnter, lastState);
+
+            stateMachine.InstanceStateAccessor.Set(instance, toState);
+
+            if (lastState != null)
+                lastState.Raise(instance, lastState.AfterLeave, toState);
+            toState.Raise(instance, toState.Enter);
         }
     }
 }

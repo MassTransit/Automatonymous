@@ -17,7 +17,7 @@ namespace Automatonymous.Tests
 
 
     [TestFixture]
-    public class Observing_state_machine_instance_state_changes
+    public class Explicitly_transitioning_to_a_state
     {
         [Test]
         public void Should_have_first_moved_to_initial()
@@ -27,7 +27,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public void Should_have_second_switched_to_running()
+        public void Should_have_second_moved_to_running()
         {
             Assert.AreEqual(_machine.Initial, _observer.Events[1].Previous);
             Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
@@ -36,7 +36,13 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(3, _observer.Events.Count);
+            Assert.AreEqual(2, _observer.Events.Count);
+        }
+
+        [Test]
+        public void Should_call_the_enter_event()
+        {
+            Assert.IsTrue(_instance.EnterCalled);
         }
 
         Instance _instance;
@@ -52,8 +58,7 @@ namespace Automatonymous.Tests
 
             using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
             {
-                _machine.RaiseEvent(_instance, x => x.Initialized);
-                _machine.RaiseEvent(_instance, x => x.Finish);
+                _machine.TransitionToState(_instance, _machine.Running);
             }
         }
 
@@ -61,6 +66,7 @@ namespace Automatonymous.Tests
         class Instance
         {
             public State CurrentState { get; set; }
+            public bool EnterCalled { get; set; }
         }
 
 
@@ -81,6 +87,10 @@ namespace Automatonymous.Tests
                 During(Running,
                     When(Finish)
                         .Finalize());
+
+                DuringAny(
+                    When(Running.Enter)
+                        .Then(state => { state.EnterCalled = true; }));
             }
 
             public State Running { get; private set; }
