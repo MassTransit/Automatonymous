@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,14 +14,16 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Linq.Expressions;
+    using System.Threading;
     using Activities;
+    using TaskComposition;
 
 
     public class InitialIfNullStateAccessor<TInstance> :
         StateAccessor<TInstance>
         where TInstance : class
     {
-        readonly TransitionActivity<TInstance> _initialActivity;
+        readonly Activity<TInstance> _initialActivity;
         readonly IObserver<StateChanged<TInstance>> _observer;
         readonly StateAccessor<TInstance> _rawStateAccessor;
 
@@ -34,19 +36,21 @@ namespace Automatonymous.Impl
             _initialActivity = new TransitionActivity<TInstance>(initialState, _rawStateAccessor);
         }
 
-        public State<TInstance> Get(TInstance instance)
+        State<TInstance> StateAccessor<TInstance>.Get(TInstance instance)
         {
             State<TInstance> state = _rawStateAccessor.Get(instance);
             if (state == null)
             {
-                _initialActivity.Execute(instance);
+                var composer = new TaskComposer<TInstance>(CancellationToken.None);
+                _initialActivity.Execute(composer, instance);
+                composer.Finish().Wait();
+
                 state = _rawStateAccessor.Get(instance);
             }
-
             return state;
         }
 
-        public void Set(TInstance instance, State<TInstance> state)
+        void StateAccessor<TInstance>.Set(TInstance instance, State<TInstance> state)
         {
             _rawStateAccessor.Set(instance, state);
         }

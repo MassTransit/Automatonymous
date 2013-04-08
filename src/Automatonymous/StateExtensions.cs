@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -28,19 +28,6 @@ namespace Automatonymous
                 throw new ArgumentException("The state is invalid: " + state.Name);
 
             return result;
-        }
-
-        public static void WithState<TInstance>(this State state, Action<State<TInstance>> callback)
-            where TInstance : class
-        {
-            if (state == null)
-                return;
-
-            var result = state as State<TInstance>;
-            if (result == null)
-                throw new ArgumentException("The state is invalid: " + state.Name);
-
-            callback(result);
         }
     }
 }

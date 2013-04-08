@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -17,64 +17,37 @@ namespace Automatonymous.Activities
 
 
     public class CallActivity<TInstance> :
-        Activity<TInstance>
+        ActionActivity<TInstance>
     {
-        readonly Action<TInstance> _action;
         readonly Expression<Action<TInstance>> _expression;
 
         public CallActivity(Expression<Action<TInstance>> expression)
+            : base(expression.Compile())
         {
             _expression = expression;
-            _action = expression.Compile();
         }
 
         public Expression<Action<TInstance>> Expression
         {
             get { return _expression; }
         }
-
-        public void Execute(TInstance instance)
-        {
-            _action(instance);
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            _action(instance);
-        }
-
-        public void Accept(StateMachineInspector inspector)
-        {
-            inspector.Inspect(this, x => { });
-        }
     }
 
 
     public class CallActivity<TInstance, TData> :
-        Activity<TInstance, TData>
+        ActionActivity<TInstance, TData>
     {
-        readonly Action<TInstance, TData> _action;
         readonly Expression<Action<TInstance, TData>> _expression;
 
         public CallActivity(Expression<Action<TInstance, TData>> expression)
+            : base(expression.Compile())
         {
             _expression = expression;
-            _action = expression.Compile();
         }
 
         public Expression<Action<TInstance, TData>> Expression
         {
             get { return _expression; }
-        }
-
-        public void Execute(TInstance instance, TData data)
-        {
-            _action(instance, data);
-        }
-
-        public void Accept(StateMachineInspector inspector)
-        {
-            inspector.Inspect(this, x => { });
         }
     }
 }

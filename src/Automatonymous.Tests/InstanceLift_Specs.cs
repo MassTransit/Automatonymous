@@ -35,7 +35,8 @@ namespace Automatonymous.Tests
 
             var instanceLift = _machine.CreateInstanceLift(_instance);
 
-            instanceLift.Raise(_machine.Initialized);
+            instanceLift.Raise(_machine.Initialized)
+                .Wait();
         }
 
 
@@ -87,7 +88,8 @@ namespace Automatonymous.Tests
 
             var instanceLift = _machine.CreateInstanceLift(_instance);
 
-            instanceLift.Raise(_machine.Initialized, new Init());
+            instanceLift.Raise(_machine.Initialized, new Init())
+                .Wait();
         }
 
 

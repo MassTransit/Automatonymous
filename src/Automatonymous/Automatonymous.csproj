@@ -41,10 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActionActivity.cs" />
-    <Compile Include="Activities\AsyncConditionalEventActivityImpl.cs" />
-    <Compile Include="Activities\AsyncDataConverterActivity.cs" />
-    <Compile Include="Activities\AsyncEventActivityImpl.cs" />
-    <Compile Include="Activities\AsyncFactoryEventActivity.cs" />
     <Compile Include="Activities\CallActivity.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />
     <Compile Include="Activities\DataConverterActivity.cs" />
@@ -53,12 +49,10 @@
     <Compile Include="Activities\ExceptionActivity.cs" />
     <Compile Include="Activities\ExceptionHandlerActivity.cs" />
     <Compile Include="Activities\FactoryEventActivity.cs" />
-    <Compile Include="Activities\TaskAsyncActivity.cs" />
+    <Compile Include="Activities\TaskActivity.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activities\TryActivity.cs" />
     <Compile Include="Activity.cs" />
-    <Compile Include="AsyncActivity.cs" />
-    <Compile Include="AsyncEventActivity.cs" />
     <Compile Include="Configuration\Binders\DataEventActivityBinder.cs" />
     <Compile Include="Configuration\Binders\EventActivityBinder.cs" />
     <Compile Include="Configuration\Binders\ExceptionActivityBinder.cs" />
@@ -110,8 +104,14 @@
     <Compile Include="..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
+    <Compile Include="TaskCompositionExtensions.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TaskComposition\TaskComposition.csproj">
+      <Project>{2452dad3-3a6f-4acb-8978-c75c08513757}</Project>
+      <Name>TaskComposition</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

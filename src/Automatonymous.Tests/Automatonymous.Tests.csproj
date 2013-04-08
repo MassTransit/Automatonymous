@@ -75,6 +75,10 @@
       <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
       <Name>Automatonymous</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TaskComposition\TaskComposition.csproj">
+      <Project>{2452dad3-3a6f-4acb-8978-c75c08513757}</Project>
+      <Name>TaskComposition</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

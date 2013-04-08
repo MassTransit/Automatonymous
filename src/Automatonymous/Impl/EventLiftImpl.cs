@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Impl
 {
-    using System.Threading.Tasks;
+    using TaskComposition;
 
 
     public class EventLiftImpl<TInstance> :
@@ -28,14 +28,9 @@ namespace Automatonymous.Impl
             _event = @event;
         }
 
-        public void Raise(TInstance instance)
+        void EventLift<TInstance>.Raise(Composer composer, TInstance instance)
         {
-            _stateMachine.RaiseEvent(instance, _event);
-        }
-
-        public Task<TInstance> RaiseAsync(TInstance instance)
-        {
-            return _stateMachine.RaiseEventAsync(instance, _event);
+            _stateMachine.RaiseEvent(composer, instance, _event);
         }
     }
 
@@ -53,14 +48,9 @@ namespace Automatonymous.Impl
             _event = @event;
         }
 
-        public void Raise(TInstance instance, TData data)
+        void EventLift<TInstance, TData>.Raise(Composer composer, TInstance instance, TData data)
         {
-            _stateMachine.RaiseEvent(instance, _event, data);
-        }
-
-        public Task<TInstance> RaiseAsync(TInstance instance, TData data)
-        {
-            return _stateMachine.RaiseEventAsync(instance, _event, data);
+            _stateMachine.RaiseEvent(composer, instance, _event, data);
         }
     }
 }

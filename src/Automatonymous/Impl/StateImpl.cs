@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,8 +14,8 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Internals.Caching;
+    using TaskComposition;
 
 
     public class StateImpl<TInstance> :
@@ -63,112 +63,16 @@ namespace Automatonymous.Impl
                 }));
         }
 
-        public void Raise(TInstance instance, Event @event)
+
+        void State<TInstance>.Raise(Composer composer, TInstance instance, Event @event)
         {
-            List<Activity<TInstance>> activities;
-            if (!_activityCache.TryGetValue(@event, out activities))
-                return;
-
-            var notification = new EventNotification(instance, @event);
-
-            _raisingObserver.OnNext(notification);
-
-            activities.ForEach(activity => activity.Execute(instance));
-
-            _raisedObserver.OnNext(notification);
+            Raise(composer, instance, @event, (c, a, i) => a.Execute(c, i));
         }
 
-        public Task<TInstance> RaiseAsync(TInstance instance, Event @event)
+        void State<TInstance>.Raise<TData>(Composer composer, TInstance instance, Event<TData> @event, TData value)
         {
-            List<Activity<TInstance>> activities;
-            if (!_activityCache.TryGetValue(@event, out activities))
-                return CreateCompletedTask(instance);
-
-            var notification = new EventNotification(instance, @event);
-
-            Task<TInstance> task = Task<TInstance>.Factory.StartNew(() =>
-            {
-                _raisingObserver.OnNext(notification);
-                return instance;
-            });
-
-            activities.ForEach(activity =>
-            {
-                var asyncActivity = activity as AsyncActivity<TInstance>;
-                if (asyncActivity != null)
-                    task = ChainTask(task, () => asyncActivity.ExecuteAsync(instance));
-                else
-                {
-                    task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
-                    {
-                        activity.Execute(instance);
-                        return instance;
-                    }));
-                }
-            });
-
-            task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
-            {
-                _raisedObserver.OnNext(notification);
-                return instance;
-            }));
-
-            return task;
+            Raise(composer, instance, @event, (c, a, i) => a.Execute(c, i, value));
         }
-
-        public void Raise<TData>(TInstance instance, Event<TData> @event, TData value)
-        {
-            List<Activity<TInstance>> activities;
-            if (!_activityCache.TryGetValue(@event, out activities))
-                return;
-
-            var notification = new EventNotification(instance, @event);
-
-            _raisingObserver.OnNext(notification);
-
-            activities.ForEach(activity => activity.Execute(instance, value));
-
-            _raisedObserver.OnNext(notification);
-        }
-
-        public Task<TInstance> RaiseAsync<TData>(TInstance instance, Event<TData> @event, TData value)
-        {
-            List<Activity<TInstance>> activities;
-            if (!_activityCache.TryGetValue(@event, out activities))
-                return CreateCompletedTask(instance);
-
-            var notification = new EventNotification(instance, @event);
-
-            Task<TInstance> task = Task<TInstance>.Factory.StartNew(() =>
-                {
-                    _raisingObserver.OnNext(notification);
-                    return instance;
-                });
-
-            activities.ForEach(activity =>
-                {
-                    var asyncActivity = activity as AsyncActivity<TInstance>;
-                    if (asyncActivity != null)
-                        task = ChainTask(task, () => asyncActivity.ExecuteAsync(instance, value));
-                    else
-                    {
-                        task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
-                            {
-                                activity.Execute(instance, value);
-                                return instance;
-                            }));
-                    }
-                });
-
-            task = ChainTask(task, () => Task<TInstance>.Factory.StartNew(() =>
-                {
-                    _raisedObserver.OnNext(notification);
-                    return instance;
-                }));
-
-            return task;
-        }
-
 
         public void Bind(EventActivity<TInstance> activity)
         {
@@ -185,60 +89,53 @@ namespace Automatonymous.Impl
             return string.CompareOrdinal(_name, other.Name);
         }
 
-        static Task<TInstance> CreateCompletedTask(TInstance instance)
+        bool Equals(State other)
         {
-            var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
-            source.SetResult(instance);
-            Task<TInstance> task = source.Task;
-            return task;
+            return string.Equals(_name, other.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            var other = obj as State;
+            return other != null && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_name != null ? _name.GetHashCode() : 0);
+        }
+
+        void Raise<TEvent>(Composer composer, TInstance instance, TEvent @event, Action<Composer, Activity<TInstance>, TInstance> callback)
+            where TEvent : Event
+        {
+            List<Activity<TInstance>> activities;
+            if (!_activityCache.TryGetValue(@event, out activities))
+                return;
+
+            composer.Execute(() =>
+                {
+                    var notification = new EventNotification(instance, @event);
+
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    ((Composer)taskComposer).Execute(() => _raisingObserver.OnNext(notification));
+
+                    foreach (var activity in activities)
+                        callback(taskComposer, activity, instance);
+
+                    ((Composer)taskComposer).Execute(() => _raisedObserver.OnNext(notification));
+
+                    return taskComposer.Finish();
+                });
         }
 
         public override string ToString()
         {
             return string.Format("{0} (State)", _name);
-        }
-
-        static Task<TInstance> ChainTask(Task<TInstance> first, Func<Task<TInstance>> next)
-        {
-            if (first == null)
-                throw new ArgumentNullException("first");
-            if (next == null)
-                throw new ArgumentNullException("next");
-
-            var source = new TaskCompletionSource<TInstance>();
-            first.ContinueWith(antecedent =>
-                {
-                    if (first.IsFaulted)
-                        source.TrySetException(first.Exception.InnerExceptions);
-                    else if (first.IsCanceled)
-                        source.TrySetCanceled();
-                    else
-                    {
-                        try
-                        {
-                            Task<TInstance> t = next();
-                            if (t == null)
-                                source.TrySetCanceled();
-                            else
-                            {
-                                t.ContinueWith(x =>
-                                    {
-                                        if (t.IsFaulted)
-                                            source.TrySetException(t.Exception.InnerExceptions);
-                                        else if (t.IsCanceled)
-                                            source.TrySetCanceled();
-                                        else
-                                            source.TrySetResult(null);
-                                    }, TaskContinuationOptions.ExecuteSynchronously);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            source.TrySetException(ex);
-                        }
-                    }
-                }, TaskContinuationOptions.ExecuteSynchronously);
-            return source.Task;
         }
 
 

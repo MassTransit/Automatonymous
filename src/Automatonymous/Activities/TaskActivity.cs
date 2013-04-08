@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,15 +13,16 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
     using TaskComposition;
 
 
-    public class ActionActivity<TInstance> :
+    public class TaskActivity<TInstance> :
         Activity<TInstance>
     {
-        readonly Action<TInstance> _action;
+        readonly Func<TInstance, Task> _action;
 
-        public ActionActivity(Action<TInstance> action)
+        public TaskActivity(Func<TInstance, Task> action)
         {
             _action = action;
         }
@@ -43,12 +44,12 @@ namespace Automatonymous.Activities
     }
 
 
-    public class ActionActivity<TInstance, TData> :
+    public class TaskActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
-        readonly Action<TInstance, TData> _action;
+        readonly Func<TInstance, TData, Task> _action;
 
-        public ActionActivity(Action<TInstance, TData> action)
+        public TaskActivity(Func<TInstance, TData, Task> action)
         {
             _action = action;
         }

@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using MassTransit;
     using MassTransit.Context;
+    using TaskComposition;
 
 
     public class RetryLaterActivity<TInstance, TData> :
@@ -21,16 +22,19 @@ namespace Automatonymous.Activities
         where TInstance : SagaStateMachineInstance
         where TData : class
     {
-        public void Execute(TInstance instance, TData data)
-        {
-            IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
-
-            context.RetryLater();
-        }
-
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        public void Execute(Composer composer, TInstance instance, TData value)
+        {
+            composer.Execute(() =>
+                {
+                    IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
+
+                    context.RetryLater();
+                });
         }
     }
 }

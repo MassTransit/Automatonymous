@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using TaskComposition;
+
+
     public class EventActivityImpl<TInstance> :
         EventActivity<TInstance>
     {
@@ -24,24 +27,24 @@ namespace Automatonymous.Activities
             _activity = activity;
         }
 
-        public void Execute(TInstance instance)
-        {
-            _activity.Execute(instance);
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            _activity.Execute(instance, value);
-        }
-
-        public void Accept(StateMachineInspector inspector)
+        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
             _activity.Accept(inspector);
         }
 
-        public Event Event
+        Event EventActivity<TInstance>.Event
         {
             get { return _event; }
+        }
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        {
+            _activity.Execute(composer, instance);
+        }
+
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        {
+            _activity.Execute(composer, instance, value);
         }
     }
 }

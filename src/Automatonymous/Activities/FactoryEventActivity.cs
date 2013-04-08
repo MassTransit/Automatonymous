@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using TaskComposition;
 
 
     public class FactoryEventActivity<TInstance> :
@@ -25,23 +26,29 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Execute(TInstance instance)
-        {
-            Activity<TInstance> activity = _activityFactory();
-
-            activity.Execute(instance);
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            Activity<TInstance> activity = _activityFactory();
-
-            activity.Execute(instance, value);
-        }
-
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        {
+            composer.Execute(() =>
+                {
+                    Activity<TInstance> activity = _activityFactory();
+
+                    return composer.ComposeActivity(activity, instance);
+                });
+        }
+
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        {
+            composer.Execute(() =>
+                {
+                    Activity<TInstance> activity = _activityFactory();
+
+                    return composer.ComposeActivity(activity, instance);
+                });
         }
     }
 
@@ -56,11 +63,14 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Execute(TInstance instance, TData data)
+        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
         {
-            Activity<TInstance, TData> activity = _activityFactory();
+            composer.Execute(() =>
+                {
+                    Activity<TInstance, TData> activity = _activityFactory();
 
-            activity.Execute(instance, data);
+                    return composer.ComposeActivity(activity, instance, value);
+                });
         }
 
         public void Accept(StateMachineInspector inspector)

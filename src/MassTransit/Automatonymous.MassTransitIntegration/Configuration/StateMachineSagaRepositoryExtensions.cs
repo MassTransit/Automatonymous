@@ -30,9 +30,10 @@ namespace Automatonymous
             Func<StateMachine<TInstance>, State> stateSelector)
             where TInstance : class, SagaStateMachineInstance
         {
-            State state = stateSelector(configurator.StateMachine);
+            StateMachine<TInstance> stateMachine = configurator.StateMachine;
+            State state = stateSelector(stateMachine).For<TInstance>();
 
-            configurator.RemoveWhen(x => configurator.StateMachine.InstanceStateAccessor.Get(x) == state);
+            configurator.RemoveWhen(x => stateMachine.InstanceStateAccessor.Get(x) == state);
 
             return configurator;
         }

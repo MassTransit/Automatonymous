@@ -31,14 +31,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance> source, Func<TInstance, Task<TInstance>> action)
             where TInstance : class
         {
-            return source.Add(new TaskAsyncActivity<TInstance>(action));
-        }
-
-        public static EventActivityBinder<TInstance> ThenAsync<TInstance>(
-            this EventActivityBinder<TInstance> source, Func<TInstance, Task> action)
-            where TInstance : class
-        {
-            return source.Add(new TaskAsyncActivity<TInstance>(action));
+            return source.Add(new TaskActivity<TInstance>(action));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
@@ -52,14 +45,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source, Func<TInstance, Task<TInstance>> action)
             where TInstance : class
         {
-            return source.Add(new TaskAsyncActivity<TInstance>(action));
-        }
-
-        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source, Func<TInstance, Task> action)
-            where TInstance : class
-        {
-            return source.Add(new TaskAsyncActivity<TInstance>(action));
+            return source.Add(new TaskActivity<TInstance>(action));
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
@@ -75,17 +61,8 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, Task<TInstance>> action)
             where TInstance : class
         {
-            var activity = new TaskAsyncActivity<TInstance, TData>(action);
-            var adapter = new AsyncDataConverterActivity<TInstance, TData>(activity);
-            return source.Add(adapter);
-        }
-
-        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, Task> action)
-            where TInstance : class
-        {
-            var activity = new TaskAsyncActivity<TInstance, TData>(action);
-            var adapter = new AsyncDataConverterActivity<TInstance, TData>(activity);
+            var activity = new TaskActivity<TInstance, TData>(action);
+            var adapter = new DataConverterActivity<TInstance, TData>(activity);
             return source.Add(adapter);
         }
 
@@ -94,14 +71,6 @@ namespace Automatonymous
             where TInstance : class
         {
             var activity = new FactoryEventActivity<TInstance>(activityFactory);
-            return source.Add(activity);
-        }
-
-        public static EventActivityBinder<TInstance> Then<TInstance>(
-            this EventActivityBinder<TInstance> source, Func<AsyncActivity<TInstance>> activityFactory)
-            where TInstance : class
-        {
-            var activity = new AsyncFactoryEventActivity<TInstance>(activityFactory);
             return source.Add(activity);
         }
 
@@ -114,14 +83,6 @@ namespace Automatonymous
         }
 
         public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source, Func<AsyncActivity<TInstance, TData>> activityFactory)
-            where TInstance : class
-        {
-            var activity = new AsyncFactoryEventActivity<TInstance, TData>(activityFactory);
-            return source.Add(activity);
-        }
-
-        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Func<Activity<TInstance>> activityFactory)
             where TInstance : class
         {
@@ -129,12 +90,5 @@ namespace Automatonymous
             return source.Add(activity);
         }
 
-        public static EventActivityBinder<TInstance, TData> Then<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source, Func<AsyncActivity<TInstance>> activityFactory)
-            where TInstance : class
-        {
-            var activity = new AsyncFactoryEventActivity<TInstance>(activityFactory);
-            return source.Add(activity);
-        }
     }
 }

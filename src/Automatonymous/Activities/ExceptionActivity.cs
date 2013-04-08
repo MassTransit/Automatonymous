@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -15,7 +15,7 @@ namespace Automatonymous.Activities
     using System;
 
 
-    public interface ExceptionActivity<TInstance> :
+    public interface ExceptionActivity<in TInstance> :
         Activity<TInstance>
     {
         Type ExceptionType { get; }

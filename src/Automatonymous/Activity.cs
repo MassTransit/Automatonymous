@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using TaskComposition;
+
+
     public interface Activity :
         AcceptStateMachineInspector
     {
@@ -21,14 +24,15 @@ namespace Automatonymous
     public interface Activity<in TInstance> :
         Activity
     {
-        void Execute(TInstance instance);
-        void Execute<TData>(TInstance instance, TData value);
+        void Execute(Composer composer, TInstance instance);
+
+        void Execute<T>(Composer composer, TInstance instance, T value);
     }
 
 
     public interface Activity<in TInstance, in TData> :
         Activity
     {
-        void Execute(TInstance instance, TData data);
+        void Execute(Composer composer, TInstance instance, TData value);
     }
 }

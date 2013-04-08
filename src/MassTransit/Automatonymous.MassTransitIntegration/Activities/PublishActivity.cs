@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using MassTransit;
+    using TaskComposition;
 
 
     public class PublishActivity<TInstance, TMessage> :
@@ -25,27 +26,33 @@ namespace Automatonymous.Activities
         readonly Func<TInstance, TMessage> _messageFactory;
 
         public PublishActivity(Func<TInstance, TMessage> messageFactory,
-                               Action<IPublishContext<TMessage>> contextCallback)
+            Action<IPublishContext<TMessage>> contextCallback)
         {
             _messageFactory = messageFactory;
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance)
-        {
-            TMessage message = _messageFactory(instance);
-            instance.Bus.Publish(message, _contextCallback);
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            TMessage message = _messageFactory(instance);
-            instance.Bus.Publish(message, _contextCallback);
-        }
-
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        {
+            composer.Execute(() =>
+                {
+                    TMessage message = _messageFactory(instance);
+                    instance.Bus.Publish(message, _contextCallback);
+                });
+        }
+
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        {
+            composer.Execute(() =>
+                {
+                    TMessage message = _messageFactory(instance);
+                    instance.Bus.Publish(message, _contextCallback);
+                });
         }
     }
 
@@ -60,21 +67,24 @@ namespace Automatonymous.Activities
         readonly Func<TInstance, TData, TMessage> _messageFactory;
 
         public PublishActivity(Func<TInstance, TData, TMessage> messageFactory,
-                               Action<IPublishContext<TMessage>> contextCallback)
+            Action<IPublishContext<TMessage>> contextCallback)
         {
             _messageFactory = messageFactory;
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance, TData data)
-        {
-            TMessage message = _messageFactory(instance, data);
-            instance.Bus.Publish(message, _contextCallback);
-        }
-
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
+        {
+            composer.Execute(() =>
+                {
+                    TMessage message = _messageFactory(instance, value);
+                    instance.Bus.Publish(message, _contextCallback);
+                });
         }
     }
 }

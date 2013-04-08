@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -15,6 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using MassTransit;
     using MassTransit.Context;
+    using TaskComposition;
 
 
     public class RespondActivity<TInstance, TData, TMessage> :
@@ -24,22 +25,25 @@ namespace Automatonymous.Activities
         where TMessage : class
     {
         readonly Action<ISendContext<TMessage>> _contextCallback;
-        readonly Func<TInstance, TData, TMessage> _messageFactory;
+        readonly Func<TInstance, IConsumeContext<TData>, TMessage> _messageFactory;
 
-        public RespondActivity(Func<TInstance, TData, TMessage> messageFactory,
-                               Action<ISendContext<TMessage>> contextCallback)
+        public RespondActivity(Func<TInstance, IConsumeContext<TData>, TMessage> messageFactory,
+            Action<ISendContext<TMessage>> contextCallback)
         {
             _messageFactory = messageFactory;
             _contextCallback = contextCallback;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public void Execute(Composer composer, TInstance instance, TData value)
         {
-            IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
+            composer.Execute(() =>
+                {
+                    IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
 
-            TMessage message = _messageFactory(instance, data);
+                    TMessage message = _messageFactory(instance, context);
 
-            context.Respond(message, _contextCallback);
+                    context.Respond(message, _contextCallback);
+                });
         }
 
         public void Accept(StateMachineInspector inspector)

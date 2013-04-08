@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    public interface EventRaised<TInstance>
+    public interface EventRaised<out TInstance>
         where TInstance : class
     {
         TInstance Instance { get; }

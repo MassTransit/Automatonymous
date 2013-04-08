@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using TaskComposition;
 
 
     public class DataConverterActivity<TInstance, TData> :
@@ -30,25 +31,27 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => _activity.Accept(inspector));
         }
 
-        public void Execute(TInstance instance)
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
         {
-            throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
+            composer.Failed(new AutomatonymousException("This activity requires a body with the event, but no body was specified."));
         }
 
-        public void Execute<T>(TInstance instance, T value)
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
         {
-            if (!(value is TData))
-            {
-                string message = "Expected: " + typeof(TData).FullName + ", Received: " + value.GetType().FullName;
-                throw new ArgumentException(message, "value");
-            }
+            composer.Execute(() =>
+                {
+                    object dataValue = value;
+                    if (dataValue == null)
+                        throw new ArgumentNullException("value", "The data argument cannot be null");
 
-            object data = value;
+                    if (!(dataValue is TData))
+                    {
+                        string message = "Expected Type " + typeof(TData).Name + " but was " + value.GetType().Name;
+                        throw new ArgumentException(message, "value");
+                    }
 
-            if (data == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
-
-            _activity.Execute(instance, (TData)data);
+                    return composer.ComposeActivity(_activity, instance, (TData)dataValue);
+                });
         }
     }
 }

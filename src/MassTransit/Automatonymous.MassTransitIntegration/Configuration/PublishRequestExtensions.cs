@@ -15,14 +15,15 @@ namespace Automatonymous
     using System;
     using Activities;
     using Binders;
+    using MassTransit;
     using MassTransit.RequestResponse.Configurators;
 
 
     public static class PublishRequestExtensions
     {
         public static EventActivityBinder<TInstance, TData> PublishRequest<TInstance, TData, TMessage>(
-            this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, TMessage> messageFactory,
-            Action<TInstance, TData, InlineRequestConfigurator<TMessage>> configurator)
+            this EventActivityBinder<TInstance, TData> source, Func<TInstance, IConsumeContext<TData>, TMessage> messageFactory,
+            Action<TInstance, IConsumeContext<TData>, InlineRequestConfigurator<TMessage>> configurator)
             where TInstance : class, SagaStateMachineInstance
             where TData : class
             where TMessage : class

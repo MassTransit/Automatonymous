@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -55,41 +55,29 @@ namespace Automatonymous.Binders
             get { return _filterExpression; }
         }
 
-        public Event<TData> Event
+        Event<TData> EventActivityBinder<TInstance, TData>.Event
         {
             get { return _event; }
         }
 
-        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity)
+        EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Add(Activity<TInstance> activity)
         {
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
         }
 
-        public EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance> activity)
-        {
-            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
-                _activities.Concat(Enumerable.Repeat(activity, 1)));
-        }
-
-        public EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity)
+        EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Add(Activity<TInstance, TData> activity)
         {
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
                 _activities.Concat(Enumerable.Repeat(new DataConverterActivity<TInstance, TData>(activity), 1)));
         }
 
-        public EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance, TData> activity)
-        {
-            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
-                _activities.Concat(Enumerable.Repeat(new AsyncDataConverterActivity<TInstance, TData>(activity), 1)));
-        }
-
-        public StateMachine<TInstance> StateMachine
+        StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine
         {
             get { return _machine; }
         }
 
-        public IEnumerator<EventActivity<TInstance>> GetEnumerator()
+        IEnumerator<EventActivity<TInstance>> IEnumerable<EventActivity<TInstance>>.GetEnumerator()
         {
             if (_filterExpression == null)
                 return _activities.Select(CreateEventActivity).GetEnumerator();
@@ -99,24 +87,20 @@ namespace Automatonymous.Binders
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return ((IEnumerable<EventActivity<TInstance>>)this).GetEnumerator();
         }
 
         EventActivity<TInstance> CreateConditionalEventActivity(Activity<TInstance> activity)
         {
-            var asyncActivity = activity as AsyncActivity<TInstance>;
-            if (asyncActivity != null)
-                return new AsyncConditionalEventActivityImpl<TInstance, TData>(_event, asyncActivity, _filterExpression);
+            var conditionalEventActivity = new ConditionalEventActivityImpl<TInstance, TData>(activity, _filterExpression);
 
-            return new ConditionalEventActivityImpl<TInstance, TData>(_event, activity, _filterExpression);
+            var converterActivity = new DataConverterActivity<TInstance, TData>(conditionalEventActivity);
+
+            return new EventActivityImpl<TInstance>(_event, converterActivity);
         }
 
         EventActivity<TInstance> CreateEventActivity(Activity<TInstance> activity)
         {
-            var asyncActivity = activity as AsyncActivity<TInstance>;
-            if (asyncActivity != null)
-                return new AsyncEventActivityImpl<TInstance>(_event, asyncActivity);
-
             return new EventActivityImpl<TInstance>(_event, activity);
         }
     }

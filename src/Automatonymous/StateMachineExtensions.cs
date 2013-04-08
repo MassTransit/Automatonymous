@@ -13,6 +13,10 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Activities;
+    using TaskComposition;
 
 
     public static class StateMachineExtensions
@@ -23,16 +27,57 @@ namespace Automatonymous
         /// <typeparam name="T">The state machine type</typeparam>
         /// <typeparam name="TInstance">The instance type</typeparam>
         /// <param name="stateMachine">The state machine</param>
+        /// <param name="composer"></param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
-        public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
+        public static void RaiseEvent<T, TInstance>(this T stateMachine, Composer composer, TInstance instance,
             Func<T, Event> eventSelector)
             where T : StateMachine<TInstance>
             where TInstance : class
         {
             Event @event = eventSelector(stateMachine);
 
-            stateMachine.RaiseEvent(instance, @event);
+            stateMachine.RaiseEvent(composer, instance, @event);
+        }
+
+        /// <summary>
+        ///     Raise a simple event on the state machine
+        /// </summary>
+        /// <typeparam name="T">The state machine type</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="composer"></param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="eventSelector">Selector to the event on the state machine</param>
+        /// <param name="data"></param>
+        public static void RaiseEvent<T, TInstance, TData>(this T stateMachine, Composer composer, TInstance instance,
+            Func<T, Event<TData>> eventSelector, TData data)
+            where T : StateMachine<TInstance>
+            where TInstance : class
+        {
+            Event<TData> @event = eventSelector(stateMachine);
+
+            stateMachine.RaiseEvent(composer, instance, @event, data);
+        }
+
+        /// <summary>
+        ///     Raise a simple event on the state machine
+        /// </summary>
+        /// <typeparam name="T">The state machine type</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="eventSelector">Selector to the event on the state machine</param>
+        /// <param name="cancellationToken"></param>
+        public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance, Func<T, Event> eventSelector,
+            CancellationToken cancellationToken = default(CancellationToken))
+            where T : StateMachine<TInstance>
+            where TInstance : class
+        {
+            Event @event = eventSelector(stateMachine);
+
+            RaiseEvent(stateMachine, instance, @event, cancellationToken);
         }
 
         /// <summary>
@@ -45,14 +90,57 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
         /// <param name="data">The data for the event</param>
-        public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance,
-            Func<T, Event<TData>> eventSelector, TData data)
+        /// <param name="cancellationToken"></param>
+        public static void RaiseEvent<T, TData, TInstance>(this T stateMachine, TInstance instance, Func<T, Event<TData>> eventSelector,
+            TData data, CancellationToken cancellationToken = default(CancellationToken))
             where T : StateMachine<TInstance>
             where TInstance : class
         {
             Event<TData> @event = eventSelector(stateMachine);
 
-            stateMachine.RaiseEvent(instance, @event, data);
+            RaiseEvent(stateMachine, instance, @event, data, cancellationToken);
+        }
+
+        /// <summary>
+        ///     Raise a simple event on the state machine
+        /// </summary>
+        /// <typeparam name="T">The state machine type</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="event">Event on the state machine</param>
+        /// <param name="cancellationToken"></param>
+        public static void RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance, Event @event,
+            CancellationToken cancellationToken = default(CancellationToken))
+            where T : StateMachine<TInstance>
+            where TInstance : class
+        {
+            var composer = new TaskComposer<TInstance>(cancellationToken);
+
+            stateMachine.RaiseEvent(composer, instance, @event);
+
+            composer.Finish().Wait();
+        }
+
+        /// <summary>
+        ///     Raise a data event on the state machine
+        /// </summary>
+        /// <typeparam name="TData">The data type of the event</typeparam>
+        /// <typeparam name="TInstance">The instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="instance">The state machine instance</param>
+        /// <param name="event"></param>
+        /// <param name="data">The data for the event</param>
+        /// <param name="cancellationToken"></param>
+        public static void RaiseEvent<TData, TInstance>(this StateMachine<TInstance> stateMachine, TInstance instance,
+            Event<TData> @event, TData data, CancellationToken cancellationToken = default(CancellationToken))
+            where TInstance : class
+        {
+            var composer = new TaskComposer<TInstance>(cancellationToken);
+
+            stateMachine.RaiseEvent(composer, instance, @event, data);
+
+            composer.Finish().Wait();
         }
 
         /// <summary>
@@ -74,13 +162,23 @@ namespace Automatonymous
             return result;
         }
 
-        public static void WithStateMachine<TInstance>(this StateMachine stateMachine,
-            Action<StateMachine<TInstance>> callback)
+        /// <summary>
+        ///     Transition a state machine instance to a specific state, producing any events related
+        ///     to the transaction such as leaving the previous state and entering the target state
+        /// </summary>
+        /// <typeparam name="TInstance">The state instance type</typeparam>
+        /// <param name="stateMachine">The state machine</param>
+        /// <param name="composer"></param>
+        /// <param name="instance">The state instance</param>
+        /// <param name="state">The target state</param>
+        public static void TransitionToState<TInstance>(this StateMachine<TInstance> stateMachine, Composer composer, TInstance instance,
+            State state)
             where TInstance : class
         {
-            StateMachine<TInstance> machine = stateMachine.For<TInstance>();
+            StateAccessor<TInstance> accessor = stateMachine.InstanceStateAccessor;
+            State<TInstance> toState = state.For<TInstance>();
 
-            callback(machine);
+            TransitionToState(composer, instance, accessor, toState);
         }
 
         /// <summary>
@@ -91,25 +189,34 @@ namespace Automatonymous
         /// <param name="stateMachine">The state machine</param>
         /// <param name="instance">The state instance</param>
         /// <param name="state">The target state</param>
-        public static void TransitionToState<TInstance>(this StateMachine<TInstance> stateMachine, TInstance instance,
-            State state)
+        /// <param name="cancellationToken"></param>
+        public static Task TransitionToState<TInstance>(this StateMachine<TInstance> stateMachine, TInstance instance,
+            State state, CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            State<TInstance> toState = state.For<TInstance>();
+            var composer = new TaskComposer<TInstance>(cancellationToken);
 
-            State<TInstance> lastState = stateMachine.InstanceStateAccessor.Get(instance);
-            if (lastState == toState)
-                return;
+            stateMachine.TransitionToState(composer, instance, state);
 
-            if (lastState != null)
-                lastState.Raise(instance, lastState.Leave);
-            toState.Raise(instance, toState.BeforeEnter, lastState);
+            return composer.Finish();
+        }
 
-            stateMachine.InstanceStateAccessor.Set(instance, toState);
+        /// <summary>
+        ///     Transition a state machine instance to a specific state, producing any events related
+        ///     to the transaction such as leaving the previous state and entering the target state
+        /// </summary>
+        /// <typeparam name="TInstance">The state instance type</typeparam>
+        /// <param name="composer"></param>
+        /// <param name="instance">The state instance</param>
+        /// <param name="accessor"></param>
+        /// <param name="state">The target state</param>
+        public static void TransitionToState<TInstance>(Composer composer, TInstance instance, StateAccessor<TInstance> accessor,
+            State<TInstance> state)
+            where TInstance : class
+        {
+            Activity<TInstance> activity = new TransitionActivity<TInstance>(state, accessor);
 
-            if (lastState != null)
-                lastState.Raise(instance, lastState.AfterLeave, toState);
-            toState.Raise(instance, toState.Enter);
+            activity.Execute(composer, instance);
         }
     }
 }

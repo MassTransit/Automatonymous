@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -27,31 +27,45 @@ namespace Automatonymous.Impl
         readonly ReadWriteProperty<TInstance, State> _property;
 
         public RawStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
-                                IObserver<StateChanged<TInstance>> observer)
+            IObserver<StateChanged<TInstance>> observer)
         {
             _observer = observer;
-            PropertyInfo statePropertyInfo = currentStateExpression.GetPropertyInfo();
 
-            _property = new ReadWriteProperty<TInstance, State>(statePropertyInfo, true);
+            _property = GetCurrentStateProperty(currentStateExpression);
         }
 
-        public State<TInstance> Get(TInstance instance)
+        State<TInstance> StateAccessor<TInstance>.Get(TInstance instance)
         {
-            return _property.Get(instance) as State<TInstance>;
+            var state = _property.Get(instance);
+            if (state == null)
+                return null;
+
+            return state.For<TInstance>();
         }
 
-        public void Set(TInstance instance, State<TInstance> state)
+        void StateAccessor<TInstance>.Set(TInstance instance, State<TInstance> state)
         {
             if (state == null)
                 throw new ArgumentNullException("state");
 
-            State<TInstance> previous = Get(instance);
+            State previous = _property.Get(instance);
             if (state.Equals(previous))
                 return;
 
             _property.Set(instance, state);
 
-            _observer.OnNext(new StateChangedImpl(instance, previous, state));
+            State<TInstance> previousState = null;
+            if (previous != null)
+                previousState = previous.For<TInstance>();
+
+            _observer.OnNext(new StateChangedImpl(instance, previousState, state));
+        }
+
+        static ReadWriteProperty<TInstance, State> GetCurrentStateProperty(Expression<Func<TInstance, State>> currentStateExpression)
+        {
+            PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
+
+            return new ReadWriteProperty<TInstance, State>(propertyInfo, true);
         }
 
 

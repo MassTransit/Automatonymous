@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -17,13 +17,13 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Threading.Tasks;
     using Activities;
     using Binders;
     using Impl;
     using Internals.Caching;
     using Internals.Extensions;
     using Internals.Primitives;
+    using TaskComposition;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
@@ -82,7 +82,31 @@ namespace Automatonymous
             return _stateCache[name];
         }
 
-        State<TInstance> StateMachine<TInstance>.GetState(string name)
+        void StateMachine<TInstance>.RaiseEvent(Composer composer, TInstance instance, Event @event)
+        {
+            composer.Execute(() =>
+                {
+                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+
+                    State<TInstance> instanceState = _stateCache[state.Name];
+
+                    return composer.ComposeEvent(instance, instanceState, @event);
+                });
+        }
+
+        void StateMachine<TInstance>.RaiseEvent<TData>(Composer composer, TInstance instance, Event<TData> @event, TData data)
+        {
+            composer.Execute(() =>
+                {
+                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+
+                    State<TInstance> instanceState = _stateCache[state.Name];
+
+                    return composer.ComposeEvent(instance, instanceState, @event, data);
+                });
+        }
+
+        public State<TInstance> GetState(string name)
         {
             return _stateCache[name];
         }
@@ -102,63 +126,14 @@ namespace Automatonymous
             get { return _eventCache.Select(x => x.Event); }
         }
 
-        Type StateMachine.InstanceType
+        public Type InstanceType
         {
             get { return typeof(TInstance); }
         }
 
         public IEnumerable<Event> NextEvents(State state)
         {
-            return _stateCache[state.Name].Events
-                .Distinct(new NameEqualityComparer());
-        }
-
-        public void RaiseEvent(TInstance instance, Event @event)
-        {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
-
-            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
-
-            _stateCache[currentState.Name].Raise(instance, @event);
-        }
-
-        public Task<TInstance> RaiseEventAsync(TInstance instance, Event @event)
-        {
-            if (instance == null)
-            {
-                var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
-                source.SetException(new ArgumentNullException("instance"));
-                return source.Task;
-            }
-
-            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
-
-            return _stateCache[currentState.Name].RaiseAsync(instance, @event);
-        }
-
-        public void RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value)
-        {
-            if (instance == null)
-                throw new ArgumentNullException("instance");
-
-            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
-
-            _stateCache[currentState.Name].Raise(instance, @event, value);
-        }
-
-        public Task<TInstance> RaiseEventAsync<TData>(TInstance instance, Event<TData> @event, TData value)
-        {
-            if (instance == null)
-            {
-                var source = new TaskCompletionSource<TInstance>(TaskCreationOptions.None);
-                source.SetException(new ArgumentNullException("instance"));
-                return source.Task;
-            }
-
-            State<TInstance> currentState = ((StateMachine<TInstance>)this).InstanceStateAccessor.Get(instance);
-
-            return _stateCache[currentState.Name].RaiseAsync(instance, @event, value);
+            return _stateCache[state.Name].Events.Distinct(new NameEqualityComparer());
         }
 
         public IObservable<StateChanged<TInstance>> StateChanged
@@ -234,14 +209,14 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
-                .Aggregate(0, (current, x) => current | (1 << x)));
+                                                              .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
             {
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    instance => RaiseEvent(instance, @event));
+                    (consumer, instance) => ((StateMachine<TInstance>)this).RaiseEvent(consumer, instance, @event));
 
                 foreach (var state in _stateCache.Where(x => x != Initial))
                 {
@@ -305,7 +280,7 @@ namespace Automatonymous
             BindTransitionEvents(Final, activities);
         }
 
-        void BindTransitionEvents(State state, IEnumerable<EventActivity<TInstance>>[] activities)
+        void BindTransitionEvents(State state, IEnumerable<IEnumerable<EventActivity<TInstance>>> activities)
         {
             IEnumerable<EventActivity<TInstance>> eventActivities = activities
                 .SelectMany(activity => activity.Where(x => IsTransitionEvent(state, x.Event)));
@@ -316,8 +291,8 @@ namespace Automatonymous
 
         bool IsTransitionEvent(State state, Event eevent)
         {
-            return eevent == state.Enter || eevent == state.BeforeEnter
-                   || eevent == state.AfterLeave || eevent == state.Leave;
+            return Equals(eevent, state.Enter) || Equals(eevent, state.BeforeEnter)
+                   || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)

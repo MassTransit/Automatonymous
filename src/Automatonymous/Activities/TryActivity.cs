@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -16,7 +16,7 @@ namespace Automatonymous.Activities
     using System.Collections.Generic;
     using System.Linq;
     using Internals.Caching;
-    using System.Reflection;
+    using TaskComposition;
 
 
     public class TryActivity<TInstance> :
@@ -26,7 +26,7 @@ namespace Automatonymous.Activities
         readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
-                           IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
+            IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
         {
             _activities = new List<Activity<TInstance>>(activities
                 .Select(x => new EventActivityImpl<TInstance>(@event, x)));
@@ -37,66 +37,6 @@ namespace Automatonymous.Activities
 
             foreach (var exceptionActivity in exceptionBinder)
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
-        }
-
-        public void Execute(TInstance instance)
-        {
-            try
-            {
-                _activities.ForEach(activity => activity.Execute(instance));
-            }
-            catch (Exception ex)
-            {
-                Type exceptionType = ex.GetType();
-#if !NETFX_CORE
-                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
-#else
-                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
-#endif
-                {
-                    if (_exceptionHandlers.WithValue(exceptionType,
-                        x => x.ForEach(activity => activity.Execute(instance, ex))))
-                        return;
-
-#if !NETFX_CORE
-                    exceptionType = exceptionType.BaseType;
-#else
-                    exceptionType = exceptionType.GetTypeInfo().BaseType;
-#endif
-                }
-
-                throw;
-            }
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            try
-            {
-                _activities.ForEach(activity => activity.Execute(instance, value));
-            }
-            catch (Exception ex)
-            {
-                Type exceptionType = ex.GetType();
-#if !NETFX_CORE
-                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
-#else
-                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
-#endif
-                {
-                    if (_exceptionHandlers.WithValue(exceptionType,
-                        x => x.ForEach(activity => activity.Execute(instance, ex))))
-                        return;
-
-#if !NETFX_CORE
-                    exceptionType = exceptionType.BaseType;
-#else
-                    exceptionType = exceptionType.GetTypeInfo().BaseType;
-#endif
-                }
-
-                throw;
-            }
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -111,6 +51,82 @@ namespace Automatonymous.Activities
                         });
                 });
         }
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        {
+            composer.Execute(() =>
+                {
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    _activities.ForEach(activity => activity.Execute(taskComposer, instance));
+
+                    ((Composer)taskComposer).Compensate(compensation =>
+                        {
+                            Type exceptionType = compensation.Exception.GetType();
+#if !NETFX_CORE
+                            while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                            while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
+                            {
+                                List<ExceptionActivity<TInstance>> handlers;
+                                if (_exceptionHandlers.TryGetValue(exceptionType, out handlers))
+                                {
+                                    var exceptionComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                                    handlers.ForEach(handler => handler.Execute(exceptionComposer, instance, compensation.Exception));
+
+                                    return compensation.Task(exceptionComposer.Finish());
+                                }
+#if !NETFX_CORE
+                                exceptionType = exceptionType.BaseType;
+#else
+                                exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
+                            }
+
+                            return compensation.Throw();
+                        });
+                });
+        }
+
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        {
+            composer.Execute(() =>
+                {
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    _activities.ForEach(activity => activity.Execute(taskComposer, instance, value));
+
+                    ((Composer)taskComposer).Compensate(compensation =>
+                        {
+                            Type exceptionType = compensation.Exception.GetType();
+#if !NETFX_CORE
+                            while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                            while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
+                            {
+                                List<ExceptionActivity<TInstance>> handlers;
+                                if (_exceptionHandlers.TryGetValue(exceptionType, out handlers))
+                                {
+                                    var exceptionComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                                    handlers.ForEach(handler => handler.Execute(exceptionComposer, instance, compensation.Exception));
+
+                                    return compensation.Task(exceptionComposer.Finish());
+                                }
+#if !NETFX_CORE
+                                exceptionType = exceptionType.BaseType;
+#else
+                                exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
+                            }
+
+                            return compensation.Throw();
+                        });
+                });
+        }
     }
 
 
@@ -118,59 +134,66 @@ namespace Automatonymous.Activities
         Activity<TInstance, TData>
     {
         readonly List<Activity<TInstance>> _activities;
-        readonly Cache<Type, List<Activity<TInstance>>> _exceptionHandlers;
+        readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
-                           IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
+            IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
         {
             _activities = new List<Activity<TInstance>>(activities
                 .Select(x => new EventActivityImpl<TInstance>(@event, x)));
 
-            _exceptionHandlers =
-                new DictionaryCache<Type, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
+            _exceptionHandlers = new DictionaryCache<Type, List<ExceptionActivity<TInstance>>>(
+                x => new List<ExceptionActivity<TInstance>>());
 
             foreach (var exceptionActivity in exceptionBinder)
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
         }
 
-        public void Execute(TInstance instance, TData data)
-        {
-            try
-            {
-                _activities.ForEach(activity => activity.Execute(instance, data));
-            }
-            catch (Exception ex)
-            {
-                Type exceptionType = ex.GetType();
-#if !NETFX_CORE
-                while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
-#else
-                while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
-#endif
-                {
-                    if (_exceptionHandlers.WithValue(exceptionType, x =>
-                        {
-                            Type tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
-                            object arg = Activator.CreateInstance(tupleType, data, ex);
-
-                            x.ForEach(activity => activity.Execute(instance, arg));
-                        }))
-                        return;
-
-#if !NETFX_CORE
-                    exceptionType = exceptionType.BaseType;
-#else
-                    exceptionType = exceptionType.GetTypeInfo().BaseType;
-#endif
-                }
-
-                throw;
-            }
-        }
 
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, _ => { _activities.ForEach(activity => activity.Accept(inspector)); });
+        }
+
+        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
+        {
+            composer.Execute(() =>
+                {
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    _activities.ForEach(activity => activity.Execute(taskComposer, instance, value));
+
+                    ((Composer)taskComposer).Compensate(compensation =>
+                        {
+                            Type exceptionType = compensation.Exception.GetType();
+#if !NETFX_CORE
+                            while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
+#else
+                            while (exceptionType != typeof(Exception).GetTypeInfo().BaseType && exceptionType != null)
+#endif
+                            {
+                                List<ExceptionActivity<TInstance>> handlers;
+                                if (_exceptionHandlers.TryGetValue(exceptionType, out handlers))
+                                {
+                                    var exceptionComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                                    Type tupleType = typeof(Tuple<,>).MakeGenericType(typeof(TData), exceptionType);
+                                    object exceptionData = Activator.CreateInstance(tupleType, value, compensation.Exception);
+
+                                    handlers.ForEach(handler => handler.Execute(exceptionComposer, instance, exceptionData));
+
+                                    return compensation.Task(exceptionComposer.Finish());
+                                }
+#if !NETFX_CORE
+                                exceptionType = exceptionType.BaseType;
+#else
+                                exceptionType = exceptionType.GetTypeInfo().BaseType;
+#endif
+                            }
+
+                            return compensation.Throw();
+                        });
+                });
         }
     }
 }

@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -18,8 +18,7 @@ namespace Automatonymous
 
     public static class IntrospectionExtensions
     {
-        public static IEnumerable<Event> NextEvents<TInstance>(this StateMachine<TInstance> machine,
-                                                               TInstance instance)
+        public static IEnumerable<Event> NextEvents<TInstance>(this StateMachine<TInstance> machine, TInstance instance)
             where TInstance : class
         {
             if (machine == null)

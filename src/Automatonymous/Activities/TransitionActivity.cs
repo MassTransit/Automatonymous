@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using TaskComposition;
+
+
     public class TransitionActivity<TInstance> :
         Activity<TInstance>
         where TInstance : class
@@ -30,31 +33,45 @@ namespace Automatonymous.Activities
             get { return _toState; }
         }
 
-        public void Execute(TInstance instance)
-        {
-            State<TInstance> lastState = _currentStateAccessor.Get(instance);
-            if (lastState == _toState)
-                return;
-
-            if (lastState != null)
-                lastState.Raise(instance, lastState.Leave);
-            _toState.Raise(instance, _toState.BeforeEnter, lastState);
-
-            _currentStateAccessor.Set(instance, _toState);
-
-            if (lastState != null)
-                lastState.Raise(instance, lastState.AfterLeave, _toState);
-            _toState.Raise(instance, _toState.Enter);
-        }
-
-        public void Execute<TData>(TInstance instance, TData value)
-        {
-            Execute(instance);
-        }
-
-        public void Accept(StateMachineInspector inspector)
+        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
+        }
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        {
+            Transition(composer, instance);
+        }
+
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        {
+            Transition(composer, instance);
+        }
+
+        void Transition(Composer composer, TInstance instance)
+        {
+            composer.Execute(() =>
+                {
+                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
+                    if (currentState == _toState)
+                        return composer.ComposeCompleted();
+
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    if (currentState != null)
+                        currentState.Raise(taskComposer, instance, currentState.Leave);
+
+                    _toState.Raise(taskComposer, instance, _toState.BeforeEnter, currentState);
+
+                    ((Composer)taskComposer).Execute(() => _currentStateAccessor.Set(instance, _toState));
+
+                    if (currentState != null)
+                        currentState.Raise(taskComposer, instance, currentState.AfterLeave, _toState);
+
+                    _toState.Raise(taskComposer, instance, _toState.Enter);
+
+                    return taskComposer.Finish();
+                });
         }
     }
 }

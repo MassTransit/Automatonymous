@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -15,18 +15,19 @@ namespace Automatonymous.Activities
     using System;
     using System.Reflection;
     using Internals.Reflection;
+    using TaskComposition;
 
 
     public class CompositeEventActivity<TInstance> :
         Activity<TInstance>
     {
         readonly CompositeEventStatus _complete;
-        readonly Action<TInstance> _completeCallback;
+        readonly Action<Composer, TInstance> _completeCallback;
         readonly int _flag;
         readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
 
         public CompositeEventActivity(PropertyInfo propertyInfo, int flag,
-            CompositeEventStatus complete, Action<TInstance> completeCallback)
+            CompositeEventStatus complete, Action<Composer, TInstance> completeCallback)
         {
             _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
             _flag = flag;
@@ -34,31 +35,40 @@ namespace Automatonymous.Activities
             _completeCallback = completeCallback;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, x => { });
         }
 
-        public void Execute(TInstance instance)
+
+        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
         {
-            CompositeEventStatus value = _property.Get(instance);
-            value.Set(_flag);
-
-            _property.Set(instance, value);
-
-            if (value.Equals(_complete))
-                _completeCallback(instance);
+            Execute(composer, instance);
         }
 
-        public void Execute<TData>(TInstance instance, TData ignored)
+        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T ignored)
         {
-            CompositeEventStatus value = _property.Get(instance);
-            value.Set(_flag);
+            Execute(composer, instance);
+        }
 
-            _property.Set(instance, value);
+        void Execute(Composer composer, TInstance instance)
+        {
+            composer.Execute(() =>
+                {
+                    CompositeEventStatus value = _property.Get(instance);
+                    value.Set(_flag);
 
-            if (value.Equals(_complete))
-                _completeCallback(instance);
+                    _property.Set(instance, value);
+
+                    if (!value.Equals(_complete))
+                        return composer.ComposeCompleted();
+
+                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+
+                    _completeCallback(taskComposer, instance);
+
+                    return taskComposer.Finish();
+                });
         }
     }
 }

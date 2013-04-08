@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,9 +12,12 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
     using Activities;
-    using Impl;
     using NUnit.Framework;
+    using TaskComposition;
 
 
     [TestFixture]
@@ -63,14 +66,14 @@ namespace Automatonymous.Tests
                 _calculator = calculator;
             }
 
-            public void Execute(ClaimAdjustment instance, CreateClaim data)
-            {
-                instance.Value = _calculator.Add(data.X, data.Y);
-            }
-
             public void Accept(StateMachineInspector inspector)
             {
                 inspector.Inspect(this, x => { });
+            }
+
+            public void Execute(Composer composer, ClaimAdjustment instance, CreateClaim value)
+            {
+                composer.Execute(() => { instance.Value = _calculator.Add(value.X, value.Y); });
             }
         }
 

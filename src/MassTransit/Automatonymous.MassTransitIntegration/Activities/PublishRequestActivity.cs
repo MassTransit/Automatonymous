@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,7 +14,9 @@ namespace Automatonymous.Activities
 {
     using System;
     using MassTransit;
+    using MassTransit.Context;
     using MassTransit.RequestResponse.Configurators;
+    using TaskComposition;
 
 
     public class PublishRequestActivity<TInstance, TData, TMessage> :
@@ -23,20 +25,26 @@ namespace Automatonymous.Activities
         where TData : class
         where TMessage : class
     {
-        readonly Func<TInstance, TData, TMessage> _messageFactory;
-        readonly Action<TInstance, TData, InlineRequestConfigurator<TMessage>> _configurator;
+        readonly Action<TInstance, IConsumeContext<TData>, InlineRequestConfigurator<TMessage>> _configurator;
+        readonly Func<TInstance, IConsumeContext<TData>, TMessage> _messageFactory;
 
-        public PublishRequestActivity(Func<TInstance, TData, TMessage> messageFactory,
-            Action<TInstance, TData, InlineRequestConfigurator<TMessage>> configurator)
+        public PublishRequestActivity(Func<TInstance, IConsumeContext<TData>, TMessage> messageFactory,
+            Action<TInstance, IConsumeContext<TData>, InlineRequestConfigurator<TMessage>> configurator)
         {
             _messageFactory = messageFactory;
             _configurator = configurator;
         }
 
-        public void Execute(TInstance instance, TData data)
+        public void Execute(Composer composer, TInstance instance, TData value)
         {
-            TMessage message = _messageFactory(instance, data);
-            instance.Bus.PublishRequest(message, configurator => _configurator(instance, data, configurator));
+            composer.Execute(() =>
+                {
+                    IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
+
+                    TMessage message = _messageFactory(instance, context);
+
+                    instance.Bus.PublishRequest(message, configurator => _configurator(instance, context, configurator));
+                });
         }
 
         public void Accept(StateMachineInspector inspector)

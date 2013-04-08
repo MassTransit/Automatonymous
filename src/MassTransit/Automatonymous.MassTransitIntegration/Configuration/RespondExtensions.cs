@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -16,7 +16,6 @@ namespace Automatonymous
     using Activities;
     using Binders;
     using MassTransit;
-    using MassTransit.Context;
 
 
     public static class RespondExtensions
@@ -27,7 +26,9 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return source.Add(new RespondActivity<TInstance, TData, TMessage>((i, d) => message, x => { }));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory = (saga, context) => message;
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, x => { }));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -37,8 +38,9 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return
-                source.Add(new RespondActivity<TInstance, TData, TMessage>((i, d) => message, contextCallback));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory = (saga, context) => message;
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, contextCallback));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -47,8 +49,10 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return
-                source.Add(new RespondActivity<TInstance, TData, TMessage>((i, d) => messageFactory(i), x => { }));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga);
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, x => { }));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -58,9 +62,10 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return
-                source.Add(new RespondActivity<TInstance, TData, TMessage>((i, d) => messageFactory(i),
-                    contextCallback));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga);
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, contextCallback));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -69,7 +74,10 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return source.Add(new RespondActivity<TInstance, TData, TMessage>(messageFactory, x => { }));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga, context.Message);
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, x => { }));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -79,7 +87,10 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            return source.Add(new RespondActivity<TInstance, TData, TMessage>(messageFactory, contextCallback));
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga, context.Message);
+
+            return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, contextCallback));
         }
 
         public static EventActivityBinder<TInstance, TData> Respond<TInstance, TData, TMessage>(
@@ -89,8 +100,8 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            Func<TInstance, TData, TMessage> factory =
-                (i, d) => messageFactory(i, ContextStorage.MessageContext<TData>(), d);
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga, context, context.Message);
 
             return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, x => { }));
         }
@@ -103,8 +114,8 @@ namespace Automatonymous
             where TData : class
             where TMessage : class
         {
-            Func<TInstance, TData, TMessage> factory =
-                (i, d) => messageFactory(i, ContextStorage.MessageContext<TData>(), d);
+            Func<TInstance, IConsumeContext<TData>, TMessage> factory =
+                (saga, context) => messageFactory(saga, context, context.Message);
 
             return source.Add(new RespondActivity<TInstance, TData, TMessage>(factory, contextCallback));
         }

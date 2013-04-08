@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -45,13 +45,12 @@ namespace Automatonymous.Impl
             get { return _accessor ?? (_accessor = CreateDefaultAccessor()); }
         }
 
-
-        public State<TInstance> Get(TInstance instance)
+        State<TInstance> StateAccessor<TInstance>.Get(TInstance instance)
         {
             return Accessor.Get(instance);
         }
 
-        public void Set(TInstance instance, State<TInstance> state)
+        void StateAccessor<TInstance>.Set(TInstance instance, State<TInstance> state)
         {
             Accessor.Set(instance, state);
         }

@@ -79,9 +79,9 @@ namespace MassTransit.AutomatonymousTests
 
                 Initially(
                     When(Started)
-                        .PublishRequest((instance, msg) => new RequestAuthorization
+                        .PublishRequest((instance, context) => new RequestAuthorization
                             {
-                                User = msg.User
+                                User = context.Message.User
                             },
                             (instance, message, x) =>
                                 {

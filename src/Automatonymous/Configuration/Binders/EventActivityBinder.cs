@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -23,8 +23,6 @@ namespace Automatonymous.Binders
         Event Event { get; }
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
-
-        EventActivityBinder<TInstance> Add(AsyncActivity<TInstance> activity);
     }
 
 
@@ -37,10 +35,6 @@ namespace Automatonymous.Binders
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
 
-        EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance> activity);
-
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
-
-        EventActivityBinder<TInstance, TData> Add(AsyncActivity<TInstance, TData> activity);
     }
 }

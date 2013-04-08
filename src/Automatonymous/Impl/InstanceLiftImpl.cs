@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,7 +13,7 @@
 namespace Automatonymous.Impl
 {
     using System;
-    using System.Threading.Tasks;
+    using TaskComposition;
 
 
     public class InstanceLiftImpl<T, TInstance> :
@@ -30,52 +30,24 @@ namespace Automatonymous.Impl
             _instance = instance;
         }
 
-        public void Raise(Event @event)
+        void InstanceLift<T>.Raise(Composer composer, Event @event)
         {
-            _stateMachine.RaiseEvent(_instance, @event);
+            _stateMachine.RaiseEvent(composer, _instance, @event);
         }
 
-        public Task RaiseAsync(Event @event)
+        void InstanceLift<T>.Raise<TData>(Composer composer, Event<TData> @event, TData value)
         {
-            return _stateMachine.RaiseEventAsync(_instance, @event);
+            _stateMachine.RaiseEvent(composer, _instance, @event, value);
         }
 
-        public void Raise<TData>(Event<TData> @event, TData value)
+        void InstanceLift<T>.Raise(Composer composer, Func<T, Event> eventSelector)
         {
-            _stateMachine.RaiseEvent(_instance, @event, value);
+            _stateMachine.RaiseEvent(composer, _instance, eventSelector);
         }
 
-        public Task RaiseAsync<TData>(Event<TData> @event, TData value)
+        void InstanceLift<T>.Raise<TData>(Composer composer, Func<T, Event<TData>> eventSelector, TData data)
         {
-            return _stateMachine.RaiseEventAsync(_instance, @event, value);
-        }
-
-        public void Raise(Func<T, Event> eventSelector)
-        {
-            Event @event = eventSelector(_stateMachine);
-
-            _stateMachine.RaiseEvent(_instance, @event);
-        }
-
-        public Task RaiseAsync(Func<T, Event> eventSelector)
-        {
-            Event @event = eventSelector(_stateMachine);
-
-            return _stateMachine.RaiseEventAsync(_instance, @event);
-        }
-
-        public void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data)
-        {
-            Event<TData> @event = eventSelector(_stateMachine);
-
-            _stateMachine.RaiseEvent(_instance, @event, data);
-        }
-
-        public Task RaiseAsync<TData>(Func<T, Event<TData>> eventSelector, TData data)
-        {
-            Event<TData> @event = eventSelector(_stateMachine);
-
-            return _stateMachine.RaiseEventAsync(_instance, @event, data);
+            _stateMachine.RaiseEvent(composer, _instance, eventSelector, data);
         }
     }
 }

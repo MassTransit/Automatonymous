@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,10 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
     using NUnit.Framework;
+    using TaskComposition;
 
 
     [TestFixture]
@@ -27,11 +25,7 @@ namespace Automatonymous.Tests
             var claim = new TestInstance();
             var machine = new TestStateMachine();
 
-            Task<TestInstance> task = machine.RaiseEventAsync(claim, machine.Create, new CreateInstance());
-
-            bool wait = task.Wait(Debugger.IsAttached ? TimeSpan.FromMinutes(30) : TimeSpan.FromSeconds(8));
-
-            Assert.IsTrue(wait, "Task did not complete");
+            machine.RaiseEvent(claim, machine.Create, new CreateInstance());
 
             Assert.AreEqual("ExecuteAsync", claim.Value);
         }
@@ -45,25 +39,16 @@ namespace Automatonymous.Tests
 
 
         class SetValueAsyncActivity :
-            AsyncActivity<TestInstance, CreateInstance>
+            Activity<TestInstance, CreateInstance>
         {
-            public void Execute(TestInstance instance, CreateInstance data)
-            {
-                instance.Value = "Execute";
-            }
-
-            public Task<TestInstance> ExecuteAsync(TestInstance instance, CreateInstance data)
-            {
-                return Task<TestInstance>.Factory.StartNew(() =>
-                    {
-                        instance.Value = "ExecuteAsync";
-                        return instance;
-                    });
-            }
-
             public void Accept(StateMachineInspector inspector)
             {
                 inspector.Inspect(this, x => { });
+            }
+
+            public void Execute(Composer composer, TestInstance instance, CreateInstance value)
+            {
+                composer.Execute(() => { instance.Value = "ExecuteAsync"; });
             }
         }
 

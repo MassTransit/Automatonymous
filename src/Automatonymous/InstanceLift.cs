@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,26 +13,18 @@
 namespace Automatonymous
 {
     using System;
-    using System.Threading.Tasks;
+    using TaskComposition;
 
 
-    public interface InstanceLift<T>
+    public interface InstanceLift<out T>
         where T : StateMachine
     {
-        void Raise(Event @event);
+        void Raise(Composer composer, Event @event);
 
-        Task RaiseAsync(Event @event);
+        void Raise<TData>(Composer composer, Event<TData> @event, TData value);
 
-        void Raise<TData>(Event<TData> @event, TData value);
-        
-        Task RaiseAsync<TData>(Event<TData> @event, TData value);
+        void Raise(Composer composer, Func<T, Event> eventSelector);
 
-        void Raise(Func<T, Event> eventSelector);
-
-        Task RaiseAsync(Func<T, Event> eventSelector);
-
-        void Raise<TData>(Func<T, Event<TData>> eventSelector, TData data);
-
-        Task RaiseAsync<TData>(Func<T, Event<TData>> eventSelector, TData data);
+        void Raise<TData>(Composer composer, Func<T, Event<TData>> eventSelector, TData data);
     }
 }

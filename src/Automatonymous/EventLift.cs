@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,23 +12,19 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System.Threading.Tasks;
+    using TaskComposition;
 
 
-    public interface EventLift<TInstance>
+    public interface EventLift<in TInstance>
         where TInstance : class
     {
-        void Raise(TInstance instance);
-
-        Task<TInstance> RaiseAsync(TInstance instance);
+        void Raise(Composer composer, TInstance instance);
     }
 
 
-    public interface EventLift<TInstance, in TData>
+    public interface EventLift<in TInstance, in TData>
         where TInstance : class
     {
-        void Raise(TInstance instance, TData data);
-
-        Task<TInstance> RaiseAsync(TInstance instance, TData data);
+        void Raise(Composer composer, TInstance instance, TData data);
     }
 }

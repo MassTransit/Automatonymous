@@ -35,7 +35,7 @@ namespace Automatonymous.Tests
 
             var eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            eventLift.Raise(_instance);
+            eventLift.Raise(_instance).Wait();
         }
 
 
