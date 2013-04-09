@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Linq.Expressions;
-    using TaskComposition;
+    using Taskell;
 
 
     public class ConditionalEventActivityImpl<TInstance, TData> :

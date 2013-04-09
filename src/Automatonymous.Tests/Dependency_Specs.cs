@@ -12,12 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using System;
-    using System.Diagnostics;
-    using System.Threading.Tasks;
     using Activities;
     using NUnit.Framework;
-    using TaskComposition;
+    using Taskell;
 
 
     [TestFixture]

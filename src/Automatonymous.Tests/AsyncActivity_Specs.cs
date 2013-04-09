@@ -13,7 +13,7 @@
 namespace Automatonymous.Tests
 {
     using NUnit.Framework;
-    using TaskComposition;
+    using Taskell;
 
 
     [TestFixture]

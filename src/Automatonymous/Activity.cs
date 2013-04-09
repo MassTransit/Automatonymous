@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using TaskComposition;
+    using Taskell;
 
 
     public interface Activity :

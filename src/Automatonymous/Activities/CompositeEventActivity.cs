@@ -15,7 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Reflection;
     using Internals.Reflection;
-    using TaskComposition;
+    using Taskell;
 
 
     public class CompositeEventActivity<TInstance> :

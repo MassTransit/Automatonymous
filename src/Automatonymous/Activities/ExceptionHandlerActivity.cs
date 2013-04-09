@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Collections.Generic;
-    using TaskComposition;
+    using Taskell;
 
 
     public class ExceptionHandlerActivity<TInstance, TException> :

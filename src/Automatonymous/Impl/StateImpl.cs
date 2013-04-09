@@ -15,7 +15,7 @@ namespace Automatonymous.Impl
     using System;
     using System.Collections.Generic;
     using Internals.Caching;
-    using TaskComposition;
+    using Taskell;
 
 
     public class StateImpl<TInstance> :

@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using MassTransit;
-    using TaskComposition;
+    using Taskell;
 
 
     public class PublishActivity<TInstance, TMessage> :

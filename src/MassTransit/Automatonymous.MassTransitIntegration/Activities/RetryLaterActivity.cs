@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     using MassTransit;
     using MassTransit.Context;
-    using TaskComposition;
+    using Taskell;
 
 
     public class RetryLaterActivity<TInstance, TData> :

@@ -15,7 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using MassTransit;
     using MassTransit.Context;
-    using TaskComposition;
+    using Taskell;
 
 
     public class RespondActivity<TInstance, TData, TMessage> :

@@ -16,7 +16,7 @@ namespace Automatonymous.Impl
     using System.Linq.Expressions;
     using System.Threading;
     using Activities;
-    using TaskComposition;
+    using Taskell;
 
 
     public class InitialIfNullStateAccessor<TInstance> :

@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using TaskComposition;
+    using Taskell;
 
 
     public class EventActivityImpl<TInstance> :

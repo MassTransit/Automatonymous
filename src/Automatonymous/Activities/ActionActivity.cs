@@ -13,7 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using TaskComposition;
+    using Taskell;
 
 
     public class ActionActivity<TInstance> :

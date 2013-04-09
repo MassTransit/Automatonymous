@@ -13,7 +13,7 @@
 namespace Automatonymous
 {
     using System.Threading.Tasks;
-    using TaskComposition;
+    using Taskell;
 
 
     public static class TaskCompositionExtensions

@@ -13,7 +13,7 @@
 namespace Automatonymous.Impl
 {
     using System;
-    using TaskComposition;
+    using Taskell;
 
 
     public class InstanceLiftImpl<T, TInstance> :

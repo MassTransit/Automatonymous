@@ -16,7 +16,7 @@ namespace Automatonymous
     using System.Threading;
     using System.Threading.Tasks;
     using Activities;
-    using TaskComposition;
+    using Taskell;
 
 
     public static class StateMachineExtensions

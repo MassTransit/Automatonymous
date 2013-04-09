@@ -16,7 +16,7 @@ namespace Automatonymous.Activities
     using MassTransit;
     using MassTransit.Context;
     using MassTransit.RequestResponse.Configurators;
-    using TaskComposition;
+    using Taskell;
 
 
     public class PublishRequestActivity<TInstance, TData, TMessage> :

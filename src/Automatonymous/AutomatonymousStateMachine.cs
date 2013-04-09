@@ -23,7 +23,7 @@ namespace Automatonymous
     using Internals.Caching;
     using Internals.Extensions;
     using Internals.Primitives;
-    using TaskComposition;
+    using Taskell;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :

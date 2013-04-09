@@ -15,7 +15,7 @@ namespace Automatonymous
     using System.Threading;
     using System.Threading.Tasks;
     using Impl;
-    using TaskComposition;
+    using Taskell;
 
 
     public static class InstanceLiftExtensions

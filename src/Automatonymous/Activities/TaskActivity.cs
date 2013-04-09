@@ -14,7 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Threading.Tasks;
-    using TaskComposition;
+    using Taskell;
 
 
     public class TaskActivity<TInstance> :

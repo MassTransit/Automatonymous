@@ -13,7 +13,7 @@
 namespace Automatonymous
 {
     using System;
-    using TaskComposition;
+    using Taskell;
 
 
     public interface InstanceLift<out T>
