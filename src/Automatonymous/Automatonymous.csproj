@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -33,13 +35,30 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Automatonymous.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Automatonymous.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release45|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\win8</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\win8\Automatonymous.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Taskell">
-      <HintPath>..\packages\Taskell.0.1.0\lib\net40\Taskell.dll</HintPath>
+    <Reference Include="Taskell, Version=0.1.2.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL"
+      Condition="'$(TargetFrameworkVersion)' == 'v4.0'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Taskell.0.1.2\lib\net40\Taskell.dll</HintPath>
+    </Reference>
+    <Reference Include="Taskell, Version=0.1.2.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL"
+      Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Taskell.0.1.2\lib\.NETCore45\Taskell.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

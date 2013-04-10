@@ -16,6 +16,9 @@ namespace Automatonymous.Activities
     using System.Collections.Generic;
     using System.Linq;
     using Internals.Caching;
+#if NETFX_CORE
+    using System.Reflection;
+#endif
     using Taskell;
 
 

@@ -1,7 +1,8 @@
-COPYRIGHT = "Copyright 2011 Chris Patterson, All rights reserved."
+COPYRIGHT = "Copyright 2011-2013 Chris Patterson, All rights reserved."
 
 include FileTest
 require 'albacore'
+require 'semver'
 
 internal_files = Dir[File.join(File.expand_path("src"), 'Automatonymous/Internals/**/*.cs')]
 if(!internal_files.any?)
@@ -9,12 +10,10 @@ if(!internal_files.any?)
   sh 'git submodule update --init' unless internal_files.any?
 end
 
-BUILD_NUMBER_BASE = '0.7.2'
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
-
-asm_version = BUILD_NUMBER_BASE
+NETCORE45_FRAMEWORK = '.NET Framework, Version=v4.5'
 
 props = {
   :src => File.expand_path("src"),
@@ -33,24 +32,17 @@ task :default => [:clean, :nuget_restore, :compile, :tests, :compile_net45fx, :n
 
 desc "Update the common version information for the build. You can call this task without building."
 assemblyinfo :global_version do |asm|
-  commit_data = get_commit_hash_and_date
-  commit = commit_data[0]
-  commit_date = commit_data[1]
-  build_number = "#{BUILD_NUMBER_BASE}.#{Date.today.strftime('%y%j')}"
-  tc_build_number = ENV["BUILD_NUMBER"]
-  build_number = "#{BUILD_NUMBER_BASE}.#{tc_build_number}" unless tc_build_number.nil?
-
   # Assembly file config
   asm.product_name = PRODUCT
   asm.description = "Automatonymous is an open source state machine library."
-  asm.version = asm_version
-  asm.file_version = build_number
-  asm.custom_attributes :AssemblyInformationalVersion => "#{asm_version}",
-	:ComVisibleAttribute => false,
-	:CLSCompliantAttribute => true
+  asm.version = FORMAL_VERSION
+  asm.file_version = FORMAL_VERSION
+  asm.custom_attributes :AssemblyInformationalVersion => "#{BUILD_VERSION}",
+  :ComVisibleAttribute => false,
+  :CLSCompliantAttribute => true
   asm.copyright = COPYRIGHT
   asm.output_file = 'src/SolutionVersion.cs'
-  asm.namespaces "System", "System.Reflection", "System.Runtime.InteropServices", "System.Security"
+  asm.namespaces "System", "System.Reflection", "System.Runtime.InteropServices"
 end
 
 desc "Prepares the working directory for a new build"
@@ -66,7 +58,7 @@ task :clean do
 end
 
 desc "Cleans, versions, compiles the application and generates build_output/."
-task :compile => [:global_version, :build] do
+task :compile => [:versioning, :global_version, :build] do
   copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
   copyOutputFiles File.join(props[:src], "MassTransit/Automatonymous.MassTransitIntegration/bin/Release"), "Automatonymous.MassTransitIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
   copyOutputFiles File.join(props[:src], "Automatonymous.NHibernateIntegration/bin/Release"), "Automatonymous.NHibernateIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
@@ -74,7 +66,7 @@ end
 
 desc "Cleans, versions, compiles the application and generates build_output/."
 task :compile_net45fx => [:global_version, :build_net45fx] do
-	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'win8')
+	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release/win8"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'win8')
 end
 
 desc "Only compiles the application."
@@ -90,12 +82,12 @@ end
 
 desc "Only compiles the application for .NET 4.5 FX CORE."
 msbuild :build_net45fx do |msb|
-	msb.properties :Configuration => "Release",
-		:Platform => 'Any CPU'
-	msb.targets :Clean, :Build
-  msb.properties[:SignAssembly] = 'true'
-  msb.properties[:AssemblyOriginatorKeyFile] = props[:keyfile]
-	msb.solution = 'src/Automatonymous-NetCore45.sln'
+  msb.properties :Configuration => "Release45",
+    :SignAssembly => 'true',
+    :AssemblyOriginatorKeyFile => props[:keyfile]
+  msb.use :net4
+  msb.targets :Clean, :Build
+  msb.solution = 'src/Automatonymous/Automatonymous.csproj'
 end
 
 def copyOutputFiles(fromDir, filePattern, outDir)
@@ -117,7 +109,7 @@ task :package => [:nuget]
 desc "ZIPs up the build results."
 zip :zip_output do |zip|
 	zip.directories_to_zip = [props[:stage]]
-	zip.output_file = "Automatonymous-#{BUILD_NUMBER_BASE}.zip"
+	zip.output_file = "Automatonymous-#{NUGET_VERSION}.zip"
 	zip.output_path = [props[:artifacts]]
 end
 
@@ -158,7 +150,7 @@ end
 
 nuspec :create_nuspec do |nuspec|
   nuspec.id = 'Automatonymous'
-  nuspec.version = asm_version
+  nuspec.version = NUGET_VERSION
   nuspec.authors = 'Chris Patterson'
   nuspec.description = 'Automatonymous is a state machine library for .NET'
   nuspec.title = 'Automatonymous'
@@ -166,6 +158,7 @@ nuspec :create_nuspec do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
+  nuspec.dependency "Taskell", "0.1.2"
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.nuspec')
   add_files props[:output], 'Automatonymous.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "Automatonymous\\**\\*.cs").gsub("/","\\"), "src")
@@ -173,7 +166,7 @@ end
 
 nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.id = 'Automatonymous.MassTransit'
-  nuspec.version = asm_version
+  nuspec.version = NUGET_VERSION
   nuspec.authors = 'Chris Patterson'
   nuspec.description = 'Integration assembly to support Automatonymous sagas, a state machine library for .NET'
   nuspec.title = 'Automatonymous.MassTransit'
@@ -182,7 +175,8 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
   nuspec.dependency "MassTransit", "2.7.1"
-  nuspec.dependency "Automatonymous", asm_version
+  nuspec.dependency "Taskell", "0.1.2"
+  nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
   add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "MassTransit\\Automatonymous.MassTransitIntegration\\**\\*.cs").gsub("/","\\"), "src")
@@ -190,7 +184,7 @@ end
 
 nuspec :create_nuspec_nhibernate do |nuspec|
   nuspec.id = 'Automatonymous.NHibernate'
-  nuspec.version = asm_version
+  nuspec.version = NUGET_VERSION
   nuspec.authors = 'Chris Patterson'
   nuspec.description = 'Integration assembly to support Automatonymous NHibernate, a state machine library for .NET'
   nuspec.title = 'Automatonymous.NHibernate'
@@ -199,7 +193,7 @@ nuspec :create_nuspec_nhibernate do |nuspec|
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
   nuspec.dependency "NHibernate", "3.3.2"
-  nuspec.dependency "Automatonymous", asm_version
+  nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.NHibernate.nuspec')
   add_files props[:output], 'Automatonymous.NHibernateIntegration.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "Automatonymous.NHibernateIntegration\\**\\*.cs").gsub("/","\\"), "src")
@@ -211,16 +205,43 @@ def project_outputs(props)
 		find_all{ |path| exists?(path) }
 end
 
-def get_commit_hash_and_date
-	begin
-		commit = `git log -1 --pretty=format:%H`
-		git_date = `git log -1 --date=iso --pretty=format:%ad`
-		commit_date = DateTime.parse( git_date ).strftime("%Y-%m-%d %H%M%S")
-	rescue
-		commit = "git unavailable"
-	end
 
-	[commit, commit_date]
+def add_files stage, what_dlls, nuspec
+  [['net40', 'net-4.0'], ['.NETCore45', 'win8']].each{|fw|
+    takeFrom = File.join(stage, fw[1], what_dlls)
+    Dir.glob(takeFrom).each do |f|
+      nuspec.file(f.gsub("/", "\\"), "lib\\#{fw[0]}")
+    end
+  }
+end
+
+def commit_data
+  begin
+    commit = `git rev-parse --short HEAD`.chomp()[0,6]
+    git_date = `git log -1 --date=iso --pretty=format:%ad`
+    commit_date = DateTime.parse( git_date ).strftime("%Y-%m-%d %H%M%S")
+  rescue Exception => e
+    puts e.inspect
+    commit = (ENV['BUILD_VCS_NUMBER'] || "000000")[0,6]
+    commit_date = Time.new.strftime("%Y-%m-%d %H%M%S")
+  end
+  [commit, commit_date]
+end
+
+task :versioning do
+  ver = SemVer.find
+  revision = (ENV['BUILD_NUMBER'] || ver.patch).to_i
+  var = SemVer.new(ver.major, ver.minor, revision, ver.special)
+  
+  # extensible number w/ git hash
+  ENV['BUILD_VERSION'] = BUILD_VERSION = ver.format("%M.%m.%p%s") + ".#{commit_data()[0]}"
+  
+  # nuget (not full semver 2.0.0-rc.1 support) see http://nuget.codeplex.com/workitem/1796
+  ENV['NUGET_VERSION'] = NUGET_VERSION = ver.format("%M.%m.%p%s")
+  
+  # purely M.m.p format
+  ENV['FORMAL_VERSION'] = FORMAL_VERSION = "#{ SemVer.new(ver.major, ver.minor, revision).format "%M.%m.%p"}"
+  puts "##teamcity[buildNumber '#{BUILD_VERSION}']" # tell teamcity our decision
 end
 
 def add_files stage, what_dlls, nuspec

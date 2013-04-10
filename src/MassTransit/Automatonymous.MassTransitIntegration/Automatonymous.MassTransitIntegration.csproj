@@ -44,8 +44,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Taskell">
-      <HintPath>..\..\packages\Taskell.0.1.0\lib\net40\Taskell.dll</HintPath>
+    <Reference Include="Taskell, Version=0.1.2.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Taskell.0.1.2\lib\net40\Taskell.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
