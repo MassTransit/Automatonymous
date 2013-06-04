@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -10,16 +10,18 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace MassTransit.Testing
+namespace Automatonymous.Testing
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Automatonymous;
-    using Saga;
-    using Scenarios;
-    using Subjects;
-    using TestDecorators;
+    using MassTransit;
+    using MassTransit.Saga;
+    using MassTransit.Testing;
+    using MassTransit.Testing.Scenarios;
+    using MassTransit.Testing.Subjects;
+    using MassTransit.Testing.TestDecorators;
+    using RepositoryConfigurators;
 
 
     public class StateMachineSagaTestSubjectImpl<TScenario, TSaga, TStateMachine> :
@@ -33,13 +35,16 @@ namespace MassTransit.Testing
         readonly ISagaRepository<TSaga> _sagaRepository;
         readonly SagaListImpl<TSaga> _sagas;
         readonly TStateMachine _stateMachine;
+        Action<StateMachineSagaRepositoryConfigurator<TSaga>> _configureCorrelation;
         bool _disposed;
         UnsubscribeAction _unsubscribe;
 
-        public StateMachineSagaTestSubjectImpl(ISagaRepository<TSaga> sagaRepository, TStateMachine stateMachine)
+        public StateMachineSagaTestSubjectImpl(ISagaRepository<TSaga> sagaRepository, TStateMachine stateMachine,
+            Action<StateMachineSagaRepositoryConfigurator<TSaga>> configureCorrelation)
         {
             _sagaRepository = sagaRepository;
             _stateMachine = stateMachine;
+            _configureCorrelation = configureCorrelation;
 
             _received = new ReceivedMessageListImpl();
             _created = new SagaListImpl<TSaga>();
@@ -58,8 +63,18 @@ namespace MassTransit.Testing
 
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (_disposed)
+                return;
+
+            if (_unsubscribe != null)
+            {
+                _unsubscribe();
+                _unsubscribe = null;
+            }
+
+            _received.Dispose();
+
+            _disposed = true;
         }
 
         public IEnumerator<SagaInstance<TSaga>> GetEnumerator()
@@ -92,30 +107,7 @@ namespace MassTransit.Testing
             var decoratedSagaRepository = new SagaRepositoryTestDecorator<TSaga>(_sagaRepository, _received, _created,
                 _sagas);
 
-            _unsubscribe = scenario.InputBus.SubscribeStateMachineSaga(_stateMachine, decoratedSagaRepository);
-        }
-
-        void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-            if (disposing)
-            {
-                if (_unsubscribe != null)
-                {
-                    _unsubscribe();
-                    _unsubscribe = null;
-                }
-
-                _received.Dispose();
-            }
-
-            _disposed = true;
-        }
-
-        ~StateMachineSagaTestSubjectImpl()
-        {
-            Dispose(false);
+            _unsubscribe = scenario.InputBus.SubscribeStateMachineSaga(_stateMachine, decoratedSagaRepository, _configureCorrelation);
         }
     }
 }

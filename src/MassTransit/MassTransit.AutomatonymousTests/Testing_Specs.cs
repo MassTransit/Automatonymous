@@ -28,7 +28,10 @@ namespace MassTransit.AutomatonymousTests
 
             SagaTest<BusTestScenario, Instance> test = TestFactory.ForSaga<Instance>().New(x =>
                 {
-                    x.UseStateMachineBuilder(_machine);
+                    x.UseStateMachineBuilder(_machine, sm =>
+                        {
+                            sm.Correlate(_machine.Stopped, (s, m) => s.CorrelationId == m.CorrelationId);
+                        });
 
                     x.Publish(new Start
                         {
@@ -44,6 +47,39 @@ namespace MassTransit.AutomatonymousTests
             Assert.IsNotNull(instance, "Saga instance not found");
 
             Assert.AreEqual(instance.CurrentState, _machine.Running);
+        }
+
+        [Test]
+        public void Should_handle_the_stop_state()
+        {
+            Guid sagaId = Guid.NewGuid();
+
+            SagaTest<BusTestScenario, Instance> test = TestFactory.ForSaga<Instance>().New(x =>
+                {
+                    x.UseStateMachineBuilder(_machine, sm =>
+                        {
+                            sm.Correlate(_machine.Stopped, (s, m) => s.CorrelationId == m.CorrelationId);
+                        });
+
+                    x.Publish(new Start
+                        {
+                            CorrelationId = sagaId
+                        });
+                    x.Publish(new Stop
+                        {
+                            CorrelationId = sagaId
+                        });
+                });
+
+            test.Execute();
+
+            Assert.IsTrue(test.Received.Any<Start>(), "Start not received");
+            Assert.IsTrue(test.Received.Any<Stop>(), "Stop not received");
+
+            Instance instance = test.Saga.Created.Contains(sagaId);
+            Assert.IsNotNull(instance, "Saga instance not found");
+
+            Assert.AreEqual(instance.CurrentState, _machine.Final);
         }
 
 
@@ -108,8 +144,7 @@ namespace MassTransit.AutomatonymousTests
         }
 
 
-        class Stop :
-            CorrelatedBy<Guid>
+        class Stop
         {
             public Guid CorrelationId { get; set; }
         }

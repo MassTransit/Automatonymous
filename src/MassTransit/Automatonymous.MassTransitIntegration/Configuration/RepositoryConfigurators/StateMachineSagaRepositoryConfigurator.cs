@@ -16,15 +16,15 @@ namespace Automatonymous.RepositoryConfigurators
     using System.Linq.Expressions;
 
 
-    public interface StateMachineSagaRepositoryConfigurator<TInstance>
-        where TInstance : class, SagaStateMachineInstance
+    public interface StateMachineSagaRepositoryConfigurator<TSaga>
+        where TSaga : class, SagaStateMachineInstance
     {
-        StateMachine<TInstance> StateMachine { get; }
+        StateMachine<TSaga> StateMachine { get; }
 
-        StateMachineEventCorrelationConfigurator<TInstance, TData> 
-            Correlate<TData>(Event<TData> @event, Expression<Func<TInstance, TData, bool>> correlationExpression)
+        StateMachineEventCorrelationConfigurator<TSaga, TData> 
+            Correlate<TData>(Event<TData> @event, Expression<Func<TSaga, TData, bool>> correlationExpression)
             where TData : class;
 
-        void RemoveWhen(Expression<Func<TInstance, bool>> removeExpression);
+        void RemoveWhen(Expression<Func<TSaga, bool>> removeExpression);
     }
 }

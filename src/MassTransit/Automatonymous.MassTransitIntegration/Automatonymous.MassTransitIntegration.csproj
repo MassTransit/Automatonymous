@@ -57,7 +57,7 @@
     <Compile Include="Activities\RespondActivity.cs" />
     <Compile Include="Activities\RetryLaterActivity.cs" />
     <Compile Include="Configuration\RepositoryConfigurators\StateMachineEventCorrelationConfigurator.cs" />
-    <Compile Include="Testing\StateMachineSagaTestBuilder.cs" />
+    <Compile Include="Testing\StateMachineSagaTestBuilderImpl.cs" />
     <Compile Include="Testing\StateMachineSagaTestInstance.cs" />
     <Compile Include="Testing\StateMachineSagaTestSubjectImpl.cs" />
     <Compile Include="Testing\StateMachineSagaTestingExtensions.cs" />
