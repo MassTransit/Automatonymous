@@ -142,6 +142,13 @@ msbuild :nuget_restore do |msb|
   msb.solution = File.join(props[:src], "Automatonymous.NHibernateIntegration", "Automatonymous.NHibernateIntegration.csproj")
 end
 
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "Automatonymous.Visualizer", "Automatonymous.Visualizer.csproj")
+end
+
 desc "Builds the nuget package"
 task :nuget => ['create_nuspec', 'create_nuspec_masstransit', 'create_nuspec_nhibernate', 'create_nuspec_quickgraph'] do
 	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
