@@ -62,6 +62,7 @@ task :compile => [:versioning, :global_version, :build] do
   copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
   copyOutputFiles File.join(props[:src], "MassTransit/Automatonymous.MassTransitIntegration/bin/Release"), "Automatonymous.MassTransitIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
   copyOutputFiles File.join(props[:src], "Automatonymous.NHibernateIntegration/bin/Release"), "Automatonymous.NHibernateIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
+  copyOutputFiles File.join(props[:src], "Automatonymous.Visualizer/bin/Release"), "Automatonymous.Visualizer.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
 end
 
 desc "Cleans, versions, compiles the application and generates build_output/."
@@ -142,10 +143,11 @@ msbuild :nuget_restore do |msb|
 end
 
 desc "Builds the nuget package"
-task :nuget => ['create_nuspec', 'create_nuspec_masstransit', 'create_nuspec_nhibernate'] do
+task :nuget => ['create_nuspec', 'create_nuspec_masstransit', 'create_nuspec_nhibernate', 'create_nuspec_quickgraph'] do
 	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
   sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.MassTransit.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
-	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.NHibernate.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+  sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.NHibernate.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.Visualizer.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
 end
 
 nuspec :create_nuspec do |nuspec|
@@ -197,6 +199,23 @@ nuspec :create_nuspec_nhibernate do |nuspec|
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.NHibernate.nuspec')
   add_files props[:output], 'Automatonymous.NHibernateIntegration.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "Automatonymous.NHibernateIntegration\\**\\*.cs").gsub("/","\\"), "src")
+end
+
+nuspec :create_nuspec_quickgraph do |nuspec|
+  nuspec.id = 'Automatonymous.Visualizer'
+  nuspec.version = NUGET_VERSION
+  nuspec.authors = 'Chris Patterson'
+  nuspec.description = 'Visualization assembly to support Automatonymous, a state machine library for .NET'
+  nuspec.title = 'Automatonymous.Visualizer'
+  nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
+  nuspec.language = "en-US"
+  nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
+  nuspec.requireLicenseAcceptance = "false"
+  nuspec.dependency "QuickGraph", "3.6.61119"
+  nuspec.dependency "Automatonymous", NUGET_VERSION
+  nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.Visualizer.nuspec')
+  add_files props[:output], 'Automatonymous.Visualizer.{dll,pdb,xml}', nuspec
+  nuspec.file(File.join(props[:src], "Automatonymous.Visualizer\\**\\*.cs").gsub("/","\\"), "src")
 end
 
 def project_outputs(props)

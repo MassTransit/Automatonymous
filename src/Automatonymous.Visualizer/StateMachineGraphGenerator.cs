@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,90 +13,73 @@
 namespace Automatonymous.Visualizer
 {
     using System;
-    using System.Drawing;
-    using System.Drawing.Imaging;
     using System.Linq;
     using Graphing;
-    using Microsoft.Glee.Drawing;
-    using Microsoft.Glee.GraphViewerGdi;
     using QuickGraph;
-    using QuickGraph.Glee;
+    using QuickGraph.Graphviz;
+    using QuickGraph.Graphviz.Dot;
 
 
-    public class StateMachineGraphGenerator
+    public class StateMachineGraphvizGenerator
     {
-        public Graph CreateGraph(StateMachineGraph data)
+        readonly AdjacencyGraph<Vertex, Edge<Vertex>> _graph;
+
+        public StateMachineGraphvizGenerator(StateMachineGraph data)
+        {
+            _graph = CreateAdjacencyGraph(data);
+        }
+
+        public string CreateDotFile()
+        {
+            var algorithm = new GraphvizAlgorithm<Vertex, Edge<Vertex>>(_graph);
+            algorithm.FormatEdge += EdgeStyler;
+            algorithm.FormatVertex += VertexStyler;
+            return algorithm.Generate();
+        }
+
+        void EdgeStyler(object sender, FormatEdgeEventArgs<Vertex, Edge<Vertex>> e)
+        {
+        }
+
+        void VertexStyler(object sender, FormatVertexEventArgs<Vertex> e)
+        {
+            e.VertexFormatter.Label = e.Vertex.Title;
+
+            if (e.Vertex.VertexType == typeof(Event))
+            {
+                e.VertexFormatter.FontColor = GraphvizColor.Black;
+                e.VertexFormatter.Shape = GraphvizVertexShape.Plaintext;
+
+                if (e.Vertex.TargetType != typeof(Event) && e.Vertex.TargetType != typeof(Exception))
+                    e.VertexFormatter.Label += "<" + e.Vertex.TargetType.Name + ">";
+            }
+            else
+            {
+                switch (e.Vertex.Title)
+                {
+                    case "Initial":
+                        e.VertexFormatter.FillColor = GraphvizColor.White;
+                        break;
+                    case "Final":
+                        e.VertexFormatter.FillColor = GraphvizColor.White;
+                        break;
+                    default:
+                        e.VertexFormatter.FillColor = GraphvizColor.White;
+                        e.VertexFormatter.FontColor = GraphvizColor.Black;
+                        break;
+                }
+
+                e.VertexFormatter.Shape = GraphvizVertexShape.Ellipse;
+            }
+        }
+
+        static AdjacencyGraph<Vertex, Edge<Vertex>> CreateAdjacencyGraph(StateMachineGraph data)
         {
             var graph = new AdjacencyGraph<Vertex, Edge<Vertex>>();
 
             graph.AddVertexRange(data.Vertices);
             graph.AddEdgeRange(data.Edges.Select(x => new Edge<Vertex>(x.From, x.To)));
-
-            GleeGraphPopulator<Vertex, Edge<Vertex>> glee = graph.CreateGleePopulator();
-
-            glee.NodeAdded += NodeStyler;
-            glee.EdgeAdded += EdgeStyler;
-            glee.Compute();
-
-            Graph gleeGraph = glee.GleeGraph;
-
-            return gleeGraph;
-        }
-
-        public void SaveGraphToFile(StateMachineGraph data, int width, int height, string filename)
-        {
-            Graph gleeGraph = CreateGraph(data);
-
-            var renderer = new GraphRenderer(gleeGraph);
-            renderer.CalculateLayout();
-
-            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            renderer.Render(bitmap);
-
-            bitmap.Save(filename, ImageFormat.Png);
-        }
-
-        void NodeStyler(object sender, GleeVertexEventArgs<Vertex> args)
-        {
-            args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.White;
-            args.Node.Attr.Fontsize = 8;
-            args.Node.Attr.FontName = "Arial";
-            args.Node.Attr.Padding = 1.1;
-
-            if (args.Vertex.VertexType == typeof(Event))
-            {
-                args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.Black;
-                args.Node.Attr.Shape = Shape.Plaintext;
-
-                args.Node.Attr.Label = args.Vertex.Title;
-
-                if (args.Vertex.TargetType != typeof(Event) && args.Vertex.TargetType != typeof(Exception))
-                    args.Node.Attr.Label += "<" + args.Vertex.TargetType.Name + ">";
-            }
-            else
-            {
-                switch (args.Vertex.Title)
-                {
-                    case "Initial":
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Green;
-                        break;
-                    case "Final":
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Crimson;
-                        break;
-                    default:
-                        args.Node.Attr.Fontcolor = Microsoft.Glee.Drawing.Color.Black;
-                        args.Node.Attr.Fillcolor = Microsoft.Glee.Drawing.Color.Cyan;
-                        break;
-                }
-                args.Node.Attr.Label = args.Vertex.Title;
-                args.Node.Attr.Shape = Shape.Ellipse;
-            }
-        }
-
-        static void EdgeStyler(object sender, GleeEdgeEventArgs<Vertex, Edge<Vertex>> e)
-        {
-            e.GEdge.EdgeAttr.FontName = "Tahoma";
-            e.GEdge.EdgeAttr.Fontsize = 6;
+            return graph;
         }
     }
 }
