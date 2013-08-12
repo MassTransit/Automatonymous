@@ -22,7 +22,7 @@ namespace Automatonymous
         {
             var taskComposer = new TaskComposer<T>(composer.CancellationToken, runSynchronously);
 
-            activity.Execute(composer, instance);
+            activity.Execute(taskComposer, instance);
 
             return taskComposer.Finish();
         }
@@ -31,7 +31,7 @@ namespace Automatonymous
         {
             var taskComposer = new TaskComposer<T>(composer.CancellationToken, runSynchronously);
 
-            activity.Execute(composer, instance, data);
+            activity.Execute(taskComposer, instance, data);
 
             return taskComposer.Finish();
         }
@@ -41,7 +41,7 @@ namespace Automatonymous
         {
             var taskComposer = new TaskComposer<T>(composer.CancellationToken, runSynchronously);
 
-            activity.Execute(composer, instance, data);
+            activity.Execute(taskComposer, instance, data);
 
             return taskComposer.Finish();
         }

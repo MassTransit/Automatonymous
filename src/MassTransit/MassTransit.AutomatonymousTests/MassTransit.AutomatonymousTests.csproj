@@ -52,6 +52,7 @@
       <Link>SolutionVersion.cs</Link>
     </Compile>
     <Compile Include="CompositeEvent_Specs.cs" />
+    <Compile Include="Fault_Specs.cs" />
     <Compile Include="FutureMessage.cs" />
     <Compile Include="Integration_Specs.cs" />
     <Compile Include="PublishRequest_Specs.cs" />
