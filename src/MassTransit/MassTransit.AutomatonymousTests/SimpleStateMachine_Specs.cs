@@ -56,10 +56,8 @@ namespace MassTransit.AutomatonymousTests
                     CorrelationId = sagaId
                 });
 
-            Instance instance = _repository.ShouldContainSaga(sagaId, 8.Seconds());
+            Instance instance = _repository.ShouldContainSagaInState(sagaId, _machine.Running, _machine, 8.Seconds());
             Assert.IsNotNull(instance);
-
-            Assert.AreEqual(instance.CurrentState, _machine.Running);
         }
 
         protected override void ConfigureSubscriptions(SubscriptionBusServiceConfigurator configurator)

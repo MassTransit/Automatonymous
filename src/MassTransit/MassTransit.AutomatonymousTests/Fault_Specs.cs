@@ -53,6 +53,21 @@ namespace MassTransit.AutomatonymousTests
             Assert.AreEqual(message.CorrelationId, faultReceived.Message.FailedMessage.CorrelationId);
         }
 
+        [Test]
+        public void Should_be_able_to_observe_its_own_event_fault()
+        {
+            var message = new Initialize();
+            Bus.Publish(message);
+
+            var initalizedSaga = _repository.ShouldContainSagaInState(message.CorrelationId, _machine.WaitingToStart, _machine, 8.Seconds());
+            Assert.IsNotNull(initalizedSaga);
+
+            Bus.Publish(new Start(message.CorrelationId));
+
+            var faultedSaga = _repository.ShouldContainSagaInState(message.CorrelationId, _machine.FailedToStart, _machine, 8.Seconds());
+            Assert.IsNotNull(faultedSaga);
+        }
+
         protected override void ConfigureSubscriptions(SubscriptionBusServiceConfigurator configurator)
         {
             _machine = new TestStateMachine();
@@ -91,21 +106,40 @@ namespace MassTransit.AutomatonymousTests
                 InstanceState(x => x.CurrentState);
 
                 State(() => Running);
+                State(() => WaitingToStart);
+                State(() => FailedToStart);
+
                 Event(() => Started);
+                Event(() => Initialized);
                 Event(() => Created);
+                Event(() => StartFaulted);
 
                 Initially(
                     When(Started)
                         .Then(instance => { throw new NotSupportedException("This is expected, but nonetheless exceptional"); })
                         .TransitionTo(Running),
+                    When(Initialized)
+                        .TransitionTo(WaitingToStart),
                     When(Created)
                         .Then((instance,msg) => { throw new NotSupportedException("This is expected, but nonetheless exceptional"); })
                         .TransitionTo(Running));
+
+                During(WaitingToStart,
+                    When(Started)
+                        .Then(instance => { throw new NotSupportedException("This is expected, but nonetheless exceptional"); })
+                        .TransitionTo(Running),
+                    When(StartFaulted)
+                        .TransitionTo(FailedToStart));
             }
 
+            public State WaitingToStart { get; private set; }
+            public State FailedToStart { get; private set; }
             public State Running { get; private set; }
+
             public Event<Start> Started { get; private set; }
+            public Event<Initialize> Initialized { get; private set; }
             public Event<Create> Created { get; private set; }
+            public Event<Fault<Start, Guid>> StartFaulted { get; private set; } 
         }
 
 
@@ -113,6 +147,22 @@ namespace MassTransit.AutomatonymousTests
             CorrelatedBy<Guid>
         {
             public Start()
+            {
+                CorrelationId = NewId.NextGuid();
+            }
+
+            public Start(Guid correlationId)
+            {
+                CorrelationId = correlationId;
+            }
+
+            public Guid CorrelationId { get; set; }
+        }
+
+        class Initialize :
+            CorrelatedBy<Guid>
+        {
+            public Initialize()
             {
                 CorrelationId = NewId.NextGuid();
             }
