@@ -146,6 +146,13 @@ desc "restores missing packages"
 msbuild :nuget_restore do |msb|
   msb.use :net4
   msb.targets :RestorePackages
+  msb.solution = File.join(props[:src], "NHibernate.AutomatonymousTests", "NHibernate.AutomatonymousTests.csproj")
+end
+
+desc "restores missing packages"
+msbuild :nuget_restore do |msb|
+  msb.use :net4
+  msb.targets :RestorePackages
   msb.solution = File.join(props[:src], "Automatonymous.Visualizer", "Automatonymous.Visualizer.csproj")
 end
 
