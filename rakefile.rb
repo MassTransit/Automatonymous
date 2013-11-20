@@ -100,7 +100,7 @@ end
 
 desc "Runs unit tests"
 nunit :tests => [:compile] do |nunit|
-          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.2', 'tools', 'nunit-console.exe')
+          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.3', 'tools', 'nunit-console.exe')
           nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results.xml')}\""
           nunit.assemblies = FileList["tests/Automatonymous.Tests.dll", File.join(props[:src], "MassTransit/MassTransit.AutomatonymousTests/bin/Release", "MassTransit.AutomatonymousTests.dll"), File.join(props[:src], "NHibernate.AutomatonymousTests/bin/Release", "NHibernate.AutomatonymousTests.dll")]
 end
@@ -190,7 +190,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.8.0"
+  nuspec.dependency "MassTransit", "2.9.0"
   nuspec.dependency "Taskell", "0.1.2"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
