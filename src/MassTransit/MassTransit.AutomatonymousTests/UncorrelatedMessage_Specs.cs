@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,6 +13,7 @@
 namespace MassTransit.AutomatonymousTests
 {
     using System;
+    using System.Threading;
     using Automatonymous;
     using Magnum.Extensions;
     using NUnit.Framework;
@@ -44,6 +45,26 @@ namespace MassTransit.AutomatonymousTests
             Assert.IsNotNull(_repository.ShouldContainSaga(responseReceived.Message.ServiceId, 1.Seconds()));
         }
 
+        [Test]
+        public void Should_retry_the_status_message()
+        {
+            var responseReceived = new FutureMessage<Status>();
+
+            var request = Bus.PublishRequestAsync(new CheckStatus("A"), x =>
+                {
+                    x.Handle<Status>(responseReceived.Set);
+                    x.HandleTimeout(8.Seconds(), () => { });
+                });
+
+            Thread.Sleep(1);
+            Bus.Publish(new Start("A", Guid.NewGuid()));
+
+            Assert.IsTrue(request.Task.Wait(8.Seconds()));
+
+            Assert.IsTrue(responseReceived.IsAvailable(0.Seconds()));
+            Assert.AreEqual("A", responseReceived.Message.ServiceName);
+        }
+
         protected override void ConfigureSubscriptions(SubscriptionBusServiceConfigurator configurator)
         {
             _machine = new TestStateMachine();
@@ -52,7 +73,10 @@ namespace MassTransit.AutomatonymousTests
             configurator.StateMachineSaga(_machine, _repository, x =>
                 {
                     x.Correlate(_machine.Started, (i, d) => i.ServiceName == d.ServiceName)
-                        .SelectCorrelationId(msg => msg.ServiceId);
+                     .SelectCorrelationId(msg => msg.ServiceId);
+
+                    x.Correlate(_machine.CheckStatus, (i, d) => i.ServiceName == d.ServiceName)
+                     .RetryLimit(5);
                 });
         }
 
@@ -73,10 +97,9 @@ namespace MassTransit.AutomatonymousTests
             }
 
             public State CurrentState { get; set; }
+            public string ServiceName { get; set; }
             public Guid CorrelationId { get; set; }
             public IServiceBus Bus { get; set; }
-
-            public string ServiceName { get; set; }
         }
 
 
@@ -89,16 +112,51 @@ namespace MassTransit.AutomatonymousTests
 
                 State(() => Running);
                 Event(() => Started);
+                Event(() => CheckStatus);
 
                 Initially(
                     When(Started)
-                        .Then((i,d) => i.ServiceName = d.ServiceName)
-                        .Respond((i,d) => new StartupComplete{ServiceId = i.CorrelationId, ServiceName = i.ServiceName})
+                        .Then((i, d) => i.ServiceName = d.ServiceName)
+                        .Respond((i, d) => new StartupComplete {ServiceId = i.CorrelationId, ServiceName = i.ServiceName})
                         .TransitionTo(Running));
+
+                During(Running,
+                    When(CheckStatus)
+                        .Respond((i, d) => new Status("Running", i.ServiceName)));
             }
+
 
             public State Running { get; private set; }
             public Event<Start> Started { get; private set; }
+            public Event<CheckStatus> CheckStatus { get; private set; }
+        }
+
+
+        class Status
+        {
+            public Status(string status, string serviceName)
+            {
+                StatusDescription = status;
+                ServiceName = serviceName;
+            }
+
+            public string ServiceName { get; set; }
+            public string StatusDescription { get; set; }
+        }
+
+
+        class CheckStatus
+        {
+            public CheckStatus(string serviceName)
+            {
+                ServiceName = serviceName;
+            }
+
+            public CheckStatus()
+            {
+            }
+
+            public string ServiceName { get; set; }
         }
 
 

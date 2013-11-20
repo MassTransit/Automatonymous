@@ -33,7 +33,7 @@ namespace Automatonymous
             StateMachine<TInstance> stateMachine = configurator.StateMachine;
             State state = stateSelector(stateMachine).For<TInstance>();
 
-            configurator.RemoveWhen(x => stateMachine.InstanceStateAccessor.Get(x) == state);
+            configurator.RemoveWhen(x => stateMachine.InstanceStateAccessor.Get(x).Equals(state));
 
             return configurator;
         }

@@ -19,7 +19,8 @@ namespace Automatonymous.Impl
 
 
     public class StateImpl<TInstance> :
-        State<TInstance>
+        State<TInstance>,
+        IEquatable<State>
         where TInstance : class
     {
         readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
@@ -89,9 +90,9 @@ namespace Automatonymous.Impl
             return string.CompareOrdinal(_name, other.Name);
         }
 
-        bool Equals(State other)
+        public bool Equals(State other)
         {
-            return string.Equals(_name, other.Name);
+            return string.CompareOrdinal(_name, other.Name) == 0;
         }
 
         public override bool Equals(object obj)
@@ -108,6 +109,37 @@ namespace Automatonymous.Impl
         {
             return (_name != null ? _name.GetHashCode() : 0);
         }
+
+        public static bool operator ==(State<TInstance> left, StateImpl<TInstance> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(State<TInstance> left, StateImpl<TInstance> right)
+        {
+            return !Equals(left, right);
+        }
+
+        public static bool operator ==(StateImpl<TInstance> left, State<TInstance> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(StateImpl<TInstance> left, State<TInstance> right)
+        {
+            return !Equals(left, right);
+        }
+
+        public static bool operator ==(StateImpl<TInstance> left, StateImpl<TInstance> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(StateImpl<TInstance> left, StateImpl<TInstance> right)
+        {
+            return !Equals(left, right);
+        }
+
 
         void Raise<TEvent>(Composer composer, TInstance instance, TEvent @event, Action<Composer, Activity<TInstance>, TInstance> callback)
             where TEvent : Event

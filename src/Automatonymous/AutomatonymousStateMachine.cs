@@ -133,7 +133,7 @@ namespace Automatonymous
 
         public IEnumerable<Event> NextEvents(State state)
         {
-            return _stateCache[state.Name].Events.Distinct(new NameEqualityComparer());
+            return _stateCache[state.Name].Events;
         }
 
         public IObservable<StateChanged<TInstance>> StateChanged
@@ -162,7 +162,9 @@ namespace Automatonymous
         /// </summary>
         /// <param name="instanceStateProperty"></param>
         /// <remarks>Setting the state accessor more than once will cause the property managed by the state machine to change each time.
-        /// Please note, the state machine can only manage one property at a given time per instance, and the best practice is to manage one property per machine.</remarks>
+        /// Please note, the state machine can only manage one property at a given time per instance, 
+        /// and the best practice is to manage one property per machine.
+        /// </remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
             _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
@@ -194,8 +196,14 @@ namespace Automatonymous
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
+            if (events == null)
+                throw new ArgumentNullException("events");
             if (events.Length > 31)
                 throw new ArgumentException("No more than 31 events can be combined into a single event");
+            if (events.Length == 0)
+                throw new ArgumentException("At least one event must be specified for a composite event");
+            if (events.Any(x => x == null))
+                throw new ArgumentException("One or more events specified has not yet been initialized");
 
             PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
             PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
@@ -253,12 +261,56 @@ namespace Automatonymous
             _stateCache[name] = state;
         }
 
-
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+
+            BindActivitiesToState(state, eventActivities);
+        }
+
+        protected void During(State state1, State state2, params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+
+            BindActivitiesToState(state1, eventActivities);
+            BindActivitiesToState(state2, eventActivities);
+        }
+
+        protected void During(State state1, State state2, State state3, params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+
+            BindActivitiesToState(state1, eventActivities);
+            BindActivitiesToState(state2, eventActivities);
+            BindActivitiesToState(state3, eventActivities);
+        }
+
+        protected void During(State state1, State state2, State state3, State state4,
+            params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+
+            BindActivitiesToState(state1, eventActivities);
+            BindActivitiesToState(state2, eventActivities);
+            BindActivitiesToState(state3, eventActivities);
+            BindActivitiesToState(state4, eventActivities);
+        }
+
+        protected void During(IEnumerable<State> states, params IEnumerable<EventActivity<TInstance>>[] activities)
+        {
+            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+
+            foreach (var state in states)
+            {
+                BindActivitiesToState(state, eventActivities);
+            }
+        }
+
+        static void BindActivitiesToState(State state, IEnumerable<EventActivity<TInstance>> eventActivities)
         {
             State<TInstance> activityState = state.For<TInstance>();
 
-            foreach (var activity in activities.SelectMany(x => x))
+            foreach (var activity in eventActivities)
                 activityState.Bind(activity);
         }
 
@@ -318,20 +370,6 @@ namespace Automatonymous
             Expression<Func<TData, bool>> filterExpression)
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
-        }
-
-
-        class NameEqualityComparer : IEqualityComparer<Event>
-        {
-            public bool Equals(Event x, Event y)
-            {
-                return Equals(x.Name, y.Name);
-            }
-
-            public int GetHashCode(Event @event)
-            {
-                return @event.Name.GetHashCode();
-            }
         }
     }
 }

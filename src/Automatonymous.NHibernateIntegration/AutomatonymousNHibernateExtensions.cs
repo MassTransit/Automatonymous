@@ -25,6 +25,23 @@ namespace Automatonymous
             where T : class
             where TMachine : StateMachine, new()
         {
+            AutomatonymousStateUserType<TMachine>.SaveAsString(new TMachine());
+
+            mapper.Property(stateExpression, x =>
+                {
+                    x.Type<AutomatonymousStateUserType<TMachine>>();
+                    x.NotNullable(true);
+                    x.Length(80);
+                });
+        }
+
+        public static void StateProperty<T, TMachine>(this IClassMapper<T> mapper,
+            Expression<Func<T, State>> stateExpression, TMachine machine)
+            where T : class
+            where TMachine : StateMachine, new()
+        {
+            AutomatonymousStateUserType<TMachine>.SaveAsString(machine);
+
             mapper.Property(stateExpression, x =>
                 {
                     x.Type<AutomatonymousStateUserType<TMachine>>();
@@ -54,7 +71,7 @@ namespace Automatonymous
         {
             mapper.Property(compositeEventStatusExpression, x =>
                 {
-                    x.Type<CompositeEventStateUserType>();
+                    x.Type<CompositeEventStatusUserType>();
                     x.NotNullable(true);
                 });
         }

@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,9 +14,11 @@ namespace Automatonymous.Saga.Pipeline
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
     using Magnum.Extensions;
     using MassTransit;
+    using MassTransit.Logging;
     using MassTransit.Saga;
     using MassTransit.Saga.Pipeline;
 
@@ -26,31 +28,43 @@ namespace Automatonymous.Saga.Pipeline
         where TInstance : class, SagaStateMachineInstance
         where TMessage : class
     {
+        static readonly ILog _log = Logger.Get<ExpressionStateMachineMessageSink<TInstance, TMessage>>();
+
         public ExpressionStateMachineMessageSink(StateMachine<TInstance> stateMachine,
-                                                 ISagaRepository<TInstance> repository,
-                                                 ISagaPolicy<TInstance, TMessage> policy,
-                                                 Event<TMessage> @event,
-                                                 Expression<Func<TInstance, TMessage, bool>> selector)
+            ISagaRepository<TInstance> repository,
+            ISagaPolicy<TInstance, TMessage> policy,
+            Event<TMessage> @event,
+            Expression<Func<TInstance, TMessage, bool>> selector)
             : base(repository, policy, new PropertySagaLocator<TInstance, TMessage>(repository, policy, selector),
                 (s, c) => GetHandlers(stateMachine, s, c, @event))
         {
         }
 
         static IEnumerable<Action<IConsumeContext<TMessage>>> GetHandlers(StateMachine<TInstance> stateMachine,
-                                                                          TInstance instance,
-                                                                          IConsumeContext<TMessage> context,
-                                                                          Event<TMessage> @event)
+            TInstance instance,
+            IConsumeContext<TMessage> context,
+            Event<TMessage> @event)
         {
-            yield return x =>
-                {
-                    instance.Bus = context.Bus;
+            State<TInstance> currentState = stateMachine.InstanceStateAccessor.Get(instance);
+            IEnumerable<Event> nextEvents = stateMachine.NextEvents(currentState);
+            if (nextEvents.Contains(@event))
+            {
+                yield return x =>
+                    {
+                        instance.Bus = context.Bus;
 
-                    context.BaseContext.NotifyConsume(context, typeof(TInstance).ToShortTypeName(),
-                        instance.CorrelationId.ToString());
+                        context.BaseContext.NotifyConsume(context, typeof(TInstance).ToShortTypeName(),
+                            instance.CorrelationId.ToString());
 
-                    using (x.CreateScope())
-                        stateMachine.RaiseEvent(instance, @event, x.Message);
-                };
+                        using (x.CreateScope())
+                            stateMachine.RaiseEvent(instance, @event, x.Message);
+                    };
+            }
+            else
+            {
+                _log.DebugFormat("{0} {1} in {2} does not accept {3}", stateMachine.GetType().Name, instance.CorrelationId,
+                    currentState.Name, @event.Name);
+            }
         }
     }
 }

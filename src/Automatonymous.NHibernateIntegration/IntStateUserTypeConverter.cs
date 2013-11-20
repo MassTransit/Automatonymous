@@ -28,7 +28,7 @@ namespace Automatonymous.NHibernateIntegration
     /// <typeparam name="T">The state machine type</typeparam>
     public class IntStateUserTypeConverter<T> :
         StateUserTypeConverter
-        where T : StateMachine, new()
+        where T : StateMachine
     {
 // ReSharper disable StaticFieldInGenericType
         static readonly SqlType[] _types = new[] {NHibernateUtil.Int32.SqlType};

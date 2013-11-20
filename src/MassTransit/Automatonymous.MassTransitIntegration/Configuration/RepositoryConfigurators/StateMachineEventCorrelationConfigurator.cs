@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -21,5 +21,15 @@ namespace Automatonymous.RepositoryConfigurators
     {
         StateMachineEventCorrelationConfigurator<TInstance, TData>
             SelectCorrelationId(Func<TData, Guid> correlationIdSelector);
+
+        /// <summary>
+        /// Specify the number of automatic retries to perform using the RetryLater
+        /// mechanism (which moves the message to the end of the queue) before deferring
+        /// retries to the built-in MassTransit mechanism.
+        /// </summary>
+        /// <param name="retryLimit"></param>
+        /// <returns></returns>
+        StateMachineEventCorrelationConfigurator<TInstance, TData>
+            RetryLimit(int retryLimit);
     }
 }

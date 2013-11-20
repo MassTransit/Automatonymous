@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -20,10 +20,12 @@ namespace Automatonymous.NHibernateIntegration
 
     public class AutomatonymousStateUserType<T> :
         IUserType
-        where T : StateMachine, new()
+        where T : StateMachine
     {
 // ReSharper disable StaticFieldInGenericType
         static StateUserTypeConverter _converter;
+        static Func<T> _machine = () => (T)Activator.CreateInstance(typeof(T));
+
 // ReSharper restore StaticFieldInGenericType
 
         bool IUserType.Equals(object x, object y)
@@ -93,8 +95,15 @@ namespace Automatonymous.NHibernateIntegration
             get { return false; }
         }
 
+        public static void SaveAsString(T machine)
+        {
+            _machine = () => machine;
+            _converter = new StringStateUserTypeConverter<T>(machine);
+        }
+
         public static void SaveAsInt32(T machine, params State[] states)
         {
+            _machine = () => machine;
             _converter = new IntStateUserTypeConverter<T>(machine, states);
         }
 
@@ -103,9 +112,15 @@ namespace Automatonymous.NHibernateIntegration
             _converter = converter;
         }
 
+        public static void SetStateUserTypeConverter(T machine, StateUserTypeConverter converter)
+        {
+            _machine = () => machine;
+            _converter = converter;
+        }
+
         StateUserTypeConverter GetConverter()
         {
-            return _converter ?? (_converter = new StringStateUserTypeConverter<T>());
+            return _converter ?? (_converter = new StringStateUserTypeConverter<T>(_machine()));
         }
     }
 }

@@ -68,7 +68,7 @@ namespace MassTransit.AutomatonymousTests
             while (DateTime.Now < giveUpAt)
             {
                 TSaga saga = repository.ShouldContainSaga(sagaId, timeout);
-                if (machine.InstanceStateAccessor.Get(saga) == state)
+                if (machine.InstanceStateAccessor.Get(saga).Equals(state))
                     return saga;
 
                 Thread.Sleep(100);

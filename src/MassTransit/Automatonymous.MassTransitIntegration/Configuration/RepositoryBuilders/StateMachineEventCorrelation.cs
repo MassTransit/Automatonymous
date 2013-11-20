@@ -46,5 +46,11 @@ namespace Automatonymous.RepositoryBuilders
         /// <returns></returns>
         Guid GetCorrelationId<TMessage>(TMessage message)
             where TMessage : class;
+
+        /// <summary>
+        /// Returns the retry limit for the event to support the retry later behavior
+        /// for synchronizing correlated events
+        /// </summary>
+        int RetryLimit { get; }
     }
 }

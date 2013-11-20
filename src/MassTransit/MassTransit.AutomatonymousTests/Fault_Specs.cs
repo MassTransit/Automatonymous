@@ -30,9 +30,13 @@ namespace MassTransit.AutomatonymousTests
         {
             var faultReceived = new FutureMessage<Fault<Start>>();
 
-            Bus.SubscribeHandler<Fault<Start>>(faultReceived.Set);
-
             var message = new Start();
+            Bus.SubscribeHandler<Fault<Start>>(x =>
+                {
+                    if (message.CorrelationId == x.FailedMessage.CorrelationId)
+                        faultReceived.Set(x);
+                });
+
             Bus.Publish(message);
 
             Assert.IsTrue(faultReceived.IsAvailable(8.Seconds()));

@@ -22,22 +22,22 @@ namespace Automatonymous.NHibernateIntegration
     /// Used to map a CompositeEventStatus property to an int for storage by 
     /// NHibernate.
     /// </summary>
-    public class CompositeEventStateUserType :
+    public class CompositeEventStatusUserType :
         IUserType
     {
         static readonly SqlType[] _types = new[] {NHibernateUtil.Int32.SqlType};
 
         bool IUserType.Equals(object x, object y)
         {
-            var xs = (State)x;
-            var ys = (State)y;
+            var xs = (CompositeEventStatus)x;
+            var ys = (CompositeEventStatus)y;
 
-            return xs.Name.Equals(ys.Name);
+            return xs.Equals(ys);
         }
 
         public int GetHashCode(object x)
         {
-            return ((State)x).Name.GetHashCode();
+            return ((CompositeEventStatus)x).GetHashCode();
         }
 
         public object NullSafeGet(IDataReader rs, string[] names, object owner)
@@ -91,7 +91,7 @@ namespace Automatonymous.NHibernateIntegration
 
         public Type ReturnedType
         {
-            get { return typeof(State); }
+            get { return typeof(CompositeEventStatus); }
         }
 
         public bool IsMutable

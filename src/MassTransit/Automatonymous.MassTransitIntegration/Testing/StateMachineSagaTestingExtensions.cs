@@ -44,5 +44,13 @@ namespace MassTransit.Testing
                                     new StateMachineSagaTestBuilderImpl<TScenario, TSaga, TStateMachine>(scenario,
                                         stateMachine, configureCallback));
         }
+
+        public static TSaga ContainsInState<TSaga>(this SagaList<TSaga> sagas, Guid sagaId,
+            State state, StateMachine<TSaga> machine)
+            where TSaga : class, SagaStateMachineInstance
+        {
+            bool any = sagas.Any(x => x.CorrelationId == sagaId && machine.InstanceStateAccessor.Get(x).Equals(state));
+            return any ? sagas.Contains(sagaId) : null;
+        }
     }
 }

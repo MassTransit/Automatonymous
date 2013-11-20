@@ -53,7 +53,7 @@ namespace Automatonymous.Activities
             composer.Execute(() =>
                 {
                     State<TInstance> currentState = _currentStateAccessor.Get(instance);
-                    if (currentState == _toState)
+                    if (_toState.Equals(currentState))
                         return composer.ComposeCompleted();
 
                     var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);

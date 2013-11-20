@@ -23,7 +23,7 @@ namespace Automatonymous.NHibernateIntegration
     /// <typeparam name="T"></typeparam>
     public class StringStateUserTypeConverter<T> :
         StateUserTypeConverter
-        where T : StateMachine, new()
+        where T : StateMachine
     {
 // ReSharper disable StaticFieldInGenericType
         static readonly SqlType[] _types = new[] {NHibernateUtil.String.SqlType};
@@ -31,9 +31,9 @@ namespace Automatonymous.NHibernateIntegration
         readonly T _machine;
         readonly Cache<string, State> _stateCache;
 
-        public StringStateUserTypeConverter()
+        public StringStateUserTypeConverter(T machine)
         {
-            _machine = new T();
+            _machine = machine;
             Cache<string, State> states = new DictionaryCache<string, State>();
             foreach (State state in _machine.States)
                 states.Add(state.Name, state);

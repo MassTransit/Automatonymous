@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -27,8 +27,9 @@ namespace Automatonymous.RepositoryBuilders
         where TData : class
     {
         readonly Expression<Func<TInstance, TData, bool>> _correlationExpression;
+        readonly Event<TData> _event;
         Func<TData, Guid> _correlationIdSelector;
-        Event<TData> _event;
+        int _retryLimit;
 
         public StateMachineEventCorrelationImpl(Event<TData> @event,
             Expression<Func<TInstance, TData, bool>> correlationExpression)
@@ -41,6 +42,11 @@ namespace Automatonymous.RepositoryBuilders
         public Event Event
         {
             get { return _event; }
+        }
+
+        public int RetryLimit
+        {
+            get { return _retryLimit; }
         }
 
         public Expression<Func<TInstance, TMessage, bool>> GetCorrelationExpression<TMessage>()
@@ -80,6 +86,13 @@ namespace Automatonymous.RepositoryBuilders
 
             _correlationIdSelector = correlationIdSelector;
 
+            return this;
+        }
+
+        StateMachineEventCorrelationConfigurator<TInstance, TData> StateMachineEventCorrelationConfigurator<TInstance, TData>.RetryLimit(
+            int retryLimit)
+        {
+            _retryLimit = retryLimit;
             return this;
         }
 
