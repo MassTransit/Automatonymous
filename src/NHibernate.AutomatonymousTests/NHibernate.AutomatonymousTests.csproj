@@ -42,11 +42,11 @@
     </Reference>
     <Reference Include="MassTransit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MassTransit.2.9.0\lib\net40\MassTransit.dll</HintPath>
+      <HintPath>..\packages\MassTransit.2.9.2\lib\net40\MassTransit.dll</HintPath>
     </Reference>
     <Reference Include="MassTransit.NHibernateIntegration, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MassTransit.NHibernate.2.9.0\lib\net40\MassTransit.NHibernateIntegration.dll</HintPath>
+      <HintPath>..\packages\MassTransit.NHibernate.2.9.2\lib\net40\MassTransit.NHibernateIntegration.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
