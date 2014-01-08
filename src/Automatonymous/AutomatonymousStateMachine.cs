@@ -60,7 +60,7 @@ namespace Automatonymous
 
             _stateCache.Each(x =>
                 {
-                    if (x == Initial || x == Final)
+                    if (Equals(x, Initial) || Equals(x, Final))
                         return;
 
                     x.Accept(inspector);
@@ -226,7 +226,7 @@ namespace Automatonymous
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
                     (consumer, instance) => ((StateMachine<TInstance>)this).RaiseEvent(consumer, instance, @event));
 
-                foreach (var state in _stateCache.Where(x => x != Initial))
+                foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
                 {
                     During(state,
                         When(events[i])
@@ -321,7 +321,7 @@ namespace Automatonymous
 
         protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            IEnumerable<State<TInstance>> states = _stateCache.Where(x => x != Initial && x != Final);
+            IEnumerable<State<TInstance>> states = _stateCache.Where(x => !Equals(x, Initial) && !Equals(x, Final));
 
             // we only add DuringAny event handlers to non-initial and non-final states to avoid
             // reviving finalized state machine instances or creating new ones accidentally.
