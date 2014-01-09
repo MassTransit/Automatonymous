@@ -21,6 +21,7 @@ _ReSharper*
 *.orig
 *.user
 
+NuGet.exe
 packages
 
 TestResult.xml
