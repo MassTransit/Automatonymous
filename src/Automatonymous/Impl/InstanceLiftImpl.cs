@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,8 @@
 namespace Automatonymous.Impl
 {
     using System;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class InstanceLiftImpl<T, TInstance> :
@@ -30,24 +31,24 @@ namespace Automatonymous.Impl
             _instance = instance;
         }
 
-        void InstanceLift<T>.Raise(Composer composer, Event @event)
+        Task InstanceLift<T>.Raise(Event @event, CancellationToken cancellationToken)
         {
-            _stateMachine.RaiseEvent(composer, _instance, @event);
+            return _stateMachine.RaiseEvent(_instance, @event, cancellationToken);
         }
 
-        void InstanceLift<T>.Raise<TData>(Composer composer, Event<TData> @event, TData value)
+        Task InstanceLift<T>.Raise<TData>(Event<TData> @event, TData value, CancellationToken cancellationToken)
         {
-            _stateMachine.RaiseEvent(composer, _instance, @event, value);
+            return _stateMachine.RaiseEvent(_instance, @event, value, cancellationToken);
         }
 
-        void InstanceLift<T>.Raise(Composer composer, Func<T, Event> eventSelector)
+        Task InstanceLift<T>.Raise(Func<T, Event> eventSelector, CancellationToken cancellationToken)
         {
-            _stateMachine.RaiseEvent(composer, _instance, eventSelector);
+            return _stateMachine.RaiseEvent(_instance, eventSelector, cancellationToken);
         }
 
-        void InstanceLift<T>.Raise<TData>(Composer composer, Func<T, Event<TData>> eventSelector, TData data)
+        Task InstanceLift<T>.Raise<TData>(Func<T, Event<TData>> eventSelector, TData data, CancellationToken cancellationToken)
         {
-            _stateMachine.RaiseEvent(composer, _instance, eventSelector, data);
+            return _stateMachine.RaiseEvent(_instance, eventSelector, data, cancellationToken);
         }
     }
 }

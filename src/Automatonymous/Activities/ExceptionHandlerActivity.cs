@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -14,7 +14,8 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Collections.Generic;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class ExceptionHandlerActivity<TInstance, TException> :
@@ -48,30 +49,16 @@ namespace Automatonymous.Activities
             get { return _event; }
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
-
-                    foreach (var activity in _activities)
-                        activity.Execute(taskComposer, instance);
-
-                    return taskComposer.Finish();
-                });
+            foreach (var activity in _activities)
+                await activity.Execute(instance, cancellationToken);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
-
-                    foreach (var activity in _activities)
-                        activity.Execute(taskComposer, instance, value);
-
-                    return taskComposer.Finish();
-                });
+            foreach (var activity in _activities)
+                await activity.Execute(instance, value, cancellationToken);
         }
     }
 }

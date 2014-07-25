@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,10 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using Impl;
-    using Taskell;
 
 
     public static class InstanceLiftExtensions
@@ -27,29 +24,6 @@ namespace Automatonymous
             var instanceLift = new InstanceLiftImpl<T, TInstance>(stateMachine, instance);
 
             return instanceLift;
-        }
-
-
-        public static Task Raise<T>(this InstanceLift<T> lift, Event @event,
-            CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine
-        {
-            var composer = new TaskComposer<T>(cancellationToken);
-
-            lift.Raise(composer, @event);
-
-            return composer.Finish();
-        }
-
-        public static Task Raise<T, TData>(this InstanceLift<T> lift, Event<TData> @event, TData data,
-            CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine
-        {
-            var composer = new TaskComposer<T>(cancellationToken);
-
-            lift.Raise(composer, @event, data);
-
-            return composer.Finish();
         }
     }
 }

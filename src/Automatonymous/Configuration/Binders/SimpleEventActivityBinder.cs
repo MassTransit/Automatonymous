@@ -67,7 +67,7 @@ namespace Automatonymous.Binders
 
         EventActivity<TInstance> CreateEventActivity(Activity<TInstance> activity)
         {
-            return new EventActivityImpl<TInstance>(_event, activity);
+            return new EventActivityShim<TInstance>(_event, activity);
         }
     }
 }

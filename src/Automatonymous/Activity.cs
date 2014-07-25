@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,7 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public interface Activity :
@@ -24,15 +25,15 @@ namespace Automatonymous
     public interface Activity<in TInstance> :
         Activity
     {
-        void Execute(Composer composer, TInstance instance);
+        Task Execute(TInstance instance, CancellationToken cancellationToken);
 
-        void Execute<T>(Composer composer, TInstance instance, T value);
+        Task Execute<T>(TInstance instance, T value, CancellationToken cancellationToken);
     }
 
 
     public interface Activity<in TInstance, in TData> :
         Activity
     {
-        void Execute(Composer composer, TInstance instance, TData value);
+        Task Execute(TInstance instance, TData value, CancellationToken cancellationToken);
     }
 }

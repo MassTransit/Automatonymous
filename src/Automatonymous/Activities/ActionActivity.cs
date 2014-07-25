@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,8 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class ActionActivity<TInstance> :
@@ -31,14 +32,14 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance));
+            _action(instance);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance));
+            _action(instance);
         }
     }
 
@@ -58,9 +59,9 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
+        async Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance, value));
+            _action(instance, value);
         }
     }
 }

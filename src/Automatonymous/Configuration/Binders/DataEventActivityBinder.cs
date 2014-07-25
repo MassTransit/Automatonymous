@@ -96,12 +96,12 @@ namespace Automatonymous.Binders
 
             var converterActivity = new DataConverterActivity<TInstance, TData>(conditionalEventActivity);
 
-            return new EventActivityImpl<TInstance>(_event, converterActivity);
+            return new EventActivityShim<TInstance>(_event, converterActivity);
         }
 
         EventActivity<TInstance> CreateEventActivity(Activity<TInstance> activity)
         {
-            return new EventActivityImpl<TInstance>(_event, activity);
+            return new EventActivityShim<TInstance>(_event, activity);
         }
     }
 }

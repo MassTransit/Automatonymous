@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -16,7 +16,6 @@ namespace Automatonymous.Impl
     using System.Linq.Expressions;
     using System.Threading;
     using Activities;
-    using Taskell;
 
 
     public class InitialIfNullStateAccessor<TInstance> :
@@ -24,14 +23,12 @@ namespace Automatonymous.Impl
         where TInstance : class
     {
         readonly Activity<TInstance> _initialActivity;
-        readonly IObserver<StateChanged<TInstance>> _observer;
         readonly StateAccessor<TInstance> _rawStateAccessor;
 
         public InitialIfNullStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
             State<TInstance> initialState, IObserver<StateChanged<TInstance>> observer)
         {
-            _observer = observer;
-            _rawStateAccessor = new RawStateAccessor<TInstance>(currentStateExpression, _observer);
+            _rawStateAccessor = new RawStateAccessor<TInstance>(currentStateExpression, observer);
 
             _initialActivity = new TransitionActivity<TInstance>(initialState, _rawStateAccessor);
         }
@@ -41,9 +38,7 @@ namespace Automatonymous.Impl
             State<TInstance> state = _rawStateAccessor.Get(instance);
             if (state == null)
             {
-                var composer = new TaskComposer<TInstance>(CancellationToken.None);
-                _initialActivity.Execute(composer, instance);
-                composer.Finish().Wait();
+                _initialActivity.Execute(instance, default(CancellationToken)).Wait();
 
                 state = _rawStateAccessor.Get(instance);
             }

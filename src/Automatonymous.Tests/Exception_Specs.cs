@@ -149,12 +149,12 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
 
         [TestFixtureSetUp]
-        public void Specifying_an_event_activity()
+        public async void Specifying_an_event_activity()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized, new Init());
+            await _machine.RaiseEvent(_instance, _machine.Initialized, new Init());
         }
 
 

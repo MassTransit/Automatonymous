@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,9 +13,10 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using MassTransit;
     using MassTransit.Context;
-    using Taskell;
 
 
     public class RespondActivity<TInstance, TData, TMessage> :
@@ -34,16 +35,13 @@ namespace Automatonymous.Activities
             _contextCallback = contextCallback;
         }
 
-        public void Execute(Composer composer, TInstance instance, TData value)
+        async Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
+            IConsumeContext<TData> context = ContextStorage.MessageContext<TData>();
 
-                    TMessage message = _messageFactory(instance, context);
+            TMessage message = _messageFactory(instance, context);
 
-                    context.Respond(message, _contextCallback);
-                });
+            context.Respond(message, _contextCallback);
         }
 
         public void Accept(StateMachineInspector inspector)

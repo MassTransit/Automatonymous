@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,16 +13,16 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
-    using Taskell;
 
 
     public class TaskActivity<TInstance> :
         Activity<TInstance>
     {
-        readonly Func<TInstance, Task> _action;
+        readonly Func<TInstance, CancellationToken, Task> _action;
 
-        public TaskActivity(Func<TInstance, Task> action)
+        public TaskActivity(Func<TInstance, CancellationToken, Task> action)
         {
             _action = action;
         }
@@ -32,14 +32,14 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance));
+            await _action(instance, cancellationToken);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance));
+            await _action(instance, cancellationToken);
         }
     }
 
@@ -47,9 +47,9 @@ namespace Automatonymous.Activities
     public class TaskActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
-        readonly Func<TInstance, TData, Task> _action;
+        readonly Func<TInstance, TData, CancellationToken, Task> _action;
 
-        public TaskActivity(Func<TInstance, TData, Task> action)
+        public TaskActivity(Func<TInstance, TData, CancellationToken, Task> action)
         {
             _action = action;
         }
@@ -59,9 +59,9 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
+        async Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
         {
-            composer.Execute(() => _action(instance, value));
+            await _action(instance, value, cancellationToken);
         }
     }
 }

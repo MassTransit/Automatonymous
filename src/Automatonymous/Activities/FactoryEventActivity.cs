@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,8 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class FactoryEventActivity<TInstance> :
@@ -31,24 +32,21 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    Activity<TInstance> activity = _activityFactory();
-
-                    return composer.ComposeActivity(activity, instance);
-                });
+            return Execute(instance, cancellationToken);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    Activity<TInstance> activity = _activityFactory();
+            return Execute(instance, cancellationToken);
+        }
 
-                    return composer.ComposeActivity(activity, instance);
-                });
+        Task Execute(TInstance instance, CancellationToken cancellationToken)
+        {
+            Activity<TInstance> activity = _activityFactory();
+
+            return activity.Execute(instance, cancellationToken);
         }
     }
 
@@ -63,14 +61,11 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        void Activity<TInstance, TData>.Execute(Composer composer, TInstance instance, TData value)
+        Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    Activity<TInstance, TData> activity = _activityFactory();
+            Activity<TInstance, TData> activity = _activityFactory();
 
-                    return composer.ComposeActivity(activity, instance, value);
-                });
+            return activity.Execute(instance, value, cancellationToken);
         }
 
         public void Accept(StateMachineInspector inspector)

@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,18 +13,19 @@
 namespace Automatonymous
 {
     using System;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public interface InstanceLift<out T>
         where T : StateMachine
     {
-        void Raise(Composer composer, Event @event);
+        Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken));
 
-        void Raise<TData>(Composer composer, Event<TData> @event, TData value);
+        Task Raise<TData>(Event<TData> @event, TData value, CancellationToken cancellationToken = default(CancellationToken));
 
-        void Raise(Composer composer, Func<T, Event> eventSelector);
+        Task Raise(Func<T, Event> eventSelector, CancellationToken cancellationToken = default(CancellationToken));
 
-        void Raise<TData>(Composer composer, Func<T, Event<TData>> eventSelector, TData data);
+        Task Raise<TData>(Func<T, Event<TData>> eventSelector, TData data, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

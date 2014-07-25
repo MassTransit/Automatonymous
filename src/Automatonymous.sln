@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous", "Automatonymous\Automatonymous.csproj", "{FD8F92EB-5818-4C59-8859-19D3A74F979B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests", "Automatonymous.Tests\Automatonymous.Tests.csproj", "{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}"

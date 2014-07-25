@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Activities;
     using Binders;
@@ -31,6 +32,13 @@ namespace Automatonymous
             this EventActivityBinder<TInstance> source, Func<TInstance, Task<TInstance>> action)
             where TInstance : class
         {
+            return source.Add(new TaskActivity<TInstance>((i, t) => action(i)));
+        }
+
+        public static EventActivityBinder<TInstance> ThenAsync<TInstance>(
+            this EventActivityBinder<TInstance> source, Func<TInstance, CancellationToken, Task<TInstance>> action)
+            where TInstance : class
+        {
             return source.Add(new TaskActivity<TInstance>(action));
         }
 
@@ -43,6 +51,13 @@ namespace Automatonymous
 
         public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Func<TInstance, Task<TInstance>> action)
+            where TInstance : class
+        {
+            return source.Add(new TaskActivity<TInstance>((i, t) => action(i)));
+        }
+
+        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Func<TInstance, CancellationToken, Task<TInstance>> action)
             where TInstance : class
         {
             return source.Add(new TaskActivity<TInstance>(action));
@@ -59,6 +74,15 @@ namespace Automatonymous
 
         public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, Task<TInstance>> action)
+            where TInstance : class
+        {
+            var activity = new TaskActivity<TInstance, TData>((i, d, t) => action(i, d));
+            var adapter = new DataConverterActivity<TInstance, TData>(activity);
+            return source.Add(adapter);
+        }
+
+        public static EventActivityBinder<TInstance, TData> ThenAsync<TInstance, TData>(
+            this EventActivityBinder<TInstance, TData> source, Func<TInstance, TData, CancellationToken, Task<TInstance>> action)
             where TInstance : class
         {
             var activity = new TaskActivity<TInstance, TData>(action);
@@ -89,6 +113,5 @@ namespace Automatonymous
             var activity = new FactoryEventActivity<TInstance>(activityFactory);
             return source.Add(activity);
         }
-
     }
 }

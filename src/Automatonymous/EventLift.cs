@@ -12,19 +12,19 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using Taskell;
+    using System.Threading.Tasks;
 
 
     public interface EventLift<in TInstance>
         where TInstance : class
     {
-        void Raise(Composer composer, TInstance instance);
+        Task Raise(TInstance instance);
     }
 
 
     public interface EventLift<in TInstance, in TData>
         where TInstance : class
     {
-        void Raise(Composer composer, TInstance instance, TData data);
+        Task Raise(TInstance instance, TData data);
     }
 }

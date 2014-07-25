@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -15,7 +15,6 @@ namespace Automatonymous
     using System.Threading;
     using System.Threading.Tasks;
     using Impl;
-    using Taskell;
 
 
     public static class EventLiftExtensions
@@ -44,22 +43,14 @@ namespace Automatonymous
             CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            var composer = new TaskComposer<TInstance>(cancellationToken);
-
-            lift.Raise(composer, instance);
-
-            return composer.Finish();
+            return lift.Raise(instance);
         }
 
         public static Task Raise<TInstance, TData>(this EventLift<TInstance, TData> lift, TInstance instance, TData value,
             CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            var composer = new TaskComposer<TInstance>(cancellationToken);
-
-            lift.Raise(composer, instance, value);
-
-            return composer.Finish();
+            return lift.Raise(instance, value);
         }
     }
 }

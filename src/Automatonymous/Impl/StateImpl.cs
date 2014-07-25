@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -14,8 +14,9 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Internals.Caching;
-    using Taskell;
 
 
     public class StateImpl<TInstance> :
@@ -44,6 +45,11 @@ namespace Automatonymous.Impl
             _activityCache = new DictionaryCache<Event, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
         }
 
+        public bool Equals(State other)
+        {
+            return string.CompareOrdinal(_name, other.Name) == 0;
+        }
+
         public string Name
         {
             get { return _name; }
@@ -58,21 +64,21 @@ namespace Automatonymous.Impl
         public void Accept(StateMachineInspector inspector)
         {
             inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
-                {
-                    key.Accept(inspector);
-                    value.ForEach(activity => activity.Accept(inspector));
-                }));
+            {
+                key.Accept(inspector);
+                value.ForEach(activity => activity.Accept(inspector));
+            }));
         }
 
 
-        void State<TInstance>.Raise(Composer composer, TInstance instance, Event @event)
+        Task State<TInstance>.Raise(TInstance instance, Event @event, CancellationToken cancellationToken)
         {
-            Raise(composer, instance, @event, (c, a, i) => a.Execute(c, i));
+            return Raise(instance, @event, (a, i) => a.Execute(i, cancellationToken));
         }
 
-        void State<TInstance>.Raise<TData>(Composer composer, TInstance instance, Event<TData> @event, TData value)
+        Task State<TInstance>.Raise<TData>(TInstance instance, Event<TData> @event, TData value, CancellationToken cancellationToken)
         {
-            Raise(composer, instance, @event, (c, a, i) => a.Execute(c, i, value));
+            return Raise(instance, @event, (a, i) => a.Execute(i, value, cancellationToken));
         }
 
         public void Bind(EventActivity<TInstance> activity)
@@ -88,11 +94,6 @@ namespace Automatonymous.Impl
         public int CompareTo(State other)
         {
             return string.CompareOrdinal(_name, other.Name);
-        }
-
-        public bool Equals(State other)
-        {
-            return string.CompareOrdinal(_name, other.Name) == 0;
         }
 
         public override bool Equals(object obj)
@@ -141,28 +142,21 @@ namespace Automatonymous.Impl
         }
 
 
-        void Raise<TEvent>(Composer composer, TInstance instance, TEvent @event, Action<Composer, Activity<TInstance>, TInstance> callback)
+        async Task Raise<TEvent>(TInstance instance, TEvent @event, Func<Activity<TInstance>, TInstance, Task> callback)
             where TEvent : Event
         {
             List<Activity<TInstance>> activities;
             if (!_activityCache.TryGetValue(@event, out activities))
                 return;
 
-            composer.Execute(() =>
-                {
-                    var notification = new EventNotification(instance, @event);
+            var notification = new EventNotification(instance, @event);
 
-                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+            _raisingObserver.OnNext(notification);
 
-                    ((Composer)taskComposer).Execute(() => _raisingObserver.OnNext(notification));
+            foreach (var activity in activities)
+                await callback(activity, instance);
 
-                    foreach (var activity in activities)
-                        callback(taskComposer, activity, instance);
-
-                    ((Composer)taskComposer).Execute(() => _raisedObserver.OnNext(notification));
-
-                    return taskComposer.Finish();
-                });
+            _raisedObserver.OnNext(notification);
         }
 
         public override string ToString()

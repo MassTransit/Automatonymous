@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,7 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class TransitionActivity<TInstance> :
@@ -38,40 +39,33 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => { });
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            Transition(composer, instance);
+            return Transition(instance, cancellationToken);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            Transition(composer, instance);
+            return Transition(instance, cancellationToken);
         }
 
-        void Transition(Composer composer, TInstance instance)
+        async Task Transition(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    State<TInstance> currentState = _currentStateAccessor.Get(instance);
-                    if (_toState.Equals(currentState))
-                        return composer.ComposeCompleted();
+            State<TInstance> currentState = _currentStateAccessor.Get(instance);
+            if (_toState.Equals(currentState))
+                return;
 
-                    var taskComposer = new TaskComposer<TInstance>(composer.CancellationToken);
+            if (currentState != null)
+                await currentState.Raise(instance, currentState.Leave, cancellationToken);
 
-                    if (currentState != null)
-                        currentState.Raise(taskComposer, instance, currentState.Leave);
+            await _toState.Raise(instance, _toState.BeforeEnter, currentState, cancellationToken);
 
-                    _toState.Raise(taskComposer, instance, _toState.BeforeEnter, currentState);
+            _currentStateAccessor.Set(instance, _toState);
 
-                    ((Composer)taskComposer).Execute(() => _currentStateAccessor.Set(instance, _toState));
+            if (currentState != null)
+                await currentState.Raise(instance, currentState.AfterLeave, _toState, cancellationToken);
 
-                    if (currentState != null)
-                        currentState.Raise(taskComposer, instance, currentState.AfterLeave, _toState);
-
-                    _toState.Raise(taskComposer, instance, _toState.Enter);
-
-                    return taskComposer.Finish();
-                });
+            await _toState.Raise(instance, _toState.Enter, cancellationToken);
         }
     }
 }

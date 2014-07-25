@@ -12,9 +12,10 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using Activities;
     using NUnit.Framework;
-    using Taskell;
 
 
     [TestFixture]
@@ -68,9 +69,9 @@ namespace Automatonymous.Tests
                 inspector.Inspect(this, x => { });
             }
 
-            public void Execute(Composer composer, ClaimAdjustment instance, CreateClaim value)
+            public async Task Execute(ClaimAdjustment instance, CreateClaim value, CancellationToken cancellationToken)
             {
-                composer.Execute(() => { instance.Value = _calculator.Add(value.X, value.Y); });
+                instance.Value = _calculator.Add(value.X, value.Y);
             }
         }
 

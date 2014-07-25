@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,16 +12,21 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
-    public class EventActivityImpl<TInstance> :
+    /// <summary>
+    /// Routes event activity to an activity
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
+    public class EventActivityShim<TInstance> :
         EventActivity<TInstance>
     {
         readonly Activity<TInstance> _activity;
         readonly Event _event;
 
-        public EventActivityImpl(Event @event, Activity<TInstance> activity)
+        public EventActivityShim(Event @event, Activity<TInstance> activity)
         {
             _event = @event;
             _activity = activity;
@@ -37,14 +42,14 @@ namespace Automatonymous.Activities
             get { return _event; }
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            _activity.Execute(composer, instance);
+            return _activity.Execute(instance, cancellationToken);
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            _activity.Execute(composer, instance, value);
+            return _activity.Execute(instance, value, cancellationToken);
         }
     }
 }

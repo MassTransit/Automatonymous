@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -17,13 +17,14 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Activities;
     using Binders;
     using Impl;
     using Internals.Caching;
     using Internals.Extensions;
     using Internals.Primitives;
-    using Taskell;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
@@ -59,12 +60,12 @@ namespace Automatonymous
             Initial.Accept(inspector);
 
             _stateCache.Each(x =>
-                {
-                    if (Equals(x, Initial) || Equals(x, Final))
-                        return;
+            {
+                if (Equals(x, Initial) || Equals(x, Final))
+                    return;
 
-                    x.Accept(inspector);
-                });
+                x.Accept(inspector);
+            });
 
             Final.Accept(inspector);
         }
@@ -82,28 +83,23 @@ namespace Automatonymous
             return _stateCache[name];
         }
 
-        void StateMachine<TInstance>.RaiseEvent(Composer composer, TInstance instance, Event @event)
+        public Task RaiseEvent(TInstance instance, Event @event, CancellationToken cancellationToken = default(CancellationToken))
         {
-            composer.Execute(() =>
-                {
-                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+            State<TInstance> state = _instanceStateAccessor.Get(instance);
 
-                    State<TInstance> instanceState = _stateCache[state.Name];
+            State<TInstance> instanceState = _stateCache[state.Name];
 
-                    return composer.ComposeEvent(instance, instanceState, @event);
-                });
+            return instanceState.Raise(instance, @event, cancellationToken);
         }
 
-        void StateMachine<TInstance>.RaiseEvent<TData>(Composer composer, TInstance instance, Event<TData> @event, TData data)
+        public Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData data,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
-            composer.Execute(() =>
-                {
-                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+            State<TInstance> state = _instanceStateAccessor.Get(instance);
 
-                    State<TInstance> instanceState = _stateCache[state.Name];
+            State<TInstance> instanceState = _stateCache[state.Name];
 
-                    return composer.ComposeEvent(instance, instanceState, @event, data);
-                });
+            return instanceState.Raise(instance, @event, data, cancellationToken);
         }
 
         public State<TInstance> GetState(string name)
@@ -217,14 +213,14 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
-                                                              .Aggregate(0, (current, x) => current | (1 << x)));
+                .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
             {
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    (consumer, instance) => ((StateMachine<TInstance>)this).RaiseEvent(consumer, instance, @event));
+                    (instance, token) => ((StateMachine<TInstance>)this).RaiseEvent(instance, @event, token));
 
                 foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
                 {
@@ -300,10 +296,8 @@ namespace Automatonymous
         {
             EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
 
-            foreach (var state in states)
-            {
+            foreach (State state in states)
                 BindActivitiesToState(state, eventActivities);
-            }
         }
 
         static void BindActivitiesToState(State state, IEnumerable<EventActivity<TInstance>> eventActivities)

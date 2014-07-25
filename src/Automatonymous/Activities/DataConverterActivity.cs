@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,8 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using Taskell;
+    using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class DataConverterActivity<TInstance, TData> :
@@ -31,27 +32,24 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => _activity.Accept(inspector));
         }
 
-        void Activity<TInstance>.Execute(Composer composer, TInstance instance)
+        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
         {
-            composer.Failed(new AutomatonymousException("This activity requires a body with the event, but no body was specified."));
+            throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
         }
 
-        void Activity<TInstance>.Execute<T>(Composer composer, TInstance instance, T value)
+        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
         {
-            composer.Execute(() =>
-                {
-                    object dataValue = value;
-                    if (dataValue == null)
-                        throw new ArgumentNullException("value", "The data argument cannot be null");
+            object dataValue = value;
+            if (dataValue == null)
+                throw new ArgumentNullException("value", "The data argument cannot be null");
 
-                    if (!(dataValue is TData))
-                    {
-                        string message = "Expected Type " + typeof(TData).Name + " but was " + value.GetType().Name;
-                        throw new ArgumentException(message, "value");
-                    }
+            if (!(dataValue is TData))
+            {
+                string message = "Expected Type " + typeof(TData).Name + " but was " + value.GetType().Name;
+                throw new ArgumentException(message, "value");
+            }
 
-                    return composer.ComposeActivity(_activity, instance, (TData)dataValue);
-                });
+            await _activity.Execute(instance, (TData)dataValue, cancellationToken);
         }
     }
 }
