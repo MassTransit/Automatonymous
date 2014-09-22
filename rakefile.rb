@@ -190,7 +190,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.9.5"
+  nuspec.dependency "MassTransit", "2.9.7"
   nuspec.dependency "Taskell", "0.1.2"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
@@ -208,7 +208,8 @@ nuspec :create_nuspec_nhibernate do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "NHibernate", "3.3.3"
+  nuspec.dependency "NHibernate", "4.0.1.4000"
+  nuspec.dependency "Iesi.Collections", "4.0.1.4000"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.NHibernate.nuspec')
   add_files props[:output], 'Automatonymous.NHibernateIntegration.{dll,pdb,xml}', nuspec
