@@ -24,6 +24,8 @@ namespace Automatonymous.Impl
         IEquatable<State>
         where TInstance : class
     {
+        // this is a cache of behaviors, not a list of activity - duh
+
         readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;

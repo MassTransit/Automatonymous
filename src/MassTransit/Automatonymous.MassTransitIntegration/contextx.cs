@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,19 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System;
-
-
-    public interface Event :
-        AcceptStateMachineInspector,
-        IComparable<Event>
+    public interface ConsumeContext<out T>
     {
-        string Name { get; }
     }
 
 
-    public interface Event<out TData> :
-        Event
+    public interface EventConsumeContext<out T> :
+        EventContext<T>,
+        ConsumeContext<T>
     {
     }
 }
