@@ -41,11 +41,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="MassTransit">
-      <HintPath>..\packages\MassTransit.2.9.7\lib\net40\MassTransit.dll</HintPath>
+      <HintPath>..\packages\MassTransit.2.9.8\lib\net40\MassTransit.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MassTransit.NHibernateIntegration">
-      <HintPath>..\packages\MassTransit.NHibernate.2.9.7\lib\net40\MassTransit.NHibernateIntegration.dll</HintPath>
+      <HintPath>..\packages\MassTransit.NHibernate.2.9.8\lib\net40\MassTransit.NHibernateIntegration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json">

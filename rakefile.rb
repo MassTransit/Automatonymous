@@ -172,7 +172,7 @@ nuspec :create_nuspec do |nuspec|
   nuspec.title = 'Automatonymous'
   nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
   nuspec.language = "en-US"
-  nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
+  nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-'Chris Patterson, Dru Sellers, Travis Smith'0"
   nuspec.requireLicenseAcceptance = "false"
   nuspec.dependency "Taskell", "0.1.2"
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.nuspec')
@@ -190,7 +190,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.9.7"
+  nuspec.dependency "MassTransit", "2.9.8"
   nuspec.dependency "Taskell", "0.1.2"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
