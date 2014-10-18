@@ -109,15 +109,6 @@ namespace MassTransit.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-                State(() => WaitingToStart);
-                State(() => FailedToStart);
-
-                Event(() => Started);
-                Event(() => Initialized);
-                Event(() => Created);
-                Event(() => StartFaulted);
-
                 Initially(
                     When(Started)
                         .Then(instance => { throw new NotSupportedException("This is expected, but nonetheless exceptional"); })

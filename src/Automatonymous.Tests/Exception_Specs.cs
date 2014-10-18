@@ -84,10 +84,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Failed);
-
-                Event(() => Initialized);
-
                 During(Initial,
                     When(Initialized)
                         .Try(x => x.Then(instance => instance.Called = true)
@@ -184,10 +180,6 @@ namespace Automatonymous.Tests
             public InstanceStateMachine()
             {
                 InstanceState(x => x.CurrentState);
-
-                State(() => Failed);
-
-                Event(() => Initialized);
 
                 During(Initial,
                     When(Initialized)

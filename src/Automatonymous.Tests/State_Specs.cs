@@ -63,8 +63,6 @@ namespace Automatonymous.Tests
             public TestStateMachine()
             {
                 InstanceState(x => x.CurrentState);
-
-                State(() => Running);
             }
 
             public State Running { get; private set; }
@@ -143,9 +141,6 @@ namespace Automatonymous.Tests
             public TestStateMachine()
             {
                 InstanceState(x => x.AutomatonymousState);
-
-                State(() => Running);
-                Event(() => Started);
 
                 Initially(
                     When(Started)

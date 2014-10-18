@@ -110,10 +110,6 @@ namespace MassTransit.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-                Event(() => Started);
-                Event(() => CheckStatus);
-
                 Initially(
                     When(Started)
                         .Then((i, d) => i.ServiceName = d.ServiceName)

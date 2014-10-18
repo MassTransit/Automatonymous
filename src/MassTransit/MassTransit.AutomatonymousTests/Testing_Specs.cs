@@ -116,11 +116,6 @@ namespace MassTransit.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-                Event(() => Started);
-                Event(() => Stopped);
-                Event(() => ShouldNotBind);
-
                 Initially(
                     When(Started)
                         .TransitionTo(Running));

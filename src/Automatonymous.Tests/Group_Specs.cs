@@ -77,10 +77,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.OverallState);
 
-                State(() => BeingServiced);
-
-                Event(() => VehicleArrived);
-
                 During(Initial,
                     When(VehicleArrived)
                         .Then((instance, m) =>
@@ -110,8 +106,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.FuelState);
 
-                State(() => Filling);
-
                 Initially(
                     When(Initial.Enter)
                         .TransitionTo(Filling));
@@ -139,8 +133,6 @@ namespace Automatonymous.Tests
             public CheckOil()
             {
                 InstanceState(x => x.OilState);
-
-                State(() => AddingOil);
 
                 Initially(
                     When(Initial.Enter)

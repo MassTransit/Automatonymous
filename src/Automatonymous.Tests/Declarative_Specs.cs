@@ -68,10 +68,6 @@ namespace Automatonymous.Tests
 			{
 				InstanceState(x => x.Top);
 
-				State(() => Greeted);
-
-				Event(() => Initialized);
-
 				During(Initial,
 					When(Initialized)
 						.TransitionTo(Greeted));
@@ -88,10 +84,6 @@ namespace Automatonymous.Tests
 			public BottomInstanceStateMachine()
 			{
 				InstanceState(x => x.Bottom);
-
-				State(() => Ignored);
-
-				Event(() => Initialized);
 
 				During(Initial,
 					When(Initialized)
