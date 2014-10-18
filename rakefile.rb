@@ -45,26 +45,6 @@ assemblyinfo :global_version do |asm|
   asm.namespaces "System", "System.Reflection", "System.Runtime.InteropServices"
 end
 
-#desc "Update the common version information for the build. You can call this task without building."
-#asmver :global_version do |asm|
-#  # Assembly file config
-#  asm.file_path = 'src/SolutionVersion.cs'
-#  
-#  #asm.namespaces "System", "System.Reflection", "System.Runtime.InteropServices"
-#  
-#  asm.attributes assembly_description: "Automatonymous is an open source state machine library.",
-#                 assembly_version: FORMAL_VERSION,
-#                 assembly_file_version: FORMAL_VERSION,
-#                 assembly_informational_version: "#{BUILD_VERSION}",
-#                 assembly_copyright: COPYRIGHT,
-#                 assembly_product: PRODUCT,
-#                 assembly_title: PRODUCT,
-#                 com_visible: false,
-#                 CLS_compliant: true
-#
-#  #asm.out = StringIO.new
-#end
-
 desc "Prepares the working directory for a new build"
 task :clean do
 	FileUtils.rm_rf props[:output]
