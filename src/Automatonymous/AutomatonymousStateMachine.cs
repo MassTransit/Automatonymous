@@ -132,7 +132,7 @@ namespace Automatonymous
             get { return _instanceStateAccessor; }
         }
 
-        public State Initial { get; protected set; }
+        public State Initial { get; private set; }
         public State Final { get; private set; }
 
         State StateMachine.GetState(string name)
