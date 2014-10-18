@@ -73,7 +73,7 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                Event(() => Third, x => x.CompositeStatus, First, Second);
+                ComposeEvent(Third, x => x.CompositeStatus, First, Second);
 
                 Initially(
                     When(Start)

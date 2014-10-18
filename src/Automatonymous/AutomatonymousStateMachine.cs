@@ -274,50 +274,41 @@ namespace Automatonymous
 				_stateCache[Initial.Name], _stateChangedObservable);
 		}
 
-		//protected void Event(Expression<Func<Event>> propertyExpression)
-		//{
-		//	PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-		//	string name = property.Name;
-
-		//	var @event = new SimpleEvent(name);
-
-		//	property.SetValue(this, @event);
-
-		//	_eventCache[name] = new StateMachineEvent<TInstance>(@event);
-		//}
-
 		/// <summary>
 		/// Adds a composite event to the state machine. A composite event is triggered when all
 		/// off the required events have been raised. Note that required events cannot be in the initial
 		/// state since it would cause extra instances of the state machine to be created
 		/// </summary>
-		/// <param name="propertyExpression">The composite event</param>
+		/// <param name="event">The composite event</param>
 		/// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
 		/// <param name="events">The events that must be raised before the composite event is raised</param>
-		protected void Event(Expression<Func<Event>> propertyExpression,
+		protected void ComposeEvent(Event @event,
 			Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
 			params Event[] events)
 		{
+			// TODO: check @event for null???
+
 			if (events == null)
+			{
 				throw new ArgumentNullException("events");
+			}
+
 			if (events.Length > 31)
+			{
 				throw new ArgumentException("No more than 31 events can be combined into a single event");
+			}
+
 			if (events.Length == 0)
+			{
 				throw new ArgumentException("At least one event must be specified for a composite event");
+			}
+
 			if (events.Any(x => x == null))
+			{
 				throw new ArgumentException("One or more events specified has not yet been initialized");
+			}
 
-			PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
 			PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
-
-			string name = eventProperty.Name;
-
-			var @event = new SimpleEvent(name);
-
-			eventProperty.SetValue(this, @event);
-
-			_eventCache[name] = new StateMachineEvent<TInstance>(@event);
 
 			var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
 				.Aggregate(0, (current, x) => current | (1 << x)));
@@ -327,7 +318,7 @@ namespace Automatonymous
 				int flag = 1 << i;
 
 				var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-					(consumer, instance) => ((StateMachine<TInstance>)this).RaiseEvent(consumer, instance, @event));
+					(consumer, instance) => ((StateMachine<TInstance>) this).RaiseEvent(consumer, instance, @event));
 
 				foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
 				{
@@ -337,32 +328,6 @@ namespace Automatonymous
 				}
 			}
 		}
-
-		//protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-		//{
-		//	PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-		//	string name = property.Name;
-
-		//	var @event = new DataEvent<T>(name);
-
-		//	property.SetValue(this, @event);
-
-		//	_eventCache[name] = new StateMachineEvent<TInstance>(@event);
-		//}
-
-		//protected void State(Expression<Func<State>> propertyExpression)
-		//{
-		//	PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-		//	string name = property.Name;
-
-		//	var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
-
-		//	property.SetValue(this, state);
-
-		//	_stateCache[name] = state;
-		//}
 
 		protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
 		{
