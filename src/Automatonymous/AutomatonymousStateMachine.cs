@@ -84,8 +84,9 @@ namespace Automatonymous
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
         readonly Cache<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
+        StateAccessor<TInstance> _instanceStateAccessor;
 
-	    protected AutomatonymousStateMachine()
+        protected AutomatonymousStateMachine()
         {
             _stateCache = new DictionaryCache<string, State<TInstance>>();
             _eventCache = new DictionaryCache<string, StateMachineEvent<TInstance>>();
@@ -97,7 +98,7 @@ namespace Automatonymous
             RegisterStates();
             RegisterEvents();
 
-            InstanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name], _stateChangedObservable);
+            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name], _stateChangedObservable);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -115,7 +116,10 @@ namespace Automatonymous
             Final.Accept(inspector);
         }
 
-        public StateAccessor<TInstance> InstanceStateAccessor { get; private set; }
+        public StateAccessor<TInstance> InstanceStateAccessor
+        {
+            get { return _instanceStateAccessor; }
+        }
 
         public State Initial { get; private set; }
         public State Final { get; private set; }
@@ -129,7 +133,7 @@ namespace Automatonymous
         {
             composer.Execute(() =>
             {
-                State<TInstance> state = InstanceStateAccessor.Get(instance);
+                State<TInstance> state = _instanceStateAccessor.Get(instance);
 
                 State<TInstance> instanceState = _stateCache[state.Name];
 
@@ -141,7 +145,7 @@ namespace Automatonymous
         {
             composer.Execute(() =>
             {
-                State<TInstance> state = InstanceStateAccessor.Get(instance);
+                State<TInstance> state = _instanceStateAccessor.Get(instance);
 
                 State<TInstance> instanceState = _stateCache[state.Name];
 
@@ -210,7 +214,7 @@ namespace Automatonymous
         /// </remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
-            InstanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
