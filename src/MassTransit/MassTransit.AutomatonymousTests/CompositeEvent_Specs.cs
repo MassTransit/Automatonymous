@@ -94,12 +94,8 @@ namespace MassTransit.AutomatonymousTests
             public TestStateMachine()
             {
                 InstanceState(x => x.CurrentState);
-                State(() => Waiting);
 
-                Event(() => Start);
-                Event(() => First);
-                Event(() => Second);
-                Event(() => Third, x => x.CompositeStatus, First, Second);
+                ComposeEvent(Third, x => x.CompositeStatus, First, Second);
 
                 Initially(
                     When(Start)

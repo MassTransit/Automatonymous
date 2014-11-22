@@ -13,20 +13,68 @@
 namespace Automatonymous
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+
     using Activities;
+
     using Binders;
+
     using Impl;
+
     using Internals.Caching;
     using Internals.Extensions;
     using Internals.Primitives;
+
     using Taskell;
 
 
+    public abstract class AutomatonymousStateMachine
+    {
+        private static readonly object PropertyLocker = new object();
+        private static readonly IDictionary<Type, IEnumerable<PropertyInfo>> Properties = new ConcurrentDictionary<Type, IEnumerable<PropertyInfo>>();
+
+        protected static readonly Type OpenGenericDataEventType = typeof (DataEvent<>);
+
+        // TODO: make this an Extension Method of Type
+        private static IEnumerable<Type> GetInheritanceChain(Type type, bool includeSelf = true)
+        {
+            var b = includeSelf ? type : type.BaseType;
+
+            while (b != null)
+            {
+                yield return b;
+
+                b = b.BaseType;
+            }
+        }
+
+        protected static IEnumerable<PropertyInfo> GetProperties(Type type)
+        {
+            if (Properties.ContainsKey(type) == false)
+            {
+                lock (PropertyLocker)
+                {
+                    if (Properties.ContainsKey(type) == false)
+                    {
+                        var properties = GetInheritanceChain(type)
+                            .SelectMany(x => x.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                            .ToList();
+
+                        Properties[type] = properties;
+                    }
+                }
+            }
+
+            return Properties[type];
+        }
+    }
+
     public abstract class AutomatonymousStateMachine<TInstance> :
+        AutomatonymousStateMachine,
         AcceptStateMachineInspector,
         StateMachine<TInstance>
         where TInstance : class
@@ -47,11 +95,10 @@ namespace Automatonymous
             _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
             _eventRaisedObserver = new EventRaisedObserver<TInstance>(_eventCache);
 
-            State(() => Initial);
-            State(() => Final);
+            RegisterStates();
+            RegisterEvents();
 
-            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name],
-                _stateChangedObservable);
+            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name], _stateChangedObservable);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -59,17 +106,17 @@ namespace Automatonymous
             Initial.Accept(inspector);
 
             _stateCache.Each(x =>
-                {
-                    if (Equals(x, Initial) || Equals(x, Final))
-                        return;
+            {
+                if (Equals(x, Initial) || Equals(x, Final))
+                    return;
 
-                    x.Accept(inspector);
-                });
+                x.Accept(inspector);
+            });
 
             Final.Accept(inspector);
         }
 
-        StateAccessor<TInstance> StateMachine<TInstance>.InstanceStateAccessor
+        public StateAccessor<TInstance> InstanceStateAccessor
         {
             get { return _instanceStateAccessor; }
         }
@@ -85,25 +132,25 @@ namespace Automatonymous
         void StateMachine<TInstance>.RaiseEvent(Composer composer, TInstance instance, Event @event)
         {
             composer.Execute(() =>
-                {
-                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+            {
+                State<TInstance> state = _instanceStateAccessor.Get(instance);
 
-                    State<TInstance> instanceState = _stateCache[state.Name];
+                State<TInstance> instanceState = _stateCache[state.Name];
 
-                    return composer.ComposeEvent(instance, instanceState, @event);
-                });
+                return composer.ComposeEvent(instance, instanceState, @event);
+            });
         }
 
         void StateMachine<TInstance>.RaiseEvent<TData>(Composer composer, TInstance instance, Event<TData> @event, TData data)
         {
             composer.Execute(() =>
-                {
-                    State<TInstance> state = _instanceStateAccessor.Get(instance);
+            {
+                State<TInstance> state = _instanceStateAccessor.Get(instance);
 
-                    State<TInstance> instanceState = _stateCache[state.Name];
+                State<TInstance> instanceState = _stateCache[state.Name];
 
-                    return composer.ComposeEvent(instance, instanceState, @event, data);
-                });
+                return composer.ComposeEvent(instance, instanceState, @event, data);
+            });
         }
 
         public State<TInstance> GetState(string name)
@@ -171,17 +218,49 @@ namespace Automatonymous
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
-        protected void Event(Expression<Func<Event>> propertyExpression)
+        void RegisterEvents()
         {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var properties = GetProperties(GetType())
+                .Where(x => typeof(Event).IsAssignableFrom(x.PropertyType)); // TODO: this may just need to be equals
 
-            string name = property.Name;
+            foreach (var property in properties)
+            {
+                var name = property.Name;
 
-            var @event = new SimpleEvent(name);
+                Event @event;
 
-            property.SetValue(this, @event);
+                if (property.PropertyType.IsGenericType)
+                {
+                    var dataEventType = OpenGenericDataEventType.MakeGenericType(property.PropertyType.GetGenericArguments());
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
+                    @event = (Event)Activator.CreateInstance(dataEventType, name);
+                }
+                else
+                {
+                    @event = new SimpleEvent(name);
+                }
+
+                _eventCache[name] = new StateMachineEvent<TInstance>(@event);
+
+                property.SetValue(this, @event);
+            }
+        }
+
+        void RegisterStates()
+        {
+            var properties = GetProperties(GetType())
+                .Where(x => typeof(State).IsAssignableFrom(x.PropertyType)); // TODO: this may just need to be equals
+
+            foreach (var property in properties)
+            {
+                var name = property.Name;
+
+                State<TInstance> state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
+
+                _stateCache[name] = state;
+
+                property.SetValue(this, state);
+            }
         }
 
         /// <summary>
@@ -189,42 +268,46 @@ namespace Automatonymous
         /// off the required events have been raised. Note that required events cannot be in the initial
         /// state since it would cause extra instances of the state machine to be created
         /// </summary>
-        /// <param name="propertyExpression">The composite event</param>
+        /// <param name="event">The composite event</param>
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void Event(Expression<Func<Event>> propertyExpression,
+        protected void ComposeEvent(Event @event,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
-            if (events == null)
-                throw new ArgumentNullException("events");
-            if (events.Length > 31)
-                throw new ArgumentException("No more than 31 events can be combined into a single event");
-            if (events.Length == 0)
-                throw new ArgumentException("At least one event must be specified for a composite event");
-            if (events.Any(x => x == null))
-                throw new ArgumentException("One or more events specified has not yet been initialized");
+            // TODO: check @event for null???
 
-            PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
+            if (events == null)
+            {
+                throw new ArgumentNullException("events");
+            }
+
+            if (events.Length > 31)
+            {
+                throw new ArgumentException("No more than 31 events can be combined into a single event");
+            }
+
+            if (events.Length == 0)
+            {
+                throw new ArgumentException("At least one event must be specified for a composite event");
+            }
+
+            if (events.Any(x => x == null))
+            {
+                throw new ArgumentException("One or more events specified has not yet been initialized");
+            }
+
             PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
-            string name = eventProperty.Name;
-
-            var @event = new SimpleEvent(name);
-
-            eventProperty.SetValue(this, @event);
-
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
-
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
-                                                              .Aggregate(0, (current, x) => current | (1 << x)));
+                .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
             {
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    (consumer, instance) => ((StateMachine<TInstance>)this).RaiseEvent(consumer, instance, @event));
+                    (consumer, instance) => ((StateMachine<TInstance>) this).RaiseEvent(consumer, instance, @event));
 
                 foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
                 {
@@ -233,32 +316,6 @@ namespace Automatonymous
                             .Then(() => activity));
                 }
             }
-        }
-
-        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-            string name = property.Name;
-
-            var @event = new DataEvent<T>(name);
-
-            property.SetValue(this, @event);
-
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
-        }
-
-        protected void State(Expression<Func<State>> propertyExpression)
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-            string name = property.Name;
-
-            var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
-
-            property.SetValue(this, state);
-
-            _stateCache[name] = state;
         }
 
         protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
@@ -338,13 +395,13 @@ namespace Automatonymous
                 .SelectMany(activity => activity.Where(x => IsTransitionEvent(state, x.Event)));
 
             foreach (var eventActivity in eventActivities)
-                During(state, new[] {eventActivity});
+                During(state, new[] { eventActivity });
         }
 
         bool IsTransitionEvent(State state, Event eevent)
         {
             return Equals(eevent, state.Enter) || Equals(eevent, state.BeforeEnter)
-                   || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
+                    || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)

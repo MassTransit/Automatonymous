@@ -74,9 +74,6 @@ namespace MassTransit.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-                Event(() => Started);
-
                 Initially(
                     When(Started)
                         .PublishRequest((instance, context) => new RequestAuthorization

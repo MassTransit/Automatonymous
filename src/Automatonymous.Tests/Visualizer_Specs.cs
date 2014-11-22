@@ -88,17 +88,7 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-            	InstanceState(x => x.CurrentState);
-
-                State(() => Running);
-                State(() => Suspended);
-                State(() => Failed);
-
-                Event(() => Initialized);
-                Event(() => Finished);
-                Event(() => Suspend);
-                Event(() => Resume);
-                Event(() => Restart);
+                InstanceState(x => x.CurrentState);
 
                 During(Initial,
                     When(Initialized)

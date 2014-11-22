@@ -75,9 +75,6 @@ namespace MassTransit.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-                Event(() => Started);
-
                 Initially(
                     When(Started)
                         .Publish((instance, msg) => new StartupComplete

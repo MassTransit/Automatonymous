@@ -176,12 +176,7 @@ namespace NHibernate.AutomatonymousTests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => OnTheWayToTheStore);
-
-                Event(() => ExitFrontDoor);
-                Event(() => GotHitByCar);
-
-                Event(() => EndOfTheWorld, x => x.Everything, ExitFrontDoor, GotHitByCar);
+                ComposeEvent(EndOfTheWorld, x => x.Everything, ExitFrontDoor, GotHitByCar);
 
                 Initially(
                     When(ExitFrontDoor)

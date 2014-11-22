@@ -73,9 +73,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                Event(() => Hello);
-                Event(() => EventA);
-                Event(() => EventInt);
             }
 
             public Event Hello { get; private set; }

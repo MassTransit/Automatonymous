@@ -84,12 +84,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                State(() => Ready);
-
-                Event(() => Init);
-                Event(() => Hello);
-                Event(() => EventA);
-
                 Initially(
                     When(Init)
                     .TransitionTo(Ready));
