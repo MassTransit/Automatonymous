@@ -13,32 +13,36 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using System.Linq.Expressions;
-    using System.Threading;
     using System.Threading.Tasks;
 
-
-    public class ConditionalEventActivityImpl<TInstance, TData> :
+    /// <summary>
+    /// Filters an activity to only execute if the condition is met
+    /// </summary>
+    /// <typeparam name="TInstance">The instance type</typeparam>
+    /// <typeparam name="TData">The event data type</typeparam>
+    public class ConditionalEventActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
         readonly Activity<TInstance> _activity;
-        readonly Func<TData, bool> _filterExpression;
+        readonly Func<BehaviorContext<TInstance, TData>, bool> _filter;
 
-        public ConditionalEventActivityImpl(Activity<TInstance> activity, Expression<Func<TData, bool>> filterExpression)
+        public ConditionalEventActivity(Activity<TInstance> activity, Func<BehaviorContext<TInstance, TData>, bool> filter)
         {
             _activity = activity;
-            _filterExpression = filterExpression.Compile();
+            _filter = filter;
         }
 
         public void Accept(StateMachineInspector inspector)
         {
-            _activity.Accept(inspector);
+            inspector.Inspect(this, x => _activity.Accept(inspector));
         }
 
-        async Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
+        Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            if (_filterExpression(value))
-                await _activity.Execute(instance, value, cancellationToken);
+            if (_filter(context))
+                return _activity.Execute(context, next);
+
+            return next.Execute(context);
         }
     }
 }

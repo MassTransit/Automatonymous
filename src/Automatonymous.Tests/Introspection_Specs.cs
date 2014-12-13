@@ -48,9 +48,9 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public void The_next_events_should_be_known()
+        public async void The_next_events_should_be_known()
         {
-            IEnumerable<Event> events = _machine.NextEvents(_instance);
+            IEnumerable<Event> events = await _machine.NextEvents(_instance);
             Assert.AreEqual(3, events.Count());
         }
 

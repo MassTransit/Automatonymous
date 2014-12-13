@@ -13,33 +13,36 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using System.Threading;
     using System.Threading.Tasks;
 
 
     public class ActionActivity<TInstance> :
         Activity<TInstance>
     {
-        readonly Action<TInstance> _action;
+        readonly Action<BehaviorContext<TInstance>> _action;
 
-        public ActionActivity(Action<TInstance> action)
+        public ActionActivity(Action<BehaviorContext<TInstance>> action)
         {
             _action = action;
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, x => { });
+            inspector.Inspect(this);
         }
 
-        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            _action(instance);
+            _action(context);
+
+            await next.Execute(context);
         }
 
-        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute<TData>(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            _action(instance);
+            _action(context);
+
+            await next.Execute(context);
         }
     }
 
@@ -47,21 +50,23 @@ namespace Automatonymous.Activities
     public class ActionActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
-        readonly Action<TInstance, TData> _action;
+        readonly Action<BehaviorContext<TInstance, TData>> _action;
 
-        public ActionActivity(Action<TInstance, TData> action)
+        public ActionActivity(Action<BehaviorContext<TInstance, TData>> action)
         {
             _action = action;
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, x => { });
+            inspector.Inspect(this);
         }
 
-        async Task Activity<TInstance, TData>.Execute(TInstance instance, TData value, CancellationToken cancellationToken)
+        async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            _action(instance, value);
+            _action(context);
+
+            await next.Execute(context);
         }
     }
 }

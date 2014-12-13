@@ -1,18 +1,17 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using System.Threading;
     using System.Threading.Tasks;
     using Activities;
     using NUnit.Framework;
@@ -37,10 +36,10 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
 
             var data = new CreateClaim
-                {
-                    X = 56,
-                    Y = 23,
-                };
+            {
+                X = 56,
+                Y = 23,
+            };
 
             _machine.RaiseEvent(_claim, _machine.Create, data);
         }
@@ -55,7 +54,7 @@ namespace Automatonymous.Tests
 
 
         class CalculateValueActivity :
-            Activity<ClaimAdjustment, CreateClaim>
+            Activity<ClaimAdjustmentInstance, CreateClaim>
         {
             readonly CalculatorService _calculator;
 
@@ -64,14 +63,15 @@ namespace Automatonymous.Tests
                 _calculator = calculator;
             }
 
-            public void Accept(StateMachineInspector inspector)
+            public async Task Execute(BehaviorContext<ClaimAdjustmentInstance, CreateClaim> context,
+                Behavior<ClaimAdjustmentInstance, CreateClaim> next)
             {
-                inspector.Inspect(this, x => { });
+                context.Instance.Value = _calculator.Add(context.Data.X, context.Data.Y);
             }
 
-            public async Task Execute(ClaimAdjustment instance, CreateClaim value, CancellationToken cancellationToken)
+            public void Accept(StateMachineInspector inspector)
             {
-                instance.Value = _calculator.Add(value.X, value.Y);
+                inspector.Inspect(this);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Automatonymous.Tests
 
 
         class InstanceStateMachine :
-            AutomatonymousStateMachine<ClaimAdjustment>
+            AutomatonymousStateMachine<ClaimAdjustmentInstance>
         {
             public InstanceStateMachine()
             {
@@ -109,8 +109,10 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Create)
-                        .Then(() => new CalculateValueActivity(new LocalCalculator()))
-                        .Then(() => new ActionActivity<ClaimAdjustment>(x => { }))
+                        .Execute(context => new CalculateValueActivity(new LocalCalculator()))
+                        .Execute(context => new ActionActivity<ClaimAdjustmentInstance>(x =>
+                        {
+                        }))
                         .TransitionTo(Running));
             }
 

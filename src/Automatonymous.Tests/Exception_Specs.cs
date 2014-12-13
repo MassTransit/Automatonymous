@@ -90,16 +90,16 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(x => x.Then(instance => instance.Called = true)
+                        .Try(x => x.Then(context => context.Instance.Called = true)
                                       .Then(_ => { throw new ApplicationException("Boom!"); })
-                                      .Then(instance => instance.NotCalled = false),
+                                      .Then(context => context.Instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
                                 {
                                     return ex
-                                        .Then((instance, exception) =>
+                                        .Then(context =>
                                             {
-                                                instance.ExceptionMessage = exception.Message;
-                                                instance.ExceptionType = exception.GetType();
+                                                context.Instance.ExceptionMessage = context.Exception.Message;
+                                                context.Instance.ExceptionType = context.Exception.GetType();
                                             })
                                         .TransitionTo(Failed);
                                 })));
@@ -191,16 +191,16 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(x => x.Then(instance => instance.Called = true)
+                        .Try(x => x.Then(context => context.Instance.Called = true)
                                       .Then(_ => { throw new ApplicationException("Boom!"); })
-                                      .Then(instance => instance.NotCalled = false),
+                                      .Then(context => context.Instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
                                 {
                                     return ex
-                                        .Then((instance, exception) =>
+                                        .Then(context =>
                                             {
-                                                instance.ExceptionMessage = exception.Item2.Message;
-                                                instance.ExceptionType = exception.Item2.GetType();
+                                                context.Instance.ExceptionMessage = exception.Item2.Message;
+                                                context.Instance.ExceptionType = exception.Item2.GetType();
                                             })
                                         .TransitionTo(Failed);
                                 })));

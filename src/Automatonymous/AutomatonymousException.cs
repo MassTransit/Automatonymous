@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -16,9 +16,7 @@ namespace Automatonymous
     using System.Runtime.Serialization;
 
 
-#if !NETFX_CORE
     [Serializable]
-#endif
     public class AutomatonymousException :
         Exception
     {
@@ -46,11 +44,9 @@ namespace Automatonymous
         {
         }
 
-#if !NETFX_CORE
         protected AutomatonymousException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
-#endif
     }
 }

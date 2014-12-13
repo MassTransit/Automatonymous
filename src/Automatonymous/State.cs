@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -24,6 +23,9 @@ namespace Automatonymous
     {
         string Name { get; }
 
+        /// <summary>
+        /// Raised when the state is entered
+        /// </summary>
         Event Enter { get; }
 
         /// <summary>
@@ -43,15 +45,25 @@ namespace Automatonymous
     }
 
 
+    /// <summary>
+    /// A state within a state machine that can be targeted with events
+    /// </summary>
+    /// <typeparam name="TInstance">The instance type to which the state applies</typeparam>
     public interface State<TInstance> :
         State
     {
         IEnumerable<Event> Events { get; }
 
-        Task Raise(TInstance instance, Event @event, CancellationToken cancellationToken = default(CancellationToken));
+        Task Raise(EventContext<TInstance> context);
 
-        Task Raise<TData>(TInstance instance, Event<TData> @event, TData value,
-            CancellationToken cancellationToken = default(CancellationToken));
+        /// <summary>
+        /// Raise an event to the state, passing the instance
+        /// </summary>
+        /// <typeparam name="T">The event data type</typeparam>
+        /// <param name="context">The event context</param>
+        /// <returns></returns>
+        Task Raise<T>(EventContext<TInstance, T> context);
+
 
         void Bind(EventActivity<TInstance> activity);
     }

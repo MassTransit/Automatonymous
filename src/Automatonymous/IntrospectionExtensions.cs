@@ -14,11 +14,12 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
 
     public static class IntrospectionExtensions
     {
-        public static IEnumerable<Event> NextEvents<TInstance>(this StateMachine<TInstance> machine, TInstance instance)
+        public static Task<IEnumerable<Event>> NextEvents<TInstance>(this StateMachine<TInstance> machine, TInstance instance)
             where TInstance : class
         {
             if (machine == null)
@@ -26,7 +27,7 @@ namespace Automatonymous
             if (instance == null)
                 throw new ArgumentNullException("instance");
 
-            return machine.NextEvents(machine.InstanceStateAccessor.Get(instance));
+            return machine.NextEvents(await machine.InstanceStateAccessor.Get(instance));
         }
     }
 }

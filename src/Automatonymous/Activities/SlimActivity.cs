@@ -16,18 +16,17 @@ namespace Automatonymous.Activities
 
 
     /// <summary>
-    /// Routes event activity to an activity
+    /// Adapts an Activity to a Data Activity context
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
-    public class EventActivityShim<TInstance> :
-        EventActivity<TInstance>
+    /// <typeparam name="TData"></typeparam>
+    public class SlimActivity<TInstance, TData> :
+        Activity<TInstance, TData>
     {
         readonly Activity<TInstance> _activity;
-        readonly Event _event;
 
-        public EventActivityShim(Event @event, Activity<TInstance> activity)
+        public SlimActivity(Activity<TInstance> activity)
         {
-            _event = @event;
             _activity = activity;
         }
 
@@ -36,14 +35,11 @@ namespace Automatonymous.Activities
             _activity.Accept(inspector);
         }
 
-        Event EventActivity<TInstance>.Event
+        async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> behavior)
         {
-            get { return _event; }
-        }
+            var upconvert = new WidenBehavior<TInstance, TData>(behavior, context);
 
-        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-            return _activity.Execute(context, next);
+            await _activity.Execute(context, upconvert);
         }
 
         public Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)

@@ -1,18 +1,17 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -36,36 +35,48 @@ namespace Automatonymous.Activities
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, x => { });
+            inspector.Inspect(this);
         }
 
-        Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            return Transition(instance, cancellationToken);
+            await Transition(context);
+
+            await next.Execute(context);
         }
 
-        Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute<TData>(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            return Transition(instance, cancellationToken);
+            await Transition(context);
+
+            await next.Execute(context);
         }
 
-        async Task Transition(TInstance instance, CancellationToken cancellationToken)
+        async Task Transition(BehaviorContext<TInstance> context)
         {
-            State<TInstance> currentState = _currentStateAccessor.Get(instance);
+            State<TInstance> currentState = await _currentStateAccessor.Get(context);
             if (_toState.Equals(currentState))
                 return;
 
             if (currentState != null)
-                await currentState.Raise(instance, currentState.Leave, cancellationToken);
+            {
+                BehaviorContext<TInstance> leaveContext = context.GetProxy(currentState.Leave);
+                await currentState.Raise(leaveContext);
+            }
 
-            await _toState.Raise(instance, _toState.BeforeEnter, currentState, cancellationToken);
+            BehaviorContext<TInstance, State> beforeContext = context.GetProxy(_toState.BeforeEnter, currentState);
+            await _toState.Raise(beforeContext);
 
-            _currentStateAccessor.Set(instance, _toState);
+            await _currentStateAccessor.Set(context, _toState);
 
             if (currentState != null)
-                await currentState.Raise(instance, currentState.AfterLeave, _toState, cancellationToken);
+            {
+                BehaviorContext<TInstance, State> leaveContext = context.GetProxy(currentState.AfterLeave, _toState);
+                await currentState.Raise(leaveContext);
+            }
 
-            await _toState.Raise(instance, _toState.Enter, cancellationToken);
+            BehaviorContext<TInstance> enterContext = context.GetProxy(_toState.Enter);
+            await _toState.Raise(enterContext);
         }
     }
 }

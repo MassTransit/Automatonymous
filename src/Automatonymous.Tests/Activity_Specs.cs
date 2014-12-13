@@ -33,7 +33,8 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized)
+                .Wait();
         }
 
 
@@ -167,7 +168,7 @@ namespace Automatonymous.Tests
                     When(Initialized)
                         .Finalize());
 
-                Finally(x => x.Then(instance => instance.Value = Finalized));
+                Finally(x => x.Then(context => context.Instance.Value = Finalized));
             }
 
             public State Running { get; private set; }
@@ -246,13 +247,13 @@ namespace Automatonymous.Tests
                     When(Initial.Enter)
                         .TransitionTo(Initializing),
                     When(Initial.AfterLeave)
-                        .Then((instance, state) => instance.LeftState = state),
+                        .Then(context => context.Instance.LeftState = context.Data),
                     When(Initializing.BeforeEnter)
-                        .Then((instance, state) => instance.EnteredState = state),
+                        .Then(context => context.Instance.EnteredState = context.Data),
                     When(Running.Enter)
                         .Finalize(),
                     When(Final.BeforeEnter)
-                        .Then((instance, state) => instance.FinalState = state));
+                        .Then(context => context.Instance.FinalState = context.Data));
             }
 
             public State Running { get; private set; }

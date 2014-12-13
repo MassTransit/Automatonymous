@@ -1,12 +1,12 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -15,6 +15,7 @@ namespace Automatonymous.Impl
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Internals.Extensions;
     using Internals.Reflection;
 
@@ -34,31 +35,31 @@ namespace Automatonymous.Impl
             _property = GetCurrentStateProperty(currentStateExpression);
         }
 
-        State<TInstance> StateAccessor<TInstance>.Get(TInstance instance)
+        async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
-            var state = _property.Get(instance);
+            State state = _property.Get(context.Instance);
             if (state == null)
                 return null;
 
             return state.For<TInstance>();
         }
 
-        void StateAccessor<TInstance>.Set(TInstance instance, State<TInstance> state)
+        async Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             if (state == null)
                 throw new ArgumentNullException("state");
 
-            State previous = _property.Get(instance);
+            State previous = _property.Get(context.Instance);
             if (state.Equals(previous))
                 return;
 
-            _property.Set(instance, state);
+            _property.Set(context.Instance, state);
 
             State<TInstance> previousState = null;
             if (previous != null)
                 previousState = previous.For<TInstance>();
 
-            _observer.OnNext(new StateChangedImpl(instance, previousState, state));
+            _observer.OnNext(new StateChangedImpl(context.Instance, previousState, state));
         }
 
         static ReadWriteProperty<TInstance, State> GetCurrentStateProperty(Expression<Func<TInstance, State>> currentStateExpression)

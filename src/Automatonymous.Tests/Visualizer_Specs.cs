@@ -116,7 +116,7 @@ namespace Automatonymous.Tests
                         .TransitionTo(Running));
 
                 During(Failed,
-                    When(Restart, x => x.Name != null)
+                    When(Restart, context => context.Data.Name != null)
                         .TransitionTo(Running));
             }
 

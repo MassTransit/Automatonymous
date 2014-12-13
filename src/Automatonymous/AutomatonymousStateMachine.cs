@@ -1,12 +1,12 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -17,7 +17,6 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
-    using System.Threading;
     using System.Threading.Tasks;
     using Activities;
     using Binders;
@@ -83,23 +82,22 @@ namespace Automatonymous
             return _stateCache[name];
         }
 
-        public Task RaiseEvent(TInstance instance, Event @event, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RaiseEvent(EventContext<TInstance> context)
         {
-            State<TInstance> state = _instanceStateAccessor.Get(instance);
+            State<TInstance> state = await _instanceStateAccessor.Get(context);
 
             State<TInstance> instanceState = _stateCache[state.Name];
 
-            return instanceState.Raise(instance, @event, cancellationToken);
+            await instanceState.Raise(context);
         }
 
-        public Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData data,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task RaiseEvent<T>(EventContext<TInstance, T> context)
         {
-            State<TInstance> state = _instanceStateAccessor.Get(instance);
+            State<TInstance> state = await _instanceStateAccessor.Get(context);
 
             State<TInstance> instanceState = _stateCache[state.Name];
 
-            return instanceState.Raise(instance, @event, data, cancellationToken);
+            await instanceState.Raise(context);
         }
 
         public State<TInstance> GetState(string name)
@@ -220,13 +218,13 @@ namespace Automatonymous
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    (instance, token) => ((StateMachine<TInstance>)this).RaiseEvent(instance, @event, token));
+                    context => ((StateMachine<TInstance>)this).RaiseEvent(context));
 
                 foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
                 {
                     During(state,
                         When(events[i])
-                            .Then(() => activity));
+                            .Execute(x => activity));
                 }
             }
         }
@@ -338,7 +336,7 @@ namespace Automatonymous
         bool IsTransitionEvent(State state, Event eevent)
         {
             return Equals(eevent, state.Enter) || Equals(eevent, state.BeforeEnter)
-                   || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
+                || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
@@ -361,7 +359,7 @@ namespace Automatonymous
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
-            Expression<Func<TData, bool>> filterExpression)
+            Func<BehaviorContext<TInstance, TData>, bool> filterExpression)
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
         }

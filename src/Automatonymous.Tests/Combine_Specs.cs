@@ -85,7 +85,7 @@ namespace Automatonymous.Tests
 
                 During(Waiting,
                     When(Third)
-                        .Then(instance => instance.Called = true));
+                        .Then(context => context.Instance.Called = true));
             }
 
             public State Waiting { get; private set; }

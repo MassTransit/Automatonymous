@@ -61,9 +61,9 @@ namespace Automatonymous.Tests
                 Event(() => Thing);
 
                 During(Initial,
-                    When(Thing, msg => msg.Condition)
+                    When(Thing, context => context.Data.Condition)
                         .TransitionTo(True),
-                    When(Thing, msg => !msg.Condition)
+                    When(Thing, context => !context.Data.Condition)
                         .TransitionTo(False));
             }
 

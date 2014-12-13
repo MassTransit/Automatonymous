@@ -1,18 +1,19 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
 //  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
     using NUnit.Framework;
+
 
     [TestFixture]
     public class When_specifying_a_conditional_event_activity
@@ -23,20 +24,22 @@ namespace Automatonymous.Tests
             var instance = new Instance();
             var machine = new InstanceStateMachine();
 
-            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = true });
+            machine.RaiseEvent(instance, machine.Thing, new Data {Condition = true});
             Assert.AreEqual(machine.True, instance.CurrentState);
 
             // reset
             instance.CurrentState = machine.Initial;
 
-            machine.RaiseEvent(instance, machine.Thing, new Data { Condition = false });
+            machine.RaiseEvent(instance, machine.Thing, new Data {Condition = false});
             Assert.AreEqual(machine.False, instance.CurrentState);
         }
+
 
         class Instance
         {
             public State CurrentState { get; set; }
         }
+
 
         class InstanceStateMachine :
             AutomatonymousStateMachine<Instance>
@@ -51,9 +54,9 @@ namespace Automatonymous.Tests
                 Event(() => Thing);
 
                 During(Initial,
-                    When(Thing, msg => msg.Condition)
+                    When(Thing, context => context.Data.Condition)
                         .TransitionTo(True),
-                    When(Thing, msg => !msg.Condition)
+                    When(Thing, context => !context.Data.Condition)
                         .TransitionTo(False));
             }
 
@@ -62,6 +65,7 @@ namespace Automatonymous.Tests
 
             public Event<Data> Thing { get; private set; }
         }
+
 
         class Data
         {

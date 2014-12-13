@@ -82,12 +82,12 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                        When(Initialized)
-                            .Then((instance, data) => instance.Value = data.Value)
+                            .Then(context => context.Instance.Value = context.Data.Value)
                             .TransitionTo(Running));
 
                 During(Running,
                     When(PassedValue)
-                        .Then((instance, data) => instance.OtherValue = data));
+                        .Then(context => context.Instance.OtherValue = context.Data));
             }
 
             public State Running { get; private set; }

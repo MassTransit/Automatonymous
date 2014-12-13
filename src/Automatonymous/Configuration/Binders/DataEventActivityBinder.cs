@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -16,7 +16,6 @@ namespace Automatonymous.Binders
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using Activities;
 
 
@@ -26,7 +25,7 @@ namespace Automatonymous.Binders
     {
         readonly IEnumerable<Activity<TInstance>> _activities;
         readonly Event<TData> _event;
-        readonly Expression<Func<TData, bool>> _filterExpression;
+        readonly Func<BehaviorContext<TInstance, TData>, bool> _filter;
         readonly StateMachine<TInstance> _machine;
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event)
@@ -35,24 +34,24 @@ namespace Automatonymous.Binders
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            Expression<Func<TData, bool>> filterExpression)
-            : this(machine, @event, filterExpression, Enumerable.Empty<Activity<TInstance>>())
+            Func<BehaviorContext<TInstance, TData>, bool> filter)
+            : this(machine, @event, filter, Enumerable.Empty<Activity<TInstance>>())
         {
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            Expression<Func<TData, bool>> filterExpression,
+            Func<BehaviorContext<TInstance, TData>, bool> filter,
             IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;
             _activities = activities;
             _machine = machine;
-            _filterExpression = filterExpression;
+            _filter = filter;
         }
 
-        public Expression<Func<TData, bool>> FilterExpression
+        public Func<BehaviorContext<TInstance, TData>, bool> Filter
         {
-            get { return _filterExpression; }
+            get { return _filter; }
         }
 
         Event<TData> EventActivityBinder<TInstance, TData>.Event
@@ -62,13 +61,13 @@ namespace Automatonymous.Binders
 
         EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Add(Activity<TInstance> activity)
         {
-            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter,
                 _activities.Concat(Enumerable.Repeat(activity, 1)));
         }
 
         EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Add(Activity<TInstance, TData> activity)
         {
-            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filterExpression,
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter,
                 _activities.Concat(Enumerable.Repeat(new DataConverterActivity<TInstance, TData>(activity), 1)));
         }
 
@@ -79,7 +78,7 @@ namespace Automatonymous.Binders
 
         IEnumerator<EventActivity<TInstance>> IEnumerable<EventActivity<TInstance>>.GetEnumerator()
         {
-            if (_filterExpression == null)
+            if (_filter == null)
                 return _activities.Select(CreateEventActivity).GetEnumerator();
 
             return _activities.Select(CreateConditionalEventActivity).GetEnumerator();
@@ -92,7 +91,7 @@ namespace Automatonymous.Binders
 
         EventActivity<TInstance> CreateConditionalEventActivity(Activity<TInstance> activity)
         {
-            var conditionalEventActivity = new ConditionalEventActivityImpl<TInstance, TData>(activity, _filterExpression);
+            var conditionalEventActivity = new ConditionalEventActivity<TInstance, TData>(activity, _filter);
 
             var converterActivity = new DataConverterActivity<TInstance, TData>(conditionalEventActivity);
 

@@ -1,4 +1,4 @@
-// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -10,16 +10,19 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Activities
+namespace Automatonymous
 {
     using System;
 
 
-    public interface ExceptionActivity<TInstance> :
-        Activity<TInstance>
+    /// <summary>
+    /// An exceptional behavior context
+    /// </summary>
+    /// <typeparam name="TState"></typeparam>
+    /// <typeparam name="TData"></typeparam>
+    public interface BehaviorExceptionContext<out TState, out TData> :
+        BehaviorContext<TState, TData>
     {
-        Type ExceptionType { get; }
-
-        Event Event { get; }
+        Exception Exception { get; }
     }
 }

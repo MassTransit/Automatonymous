@@ -1,12 +1,12 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
+﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
 //  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -34,7 +34,6 @@ namespace Automatonymous.Tests
         PitStop _machine;
         PitStopInstance _instance;
 
-
         [TestFixtureSetUp]
         public void Setup()
         {
@@ -42,10 +41,10 @@ namespace Automatonymous.Tests
             _instance = new PitStopInstance();
 
             var vehicle = new Vehicle
-                {
-                    Make = "Audi",
-                    Model = "A6",
-                };
+            {
+                Make = "Audi",
+                Model = "A6",
+            };
 
             _machine.RaiseEvent(_instance, _machine.VehicleArrived, vehicle);
         }
@@ -83,18 +82,18 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(VehicleArrived)
-                        .Then((instance, m) =>
-                            {
-                                instance.VehicleMake = m.Make;
-                                instance.VehicleModel = m.Model;
-                            })
+                        .Then(context =>
+                        {
+                            context.Instance.VehicleMake = context.Data.Make;
+                            context.Instance.VehicleModel = context.Data.Model;
+                        })
                         .TransitionTo(BeingServiced)
 //                        .RunParallel(p =>
 //                            {
 //                                p.Start<FillTank>(x => x.BeginFilling);
 //                                p.Start<CheckOil>(x => x.BeginChecking);
 //                            }))
-                            );
+                    );
             }
 
             public State BeingServiced { get; private set; }
@@ -118,20 +117,20 @@ namespace Automatonymous.Tests
 
                 During(Filling,
                     When(Full)
-                        .Then((instance, m) =>
-                            {
-                                instance.FuelGallons = m.Gallons;
-                                instance.FuelPricePerGallon = m.PricePerGallon;
-                                instance.FuelCost = m.Gallons*m.PricePerGallon;
-                            })
+                        .Then(context =>
+                        {
+                            context.Instance.FuelGallons = context.Data.Gallons;
+                            context.Instance.FuelPricePerGallon = context.Data.PricePerGallon;
+                            context.Instance.FuelCost = context.Data.Gallons * context.Data.PricePerGallon;
+                        })
                         .Finalize());
             }
-
 
             public State Filling { get; private set; }
 
             public Event<FuelDispensed> Full { get; private set; }
         }
+
 
         class CheckOil :
             AutomatonymousStateMachine<PitStopInstance>
@@ -148,15 +147,14 @@ namespace Automatonymous.Tests
 
                 During(AddingOil,
                     When(Done)
-                        .Then((instance, m) =>
-                            {
-                                instance.OilQuarts = m.Quarts;
-                                instance.OilPricePerQuart = m.PricePerQuart;
-                                instance.OilCost = Math.Ceiling(m.Quarts)*m.PricePerQuart;
-                            })
+                        .Then(context =>
+                        {
+                            context.Instance.OilQuarts = context.Data.Quarts;
+                            context.Instance.OilPricePerQuart = context.Data.PricePerQuart;
+                            context.Instance.OilCost = Math.Ceiling(context.Data.Quarts) * context.Data.PricePerQuart;
+                        })
                         .Finalize());
             }
-
 
             public State AddingOil { get; private set; }
 
@@ -169,6 +167,7 @@ namespace Automatonymous.Tests
             public decimal Gallons { get; set; }
             public decimal PricePerGallon { get; set; }
         }
+
 
         class OilAdded
         {

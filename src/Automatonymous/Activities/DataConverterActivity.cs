@@ -12,8 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using System;
-    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -32,24 +30,22 @@ namespace Automatonymous.Activities
             inspector.Inspect(this, x => _activity.Accept(inspector));
         }
 
-        async Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
             throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
         }
 
-        async Task Activity<TInstance>.Execute<T>(TInstance instance, T value, CancellationToken cancellationToken)
+        async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            object dataValue = value;
-            if (dataValue == null)
-                throw new ArgumentNullException("value", "The data argument cannot be null");
+            var dataContext = context as BehaviorContext<TInstance, TData>;
+            if (dataContext == null)
+                throw new AutomatonymousException("Expected Type " + typeof(TData).Name + " but was " + context.Data.GetType().Name);
 
-            if (!(dataValue is TData))
-            {
-                string message = "Expected Type " + typeof(TData).Name + " but was " + value.GetType().Name;
-                throw new ArgumentException(message, "value");
-            }
+            var dataNext = next as Behavior<TInstance, TData>;
+            if (dataNext == null)
+                throw new AutomatonymousException("The next behavior was not a valid type");
 
-            await _activity.Execute(instance, (TData)dataValue, cancellationToken);
+            await _activity.Execute(dataContext, dataNext);
         }
     }
 }

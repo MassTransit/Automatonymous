@@ -1,12 +1,12 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -19,6 +19,12 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Explicitly_transitioning_to_a_state
     {
+        [Test]
+        public void Should_call_the_enter_event()
+        {
+            Assert.IsTrue(_instance.EnterCalled);
+        }
+
         [Test]
         public void Should_have_first_moved_to_initial()
         {
@@ -37,12 +43,6 @@ namespace Automatonymous.Tests
         public void Should_raise_the_event()
         {
             Assert.AreEqual(2, _observer.Events.Count);
-        }
-
-        [Test]
-        public void Should_call_the_enter_event()
-        {
-            Assert.IsTrue(_instance.EnterCalled);
         }
 
         Instance _instance;
@@ -90,7 +90,7 @@ namespace Automatonymous.Tests
 
                 DuringAny(
                     When(Running.Enter)
-                        .Then(state => { state.EnterCalled = true; }));
+                        .Then(context => context.Instance.EnterCalled = true));
             }
 
             public State Running { get; private set; }

@@ -1,4 +1,4 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,26 +13,17 @@
 namespace Automatonymous.Activities
 {
     using System;
-    using System.Reflection;
     using System.Threading.Tasks;
-    using Internals.Reflection;
 
 
-    public class CompositeEventActivity<TInstance> :
+    public class AsyncActivity<TInstance> :
         Activity<TInstance>
     {
-        readonly CompositeEventStatus _complete;
-        readonly Func<BehaviorContext<TInstance>, Task> _completeCallback;
-        readonly int _flag;
-        readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
+        readonly Func<BehaviorContext<TInstance>, Task> _asyncAction;
 
-        public CompositeEventActivity(PropertyInfo propertyInfo, int flag, CompositeEventStatus complete,
-            Func<BehaviorContext<TInstance>, Task> completeCallback)
+        public AsyncActivity(Func<BehaviorContext<TInstance>, Task> asyncAction)
         {
-            _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
-            _flag = flag;
-            _complete = complete;
-            _completeCallback = completeCallback;
+            _asyncAction = asyncAction;
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
@@ -42,29 +33,40 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            await Execute(context);
+            await _asyncAction(context);
 
             await next.Execute(context);
         }
 
         async Task Activity<TInstance>.Execute<TData>(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            await Execute(context);
+            await _asyncAction(context);
 
             await next.Execute(context);
         }
+    }
 
-        async Task Execute(BehaviorContext<TInstance> context)
+
+    public class AsyncActivity<TInstance, TData> :
+        Activity<TInstance, TData>
+    {
+        readonly Func<BehaviorContext<TInstance, TData>, Task> _asyncAction;
+
+        public AsyncActivity(Func<BehaviorContext<TInstance, TData>, Task> asyncAction)
         {
-            CompositeEventStatus value = _property.Get(context.Instance);
-            value.Set(_flag);
+            _asyncAction = asyncAction;
+        }
 
-            _property.Set(context.Instance, value);
+        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this);
+        }
 
-            if (!value.Equals(_complete))
-                return;
+        async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
+        {
+            await _asyncAction(context);
 
-            await _completeCallback(context);
+            await next.Execute(context);
         }
     }
 }

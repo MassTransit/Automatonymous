@@ -96,10 +96,10 @@ namespace Automatonymous.Tests
 
                 DuringAny(
                     When(Hello)
-                        .Then(instance => instance.HelloCalled = true)
+                        .Then(context => context.Instance.HelloCalled = true)
                         .Finalize(),
                     When(EventA)
-                        .Then((instance, a) => instance.AValue = a.Value)
+                        .Then(context => context.Instance.AValue = context.Data.Value)
                         .Finalize());
             }
 

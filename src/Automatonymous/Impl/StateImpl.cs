@@ -1,12 +1,12 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
+// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
+//  
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed 
+// Unless required by applicable law or agreed to in writing, software distributed
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -14,9 +14,7 @@ namespace Automatonymous.Impl
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Internals.Caching;
 
 
     public class StateImpl<TInstance> :
@@ -24,9 +22,7 @@ namespace Automatonymous.Impl
         IEquatable<State>
         where TInstance : class
     {
-        // this is a cache of behaviors, not a list of activity - duh
-
-        readonly Cache<Event, List<Activity<TInstance>>> _activityCache;
+        readonly Dictionary<Event, BehaviorBuilder> _behaviors;
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;
         readonly IObserver<EventRaising<TInstance>> _raisingObserver;
@@ -44,7 +40,7 @@ namespace Automatonymous.Impl
             BeforeEnter = new DataEvent<State>(name + ".BeforeEnter");
             AfterLeave = new DataEvent<State>(name + ".AfterLeave");
 
-            _activityCache = new DictionaryCache<Event, List<Activity<TInstance>>>(x => new List<Activity<TInstance>>());
+            _behaviors = new Dictionary<Event, BehaviorBuilder>();
         }
 
         public bool Equals(State other)
@@ -65,37 +61,63 @@ namespace Automatonymous.Impl
 
         public void Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, _ => _activityCache.Each((key, value) =>
+            inspector.Inspect(this, _ =>
             {
-                key.Accept(inspector);
-                value.ForEach(activity => activity.Accept(inspector));
-            }));
+                foreach (var behavior in _behaviors)
+                {
+                    behavior.Key.Accept(inspector);
+                    behavior.Value.Accept(inspector);
+                }
+            });
         }
 
-
-        Task State<TInstance>.Raise(TInstance instance, Event @event, CancellationToken cancellationToken)
+        async Task State<TInstance>.Raise<T>(EventContext<TInstance, T> context)
         {
-            return Raise(instance, @event, (a, i) => a.Execute(i, cancellationToken));
-        }
+            BehaviorBuilder activities;
+            if (!_behaviors.TryGetValue(context.Event, out activities))
+                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
 
-        Task State<TInstance>.Raise<TData>(TInstance instance, Event<TData> @event, TData value, CancellationToken cancellationToken)
-        {
-            return Raise(instance, @event, (a, i) => a.Execute(i, value, cancellationToken));
+            var notification = new EventNotification(context);
+
+            _raisingObserver.OnNext(notification);
+
+            var behaviorContext = new BehaviorContextImpl<TInstance, T>(context);
+
+            await activities.GetBehavior.Execute(behaviorContext);
+
+            _raisedObserver.OnNext(notification);
         }
 
         public void Bind(EventActivity<TInstance> activity)
         {
-            _activityCache[activity.Event].Add(activity);
+            _behaviors[activity.Event].Add(activity);
         }
 
         public IEnumerable<Event> Events
         {
-            get { return _activityCache.GetAllKeys(); }
+            get { return _behaviors.Keys; }
         }
 
         public int CompareTo(State other)
         {
             return string.CompareOrdinal(_name, other.Name);
+        }
+
+        async Task State<TInstance>.Raise(EventContext<TInstance> context)
+        {
+            BehaviorBuilder activities;
+            if (!_behaviors.TryGetValue(context.Event, out activities))
+                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
+
+            var notification = new EventNotification(context);
+
+            _raisingObserver.OnNext(notification);
+
+            var behaviorContext = new BehaviorContextImpl<TInstance>(context);
+
+            await activities.GetBehavior.Execute(behaviorContext);
+
+            _raisedObserver.OnNext(notification);
         }
 
         public override bool Equals(object obj)
@@ -143,27 +165,54 @@ namespace Automatonymous.Impl
             return !Equals(left, right);
         }
 
-
-        async Task Raise<TEvent>(TInstance instance, TEvent @event, Func<Activity<TInstance>, TInstance, Task> callback)
-            where TEvent : Event
-        {
-            List<Activity<TInstance>> activities;
-            if (!_activityCache.TryGetValue(@event, out activities))
-                return;
-
-            var notification = new EventNotification(instance, @event);
-
-            _raisingObserver.OnNext(notification);
-
-            foreach (var activity in activities)
-                await callback(activity, instance);
-
-            _raisedObserver.OnNext(notification);
-        }
-
         public override string ToString()
         {
             return string.Format("{0} (State)", _name);
+        }
+
+
+        class BehaviorBuilder
+        {
+            readonly List<Activity<TInstance>> _activities;
+            readonly Lazy<Behavior<TInstance>> _behavior;
+
+            public BehaviorBuilder()
+            {
+                _activities = new List<Activity<TInstance>>();
+                _behavior = new Lazy<Behavior<TInstance>>(CreateBehavior);
+            }
+
+            public Behavior<TInstance> GetBehavior
+            {
+                get { return _behavior.Value; }
+            }
+
+            Behavior<TInstance> CreateBehavior()
+            {
+                if (_activities.Count == 0)
+                    return Behavior.Empty<TInstance>();
+
+                Behavior<TInstance> current = new LastBehavior<TInstance>(_activities[_activities.Count - 1]);
+
+                for (int i = _activities.Count - 2; i >= 0; i--)
+                    current = new ActivityBehavior<TInstance>(_activities[i], current);
+
+                return current;
+            }
+
+            public void Add(Activity<TInstance> activity)
+            {
+                if (_behavior.IsValueCreated)
+                    throw new AutomatonymousException("The behavior was already built, additional activities cannot be added.");
+
+                _activities.Add(activity);
+            }
+
+            public void Accept(StateMachineInspector inspector)
+            {
+                foreach (var activity in _activities)
+                    activity.Accept(inspector);
+            }
         }
 
 
@@ -171,10 +220,10 @@ namespace Automatonymous.Impl
             EventRaising<TInstance>,
             EventRaised<TInstance>
         {
-            public EventNotification(TInstance instance, Event @event)
+            public EventNotification(EventContext<TInstance> context)
             {
-                Instance = instance;
-                Event = @event;
+                Instance = context.Instance;
+                Event = context.Event;
             }
 
             public TInstance Instance { get; private set; }

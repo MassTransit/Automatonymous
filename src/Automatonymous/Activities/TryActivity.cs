@@ -54,7 +54,7 @@ namespace Automatonymous.Activities
             });
         }
 
-        Task Activity<TInstance>.Execute(TInstance instance, CancellationToken cancellationToken)
+        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
             return Execute(instance, cancellationToken);
         }

@@ -14,7 +14,6 @@ namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -99,20 +98,15 @@ namespace Automatonymous
         /// <summary>
         /// Raise a simple event on the state machine instance asynchronously
         /// </summary>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="event">The event to raise</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="context"></param>
         /// <returns>Task for the instance once completed</returns>
-        Task RaiseEvent(TInstance instance, Event @event, CancellationToken cancellationToken = default(CancellationToken));
+        Task RaiseEvent(EventContext<TInstance> context);
 
         /// <summary>
         /// Raise a data event on the state machine instance
         /// </summary>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="event">The event to raise</param>
-        /// <param name="value">The data value associated with the event</param>
-        /// <param name="cancellationToken"></param>
-        Task RaiseEvent<TData>(TInstance instance, Event<TData> @event, TData value, CancellationToken cancellationToken = default(CancellationToken));
+        /// <param name="context"></param>
+        Task RaiseEvent<T>(EventContext<TInstance, T> context);
 
         /// <summary>
         /// Exposes a raised event to observers before it is raised on the instance

@@ -12,20 +12,33 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System.Threading;
     using System.Threading.Tasks;
 
 
-    public interface EventLift<in TInstance>
+    public class LastBehavior<TInstance> :
+        Behavior<TInstance>
         where TInstance : class
     {
-        Task Raise(TInstance instance, CancellationToken cancellationToken = default(CancellationToken));
-    }
+        readonly Activity<TInstance> _activity;
 
+        public LastBehavior(Activity<TInstance> activity)
+        {
+            _activity = activity;
+        }
 
-    public interface EventLift<in TInstance, in TData>
-        where TInstance : class
-    {
-        Task Raise(TInstance instance, TData data, CancellationToken cancellationToken = default(CancellationToken));
+        public void Accept(StateMachineInspector inspector)
+        {
+            _activity.Accept(inspector);
+        }
+
+        public Task Execute(BehaviorContext<TInstance> context)
+        {
+            return _activity.Execute(context, Behavior.Empty<TInstance>());
+        }
+
+        public Task Execute<T>(BehaviorContext<TInstance, T> context)
+        {
+            return _activity.Execute(context, Behavior.Empty<TInstance>());
+        }
     }
 }

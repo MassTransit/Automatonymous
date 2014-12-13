@@ -12,10 +12,13 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using System.Threading.Tasks;
+
+
     public interface StateAccessor<TInstance>
     {
-        State<TInstance> Get(TInstance instance);
+        Task<State<TInstance>> Get(InstanceContext<TInstance> context);
 
-        void Set(TInstance instance, State<TInstance> state);
+        Task Set(InstanceContext<TInstance> context, State<TInstance> state);
     }
 }
