@@ -31,7 +31,7 @@ namespace Automatonymous.Binders
         {
         }
 
-        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event,
+        SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event,
             IEnumerable<Activity<TInstance>> activities)
         {
             _event = @event;

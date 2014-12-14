@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using Impl;
+    using Lifts;
 
 
     public static class InstanceLiftExtensions

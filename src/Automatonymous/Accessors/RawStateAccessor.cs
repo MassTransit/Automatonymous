@@ -10,7 +10,7 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous.Accessors
 {
     using System;
     using System.Linq.Expressions;
@@ -24,12 +24,14 @@ namespace Automatonymous.Impl
         StateAccessor<TInstance>
         where TInstance : class
     {
+        readonly StateMachine<TInstance> _machine;
         readonly IObserver<StateChanged<TInstance>> _observer;
         readonly ReadWriteProperty<TInstance, State> _property;
 
-        public RawStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
+        public RawStateAccessor(StateMachine<TInstance> machine, Expression<Func<TInstance, State>> currentStateExpression,
             IObserver<StateChanged<TInstance>> observer)
         {
+            _machine = machine;
             _observer = observer;
 
             _property = GetCurrentStateProperty(currentStateExpression);
@@ -41,7 +43,7 @@ namespace Automatonymous.Impl
             if (state == null)
                 return null;
 
-            return state.For<TInstance>();
+            return _machine.GetState(state.Name); // state.For<TInstance>();
         }
 
         async Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
@@ -57,7 +59,7 @@ namespace Automatonymous.Impl
 
             State<TInstance> previousState = null;
             if (previous != null)
-                previousState = previous.For<TInstance>();
+                previousState = _machine.GetState(previous.Name); // previous.For<TInstance>();
 
             _observer.OnNext(new StateChangedImpl(context.Instance, previousState, state));
         }

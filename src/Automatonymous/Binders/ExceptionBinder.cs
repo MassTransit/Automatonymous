@@ -16,8 +16,8 @@ namespace Automatonymous.Binders
     using Activities;
 
 
-    public interface ExceptionBinder<TInstance> :
-        IEnumerable<ExceptionActivity<TInstance>>
+    public interface ExceptionBinder<TInstance>
     {
+        IEnumerable<ExceptionActivity<TInstance>> GetActivities();
     }
 }

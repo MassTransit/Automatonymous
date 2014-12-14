@@ -13,6 +13,7 @@
 namespace Automatonymous
 {
     using System.Threading.Tasks;
+    using Behaviors;
 
 
     /// <summary>
@@ -20,7 +21,6 @@ namespace Automatonymous
     /// the activities that are executed in response to the event.
     /// </summary>
     public static class Behavior
-
     {
         /// <summary>
         /// Returns an empty pipe of the specified context type
@@ -28,14 +28,12 @@ namespace Automatonymous
         /// <typeparam name="T">The context type</typeparam>
         /// <returns></returns>
         public static Behavior<T> Empty<T>()
-            where T : class
         {
             return Cache<T>.EmptyBehavior;
         }
 
 
         static class Cache<T>
-            where T : class
         {
             internal static readonly Behavior<T> EmptyBehavior = new EmptyBehavior<T>();
         }

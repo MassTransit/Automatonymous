@@ -16,6 +16,8 @@ namespace Automatonymous
     using System.Threading;
     using System.Threading.Tasks;
     using Activities;
+    using Behaviors;
+    using Events;
 
 
     public static class StateMachineExtensions
@@ -136,21 +138,21 @@ namespace Automatonymous
         ///     to the transaction such as leaving the previous state and entering the target state
         /// </summary>
         /// <typeparam name="TInstance">The state instance type</typeparam>
-        /// <param name="stateMachine">The state machine</param>
+        /// <param name="machine">The state machine</param>
         /// <param name="instance">The state instance</param>
         /// <param name="state">The target state</param>
         /// <param name="cancellationToken"></param>
-        public static Task TransitionToState<TInstance>(this StateMachine<TInstance> stateMachine, TInstance instance,
+        public static Task TransitionToState<TInstance>(this StateMachine<TInstance> machine, TInstance instance,
             State state, CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            StateAccessor<TInstance> accessor = stateMachine.InstanceStateAccessor;
-            State<TInstance> toState = state.For<TInstance>();
+            StateAccessor<TInstance> accessor = machine.InstanceStateAccessor;
+            State<TInstance> toState = machine.GetState(state.Name); // state.For<TInstance>();
 
             Activity<TInstance> activity = new TransitionActivity<TInstance>(toState, accessor);
             var behavior = new LastBehavior<TInstance>(activity);
 
-            var eventContext = new StateMachineEventContext<TInstance>(stateMachine, instance, toState.Enter, cancellationToken);
+            var eventContext = new StateMachineEventContext<TInstance>(machine, instance, toState.Enter, cancellationToken);
 
             var behaviorContext = new BehaviorContextImpl<TInstance>(eventContext);
 

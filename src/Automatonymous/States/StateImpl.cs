@@ -10,11 +10,13 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous.States
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Behaviors;
+    using Events;
 
 
     public class StateImpl<TInstance> :
@@ -23,13 +25,14 @@ namespace Automatonymous.Impl
         where TInstance : class
     {
         readonly Dictionary<Event, BehaviorBuilder> _behaviors;
+        readonly StateMachine<TInstance> _machine;
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;
         readonly IObserver<EventRaising<TInstance>> _raisingObserver;
 
-        public StateImpl(string name, IObserver<EventRaising<TInstance>> raisingObserver,
-            IObserver<EventRaised<TInstance>> raisedObserver)
+        public StateImpl(StateMachine<TInstance> machine, string name, IObserver<EventRaising<TInstance>> raisingObserver, IObserver<EventRaised<TInstance>> raisedObserver)
         {
+            _machine = machine;
             _name = name;
             _raisingObserver = raisingObserver;
             _raisedObserver = raisedObserver;

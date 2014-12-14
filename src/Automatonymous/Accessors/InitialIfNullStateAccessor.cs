@@ -10,25 +10,28 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous.Accessors
 {
     using System;
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Activities;
+    using Behaviors;
 
 
     public class InitialIfNullStateAccessor<TInstance> :
         StateAccessor<TInstance>
         where TInstance : class
     {
+        readonly StateMachine<TInstance> _machine;
         readonly Behavior<TInstance> _initialBehavior;
         readonly StateAccessor<TInstance> _rawStateAccessor;
 
-        public InitialIfNullStateAccessor(Expression<Func<TInstance, State>> currentStateExpression,
+        public InitialIfNullStateAccessor(StateMachine<TInstance> machine, Expression<Func<TInstance, State>> currentStateExpression,
             State<TInstance> initialState, IObserver<StateChanged<TInstance>> observer)
         {
-            _rawStateAccessor = new RawStateAccessor<TInstance>(currentStateExpression, observer);
+            _machine = machine;
+            _rawStateAccessor = new RawStateAccessor<TInstance>(machine, currentStateExpression, observer);
 
             Activity<TInstance> initialActivity = new TransitionActivity<TInstance>(initialState, _rawStateAccessor);
             _initialBehavior = new LastBehavior<TInstance>(initialActivity);

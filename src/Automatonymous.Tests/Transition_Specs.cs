@@ -58,7 +58,8 @@ namespace Automatonymous.Tests
 
             using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
             {
-                _machine.TransitionToState(_instance, _machine.Running);
+                _machine.TransitionToState(_instance, _machine.Running)
+                    .Wait();
             }
         }
 

@@ -14,7 +14,7 @@ namespace Automatonymous
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Impl;
+    using Lifts;
 
 
     public static class EventLiftExtensions

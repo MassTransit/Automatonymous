@@ -10,8 +10,9 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous
+namespace Automatonymous.Events
 {
+    using System;
     using System.Threading;
 
 
@@ -23,6 +24,7 @@ namespace Automatonymous
         readonly Event _event;
         readonly TInstance _instance;
         readonly StateMachine<TInstance> _machine;
+        readonly PayloadCache _payloadCache;
 
         public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event,
             CancellationToken cancellationToken)
@@ -31,6 +33,23 @@ namespace Automatonymous
             _instance = instance;
             _event = @event;
             _cancellationToken = cancellationToken;
+
+            _payloadCache = new PayloadCache();
+        }
+
+        public bool HasPayloadType(Type contextType)
+        {
+            return _payloadCache.HasPayloadType(contextType);
+        }
+
+        public bool TryGetPayload<TPayload>(out TPayload context) where TPayload : class
+        {
+            return _payloadCache.TryGetPayload(out context);
+        }
+
+        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
+        {
+            return _payloadCache.GetOrAddPayload(payloadFactory);
         }
 
         CancellationToken InstanceContext<TInstance>.CancellationToken
@@ -50,7 +69,7 @@ namespace Automatonymous
     }
 
 
-    class StateMachineEventContext<TInstance, TData> :
+    public class StateMachineEventContext<TInstance, TData> :
         StateMachineEventContext<TInstance>,
         EventContext<TInstance, TData>
         where TInstance : class

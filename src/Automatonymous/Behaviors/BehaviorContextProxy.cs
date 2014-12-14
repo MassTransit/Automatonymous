@@ -10,8 +10,9 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous
+namespace Automatonymous.Behaviors
 {
+    using System;
     using System.Threading;
 
 
@@ -25,6 +26,21 @@ namespace Automatonymous
         {
             _context = context;
             _event = @event;
+        }
+
+        public bool HasPayloadType(Type contextType)
+        {
+            return _context.HasPayloadType(contextType);
+        }
+
+        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
+        {
+            return _context.TryGetPayload(out payload);
+        }
+
+        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
+        {
+            return _context.GetOrAddPayload(payloadFactory);
         }
 
         public CancellationToken CancellationToken
@@ -66,6 +82,21 @@ namespace Automatonymous
             _context = context;
             _event = @event;
             _data = data;
+        }
+
+        public bool HasPayloadType(Type contextType)
+        {
+            return _context.HasPayloadType(contextType);
+        }
+
+        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
+        {
+            return _context.TryGetPayload(out payload);
+        }
+
+        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
+        {
+            return _context.GetOrAddPayload(payloadFactory);
         }
 
         public TData Data

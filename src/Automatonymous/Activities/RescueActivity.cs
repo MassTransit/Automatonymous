@@ -43,12 +43,12 @@ namespace Automatonymous.Activities
                 exception = ex;
             }
 
-            if (exception != null)
-            {
-                BehaviorContext<TInstance, Tuple<Exception, TData>> exceptionContext = context.Push(exception);
-
-                await _exceptionHandler.Execute(exceptionContext);
-            }
+//            if (exception != null)
+//            {
+//                BehaviorContext<TInstance, Tuple<Exception, TData>> exceptionContext = context.Push(exception);
+//
+//                await _exceptionHandler.Execute(exceptionContext);
+//            }
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)

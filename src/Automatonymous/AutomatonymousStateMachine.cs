@@ -18,12 +18,15 @@ namespace Automatonymous
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Accessors;
     using Activities;
     using Binders;
-    using Impl;
+    using Events;
     using Internals.Caching;
     using Internals.Extensions;
     using Internals.Primitives;
+    using Observers;
+    using States;
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
@@ -50,8 +53,7 @@ namespace Automatonymous
             State(() => Initial);
             State(() => Final);
 
-            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(_stateCache[Initial.Name],
-                _stateChangedObservable);
+            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -161,7 +163,7 @@ namespace Automatonymous
         /// </remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
-            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(instanceStateProperty,
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(this, instanceStateProperty,
                 _stateCache[Initial.Name], _stateChangedObservable);
         }
 
@@ -175,7 +177,7 @@ namespace Automatonymous
 
             property.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
         }
 
         /// <summary>
@@ -208,7 +210,7 @@ namespace Automatonymous
 
             eventProperty.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
 
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
@@ -239,7 +241,7 @@ namespace Automatonymous
 
             property.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
         }
 
         protected void State(Expression<Func<State>> propertyExpression)
@@ -248,7 +250,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var state = new StateImpl<TInstance>(name, _eventRaisingObserver, _eventRaisedObserver);
+            var state = new StateImpl<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
 
             property.SetValue(this, state);
 
@@ -298,9 +300,9 @@ namespace Automatonymous
                 BindActivitiesToState(state, eventActivities);
         }
 
-        static void BindActivitiesToState(State state, IEnumerable<EventActivity<TInstance>> eventActivities)
+        void BindActivitiesToState(State state, IEnumerable<EventActivity<TInstance>> eventActivities)
         {
-            State<TInstance> activityState = state.For<TInstance>();
+            State<TInstance> activityState = GetState(state.Name); // state.For<TInstance>();
 
             foreach (var activity in eventActivities)
                 activityState.Bind(activity);

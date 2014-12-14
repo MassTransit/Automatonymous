@@ -25,7 +25,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance> source, State toState)
             where TInstance : class
         {
-            State<TInstance> state = toState.For<TInstance>();
+            State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
@@ -39,7 +39,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source, State toState)
             where TInstance : class
         {
-            State<TInstance> state = toState.For<TInstance>();
+            State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
@@ -53,7 +53,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.Final.For<TInstance>();
+            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
@@ -68,7 +68,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance> source)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.Final.For<TInstance>();
+            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 

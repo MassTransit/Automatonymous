@@ -10,7 +10,7 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Impl
+namespace Automatonymous.Accessors
 {
     using System;
     using System.Collections.Generic;
@@ -31,12 +31,15 @@ namespace Automatonymous.Impl
         where TInstance : class
     {
         readonly State<TInstance> _initialState;
+        readonly StateMachine<TInstance> _machine;
         readonly IObserver<StateChanged<TInstance>> _observer;
 
         StateAccessor<TInstance> _accessor;
 
-        public DefaultInstanceStateAccessor(State<TInstance> initialState, IObserver<StateChanged<TInstance>> observer)
+        public DefaultInstanceStateAccessor(StateMachine<TInstance> machine, State<TInstance> initialState,
+            IObserver<StateChanged<TInstance>> observer)
         {
+            _machine = machine;
             _initialState = initialState;
             _observer = observer;
         }
@@ -83,7 +86,7 @@ namespace Automatonymous.Impl
             Expression<Func<TInstance, State>> expression = Expression.Lambda<Func<TInstance, State>>(memberExpression,
                 instance);
 
-            return new InitialIfNullStateAccessor<TInstance>(expression, _initialState, _observer);
+            return new InitialIfNullStateAccessor<TInstance>(_machine, expression, _initialState, _observer);
         }
     }
 }

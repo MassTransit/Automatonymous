@@ -98,8 +98,8 @@ namespace Automatonymous.Tests
                                     return ex
                                         .Then(context =>
                                             {
-                                                context.Instance.ExceptionMessage = context.Exception.Message;
-                                                context.Instance.ExceptionType = context.Exception.GetType();
+                                                context.Instance.ExceptionMessage = context.Data.Message;
+                                                context.Instance.ExceptionType = context.Data.GetType();
                                             })
                                         .TransitionTo(Failed);
                                 })));
@@ -199,8 +199,8 @@ namespace Automatonymous.Tests
                                     return ex
                                         .Then(context =>
                                             {
-                                                context.Instance.ExceptionMessage = exception.Item2.Message;
-                                                context.Instance.ExceptionType = exception.Item2.GetType();
+                                                context.Instance.ExceptionMessage = context.Data.Item2.Message;
+                                                context.Instance.ExceptionType = context.Data.Item2.GetType();
                                             })
                                         .TransitionTo(Failed);
                                 })));
