@@ -16,30 +16,29 @@ namespace Automatonymous.Activities
 
 
     /// <summary>
-    /// Adapts an Activity to a Data Activity context
+    /// Calls through a Behavior<typeparam name="TInstance">T</typeparam> retaining the data portion
+    /// of the behavior context.
     /// </summary>
-    /// <typeparam name="TInstance"></typeparam>
-    /// <typeparam name="TData"></typeparam>
-    public class SlimActivity<TInstance, TData> :
-        Activity<TInstance, TData>
+    /// <typeparam name="TInstance">The instance type</typeparam>
+    /// <typeparam name="TData">The event data type</typeparam>
+    public class SlimBehavior<TInstance, TData> :
+        Behavior<TInstance, TData>
     {
-        readonly Activity<TInstance> _activity;
+        readonly Behavior<TInstance> _behavior;
 
-        public SlimActivity(Activity<TInstance> activity)
+        public SlimBehavior(Behavior<TInstance> behavior)
         {
-            _activity = activity;
+            _behavior = behavior;
+        }
+
+        public Task Execute(BehaviorContext<TInstance, TData> context)
+        {
+            return _behavior.Execute(context);
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
         {
-            _activity.Accept(inspector);
-        }
-
-        async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> behavior)
-        {
-            var upconvert = new WidenBehavior<TInstance, TData>(behavior, context);
-
-            await _activity.Execute(context, upconvert);
+            _behavior.Accept(inspector);
         }
     }
 }

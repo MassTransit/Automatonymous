@@ -29,6 +29,8 @@ namespace Automatonymous
 
         void Inspect<T>(Behavior<T> behavior, Action<Behavior<T>> next);
 
+        void Inspect<T, TData>(Behavior<T, TData> behavior);
+
         void Inspect(Activity activity, Action<Activity> next);
     }
 }

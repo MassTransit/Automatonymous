@@ -58,6 +58,7 @@
     <Compile Include="Activities\FactoryActivity.cs" />
     <Compile Include="Activities\AsyncActivity.cs" />
     <Compile Include="Activities\SlimActivity.cs" />
+    <Compile Include="Activities\SlimBehavior.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activities\TryActivity.cs" />
     <Compile Include="Activities\RescueActivity.cs" />
@@ -97,14 +98,18 @@
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
+    <Compile Include="InstanceContext.cs" />
+    <Compile Include="InstanceContextImpl.cs" />
     <Compile Include="InstanceLift.cs" />
     <Compile Include="InstanceLiftExtensions.cs" />
     <Compile Include="Lifts\EventLiftImpl.cs" />
     <Compile Include="Lifts\InstanceLiftImpl.cs" />
     <Compile Include="Observers\EventRaisedObserver.cs" />
     <Compile Include="Observers\EventRaisingObserver.cs" />
+    <Compile Include="PayloadFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateAccessor.cs" />
+    <Compile Include="StateAccessorExtensions.cs" />
     <Compile Include="StateChanged.cs" />
     <Compile Include="StateExtensions.cs" />
     <Compile Include="StateMachineExtensions.cs" />

@@ -82,6 +82,11 @@ namespace Automatonymous.Graphing
             throw new NotImplementedException();
         }
 
+        public void Inspect<T, TData>(Behavior<T, TData> behavior)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Inspect(Activity activity, Action<Activity> next)
         {
             var transitionActivity = activity as TransitionActivity<TInstance>;

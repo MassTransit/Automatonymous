@@ -78,7 +78,8 @@ namespace Automatonymous.States
         {
             BehaviorBuilder activities;
             if (!_behaviors.TryGetValue(context.Event, out activities))
-                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
+                return;
+//                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
 
             var notification = new EventNotification(context);
 
@@ -93,7 +94,13 @@ namespace Automatonymous.States
 
         public void Bind(EventActivity<TInstance> activity)
         {
-            _behaviors[activity.Event].Add(activity);
+            BehaviorBuilder builder;
+            if (!_behaviors.TryGetValue(activity.Event, out builder))
+            {
+                builder = new BehaviorBuilder();
+                _behaviors.Add(activity.Event, builder);
+            }
+            builder.Add(activity);
         }
 
         public IEnumerable<Event> Events
@@ -110,7 +117,8 @@ namespace Automatonymous.States
         {
             BehaviorBuilder activities;
             if (!_behaviors.TryGetValue(context.Event, out activities))
-                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
+                return;
+//                throw new AutomatonymousException("The event is not valid in the current state: " + context.Event.Name);
 
             var notification = new EventNotification(context);
 

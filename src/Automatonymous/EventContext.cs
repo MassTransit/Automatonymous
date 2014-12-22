@@ -12,47 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System;
-    using System.Threading;
-
-
-    public interface InstanceContext<out TInstance>
-    {
-        CancellationToken CancellationToken { get; }
-
-        TInstance Instance { get; }
-
-        /// <summary>
-        /// Checks if a payload is present in the context
-        /// </summary>
-        /// <param name="contextType"></param>
-        /// <returns></returns>
-        bool HasPayloadType(Type contextType);
-
-        /// <summary>
-        /// Retrieves a payload from the pipe context
-        /// </summary>
-        /// <typeparam name="TPayload">The payload type</typeparam>
-        /// <param name="payload">The payload</param>
-        /// <returns></returns>
-        bool TryGetPayload<TPayload>(out TPayload payload)
-            where TPayload : class;
-
-        /// <summary>
-        /// Returns an existing payload or creates the payload using the factory method provided
-        /// </summary>
-        /// <typeparam name="TPayload">The payload type</typeparam>
-        /// <param name="payloadFactory">The payload factory is the payload is not present</param>
-        /// <returns>The payload</returns>
-        TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory)
-            where TPayload : class;
-    }
-
-
-    public delegate T PayloadFactory<out T>()
-        where T : class;
-
-
     public interface EventContext<out TInstance> :
         InstanceContext<TInstance>
     {

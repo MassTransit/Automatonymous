@@ -59,7 +59,7 @@ namespace Automatonymous
     /// <typeparam name="TState">The state type</typeparam>
     /// <typeparam name="TData">The data type of the behavior</typeparam>
     public interface Behavior<in TState, in TData> :
-        Behavior<TState>
+        AcceptStateMachineInspector
     {
         Task Execute(BehaviorContext<TState, TData> context);
     }

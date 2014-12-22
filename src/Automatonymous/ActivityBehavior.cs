@@ -13,17 +13,18 @@
 namespace Automatonymous
 {
     using System.Threading.Tasks;
+    using Activities;
 
 
     public class ActivityBehavior<TInstance> :
         Behavior<TInstance>
     {
-        readonly Activity<TInstance> _filter;
+        readonly Activity<TInstance> _activity;
         readonly Behavior<TInstance> _next;
 
-        public ActivityBehavior(Activity<TInstance> filter, Behavior<TInstance> next)
+        public ActivityBehavior(Activity<TInstance> activity, Behavior<TInstance> next)
         {
-            _filter = filter;
+            _activity = activity;
             _next = next;
         }
 
@@ -31,19 +32,21 @@ namespace Automatonymous
         {
             inspector.Inspect(this, x =>
             {
-                _filter.Accept(inspector);
+                _activity.Accept(inspector);
                 _next.Accept(inspector);
             });
         }
 
         public Task Execute(BehaviorContext<TInstance> context)
         {
-            return _filter.Execute(context, _next);
+            return _activity.Execute(context, _next);
         }
 
         public Task Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            return _filter.Execute(context, _next);
+            var behavior = new SlimBehavior<TInstance, T>(_next);
+
+            return _activity.Execute(context, behavior);
         }
     }
 }
