@@ -27,8 +27,22 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        async Task Behavior<TInstance>.Execute<T1>(BehaviorContext<TInstance, T1> context)
+        async Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
+        }
+    }
+
+
+    public class EmptyBehavior<TInstance, TData> :
+        Behavior<TInstance, TData>
+    {
+        async Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)
+        {
+        }
+
+        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this);
         }
     }
 }

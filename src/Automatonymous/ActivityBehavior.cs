@@ -44,9 +44,36 @@ namespace Automatonymous
 
         public Task Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            var behavior = new SlimBehavior<TInstance, T>(_next);
+            var behavior = new SplitBehavior<TInstance, T>(_next);
 
             return _activity.Execute(context, behavior);
+        }
+    }
+
+    public class ActivityBehavior<TInstance, TData> :
+        Behavior<TInstance, TData>
+    {
+        readonly Activity<TInstance, TData> _activity;
+        readonly Behavior<TInstance, TData> _next;
+
+        public ActivityBehavior(Activity<TInstance, TData> activity, Behavior<TInstance, TData> next)
+        {
+            _activity = activity;
+            _next = next;
+        }
+
+        public Task Execute(BehaviorContext<TInstance, TData> context)
+        {
+            return _activity.Execute(context, _next);
+        }
+
+        public void Accept(StateMachineInspector inspector)
+        {
+            inspector.Inspect(this, x =>
+            {
+                _activity.Accept(inspector);
+                _next.Accept(inspector);
+            });
         }
     }
 }

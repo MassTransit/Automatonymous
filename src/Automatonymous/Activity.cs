@@ -24,8 +24,8 @@ namespace Automatonymous
     /// <summary>
     /// An activity is part of a behavior that is executed in order
     /// </summary>
-    /// <typeparam name="TState"></typeparam>
-    public interface Activity<TState> :
+    /// <typeparam name="TInstance"></typeparam>
+    public interface Activity<TInstance> :
         Activity
     {
         /// <summary>
@@ -34,7 +34,7 @@ namespace Automatonymous
         /// <param name="context">The behavior context</param>
         /// <param name="next">The behavior that follows this activity</param>
         /// <returns>An awaitable task</returns>
-        Task Execute(BehaviorContext<TState> context, Behavior<TState> next);
+        Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next);
 
         /// <summary>
         /// Execute the activity with the given behavior context
@@ -42,11 +42,11 @@ namespace Automatonymous
         /// <param name="context">The behavior context</param>
         /// <param name="next">The behavior that follows this activity</param>
         /// <returns>An awaitable task</returns>
-        Task Execute<T>(BehaviorContext<TState, T> context, Behavior<TState, T> next);
+        Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next);
     }
 
 
-    public interface Activity<TState, TData> :
+    public interface Activity<TInstance, TData> :
         Activity
     {
         /// <summary>
@@ -55,6 +55,6 @@ namespace Automatonymous
         /// <param name="context">The behavior context</param>
         /// <param name="next">The behavior that follows this activity</param>
         /// <returns>An awaitable task</returns>
-        Task Execute(BehaviorContext<TState, TData> context, Behavior<TState, TData> next);
+        Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next);
     }
 }

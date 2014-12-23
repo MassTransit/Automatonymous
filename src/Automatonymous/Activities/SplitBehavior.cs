@@ -16,17 +16,16 @@ namespace Automatonymous.Activities
 
 
     /// <summary>
-    /// Calls through a Behavior<typeparam name="TInstance">T</typeparam> retaining the data portion
-    /// of the behavior context.
+    /// Splits apart the data from the behavior so it can be invoked properly.
     /// </summary>
     /// <typeparam name="TInstance">The instance type</typeparam>
     /// <typeparam name="TData">The event data type</typeparam>
-    public class SlimBehavior<TInstance, TData> :
+    public class SplitBehavior<TInstance, TData> :
         Behavior<TInstance, TData>
     {
         readonly Behavior<TInstance> _behavior;
 
-        public SlimBehavior(Behavior<TInstance> behavior)
+        public SplitBehavior(Behavior<TInstance> behavior)
         {
             _behavior = behavior;
         }

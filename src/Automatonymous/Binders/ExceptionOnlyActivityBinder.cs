@@ -37,8 +37,8 @@ namespace Automatonymous.Binders
             params ExceptionActivity<TInstance>[] appendActivity)
         {
             _activities = new ExceptionActivity<TInstance>[activities.Length + appendActivity.Length];
-            Buffer.BlockCopy(activities, 0, _activities, 0, activities.Length);
-            Buffer.BlockCopy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
+            Array.Copy(activities, 0, _activities, 0, activities.Length);
+            Array.Copy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
 
             _machine = machine;
             _event = @event;
@@ -53,7 +53,7 @@ namespace Automatonymous.Binders
 
             contextBinder = handler(contextBinder);
 
-            var handlerActivity = new ExceptionHandlerActivity<TInstance, TException>(contextBinder, typeof(TException), contextBinder.Event);
+            var handlerActivity = new ExceptionHandlerActivity<TInstance, TException>(contextBinder.GetActivities(), typeof(TException), contextBinder.Event);
 
             return new ExceptionOnlyActivityBinder<TInstance>(_machine, _event, _activities, handlerActivity);
         }

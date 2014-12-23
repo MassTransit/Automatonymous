@@ -16,14 +16,27 @@ namespace Automatonymous.Activities
 
 
     public interface ExceptionActivity<TInstance> :
-        Activity<TInstance>
+        Activity<TInstance, Exception>
     {
         Type ExceptionType { get; }
 
         Event Event { get; }
 
-        BehaviorContext<TInstance> GetExceptionContext(BehaviorContext<TInstance> context, Exception exception);
+        BehaviorContext<TInstance, Exception> GetExceptionContext(BehaviorContext<TInstance> context, Exception exception);
 
-        BehaviorContext<TInstance> GetExceptionContext<TData>(BehaviorContext<TInstance, TData> context, Exception exception);
+        BehaviorContext<TInstance, Tuple<TData, Exception>> GetExceptionContext<TData>(BehaviorContext<TInstance, TData> context,
+            Exception exception);
+    }
+
+
+    public interface ExceptionActivity<TInstance, TData> :
+        Activity<TInstance, Tuple<TData, Exception>>
+    {
+        Type ExceptionType { get; }
+
+        Event<Tuple<TData, Exception>> Event { get; }
+
+        BehaviorContext<TInstance, Tuple<TData, Exception>> GetExceptionContext(BehaviorContext<TInstance, TData> context,
+            Exception exception);
     }
 }

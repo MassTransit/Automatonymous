@@ -220,7 +220,12 @@ namespace Automatonymous
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    context => ((StateMachine<TInstance>)this).RaiseEvent(context));
+                    context =>
+                    {
+                        var compositeEventContext = context.GetProxy(@event);
+
+                        return ((StateMachine<TInstance>)this).RaiseEvent(compositeEventContext);
+                    });
 
                 foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
                 {

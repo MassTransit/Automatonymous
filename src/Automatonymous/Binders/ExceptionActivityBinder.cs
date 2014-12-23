@@ -32,7 +32,7 @@ namespace Automatonymous.Binders
 
 
     public interface ExceptionActivityBinder<TInstance, TData> :
-        ExceptionBinder<TInstance>
+        ExceptionBinder<TInstance, TData>
         where TInstance : class
     {
         /// <summary>

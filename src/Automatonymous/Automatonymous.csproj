@@ -58,7 +58,7 @@
     <Compile Include="Activities\FactoryActivity.cs" />
     <Compile Include="Activities\AsyncActivity.cs" />
     <Compile Include="Activities\SlimActivity.cs" />
-    <Compile Include="Activities\SlimBehavior.cs" />
+    <Compile Include="Activities\SplitBehavior.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activities\TryActivity.cs" />
     <Compile Include="Activities\RescueActivity.cs" />

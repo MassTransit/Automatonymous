@@ -59,15 +59,20 @@ namespace Automatonymous.Activities
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TData"></typeparam>
     public class EventActivityShim<TInstance, TData> :
-        EventActivity<TInstance>
+        EventActivity<TInstance, TData>
     {
         readonly Activity<TInstance, TData> _activity;
-        readonly Event _event;
+        readonly Event<TData> _event;
 
-        public EventActivityShim(Event @event, Activity<TInstance, TData> activity)
+        public EventActivityShim(Event<TData> @event, Activity<TInstance, TData> activity)
         {
             _event = @event;
             _activity = activity;
+        }
+
+        public Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
+        {
+            return _activity.Execute(context, next);
         }
 
         void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
@@ -75,23 +80,9 @@ namespace Automatonymous.Activities
             _activity.Accept(inspector);
         }
 
-        Event EventActivity<TInstance>.Event
+        Event<TData> EventActivity<TInstance, TData>.Event
         {
             get { return _event; }
-        }
-
-        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-            throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
-        }
-
-        public Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
-        {
-            var activity = _activity as Activity<TInstance, T>;
-            if (activity == null)
-                throw new AutomatonymousException("Expected Type " + typeof(TData).Name + " but was " + typeof(T).Name);
-
-            return activity.Execute(context, next);
         }
     }
 }

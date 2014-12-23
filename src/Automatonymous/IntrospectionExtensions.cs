@@ -21,7 +21,8 @@ namespace Automatonymous
 
     public static class IntrospectionExtensions
     {
-        public static async Task<IEnumerable<Event>> NextEvents<TInstance>(this StateMachine<TInstance> machine, TInstance instance)
+        public static async Task<IEnumerable<Event>> NextEvents<T, TInstance>(this T machine, TInstance instance)
+            where T : class, StateMachine<TInstance>
             where TInstance : class
         {
             if (machine == null)

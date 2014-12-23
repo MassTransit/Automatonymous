@@ -24,7 +24,7 @@ namespace Automatonymous.Activities
         Activity<TInstance>
     {
         readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
-        Behavior<TInstance> _behavior;
+        readonly Behavior<TInstance> _behavior;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
             IEnumerable<ExceptionActivity<TInstance>> exceptionHandlers)
@@ -50,14 +50,14 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            await Execute(context);
+            await Execute(context, () => _behavior.Execute(context));
 
             await next.Execute(context);
         }
 
         async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            await Execute(context);
+            await Execute(context, () => _behavior.Execute(context));
 
             await next.Execute(context);
         }
@@ -75,13 +75,13 @@ namespace Automatonymous.Activities
             return current;
         }
 
-        async Task Execute(BehaviorContext<TInstance> context)
+        async Task Execute(BehaviorContext<TInstance> context, Func<Task> invokeBehavior)
         {
             Exception exception = null;
 
             try
             {
-                await _behavior.Execute(context);
+                await invokeBehavior();
             }
             catch (Exception ex)
             {
@@ -98,9 +98,9 @@ namespace Automatonymous.Activities
                     {
                         foreach (var handler in handlers)
                         {
-                            BehaviorContext<TInstance> contextProxy = handler.GetExceptionContext(context, exception);
+                            BehaviorContext<TInstance, Exception> contextProxy = handler.GetExceptionContext(context, exception);
 
-                            var behavior = new LastBehavior<TInstance>(handler);
+                            var behavior = new LastBehavior<TInstance, Exception>(handler);
 
                             await behavior.Execute(contextProxy);
                         }
@@ -121,16 +121,16 @@ namespace Automatonymous.Activities
         where TInstance : class
     {
         readonly List<Activity<TInstance>> _activities;
-        readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
+        readonly Cache<Type, List<ExceptionActivity<TInstance, TData>>> _exceptionHandlers;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
-            IEnumerable<ExceptionActivity<TInstance>> exceptionBinder)
+            IEnumerable<ExceptionActivity<TInstance, TData>> exceptionBinder)
         {
             _activities = new List<Activity<TInstance>>(activities
                 .Select(x => new EventActivityShim<TInstance>(@event, x)));
 
-            _exceptionHandlers = new DictionaryCache<Type, List<ExceptionActivity<TInstance>>>(
-                x => new List<ExceptionActivity<TInstance>>());
+            _exceptionHandlers = new DictionaryCache<Type, List<ExceptionActivity<TInstance, TData>>>(
+                x => new List<ExceptionActivity<TInstance, TData>>());
 
             foreach (var exceptionActivity in exceptionBinder)
                 _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
@@ -138,10 +138,7 @@ namespace Automatonymous.Activities
 
         public void Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, _ =>
-            {
-                _activities.ForEach(activity => activity.Accept(inspector));
-            });
+            inspector.Inspect(this, _ => _activities.ForEach(activity => activity.Accept(inspector)));
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
@@ -162,14 +159,14 @@ namespace Automatonymous.Activities
                 Type exceptionType = exception.GetType();
                 while (exceptionType != typeof(Exception).BaseType && exceptionType != null)
                 {
-                    List<ExceptionActivity<TInstance>> handlers;
+                    List<ExceptionActivity<TInstance, TData>> handlers;
                     if (_exceptionHandlers.TryGetValue(exceptionType, out handlers))
                     {
-                        foreach (var handler in handlers)
+                        foreach (ExceptionActivity<TInstance, TData> handler in handlers)
                         {
-                            BehaviorContext<TInstance> contextProxy = handler.GetExceptionContext(context, exception);
+                            BehaviorContext<TInstance, Tuple<TData, Exception>> contextProxy = handler.GetExceptionContext(context, exception);
 
-                            var behavior = new LastBehavior<TInstance>(handler);
+                            var behavior = new LastBehavior<TInstance, Tuple<TData,Exception>>(handler);
 
                             await behavior.Execute(contextProxy);
                         }

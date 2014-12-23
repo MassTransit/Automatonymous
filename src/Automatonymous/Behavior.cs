@@ -29,38 +29,49 @@ namespace Automatonymous
         /// <returns></returns>
         public static Behavior<T> Empty<T>()
         {
-            return Cache<T>.EmptyBehavior;
+            return Cached<T>.EmptyBehavior;
+        }
+
+        public static Behavior<T, TData> Empty<T, TData>()
+        {
+            return Cached<T, TData>.EmptyBehavior;
         }
 
 
-        static class Cache<T>
+        static class Cached<T>
         {
             internal static readonly Behavior<T> EmptyBehavior = new EmptyBehavior<T>();
         }
+
+
+        static class Cached<T, TData>
+        {
+            internal static readonly Behavior<T, TData> EmptyBehavior = new EmptyBehavior<T, TData>();
+        }
     }
 
 
     /// <summary>
     /// A behavior is a chain of activities invoked by a state
     /// </summary>
-    /// <typeparam name="TState">The state type</typeparam>
-    public interface Behavior<in TState> :
+    /// <typeparam name="TInstance">The state type</typeparam>
+    public interface Behavior<in TInstance> :
         AcceptStateMachineInspector
     {
-        Task Execute(BehaviorContext<TState> context);
+        Task Execute(BehaviorContext<TInstance> context);
 
-        Task Execute<T>(BehaviorContext<TState, T> context);
+        Task Execute<T>(BehaviorContext<TInstance, T> context);
     }
 
 
     /// <summary>
     /// A behavior is a chain of activities invoked by a state
     /// </summary>
-    /// <typeparam name="TState">The state type</typeparam>
+    /// <typeparam name="TInstance">The state type</typeparam>
     /// <typeparam name="TData">The data type of the behavior</typeparam>
-    public interface Behavior<in TState, in TData> :
+    public interface Behavior<in TInstance, in TData> :
         AcceptStateMachineInspector
     {
-        Task Execute(BehaviorContext<TState, TData> context);
+        Task Execute(BehaviorContext<TInstance, TData> context);
     }
 }

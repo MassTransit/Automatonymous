@@ -37,7 +37,29 @@ namespace Automatonymous.Behaviors
 
         public Task Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            return _activity.Execute(context, Behavior.Empty<TInstance>());
+            return _activity.Execute(context, Behavior.Empty<TInstance, T>());
+        }
+    }
+
+
+    public class LastBehavior<TInstance, TData> :
+        Behavior<TInstance, TData>
+    {
+        readonly Activity<TInstance, TData> _activity;
+
+        public LastBehavior(Activity<TInstance, TData> activity)
+        {
+            _activity = activity;
+        }
+
+        public Task Execute(BehaviorContext<TInstance, TData> context)
+        {
+            return _activity.Execute(context, Behavior.Empty<TInstance, TData>());
+        }
+
+        public void Accept(StateMachineInspector inspector)
+        {
+            _activity.Accept(inspector);
         }
     }
 }

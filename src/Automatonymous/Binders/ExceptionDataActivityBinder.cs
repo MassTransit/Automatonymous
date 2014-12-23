@@ -27,25 +27,24 @@ namespace Automatonymous.Binders
         ExceptionActivityBinder<TInstance, TData>
         where TInstance : class
     {
-        readonly ExceptionActivity<TInstance>[] _activities;
+        readonly ExceptionActivity<TInstance, TData>[] _activities;
         readonly Event<TData> _event;
         readonly StateMachine<TInstance> _machine;
 
         public ExceptionDataActivityBinder(StateMachine<TInstance> machine, Event<TData> @event)
         {
-            _activities = new ExceptionActivity<TInstance>[0];
+            _activities = new ExceptionActivity<TInstance, TData>[0];
             _machine = machine;
             _event = @event;
         }
 
-        ExceptionDataActivityBinder(StateMachine<TInstance> machine, Event<TData> @event, ExceptionActivity<TInstance>[] activities,
-            params ExceptionActivity<TInstance>[] appendActivity)
+        ExceptionDataActivityBinder(StateMachine<TInstance> machine, Event<TData> @event, ExceptionActivity<TInstance, TData>[] activities,
+            params ExceptionActivity<TInstance, TData>[] appendActivity)
         {
-            _activities = new ExceptionActivity<TInstance>[activities.Length + appendActivity.Length];
-            Buffer.BlockCopy(activities, 0, _activities, 0, activities.Length);
-            Buffer.BlockCopy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
+            _activities = new ExceptionActivity<TInstance, TData>[activities.Length + appendActivity.Length];
+            Array.Copy(activities, 0, _activities, 0, activities.Length);
+            Array.Copy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
 
-            _activities = activities;
             _machine = machine;
             _event = @event;
         }
@@ -60,13 +59,12 @@ namespace Automatonymous.Binders
 
             contextBinder = handler(contextBinder);
 
-            var handlerActivity = new ExceptionHandlerActivity<TInstance, TData, TException>(contextBinder, typeof(TException),
-                contextBinder.Event);
+            var handlerActivity = new ExceptionHandlerActivity<TInstance, TData, TException>(contextBinder.GetActivities(), typeof(TException));
 
             return new ExceptionDataActivityBinder<TInstance, TData>(_machine, _event, _activities, handlerActivity);
         }
 
-        public IEnumerable<ExceptionActivity<TInstance>> GetActivities()
+        public IEnumerable<ExceptionActivity<TInstance, TData>> GetActivities()
         {
             return _activities;
         }
