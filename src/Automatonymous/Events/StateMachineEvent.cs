@@ -12,7 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Events
 {
-    using Internals.Primitives;
+    using Internals;
 
 
     class StateMachineEvent<TInstance>

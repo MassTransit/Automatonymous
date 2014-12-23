@@ -17,25 +17,22 @@ namespace Automatonymous.Activities
     using System.Linq;
     using System.Threading.Tasks;
     using Behaviors;
-    using Internals.Caching;
 
 
     public class TryActivity<TInstance> :
         Activity<TInstance>
     {
-        readonly Cache<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
         readonly Behavior<TInstance> _behavior;
+        readonly Dictionary<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
             IEnumerable<ExceptionActivity<TInstance>> exceptionHandlers)
         {
             _behavior = CreateBehavior(activities.Select(x => (Activity<TInstance>)new EventActivityShim<TInstance>(@event, x)).ToArray());
 
-            _exceptionHandlers = new DictionaryCache<Type, List<ExceptionActivity<TInstance>>>(
-                x => new List<ExceptionActivity<TInstance>>());
 
-            foreach (var exceptionActivity in exceptionHandlers)
-                _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
+            _exceptionHandlers = new Dictionary<Type, List<ExceptionActivity<TInstance>>>(
+                exceptionHandlers.GroupBy(x => x.ExceptionType).ToDictionary(x => x.Key, x => x.ToList()));
         }
 
         public void Accept(StateMachineInspector inspector)
@@ -44,7 +41,8 @@ namespace Automatonymous.Activities
             {
                 _behavior.Accept(inspector);
 
-                _exceptionHandlers.Each((type, handler) => handler.ForEach(x => x.Accept(inspector)));
+                foreach (var handler in _exceptionHandlers.Values)
+                    handler.ForEach(x => x.Accept(inspector));
             });
         }
 
@@ -120,25 +118,24 @@ namespace Automatonymous.Activities
         Activity<TInstance, TData>
         where TInstance : class
     {
-        readonly List<Activity<TInstance>> _activities;
-        readonly Cache<Type, List<ExceptionActivity<TInstance, TData>>> _exceptionHandlers;
+        readonly Dictionary<Type, List<ExceptionActivity<TInstance, TData>>> _exceptionHandlers;
+        Behavior<TInstance> _behavior;
 
         public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
             IEnumerable<ExceptionActivity<TInstance, TData>> exceptionBinder)
         {
-            _activities = new List<Activity<TInstance>>(activities
-                .Select(x => new EventActivityShim<TInstance>(@event, x)));
+            _behavior = CreateBehavior(activities.Select(x => (Activity<TInstance>)new EventActivityShim<TInstance>(@event, x)).ToArray());
 
-            _exceptionHandlers = new DictionaryCache<Type, List<ExceptionActivity<TInstance, TData>>>(
-                x => new List<ExceptionActivity<TInstance, TData>>());
-
-            foreach (var exceptionActivity in exceptionBinder)
-                _exceptionHandlers[exceptionActivity.ExceptionType].Add(exceptionActivity);
+            _exceptionHandlers = new Dictionary<Type, List<ExceptionActivity<TInstance, TData>>>(
+                exceptionBinder.GroupBy(x => x.ExceptionType).ToDictionary(x => x.Key, x => x.ToList()));
         }
 
         public void Accept(StateMachineInspector inspector)
         {
-            inspector.Inspect(this, _ => _activities.ForEach(activity => activity.Accept(inspector)));
+            _behavior.Accept(inspector);
+
+            foreach (var handler in _exceptionHandlers.Values)
+                handler.ForEach(x => x.Accept(inspector));
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
@@ -146,8 +143,7 @@ namespace Automatonymous.Activities
             Exception exception = null;
             try
             {
-                foreach (var activity in _activities)
-                    await activity.Execute(context, next);
+                await _behavior.Execute(context);
             }
             catch (Exception ex)
             {
@@ -162,11 +158,12 @@ namespace Automatonymous.Activities
                     List<ExceptionActivity<TInstance, TData>> handlers;
                     if (_exceptionHandlers.TryGetValue(exceptionType, out handlers))
                     {
-                        foreach (ExceptionActivity<TInstance, TData> handler in handlers)
+                        foreach (var handler in handlers)
                         {
-                            BehaviorContext<TInstance, Tuple<TData, Exception>> contextProxy = handler.GetExceptionContext(context, exception);
+                            BehaviorContext<TInstance, Tuple<TData, Exception>> contextProxy = handler.GetExceptionContext(context,
+                                exception);
 
-                            var behavior = new LastBehavior<TInstance, Tuple<TData,Exception>>(handler);
+                            var behavior = new LastBehavior<TInstance, Tuple<TData, Exception>>(handler);
 
                             await behavior.Execute(contextProxy);
                         }
@@ -178,6 +175,19 @@ namespace Automatonymous.Activities
 
                 throw new AutomatonymousException("The activity threw an exception", exception);
             }
+        }
+
+        Behavior<TInstance> CreateBehavior(Activity<TInstance>[] activities)
+        {
+            if (activities.Length == 0)
+                return Behavior.Empty<TInstance>();
+
+            Behavior<TInstance> current = new LastBehavior<TInstance>(activities[activities.Length - 1]);
+
+            for (int i = activities.Length - 2; i >= 0; i--)
+                current = new ActivityBehavior<TInstance>(activities[i], current);
+
+            return current;
         }
     }
 }

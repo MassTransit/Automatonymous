@@ -15,7 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Internals.Reflection;
+    using Internals;
 
 
     public class CompositeEventActivity<TInstance> :

@@ -23,9 +23,6 @@ namespace Automatonymous.Activities
         Event Event { get; }
 
         BehaviorContext<TInstance, Exception> GetExceptionContext(BehaviorContext<TInstance> context, Exception exception);
-
-        BehaviorContext<TInstance, Tuple<TData, Exception>> GetExceptionContext<TData>(BehaviorContext<TInstance, TData> context,
-            Exception exception);
     }
 
 

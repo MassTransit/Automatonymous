@@ -16,8 +16,7 @@ namespace Automatonymous.Accessors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Internals.Extensions;
-    using Internals.Reflection;
+    using Internals;
 
 
     public class RawStateAccessor<TInstance> :

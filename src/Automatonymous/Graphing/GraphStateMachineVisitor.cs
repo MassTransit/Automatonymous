@@ -16,7 +16,6 @@ namespace Automatonymous.Graphing
     using System.Collections.Generic;
     using System.Linq;
     using Activities;
-    using Internals.Caching;
 
 
     public class GraphStateMachineVisitor<TInstance> :
@@ -24,34 +23,34 @@ namespace Automatonymous.Graphing
         where TInstance : class
     {
         readonly List<Edge> _edges = new List<Edge>();
-        readonly Cache<Event, Vertex> _events;
-        readonly Cache<State, Vertex> _states;
+        readonly Dictionary<Event, Vertex> _events;
+        readonly Dictionary<State, Vertex> _states;
         Vertex _currentEvent;
         Vertex _currentState;
 
         public GraphStateMachineVisitor()
         {
-            _states = new DictionaryCache<State, Vertex>(GetStateVertex);
-            _events = new DictionaryCache<Event, Vertex>(GetEventVertex);
+            _states = new Dictionary<State, Vertex>();
+            _events = new Dictionary<Event, Vertex>();
         }
 
         public StateMachineGraph Graph
         {
-            get { return new StateMachineGraph(_states.Union(_events), _edges); }
+            get { return new StateMachineGraph(_states.Values.Union(_events.Values), _edges); }
         }
 
         public void Inspect(State state, Action<State> next)
         {
             State<TInstance> s = state.For<TInstance>();
 
-            _currentState = _states[s];
+            _currentState = GetStateVertex(s);
 
             next(s);
         }
 
         public void Inspect(Event @event, Action<Event> next)
         {
-            _currentEvent = _events[@event];
+            _currentEvent = GetEventVertex(@event);
 
             _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
 
@@ -60,7 +59,7 @@ namespace Automatonymous.Graphing
 
         public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next)
         {
-            _currentEvent = _events[@event];
+            _currentEvent = GetEventVertex(@event);
 
             _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
 
@@ -69,27 +68,22 @@ namespace Automatonymous.Graphing
 
         public void Inspect(Activity activity)
         {
-            throw new NotImplementedException();
         }
 
         public void Inspect<T>(Behavior<T> behavior)
         {
-            throw new NotImplementedException();
         }
 
         public void Inspect<T>(Behavior<T> behavior, Action<Behavior<T>> next)
         {
-            throw new NotImplementedException();
         }
 
         public void Inspect<T, TData>(Behavior<T, TData> behavior)
         {
-            throw new NotImplementedException();
         }
 
         public void Inspect<T, TData>(Behavior<T, TData> behavior, Action<Behavior<T, TData>> next)
         {
-            throw new NotImplementedException();
         }
 
         public void Inspect(Activity activity, Action<Activity> next)
@@ -128,7 +122,7 @@ namespace Automatonymous.Graphing
         {
             Vertex previousEvent = _currentEvent;
 
-            _currentEvent = _events[exceptionActivity.Event];
+            _currentEvent = GetEventVertex(exceptionActivity.Event);
 
             _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
 
@@ -139,17 +133,41 @@ namespace Automatonymous.Graphing
 
         void InspectTransitionActivity(TransitionActivity<TInstance> transitionActivity)
         {
-            Vertex targetState = _states[transitionActivity.ToState];
+            Vertex targetState = GetStateVertex(transitionActivity.ToState);
 
             _edges.Add(new Edge(_currentEvent, targetState, _currentEvent.Title));
         }
 
-        static Vertex GetStateVertex(State state)
+        Vertex GetStateVertex(State state)
+        {
+            Vertex vertex;
+            if (_states.TryGetValue(state, out vertex))
+                return vertex;
+
+            vertex = CreateStateVertex(state);
+            _states.Add(state, vertex);
+
+            return vertex;
+        }
+
+        Vertex GetEventVertex(Event state)
+        {
+            Vertex vertex;
+            if (_events.TryGetValue(state, out vertex))
+                return vertex;
+
+            vertex = CreateEventVertex(state);
+            _events.Add(state, vertex);
+
+            return vertex;
+        }
+
+        static Vertex CreateStateVertex(State state)
         {
             return new Vertex(typeof(State), typeof(State), state.Name);
         }
 
-        static Vertex GetEventVertex(Event @event)
+        static Vertex CreateEventVertex(Event @event)
         {
             Type targetType = @event
                 .GetType()

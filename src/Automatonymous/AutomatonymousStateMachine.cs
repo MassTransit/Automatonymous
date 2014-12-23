@@ -22,9 +22,7 @@ namespace Automatonymous
     using Activities;
     using Binders;
     using Events;
-    using Internals.Caching;
-    using Internals.Extensions;
-    using Internals.Primitives;
+    using Internals;
     using Observers;
     using States;
 
@@ -34,17 +32,17 @@ namespace Automatonymous
         StateMachine<TInstance>
         where TInstance : class
     {
-        readonly Cache<string, StateMachineEvent<TInstance>> _eventCache;
+        readonly Dictionary<string, StateMachineEvent<TInstance>> _eventCache;
         readonly EventRaisedObserver<TInstance> _eventRaisedObserver;
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
-        readonly Cache<string, State<TInstance>> _stateCache;
+        readonly Dictionary<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         StateAccessor<TInstance> _instanceStateAccessor;
 
         protected AutomatonymousStateMachine()
         {
-            _stateCache = new DictionaryCache<string, State<TInstance>>();
-            _eventCache = new DictionaryCache<string, StateMachineEvent<TInstance>>();
+            _stateCache = new Dictionary<string, State<TInstance>>();
+            _eventCache = new Dictionary<string, StateMachineEvent<TInstance>>();
 
             _stateChangedObservable = new Observable<StateChanged<TInstance>>();
             _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
@@ -60,13 +58,13 @@ namespace Automatonymous
         {
             Initial.Accept(inspector);
 
-            _stateCache.Each(x =>
+            foreach (var x in _stateCache.Values)
             {
                 if (Equals(x, Initial) || Equals(x, Final))
                     return;
 
                 x.Accept(inspector);
-            });
+            }
 
             Final.Accept(inspector);
         }
@@ -109,7 +107,7 @@ namespace Automatonymous
 
         public IEnumerable<State> States
         {
-            get { return _stateCache; }
+            get { return _stateCache.Values; }
         }
 
         Event StateMachine.GetEvent(string name)
@@ -119,7 +117,7 @@ namespace Automatonymous
 
         public IEnumerable<Event> Events
         {
-            get { return _eventCache.Select(x => x.Event); }
+            get { return _eventCache.Values.Select(x => x.Event); }
         }
 
         public Type InstanceType
@@ -139,7 +137,7 @@ namespace Automatonymous
 
         public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
         {
-            if (!_eventCache.Has(@event.Name))
+            if (!_eventCache.ContainsKey(@event.Name))
                 throw new ArgumentException("Unknown event: " + @event.Name, "event");
 
             return _eventCache[@event.Name].EventRaising;
@@ -147,7 +145,7 @@ namespace Automatonymous
 
         public IObservable<EventRaised<TInstance>> EventRaised(Event @event)
         {
-            if (!_eventCache.Has(@event.Name))
+            if (!_eventCache.ContainsKey(@event.Name))
                 throw new ArgumentException("Unknown event: " + @event.Name, "event");
 
             return _eventCache[@event.Name].EventRaised;
@@ -222,12 +220,12 @@ namespace Automatonymous
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
                     context =>
                     {
-                        var compositeEventContext = context.GetProxy(@event);
+                        BehaviorContext<TInstance> compositeEventContext = context.GetProxy(@event);
 
                         return ((StateMachine<TInstance>)this).RaiseEvent(compositeEventContext);
                     });
 
-                foreach (var state in _stateCache.Where(x => !Equals(x, Initial)))
+                foreach (var state in _stateCache.Values.Where(x => !Equals(x, Initial)))
                 {
                     During(state,
                         When(events[i])
@@ -320,7 +318,7 @@ namespace Automatonymous
 
         protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
         {
-            IEnumerable<State<TInstance>> states = _stateCache.Where(x => !Equals(x, Initial) && !Equals(x, Final));
+            IEnumerable<State<TInstance>> states = _stateCache.Values.Where(x => !Equals(x, Initial) && !Equals(x, Final));
 
             // we only add DuringAny event handlers to non-initial and non-final states to avoid
             // reviving finalized state machine instances or creating new ones accidentally.

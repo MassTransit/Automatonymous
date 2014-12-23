@@ -102,6 +102,11 @@
     <Compile Include="InstanceContextImpl.cs" />
     <Compile Include="InstanceLift.cs" />
     <Compile Include="InstanceLiftExtensions.cs" />
+    <Compile Include="Internals\Connectable.cs" />
+    <Compile Include="Internals\ExpressionExtensions.cs" />
+    <Compile Include="Internals\Observable.cs" />
+    <Compile Include="Internals\ReadOnlyProperty.cs" />
+    <Compile Include="Internals\ReadWriteProperty.cs" />
     <Compile Include="Lifts\EventLiftImpl.cs" />
     <Compile Include="Lifts\InstanceLiftImpl.cs" />
     <Compile Include="Observers\EventRaisedObserver.cs" />
@@ -122,7 +127,6 @@
     <Compile Include="StateMachine.cs" />
     <Compile Include="AcceptStateMachineInspector.cs" />
     <Compile Include="Graphing\Vertex.cs" />
-    <Compile Include="Internals\**\*.cs" />
     <Compile Include="..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>

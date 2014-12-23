@@ -58,17 +58,9 @@ namespace Automatonymous.Activities
             return context.GetProxy(_event, exception as TException);
         }
 
-        BehaviorContext<TInstance, Tuple<TData, Exception>> ExceptionActivity<TInstance>.GetExceptionContext<TData>(
-            BehaviorContext<TInstance, TData> context, Exception exception)
-        {
-            var @event = new DataEvent<Tuple<TData, Exception>>(typeof(TData).Name + "." + typeof(TException).Name);
-
-            return context.GetProxy(@event, Tuple.Create(context.Data, exception));
-        }
-
         public async Task Execute(BehaviorContext<TInstance, Exception> context, Behavior<TInstance, Exception> next)
         {
-            var contextProxy = context.GetProxy(_event, context.Data as TException);
+            BehaviorContext<TInstance, TException> contextProxy = context.GetProxy(_event, context.Data as TException);
 
             await _behavior.Execute(contextProxy);
 
@@ -83,7 +75,7 @@ namespace Automatonymous.Activities
             Behavior<TInstance, TException> current = new LastBehavior<TInstance, TException>(activities[activities.Length - 1]);
 
             for (int i = activities.Length - 2; i >= 0; i--)
-                current = new ActivityBehavior<TInstance,TException>(activities[i], current);
+                current = new ActivityBehavior<TInstance, TException>(activities[i], current);
 
             return current;
         }
@@ -95,17 +87,17 @@ namespace Automatonymous.Activities
         where TInstance : class
         where TException : Exception
     {
-        readonly Behavior<TInstance, Tuple<TData,TException>> _behavior;
+        readonly Behavior<TInstance, Tuple<TData, TException>> _behavior;
         readonly Event<Tuple<TData, Exception>> _event;
-        readonly Event<Tuple<TData, TException>> _typedEvent;
         readonly Type _exceptionType;
+        readonly Event<Tuple<TData, TException>> _typedEvent;
 
-        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance, Tuple<TData,TException>>> activities, Type exceptionType)
+        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance, Tuple<TData, TException>>> activities, Type exceptionType)
         {
             _exceptionType = exceptionType;
             _event = new DataEvent<Tuple<TData, Exception>>(typeof(TData).Name + "." + typeof(TException).Name);
             _typedEvent = new DataEvent<Tuple<TData, TException>>(typeof(TData).Name + "." + typeof(TException).Name);
-            _behavior = CreateBehavior(activities.Cast<Activity<TInstance, Tuple<TData,TException>>>().ToArray());
+            _behavior = CreateBehavior(activities.Cast<Activity<TInstance, Tuple<TData, TException>>>().ToArray());
         }
 
         public Event<Tuple<TData, Exception>> Event
@@ -119,9 +111,11 @@ namespace Automatonymous.Activities
             return context.GetProxy(_event, Tuple.Create(context.Data, exception));
         }
 
-        public async Task Execute(BehaviorContext<TInstance, Tuple<TData, Exception>> context, Behavior<TInstance, Tuple<TData, Exception>> next)
+        public async Task Execute(BehaviorContext<TInstance, Tuple<TData, Exception>> context,
+            Behavior<TInstance, Tuple<TData, Exception>> next)
         {
-            var behaviorContext = context.GetProxy(_typedEvent, Tuple.Create(context.Data.Item1, context.Data.Item2 as TException));
+            BehaviorContext<TInstance, Tuple<TData, TException>> behaviorContext = context.GetProxy(_typedEvent,
+                Tuple.Create(context.Data.Item1, context.Data.Item2 as TException));
 
             await _behavior.Execute(behaviorContext);
 
@@ -138,15 +132,16 @@ namespace Automatonymous.Activities
             get { return _exceptionType; }
         }
 
-        Behavior<TInstance, Tuple<TData, TException>> CreateBehavior(Activity<TInstance, Tuple<TData,TException>>[] activities)
+        Behavior<TInstance, Tuple<TData, TException>> CreateBehavior(Activity<TInstance, Tuple<TData, TException>>[] activities)
         {
             if (activities.Length == 0)
                 return Behavior.Empty<TInstance, Tuple<TData, TException>>();
 
-            Behavior<TInstance, Tuple<TData, TException>> current = new LastBehavior<TInstance, Tuple<TData,TException>>(activities[activities.Length - 1]);
+            Behavior<TInstance, Tuple<TData, TException>> current =
+                new LastBehavior<TInstance, Tuple<TData, TException>>(activities[activities.Length - 1]);
 
             for (int i = activities.Length - 2; i >= 0; i--)
-                current = new ActivityBehavior<TInstance, Tuple<TData,TException>>(activities[i], current);
+                current = new ActivityBehavior<TInstance, Tuple<TData, TException>>(activities[i], current);
 
             return current;
         }

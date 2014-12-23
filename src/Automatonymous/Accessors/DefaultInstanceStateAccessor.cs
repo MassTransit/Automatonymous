@@ -18,7 +18,6 @@ namespace Automatonymous.Accessors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Internals.Extensions;
 
 
     /// <summary>
@@ -62,7 +61,7 @@ namespace Automatonymous.Accessors
         StateAccessor<TInstance> CreateDefaultAccessor()
         {
             List<PropertyInfo> states = typeof(TInstance)
-                .GetAllProperties()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.PropertyType == typeof(State))
                 .Where(x => x.GetGetMethod(true) != null)
                 .Where(x => x.GetSetMethod(true) != null)
