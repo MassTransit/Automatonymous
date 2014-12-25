@@ -4,16 +4,9 @@ include FileTest
 require 'albacore'
 require 'semver'
 
-internal_files = Dir[File.join(File.expand_path("src"), 'Automatonymous/Internals/**/*.cs')]
-if(!internal_files.any?)
-  #you didn't git submodule update --init - here let me help you
-  sh 'git submodule update --init' unless internal_files.any?
-end
-
 PRODUCT = 'Automatonymous'
 CLR_TOOLS_VERSION = 'v4.0.30319'
 OUTPUT_PATH = 'bin/Release'
-NETCORE45_FRAMEWORK = '.NET Framework, Version=v4.5'
 
 props = {
   :src => File.expand_path("src"),
@@ -28,7 +21,7 @@ desc "Cleans, compiles, il-merges, unit tests, prepares examples, packages zip"
 task :all => [:default, :package]
 
 desc "**Default**, compiles and runs tests"
-task :default => [:clean, :nuget_restore, :compile, :tests, :compile_net45fx, :nuget]
+task :default => [:clean, :nuget_restore, :compile, :tests, :nuget]
 
 desc "Update the common version information for the build. You can call this task without building."
 assemblyinfo :global_version do |asm|
@@ -59,15 +52,9 @@ end
 
 desc "Cleans, versions, compiles the application and generates build_output/."
 task :compile => [:versioning, :global_version, :build] do
-  copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
-  copyOutputFiles File.join(props[:src], "MassTransit/Automatonymous.MassTransitIntegration/bin/Release"), "Automatonymous.MassTransitIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
-  copyOutputFiles File.join(props[:src], "Automatonymous.NHibernateIntegration/bin/Release"), "Automatonymous.NHibernateIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
-  copyOutputFiles File.join(props[:src], "Automatonymous.Visualizer/bin/Release"), "Automatonymous.Visualizer.{dll,pdb,xml}", File.join(props[:output], 'net-4.0')
-end
-
-desc "Cleans, versions, compiles the application and generates build_output/."
-task :compile_net45fx => [:global_version, :build_net45fx] do
-	copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release/win8"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'win8')
+  copyOutputFiles File.join(props[:src], "Automatonymous/bin/Release"), "Automatonymous.{dll,pdb,xml}", File.join(props[:output], 'net-4.5')
+  copyOutputFiles File.join(props[:src], "Automatonymous.NHibernateIntegration/bin/Release"), "Automatonymous.NHibernateIntegration.{dll,pdb,xml}", File.join(props[:output], 'net-4.5')
+  copyOutputFiles File.join(props[:src], "Automatonymous.Visualizer/bin/Release"), "Automatonymous.Visualizer.{dll,pdb,xml}", File.join(props[:output], 'net-4.5')
 end
 
 desc "Only compiles the application."
@@ -81,16 +68,6 @@ msbuild :build do |msb|
   msb.solution = 'src/Automatonymous.sln'
 end
 
-desc "Only compiles the application for .NET 4.5 FX CORE."
-msbuild :build_net45fx do |msb|
-  msb.properties :Configuration => "Release45",
-    :SignAssembly => 'true',
-    :AssemblyOriginatorKeyFile => props[:keyfile]
-  msb.use :net4
-  msb.targets :Clean, :Build
-  msb.solution = 'src/Automatonymous/Automatonymous.csproj'
-end
-
 def copyOutputFiles(fromDir, filePattern, outDir)
 	FileUtils.mkdir_p outDir unless exists?(outDir)
 	Dir.glob(File.join(fromDir, filePattern)){|file|
@@ -100,9 +77,9 @@ end
 
 desc "Runs unit tests"
 nunit :tests => [:compile] do |nunit|
-          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.3', 'tools', 'nunit-console.exe')
+          nunit.command = File.join('src', 'packages','NUnit.Runners.2.6.4', 'tools', 'nunit-console.exe')
           nunit.options = "/framework=#{CLR_TOOLS_VERSION}", '/nothread', '/nologo', '/labels', "\"/xml=#{File.join(props[:artifacts], 'nunit-test-results.xml')}\""
-          nunit.assemblies = FileList["tests/Automatonymous.Tests.dll", File.join(props[:src], "MassTransit/MassTransit.AutomatonymousTests/bin/Release", "MassTransit.AutomatonymousTests.dll"), File.join(props[:src], "NHibernate.AutomatonymousTests/bin/Release", "NHibernate.AutomatonymousTests.dll")]
+          nunit.assemblies = FileList["tests/Automatonymous.Tests.dll", File.join(props[:src], "Automatonymous.NHibernateIntegration.Tests/bin/Release", "Automatonymous.NHibernateIntegration.Tests.dll")]
 end
 
 task :package => [:nuget]
@@ -125,20 +102,6 @@ desc "restores missing packages"
 msbuild :nuget_restore do |msb|
   msb.use :net4
   msb.targets :RestorePackages
-  msb.solution = File.join(props[:src], "MassTransit", "MassTransit.AutomatonymousTests", "MassTransit.AutomatonymousTests.csproj")
-end
-
-desc "restores missing packages"
-msbuild :nuget_restore do |msb|
-  msb.use :net4
-  msb.targets :RestorePackages
-  msb.solution = File.join(props[:src], "MassTransit", "Automatonymous.MassTransitIntegration", "Automatonymous.MassTransitIntegration.csproj")
-end
-
-desc "restores missing packages"
-msbuild :nuget_restore do |msb|
-  msb.use :net4
-  msb.targets :RestorePackages
   msb.solution = File.join(props[:src], "Automatonymous.NHibernateIntegration", "Automatonymous.NHibernateIntegration.csproj")
 end
 
@@ -146,7 +109,7 @@ desc "restores missing packages"
 msbuild :nuget_restore do |msb|
   msb.use :net4
   msb.targets :RestorePackages
-  msb.solution = File.join(props[:src], "NHibernate.AutomatonymousTests", "NHibernate.AutomatonymousTests.csproj")
+  msb.solution = File.join(props[:src], "Automatonymous.NHibernateIntegration.Tests", "Automatonymous.NHibernateIntegration.Tests.csproj")
 end
 
 desc "restores missing packages"
@@ -157,11 +120,10 @@ msbuild :nuget_restore do |msb|
 end
 
 desc "Builds the nuget package"
-task :nuget => ['create_nuspec', 'create_nuspec_masstransit', 'create_nuspec_nhibernate', 'create_nuspec_quickgraph'] do
-	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
-  sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.MassTransit.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+task :nuget => ['create_nuspec', 'create_nuspec_nhibernate', 'create_nuspec_quickgraph'] do
+  sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
   sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.NHibernate.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
-	sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.Visualizer.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
+  sh "#{File.join(props[:src],'.nuget','nuget.exe')} pack #{props[:artifacts]}/Automatonymous.Visualizer.nuspec /Symbols /OutputDirectory #{props[:artifacts]}"
 end
 
 nuspec :create_nuspec do |nuspec|
@@ -174,28 +136,9 @@ nuspec :create_nuspec do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "Taskell", "0.1.2"
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.nuspec')
   add_files props[:output], 'Automatonymous.{dll,pdb,xml}', nuspec
   nuspec.file(File.join(props[:src], "Automatonymous\\**\\*.cs").gsub("/","\\"), "src")
-end
-
-nuspec :create_nuspec_masstransit do |nuspec|
-  nuspec.id = 'Automatonymous.MassTransit'
-  nuspec.version = NUGET_VERSION
-  nuspec.authors = 'Chris Patterson'
-  nuspec.description = 'Integration assembly to support Automatonymous sagas, a state machine library for .NET'
-  nuspec.title = 'Automatonymous.MassTransit'
-  nuspec.projectUrl = 'http://github.com/MassTransit/Automatonymous'
-  nuspec.language = "en-US"
-  nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
-  nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.9.5"
-  nuspec.dependency "Taskell", "0.1.2"
-  nuspec.dependency "Automatonymous", NUGET_VERSION
-  nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
-  add_files props[:output], 'Automatonymous.MassTransitIntegration.{dll,pdb,xml}', nuspec
-  nuspec.file(File.join(props[:src], "MassTransit\\Automatonymous.MassTransitIntegration\\**\\*.cs").gsub("/","\\"), "src")
 end
 
 nuspec :create_nuspec_nhibernate do |nuspec|
@@ -208,7 +151,8 @@ nuspec :create_nuspec_nhibernate do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "NHibernate", "3.3.3"
+  nuspec.dependency "NHibernate", "4.0.2"
+  nuspec.dependency "Iesi.Collections", "4.0.1"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.NHibernate.nuspec')
   add_files props[:output], 'Automatonymous.NHibernateIntegration.{dll,pdb,xml}', nuspec
@@ -240,7 +184,7 @@ end
 
 
 def add_files stage, what_dlls, nuspec
-  [['net40', 'net-4.0'], ['.NETCore45', 'win8']].each{|fw|
+  [['net45', 'net-4.5']].each{|fw|
     takeFrom = File.join(stage, fw[1], what_dlls)
     Dir.glob(takeFrom).each do |f|
       nuspec.file(f.gsub("/", "\\"), "lib\\#{fw[0]}")
@@ -275,15 +219,6 @@ task :versioning do
   # purely M.m.p format
   ENV['FORMAL_VERSION'] = FORMAL_VERSION = "#{ SemVer.new(ver.major, ver.minor, revision).format "%M.%m.%p"}"
   puts "##teamcity[buildNumber '#{BUILD_VERSION}']" # tell teamcity our decision
-end
-
-def add_files stage, what_dlls, nuspec
-  [['net40', 'net-4.0'], ['.NETCore45', 'win8']].each{|fw|
-    takeFrom = File.join(stage, fw[1], what_dlls)
-    Dir.glob(takeFrom).each do |f|
-      nuspec.file(f.gsub("/", "\\"), "lib\\#{fw[0]}")
-    end
-  }
 end
 
 def waitfor(&block)
