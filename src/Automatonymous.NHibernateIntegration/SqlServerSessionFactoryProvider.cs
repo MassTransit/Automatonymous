@@ -10,7 +10,7 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.NHibernateIntegration
+namespace Automatonymous
 {
     using System;
     using System.Data;
@@ -18,11 +18,13 @@ namespace Automatonymous.NHibernateIntegration
     using NHibernate.Cfg.Loquacious;
     using NHibernate.Dialect;
 
-
+    /// <summary>
+    /// Used to configure the session factory for use with SQL server
+    /// </summary>
     public class SqlServerSessionFactoryProvider :
         NHibernateSessionFactoryProvider
     {
-        public SqlServerSessionFactoryProvider(string connectionString, IsolationLevel isolationLevel = IsolationLevel.RepeatableRead,
+        public SqlServerSessionFactoryProvider(string connectionString, IsolationLevel isolationLevel = IsolationLevel.Serializable,
             short batchSize = 100, bool logSql = false, bool updateSchema = false, params Type[] mapTypes)
             : base(mapTypes, x => Integrate(x, connectionString, batchSize, isolationLevel, logSql, updateSchema))
         {

@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,8 +13,13 @@
 namespace Automatonymous
 {
     using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Linq;
+
 
     [Serializable]
+    [DebuggerDisplay("{Status}")]
     public struct CompositeEventStatus :
         IComparable<CompositeEventStatus>
     {
@@ -23,6 +28,16 @@ namespace Automatonymous
         public CompositeEventStatus(int bits)
         {
             _bits = bits;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string Status
+        {
+            get
+            {
+                int bits = _bits;
+                return string.Join("", Enumerable.Range(0, 32).Select(x => (bits & (1 << x)) == 0 ? "0" : "1"));
+            }
         }
 
         public int Bits

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous", "Automatonymous\Automatonymous.csproj", "{FD8F92EB-5818-4C59-8859-19D3A74F979B}"
 EndProject
@@ -9,22 +9,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests", "Aut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Visualizer", "Automatonymous.Visualizer\Automatonymous.Visualizer.csproj", "{CD346A24-EEBB-493C-AAC0-E9896340B66A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassTransit", "MassTransit", "{B4965117-C0CF-4B58-BDBB-42C34996D321}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.MassTransitIntegration", "MassTransit\Automatonymous.MassTransitIntegration\Automatonymous.MassTransitIntegration.csproj", "{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.AutomatonymousTests", "MassTransit\MassTransit.AutomatonymousTests\MassTransit.AutomatonymousTests.csproj", "{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.NHibernateIntegration", "Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj", "{C0932502-0847-4966-8D0A-2CA80B1669ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NHibernate", "NHibernate", "{9D51129A-6050-40F6-A776-6C7C621438DA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.AutomatonymousTests", "NHibernate.AutomatonymousTests\NHibernate.AutomatonymousTests.csproj", "{06A25528-1537-4E70-85E2-CC979B924417}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6C2EAA3F-FD85-4C2F-A6F5-C97EC88384C3}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.NHibernateIntegration.Tests", "Automatonymous.NHibernateIntegration.Tests\Automatonymous.NHibernateIntegration.Tests.csproj", "{06A25528-1537-4E70-85E2-CC979B924417}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,14 +38,6 @@ Global
 		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,8 +51,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{A852511B-2742-4F4D-BD4E-ADDDBF3BD4B3} = {B4965117-C0CF-4B58-BDBB-42C34996D321}
-		{1DAB3D46-3386-48F8-8381-2F5B678D1DB6} = {B4965117-C0CF-4B58-BDBB-42C34996D321}
 		{C0932502-0847-4966-8D0A-2CA80B1669ED} = {9D51129A-6050-40F6-A776-6C7C621438DA}
 		{06A25528-1537-4E70-85E2-CC979B924417} = {9D51129A-6050-40F6-A776-6C7C621438DA}
 	EndGlobalSection

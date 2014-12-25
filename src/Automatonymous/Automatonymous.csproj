@@ -79,6 +79,7 @@
     <Compile Include="Binders\ExceptionOnlyActivityBinder.cs" />
     <Compile Include="Binders\ExceptionBinder.cs" />
     <Compile Include="Binders\SimpleEventActivityBinder.cs" />
+    <Compile Include="CompositeEventOptions.cs" />
     <Compile Include="EventActivity.cs" />
     <Compile Include="EventContext.cs" />
     <Compile Include="EventRaised.cs" />

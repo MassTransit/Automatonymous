@@ -1,12 +1,12 @@
-// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -178,6 +178,7 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
         }
 
+
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
         /// off the required events have been raised. Note that required events cannot be in the initial
@@ -188,6 +189,23 @@ namespace Automatonymous
         /// <param name="events">The events that must be raised before the composite event is raised</param>
         protected void Event(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
+            params Event[] events)
+        {
+            Event(propertyExpression, trackingPropertyExpression, CompositeEventOptions.None, events);
+        }
+
+        /// <summary>
+        /// Adds a composite event to the state machine. A composite event is triggered when all
+        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// state since it would cause extra instances of the state machine to be created
+        /// </summary>
+        /// <param name="propertyExpression">The composite event</param>
+        /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
+        /// <param name="options">Options on the composite event</param>
+        /// <param name="events">The events that must be raised before the composite event is raised</param>
+        protected void Event(Expression<Func<Event>> propertyExpression,
+            Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
+            CompositeEventOptions options,
             params Event[] events)
         {
             if (events == null)
@@ -225,7 +243,8 @@ namespace Automatonymous
                         return ((StateMachine<TInstance>)this).RaiseEvent(compositeEventContext);
                     });
 
-                foreach (var state in _stateCache.Values.Where(x => !Equals(x, Initial)))
+                Func<State<TInstance>, bool> filter = x => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                foreach (var state in _stateCache.Values.Where(filter))
                 {
                     During(state,
                         When(events[i])
@@ -341,7 +360,7 @@ namespace Automatonymous
         bool IsTransitionEvent(State state, Event eevent)
         {
             return Equals(eevent, state.Enter) || Equals(eevent, state.BeforeEnter)
-                || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
+                   || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)

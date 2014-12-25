@@ -15,7 +15,7 @@ namespace Automatonymous
     using System;
     using System.Linq.Expressions;
     using NHibernate.Mapping.ByCode;
-    using NHibernateIntegration;
+    using UserTypes;
 
 
     public static class AutomatonymousNHibernateExtensions
