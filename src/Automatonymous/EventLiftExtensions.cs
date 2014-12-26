@@ -43,14 +43,14 @@ namespace Automatonymous
             CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            return lift.Raise(instance);
+            return lift.Raise(instance, cancellationToken);
         }
 
         public static Task Raise<TInstance, TData>(this EventLift<TInstance, TData> lift, TInstance instance, TData value,
             CancellationToken cancellationToken = default(CancellationToken))
             where TInstance : class
         {
-            return lift.Raise(instance, value);
+            return lift.Raise(instance, value, cancellationToken);
         }
     }
 }

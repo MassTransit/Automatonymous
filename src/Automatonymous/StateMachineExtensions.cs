@@ -115,25 +115,6 @@ namespace Automatonymous
         }
 
         /// <summary>
-        ///     Returns an instance-specific version of the state machine (smart cast essentially)
-        /// </summary>
-        /// <typeparam name="TInstance">The instance type requested</typeparam>
-        /// <param name="stateMachine">The untyped state machine interface</param>
-        /// <returns>The typed static machine reference</returns>
-        public static StateMachine<TInstance> For<TInstance>(this StateMachine stateMachine)
-            where TInstance : class
-        {
-            if (stateMachine == null)
-                throw new ArgumentNullException("stateMachine");
-
-            var result = stateMachine as StateMachine<TInstance>;
-            if (result == null)
-                throw new ArgumentException("The state machine is not of the instance type: " + typeof(TInstance).Name);
-
-            return result;
-        }
-
-        /// <summary>
         ///     Transition a state machine instance to a specific state, producing any events related
         ///     to the transaction such as leaving the previous state and entering the target state
         /// </summary>

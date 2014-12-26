@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Threading.Tasks;
+    using Events;
 
 
     /// <summary>
@@ -24,9 +25,9 @@ namespace Automatonymous.Activities
     public class RescueActivity<TInstance, TData> :
         Activity<TInstance, TData>
     {
-        readonly Behavior<TInstance, Tuple<Exception, TData>> _exceptionHandler;
+        readonly Behavior<TInstance, Tuple<TData, Exception>> _exceptionHandler;
 
-        public RescueActivity(Behavior<TInstance, Tuple<Exception, TData>> exceptionHandler)
+        public RescueActivity(Behavior<TInstance, Tuple<TData, Exception>> exceptionHandler)
         {
             _exceptionHandler = exceptionHandler;
         }
@@ -43,12 +44,14 @@ namespace Automatonymous.Activities
                 exception = ex;
             }
 
-//            if (exception != null)
-//            {
-//                BehaviorContext<TInstance, Tuple<Exception, TData>> exceptionContext = context.Push(exception);
-//
-//                await _exceptionHandler.Execute(exceptionContext);
-//            }
+            if (exception != null)
+            {
+                var @event = new DataEvent<Tuple<TData, Exception>>(typeof(TData).Name + "." + exception.GetType().Name);
+                BehaviorContext<TInstance, Tuple<TData, Exception>> exceptionContext = context.GetProxy(@event,
+                    Tuple.Create(context.Data, exception));
+
+                await _exceptionHandler.Execute(exceptionContext);
+            }
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)

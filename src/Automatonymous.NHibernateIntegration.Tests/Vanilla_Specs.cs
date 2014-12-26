@@ -21,7 +21,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
     using UserTypes;
 
 
-    [TestFixture, Explicit]
+    [TestFixture]
     public class When_using_NHibernateRepository
     {
         SuperShopper _machine;

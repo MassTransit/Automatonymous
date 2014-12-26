@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,6 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Events
 {
+    using System;
+
+
     public class SimpleEvent :
         Event
     {
@@ -34,7 +37,7 @@ namespace Automatonymous.Events
 
         public int CompareTo(Event other)
         {
-            return _name.CompareTo(other.Name);
+            return String.Compare(_name, other.Name, StringComparison.Ordinal);
         }
 
         public bool Equals(SimpleEvent other)

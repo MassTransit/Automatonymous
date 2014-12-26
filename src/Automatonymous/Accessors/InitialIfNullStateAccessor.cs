@@ -23,14 +23,12 @@ namespace Automatonymous.Accessors
         StateAccessor<TInstance>
         where TInstance : class
     {
-        readonly StateMachine<TInstance> _machine;
         readonly Behavior<TInstance> _initialBehavior;
         readonly StateAccessor<TInstance> _rawStateAccessor;
 
         public InitialIfNullStateAccessor(StateMachine<TInstance> machine, Expression<Func<TInstance, State>> currentStateExpression,
             State<TInstance> initialState, IObserver<StateChanged<TInstance>> observer)
         {
-            _machine = machine;
             _rawStateAccessor = new RawStateAccessor<TInstance>(machine, currentStateExpression, observer);
 
             Activity<TInstance> initialActivity = new TransitionActivity<TInstance>(initialState, _rawStateAccessor);
