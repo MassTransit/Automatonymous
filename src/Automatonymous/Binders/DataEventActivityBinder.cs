@@ -23,7 +23,7 @@ namespace Automatonymous.Binders
     {
         readonly StateActivityBinder<TInstance>[] _activities;
         readonly Event<TData> _event;
-        readonly Func<BehaviorContext<TInstance, TData>, bool> _filter;
+        readonly StateMachineEventFilter<TInstance, TData> _filter;
         readonly StateMachine<TInstance> _machine;
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event)
@@ -34,7 +34,7 @@ namespace Automatonymous.Binders
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            Func<BehaviorContext<TInstance, TData>, bool> filter)
+            StateMachineEventFilter<TInstance, TData> filter)
         {
             _event = @event;
             _activities = new StateActivityBinder<TInstance>[0];
@@ -43,7 +43,7 @@ namespace Automatonymous.Binders
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            Func<BehaviorContext<TInstance, TData>, bool> filter, StateActivityBinder<TInstance>[] activities,
+            StateMachineEventFilter<TInstance, TData> filter, StateActivityBinder<TInstance>[] activities,
             params StateActivityBinder<TInstance>[] appendActivity)
         {
             _activities = new StateActivityBinder<TInstance>[activities.Length + appendActivity.Length];
@@ -55,7 +55,7 @@ namespace Automatonymous.Binders
             _filter = filter;
         }
 
-        public Func<BehaviorContext<TInstance, TData>, bool> Filter
+        public StateMachineEventFilter<TInstance, TData> Filter
         {
             get { return _filter; }
         }
@@ -82,6 +82,13 @@ namespace Automatonymous.Binders
             StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(_event);
 
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, activityBinder);
+        }
+
+        public EventActivityBinder<TInstance, TData> Ignore(StateMachineEventFilter<TInstance, TData> filter)
+        {
+            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance, TData>(_event, filter);
+
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, filter, _activities, activityBinder);
         }
 
         StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine

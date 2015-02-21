@@ -25,7 +25,7 @@ namespace Automatonymous.States
         where TInstance : class
     {
         readonly Dictionary<Event, ActivityBehaviorBuilder<TInstance>> _behaviors;
-        readonly HashSet<Event> _ignoredEvents;
+        readonly Dictionary<Event, StateEventFilter<TInstance>> _ignoredEvents;
         readonly StateMachine<TInstance> _machine;
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;
@@ -39,7 +39,7 @@ namespace Automatonymous.States
             _raisingObserver = raisingObserver;
             _raisedObserver = raisedObserver;
             _behaviors = new Dictionary<Event, ActivityBehaviorBuilder<TInstance>>();
-            _ignoredEvents = new HashSet<Event>();
+            _ignoredEvents = new Dictionary<Event, StateEventFilter<TInstance>>();
 
             Enter = new SimpleEvent(name + ".Enter");
             Ignore(Enter);
@@ -83,7 +83,7 @@ namespace Automatonymous.States
         async Task State<TInstance>.Raise<T>(EventContext<TInstance, T> context)
         {
             ActivityBehaviorBuilder<TInstance> activities;
-            if (!GetBehaviorBuilder(context.Event, out activities))
+            if (!GetBehaviorBuilder(context, out activities))
                 return;
 
             var notification = new EventNotification(context);
@@ -110,7 +110,12 @@ namespace Automatonymous.States
 
         public void Ignore(Event @event)
         {
-            _ignoredEvents.Add(@event);
+            _ignoredEvents[@event] = new AllStateEventFilter<TInstance>();
+        }
+
+        public void Ignore<T>(Event<T> @event, StateMachineEventFilter<TInstance, T> filter)
+        {
+            _ignoredEvents[@event] = new SelectedStateEventFilter<TInstance, T>(filter);
         }
 
         public IEnumerable<Event> Events
@@ -126,11 +131,10 @@ namespace Automatonymous.States
         async Task State<TInstance>.Raise(EventContext<TInstance> context)
         {
             ActivityBehaviorBuilder<TInstance> activities;
-            if (!GetBehaviorBuilder(context.Event, out activities))
+            if (!GetBehaviorBuilder(context, out activities))
                 return;
 
             var notification = new EventNotification(context);
-
             _raisingObserver.OnNext(notification);
 
             var behaviorContext = new BehaviorContextImpl<TInstance>(context);
@@ -140,15 +144,30 @@ namespace Automatonymous.States
             _raisedObserver.OnNext(notification);
         }
 
-        bool GetBehaviorBuilder(Event @event, out ActivityBehaviorBuilder<TInstance> activities)
+        bool GetBehaviorBuilder(EventContext<TInstance> context, out ActivityBehaviorBuilder<TInstance> activities)
         {
-            if (_behaviors.TryGetValue(@event, out activities))
+            if (_behaviors.TryGetValue(context.Event, out activities))
                 return true;
 
-            if (_ignoredEvents.Contains(@event))
-                return false;
+            StateEventFilter<TInstance> filter;
+            if (_ignoredEvents.TryGetValue(context.Event, out filter))
+                if (filter.Filter(context))
+                    return false;
 
-            throw new InvalidEventInStateException(_machine.Name, @event.Name, _name);
+            throw new InvalidEventInStateException(_machine.Name, context.Event.Name, _name);
+        }
+
+        bool GetBehaviorBuilder<T>(EventContext<TInstance, T> context, out ActivityBehaviorBuilder<TInstance> activities)
+        {
+            if (_behaviors.TryGetValue(context.Event, out activities))
+                return true;
+
+            StateEventFilter<TInstance> filter;
+            if (_ignoredEvents.TryGetValue(context.Event, out filter))
+                if (filter.Filter(context))
+                    return false;
+
+            throw new InvalidEventInStateException(_machine.Name, context.Event.Name, _name);
         }
 
         public override bool Equals(object obj)

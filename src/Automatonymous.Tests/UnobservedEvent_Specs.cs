@@ -64,6 +64,69 @@ namespace Automatonymous.Tests
         }
     }
 
+    [TestFixture]
+    public class Raising_an_ignored_event_that_is_not_filtered
+    {
+        [Test]
+        public async void Should_throw_an_exception_when_event_is_not_allowed_in_current_state()
+        {
+            var instance = new Instance();
+
+            await _machine.RaiseEvent(instance, x => x.Start);
+
+            Assert.Throws<InvalidEventInStateException>(async () => await _machine.RaiseEvent(instance, x => x.Charge, new A { Volts = 12 }));
+        }
+
+        TestStateMachine _machine;
+
+
+        class Instance
+        {
+            public State CurrentState { get; set; }
+            public int Volts { get; set; }
+        }
+
+
+        [TestFixtureSetUp]
+        public void A_state_is_declared()
+        {
+            _machine = new TestStateMachine();
+        }
+
+
+        class TestStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public TestStateMachine()
+            {
+                Event(() => Start);
+                Event(() => Charge);
+
+                State(() => Running);
+
+                Initially(
+                    When(Start)
+                        .TransitionTo(Running));
+
+                During(Running,
+                    Ignore(Start),
+                    Ignore(Charge, x => x.Data.Volts == 9));
+            }
+
+            public Event Start { get; private set; }
+            public Event<A> Charge { get; private set; }
+
+            public State Running { get; private set; }
+        }
+
+
+        class A
+        {
+            public int Volts { get; set; }
+        }
+
+    }
+
 
     [TestFixture]
     public class Raising_an_ignored_event

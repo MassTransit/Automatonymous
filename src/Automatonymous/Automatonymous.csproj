@@ -123,6 +123,7 @@
     <Compile Include="StateAccessorExtensions.cs" />
     <Compile Include="StateChanged.cs" />
     <Compile Include="StateExtensions.cs" />
+    <Compile Include="StateMachineEventFilter.cs" />
     <Compile Include="StateMachineExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="IntrospectionExtensions.cs" />
@@ -131,6 +132,9 @@
     <Compile Include="State.cs" />
     <Compile Include="StateMachineVisitor.cs" />
     <Compile Include="StateMachine.cs" />
+    <Compile Include="States\AllStateEventFilter.cs" />
+    <Compile Include="States\SelectedStateEventFilter.cs" />
+    <Compile Include="States\StateEventFilter.cs" />
     <Compile Include="Visitable.cs" />
     <Compile Include="Graphing\Vertex.cs" />
     <Compile Include="..\SolutionVersion.cs">

@@ -77,5 +77,14 @@ namespace Automatonymous
         /// </summary>
         /// <param name="event"></param>
         void Ignore(Event @event);
+
+        /// <summary>
+        /// Ignore the specified event in this state if the filter condition passed. Prevents exceptions
+        /// from being thrown if the event is raised during this state.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="event"></param>
+        /// <param name="filter"></param>
+        void Ignore<T>(Event<T> @event, StateMachineEventFilter<TInstance, T> filter);
     }
 }

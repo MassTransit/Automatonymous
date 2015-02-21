@@ -61,21 +61,6 @@ namespace Automatonymous
             _name = GetType().Name;
         }
 
-        public void Accept(StateMachineVisitor visitor)
-        {
-            Initial.Accept(visitor);
-
-            foreach (var x in _stateCache.Values)
-            {
-                if (Equals(x, Initial) || Equals(x, Final))
-                    continue;
-
-                x.Accept(visitor);
-            }
-
-            Final.Accept(visitor);
-        }
-
         string StateMachine.Name
         {
             get { return _name; }
@@ -190,6 +175,21 @@ namespace Automatonymous
                 return result.EventRaised;
 
             throw new UnknownEventException(_name, @event.Name);
+        }
+
+        public void Accept(StateMachineVisitor visitor)
+        {
+            Initial.Accept(visitor);
+
+            foreach (var x in _stateCache.Values)
+            {
+                if (Equals(x, Initial) || Equals(x, Final))
+                    continue;
+
+                x.Accept(visitor);
+            }
+
+            Final.Accept(visitor);
         }
 
         /// <summary>
@@ -396,15 +396,10 @@ namespace Automatonymous
             BindTransitionEvents(_final, activities);
         }
 
-        void BindTransitionEvents(State<TInstance> state, IEnumerable<EventActivities<TInstance>> activities)
-        {
-            IEnumerable<StateActivityBinder<TInstance>> eventActivities = activities
-                .SelectMany(activity => activity.GetStateActivityBinders().Where(x => x.IsStateTransitionEvent(state)));
-
-            foreach (var eventActivity in eventActivities)
-                eventActivity.Bind(state);
-        }
-
+        /// <summary>
+        /// When the Final state is entered, execute the chained activities. This occurs in any state that is not the initial or final state
+        /// </summary>
+        /// <param name="activityCallback"></param>
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
             EventActivityBinder<TInstance> binder = When(Final.Enter);
@@ -414,12 +409,54 @@ namespace Automatonymous
             DuringAny(binder);
         }
 
+        void BindTransitionEvents(State<TInstance> state, IEnumerable<EventActivities<TInstance>> activities)
+        {
+            IEnumerable<StateActivityBinder<TInstance>> eventActivities = activities
+                .SelectMany(activity => activity.GetStateActivityBinders().Where(x => x.IsStateTransitionEvent(state)));
+
+            foreach (var eventActivity in eventActivities)
+                eventActivity.Bind(state);
+        }
+
+        /// <summary>
+        /// When the event is fired in this state, execute the chained activities
+        /// </summary>
+        /// <param name="event">The fired event</param>
+        /// <returns></returns>
         protected EventActivityBinder<TInstance> When(Event @event)
         {
             return new SimpleEventActivityBinder<TInstance>(this, @event);
         }
 
+        /// <summary>
+        /// When the event is fired in this state, execute the chained activities
+        /// </summary>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="event">The fired event</param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(this, @event);
+        }
 
+        /// <summary>
+        /// When the event is fired in this state, and the event data matches the filter expression, execute the chained activities
+        /// </summary>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="event">The fired event</param>
+        /// <param name="filter">The filter applied to the event</param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
+            StateMachineEventFilter<TInstance, TData> filter)
+        {
+            return new DataEventActivityBinder<TInstance, TData>(this, @event, filter);
+        }
+
+        /// <summary>
+        /// Ignore the event in this state (no exception is thrown)
+        /// </summary>
+        /// <param name="event">The ignored event</param>
+        /// <returns></returns>
         protected EventActivityBinder<TInstance> Ignore(Event @event)
         {
             EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, @event);
@@ -427,11 +464,12 @@ namespace Automatonymous
             return binder.Ignore();
         }
 
-        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
-        {
-            return new DataEventActivityBinder<TInstance, TData>(this, @event);
-        }
-
+        /// <summary>
+        /// Ignore the event in this state (no exception is thrown)
+        /// </summary>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="event">The ignored event</param>
+        /// <returns></returns>
         protected EventActivityBinder<TInstance, TData> Ignore<TData>(Event<TData> @event)
         {
             EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
@@ -439,10 +477,19 @@ namespace Automatonymous
             return binder.Ignore();
         }
 
-        protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,
-            Func<BehaviorContext<TInstance, TData>, bool> filterExpression)
+        /// <summary>
+        /// Ignore the event in this state (no exception is thrown)
+        /// </summary>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="event">The ignored event</param>
+        /// <param name="filter">The filter to apply to the event data</param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance, TData> Ignore<TData>(Event<TData> @event,
+            StateMachineEventFilter<TInstance, TData> filter)
         {
-            return new DataEventActivityBinder<TInstance, TData>(this, @event, filterExpression);
+            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
+
+            return binder.Ignore(filter);
         }
     }
 }

@@ -59,4 +59,51 @@ namespace Automatonymous.Binders
         {
         }
     }
+
+
+    public class IgnoreEventStateActivityBinder<TInstance, TData> :
+        StateActivityBinder<TInstance>,
+        Activity<TInstance>
+    {
+        readonly Event<TData> _event;
+        readonly StateMachineEventFilter<TInstance, TData> _filter;
+
+        public IgnoreEventStateActivityBinder(Event<TData> @event, StateMachineEventFilter<TInstance, TData> filter)
+        {
+            _event = @event;
+            _filter = filter;
+        }
+
+        public void Accept(StateMachineVisitor visitor)
+        {
+        }
+
+        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        {
+        }
+
+        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
+        {
+        }
+
+        public Activity<TInstance> Activity
+        {
+            get { return this; }
+        }
+
+        public bool IsStateTransitionEvent(State state)
+        {
+            return Equals(_event, state.Enter) || Equals(_event, state.BeforeEnter)
+                   || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
+        }
+
+        public void Bind(State<TInstance> state)
+        {
+            state.Ignore(_event, _filter);
+        }
+
+        public void Bind(BehaviorBuilder<TInstance> builder)
+        {
+        }
+    }
 }
