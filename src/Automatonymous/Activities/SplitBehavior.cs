@@ -35,9 +35,9 @@ namespace Automatonymous.Activities
             return _behavior.Execute(context);
         }
 
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            _behavior.Accept(inspector);
+            _behavior.Accept(visitor);
         }
     }
 }

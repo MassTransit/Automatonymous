@@ -28,12 +28,12 @@ namespace Automatonymous
             _next = next;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x =>
+            visitor.Visit(this, x =>
             {
-                _activity.Accept(inspector);
-                _next.Accept(inspector);
+                _activity.Accept(visitor);
+                _next.Accept(visitor);
             });
         }
 
@@ -67,12 +67,12 @@ namespace Automatonymous
             return _activity.Execute(context, _next);
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x =>
+            visitor.Visit(this, x =>
             {
-                _activity.Accept(inspector);
-                _next.Accept(inspector);
+                _activity.Accept(visitor);
+                _next.Accept(visitor);
             });
         }
     }

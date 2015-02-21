@@ -14,6 +14,7 @@ namespace Automatonymous.Binders
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Activities;
     using Events;
 
@@ -59,7 +60,7 @@ namespace Automatonymous.Binders
 
             contextBinder = handler(contextBinder);
 
-            var handlerActivity = new ExceptionHandlerActivity<TInstance, TData, TException>(contextBinder.GetActivities(), typeof(TException));
+            var handlerActivity = new ExceptionHandlerActivity<TInstance, TData, TException>(contextBinder.GetStateActivityBinders(), typeof(TException));
 
             return new ExceptionDataActivityBinder<TInstance, TData>(_machine, _event, _activities, handlerActivity);
         }

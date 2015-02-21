@@ -1,12 +1,12 @@
-﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -41,7 +41,8 @@ namespace Automatonymous.Tests
                 Y = 23,
             };
 
-            _machine.RaiseEvent(_claim, _machine.Create, data);
+            _machine.RaiseEvent(_claim, _machine.Create, data)
+                .Wait();
         }
 
 
@@ -69,9 +70,9 @@ namespace Automatonymous.Tests
                 context.Instance.Value = _calculator.Add(context.Data.X, context.Data.Y);
             }
 
-            public void Accept(StateMachineInspector inspector)
+            public void Accept(StateMachineVisitor visitor)
             {
-                inspector.Inspect(this);
+                visitor.Visit(this);
             }
         }
 
@@ -110,9 +111,7 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Create)
                         .Execute(context => new CalculateValueActivity(new LocalCalculator()))
-                        .Execute(context => new ActionActivity<ClaimAdjustmentInstance>(x =>
-                        {
-                        }))
+                        .Execute(context => new ActionActivity<ClaimAdjustmentInstance>(x => { }))
                         .TransitionTo(Running));
             }
 

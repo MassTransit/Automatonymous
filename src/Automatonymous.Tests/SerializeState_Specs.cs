@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -20,20 +20,20 @@ namespace Automatonymous.Tests
     public class Serializing_a_state_instance
     {
         [Test]
-        public void Should_properly_handle_the_state_property()
+        public async void Should_properly_handle_the_state_property()
         {
             var instance = new Instance();
             var machine = new InstanceStateMachine();
 
-            machine.RaiseEvent(instance, machine.Thing, new Data
-                {
-                    Condition = true
-                });
+            await machine.RaiseEvent(instance, machine.Thing, new Data
+            {
+                Condition = true
+            });
             Assert.AreEqual(machine.True, instance.CurrentState);
 
             var serializer = new JsonStateSerializer<InstanceStateMachine, Instance>(machine);
 
-            var body = serializer.Serialize(instance);
+            string body = serializer.Serialize(instance);
 
             Console.WriteLine("Body: {0}", body);
             var reInstance = serializer.Deserialize<Instance>(body);

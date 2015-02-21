@@ -25,9 +25,9 @@ namespace Automatonymous.Activities
             _activity = activity;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x => _activity.Accept(inspector));
+            visitor.Visit(this, x => _activity.Accept(visitor));
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

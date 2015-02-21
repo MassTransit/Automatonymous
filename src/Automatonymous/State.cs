@@ -18,7 +18,7 @@ namespace Automatonymous
 
 
     public interface State :
-        AcceptStateMachineInspector,
+        Visitable,
         IComparable<State>
     {
         string Name { get; }
@@ -64,7 +64,18 @@ namespace Automatonymous
         /// <returns></returns>
         Task Raise<T>(EventContext<TInstance, T> context);
 
+        /// <summary>
+        /// Bind an activity to an event
+        /// </summary>
+        /// <param name="event"></param>
+        /// <param name="activity"></param>
+        void Bind(Event @event, Activity<TInstance> activity);
 
-        void Bind(EventActivity<TInstance> activity);
+        /// <summary>
+        /// Ignore the specified event in this state. Prevents an exception from being thrown if
+        /// the event is raised during this state.
+        /// </summary>
+        /// <param name="event"></param>
+        void Ignore(Event @event);
     }
 }

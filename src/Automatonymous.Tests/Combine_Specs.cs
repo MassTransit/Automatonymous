@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -19,44 +19,45 @@ namespace Automatonymous.Tests
     public class When_combining_events_into_a_single_event
     {
         [Test]
-        public void Should_have_called_combined_event()
+        public async void Should_have_called_combined_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            await _machine.RaiseEvent(_instance, _machine.Start);
 
-            _machine.RaiseEvent(_instance, _machine.First);
-            _machine.RaiseEvent(_instance, _machine.Second);
+            await _machine.RaiseEvent(_instance, _machine.First);
+            await _machine.RaiseEvent(_instance, _machine.Second);
 
             Assert.IsTrue(_instance.Called);
         }
 
         [Test]
-        public void Should_not_call_for_one_event()
+        public async void Should_not_call_for_one_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            await _machine.RaiseEvent(_instance, _machine.Start);
 
-            _machine.RaiseEvent(_instance, _machine.First);
+            await _machine.RaiseEvent(_instance, _machine.First);
 
             Assert.IsFalse(_instance.Called);
         }
 
         [Test]
-        public void Should_not_call_for_one_other_event()
+        public async void Should_not_call_for_one_other_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
-            _machine.RaiseEvent(_instance, _machine.Start);
+            await _machine.RaiseEvent(_instance, _machine.Start);
 
-            _machine.RaiseEvent(_instance, _machine.Second);
+            await _machine.RaiseEvent(_instance, _machine.Second);
 
             Assert.IsFalse(_instance.Called);
         }
 
         TestStateMachine _machine;
         Instance _instance;
+
 
         class Instance
         {

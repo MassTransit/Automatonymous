@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -33,7 +33,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var eventLift = _machine.CreateEventLift(_machine.Initialized);
+            EventLift<Instance> eventLift = _machine.CreateEventLift(_machine.Initialized);
 
             eventLift.Raise(_instance).Wait();
         }
@@ -65,6 +65,7 @@ namespace Automatonymous.Tests
         }
     }
 
+
     [TestFixture]
     public class When_using_an_event_raiser_with_data
     {
@@ -83,9 +84,9 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var eventLift = _machine.CreateEventLift(_machine.Initialized);
+            EventLift<Instance, Init> eventLift = _machine.CreateEventLift(_machine.Initialized);
 
-            eventLift.Raise(_instance, new Init());
+            eventLift.Raise(_instance, new Init()).Wait();
         }
 
 

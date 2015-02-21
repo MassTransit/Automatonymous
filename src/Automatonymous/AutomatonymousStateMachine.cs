@@ -1,4 +1,4 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -28,16 +28,19 @@ namespace Automatonymous
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
-        AcceptStateMachineInspector,
+        Visitable,
         StateMachine<TInstance>
         where TInstance : class
     {
         readonly Dictionary<string, StateMachineEvent<TInstance>> _eventCache;
         readonly EventRaisedObserver<TInstance> _eventRaisedObserver;
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
+        readonly State<TInstance> _final;
+        readonly State<TInstance> _initial;
         readonly Dictionary<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         StateAccessor<TInstance> _instanceStateAccessor;
+        string _name;
 
         protected AutomatonymousStateMachine()
         {
@@ -48,25 +51,34 @@ namespace Automatonymous
             _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
             _eventRaisedObserver = new EventRaisedObserver<TInstance>(_eventCache);
 
-            State(() => Initial);
-            State(() => Final);
+            _initial = new StateImpl<TInstance>(this, "Initial", _eventRaisingObserver, _eventRaisedObserver);
+            _stateCache[_initial.Name] = _initial;
+            _final = new StateImpl<TInstance>(this, "Final", _eventRaisingObserver, _eventRaisedObserver);
+            _stateCache[_final.Name] = _final;
 
             _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
+
+            _name = GetType().Name;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            Initial.Accept(inspector);
+            Initial.Accept(visitor);
 
             foreach (var x in _stateCache.Values)
             {
                 if (Equals(x, Initial) || Equals(x, Final))
-                    return;
+                    continue;
 
-                x.Accept(inspector);
+                x.Accept(visitor);
             }
 
-            Final.Accept(inspector);
+            Final.Accept(visitor);
+        }
+
+        string StateMachine.Name
+        {
+            get { return _name; }
         }
 
         StateAccessor<TInstance> StateMachine<TInstance>.InstanceStateAccessor
@@ -74,19 +86,32 @@ namespace Automatonymous
             get { return _instanceStateAccessor; }
         }
 
-        public State Initial { get; private set; }
-        public State Final { get; private set; }
+        public State Initial
+        {
+            get { return _initial; }
+        }
+
+        public State Final
+        {
+            get { return _final; }
+        }
 
         State StateMachine.GetState(string name)
         {
-            return _stateCache[name];
+            State<TInstance> result;
+            if (_stateCache.TryGetValue(name, out result))
+                return result;
+
+            throw new UnknownStateException(_name, name);
         }
 
         public async Task RaiseEvent(EventContext<TInstance> context)
         {
             State<TInstance> state = await _instanceStateAccessor.Get(context);
 
-            State<TInstance> instanceState = _stateCache[state.Name];
+            State<TInstance> instanceState;
+            if (!_stateCache.TryGetValue(state.Name, out instanceState))
+                throw new UnknownStateException(_name, state.Name);
 
             await instanceState.Raise(context);
         }
@@ -95,14 +120,20 @@ namespace Automatonymous
         {
             State<TInstance> state = await _instanceStateAccessor.Get(context);
 
-            State<TInstance> instanceState = _stateCache[state.Name];
+            State<TInstance> instanceState;
+            if (!_stateCache.TryGetValue(state.Name, out instanceState))
+                throw new UnknownStateException(_name, state.Name);
 
             await instanceState.Raise(context);
         }
 
         public State<TInstance> GetState(string name)
         {
-            return _stateCache[name];
+            State<TInstance> result;
+            if (_stateCache.TryGetValue(name, out result))
+                return result;
+
+            throw new UnknownStateException(_name, name);
         }
 
         public IEnumerable<State> States
@@ -112,7 +143,11 @@ namespace Automatonymous
 
         Event StateMachine.GetEvent(string name)
         {
-            return _eventCache[name].Event;
+            StateMachineEvent<TInstance> result;
+            if (_eventCache.TryGetValue(name, out result))
+                return result.Event;
+
+            throw new UnknownEventException(_name, name);
         }
 
         public IEnumerable<Event> Events
@@ -127,7 +162,11 @@ namespace Automatonymous
 
         public IEnumerable<Event> NextEvents(State state)
         {
-            return _stateCache[state.Name].Events;
+            State<TInstance> result;
+            if (_stateCache.TryGetValue(state.Name, out result))
+                return result.Events;
+
+            throw new UnknownStateException(_name, state.Name);
         }
 
         public IObservable<StateChanged<TInstance>> StateChanged
@@ -137,18 +176,20 @@ namespace Automatonymous
 
         public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
         {
-            if (!_eventCache.ContainsKey(@event.Name))
-                throw new ArgumentException("Unknown event: " + @event.Name, "event");
+            StateMachineEvent<TInstance> result;
+            if (_eventCache.TryGetValue(@event.Name, out result))
+                return result.EventRaising;
 
-            return _eventCache[@event.Name].EventRaising;
+            throw new UnknownEventException(_name, @event.Name);
         }
 
         public IObservable<EventRaised<TInstance>> EventRaised(Event @event)
         {
-            if (!_eventCache.ContainsKey(@event.Name))
-                throw new ArgumentException("Unknown event: " + @event.Name, "event");
+            StateMachineEvent<TInstance> result;
+            if (_eventCache.TryGetValue(@event.Name, out result))
+                return result.EventRaised;
 
-            return _eventCache[@event.Name].EventRaised;
+            throw new UnknownEventException(_name, @event.Name);
         }
 
         /// <summary>
@@ -178,6 +219,13 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
         }
 
+        protected void Name(string machineName)
+        {
+            if (string.IsNullOrWhiteSpace(machineName))
+                throw new ArgumentException("The machine name must not be empty", "machineName");
+
+            _name = machineName;
+        }
 
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
@@ -279,63 +327,63 @@ namespace Automatonymous
             _stateCache[name] = state;
         }
 
-        protected void During(State state, params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void During(State state, params EventActivities<TInstance>[] activities)
         {
-            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state, eventActivities);
+            BindActivitiesToState(state, stateActivitiesBinder);
         }
 
-        protected void During(State state1, State state2, params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void During(State state1, State state2, params EventActivities<TInstance>[] activities)
         {
-            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, eventActivities);
-            BindActivitiesToState(state2, eventActivities);
+            BindActivitiesToState(state1, stateActivitiesBinder);
+            BindActivitiesToState(state2, stateActivitiesBinder);
         }
 
-        protected void During(State state1, State state2, State state3, params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void During(State state1, State state2, State state3, params EventActivities<TInstance>[] activities)
         {
-            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, eventActivities);
-            BindActivitiesToState(state2, eventActivities);
-            BindActivitiesToState(state3, eventActivities);
+            BindActivitiesToState(state1, stateActivitiesBinder);
+            BindActivitiesToState(state2, stateActivitiesBinder);
+            BindActivitiesToState(state3, stateActivitiesBinder);
         }
 
         protected void During(State state1, State state2, State state3, State state4,
-            params IEnumerable<EventActivity<TInstance>>[] activities)
+            params EventActivities<TInstance>[] activities)
         {
-            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, eventActivities);
-            BindActivitiesToState(state2, eventActivities);
-            BindActivitiesToState(state3, eventActivities);
-            BindActivitiesToState(state4, eventActivities);
+            BindActivitiesToState(state1, stateActivitiesBinder);
+            BindActivitiesToState(state2, stateActivitiesBinder);
+            BindActivitiesToState(state3, stateActivitiesBinder);
+            BindActivitiesToState(state4, stateActivitiesBinder);
         }
 
-        protected void During(IEnumerable<State> states, params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void During(IEnumerable<State> states, params EventActivities<TInstance>[] activities)
         {
-            EventActivity<TInstance>[] eventActivities = activities.SelectMany(x => x).ToArray();
+            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             foreach (State state in states)
-                BindActivitiesToState(state, eventActivities);
+                BindActivitiesToState(state, stateActivitiesBinder);
         }
 
-        void BindActivitiesToState(State state, IEnumerable<EventActivity<TInstance>> eventActivities)
+        void BindActivitiesToState(State state, IEnumerable<StateActivityBinder<TInstance>> eventActivities)
         {
-            State<TInstance> activityState = GetState(state.Name); // state.For<TInstance>();
+            State<TInstance> activityState = GetState(state.Name);
 
             foreach (var activity in eventActivities)
-                activityState.Bind(activity);
+                activity.Bind(activityState);
         }
 
-        protected void Initially(params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void Initially(params EventActivities<TInstance>[] activities)
         {
             During(Initial, activities);
         }
 
-        protected void DuringAny(params IEnumerable<EventActivity<TInstance>>[] activities)
+        protected void DuringAny(params EventActivities<TInstance>[] activities)
         {
             IEnumerable<State<TInstance>> states = _stateCache.Values.Where(x => !Equals(x, Initial) && !Equals(x, Final));
 
@@ -344,23 +392,17 @@ namespace Automatonymous
             foreach (var state in states)
                 During(state, activities);
 
-            BindTransitionEvents(Initial, activities);
-            BindTransitionEvents(Final, activities);
+            BindTransitionEvents(_initial, activities);
+            BindTransitionEvents(_final, activities);
         }
 
-        void BindTransitionEvents(State state, IEnumerable<IEnumerable<EventActivity<TInstance>>> activities)
+        void BindTransitionEvents(State<TInstance> state, IEnumerable<EventActivities<TInstance>> activities)
         {
-            IEnumerable<EventActivity<TInstance>> eventActivities = activities
-                .SelectMany(activity => activity.Where(x => IsTransitionEvent(state, x.Event)));
+            IEnumerable<StateActivityBinder<TInstance>> eventActivities = activities
+                .SelectMany(activity => activity.GetStateActivityBinders().Where(x => x.IsStateTransitionEvent(state)));
 
             foreach (var eventActivity in eventActivities)
-                During(state, new[] {eventActivity});
-        }
-
-        bool IsTransitionEvent(State state, Event eevent)
-        {
-            return Equals(eevent, state.Enter) || Equals(eevent, state.BeforeEnter)
-                   || Equals(eevent, state.AfterLeave) || Equals(eevent, state.Leave);
+                eventActivity.Bind(state);
         }
 
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
@@ -377,9 +419,24 @@ namespace Automatonymous
             return new SimpleEventActivityBinder<TInstance>(this, @event);
         }
 
+
+        protected EventActivityBinder<TInstance> Ignore(Event @event)
+        {
+            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, @event);
+
+            return binder.Ignore();
+        }
+
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event)
         {
             return new DataEventActivityBinder<TInstance, TData>(this, @event);
+        }
+
+        protected EventActivityBinder<TInstance, TData> Ignore<TData>(Event<TData> @event)
+        {
+            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
+
+            return binder.Ignore();
         }
 
         protected EventActivityBinder<TInstance, TData> When<TData>(Event<TData> @event,

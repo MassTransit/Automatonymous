@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -43,10 +43,12 @@ namespace Automatonymous.Tests
             Assert.IsInstanceOf<StateImpl<Instance>>(_machine.Initial);
         }
 
+
         class Instance
         {
             public State CurrentState { get; set; }
         }
+
 
         TestStateMachine _machine;
 
@@ -92,7 +94,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _instance.StateMachine = _machine;
 
-            _machine.RaiseEvent(_instance, x => x.Started);
+            _machine.RaiseEvent(_instance, x => x.Started).Wait();
         }
 
 
@@ -127,7 +129,7 @@ namespace Automatonymous.Tests
             {
                 get
                 {
-                    if(string.IsNullOrEmpty(CurrentState))
+                    if (string.IsNullOrEmpty(CurrentState))
                         return null;
 
                     return _machine.GetState(CurrentState);
@@ -150,7 +152,6 @@ namespace Automatonymous.Tests
                 Initially(
                     When(Started)
                         .TransitionTo(Running));
-
             }
 
             public Event Started { get; private set; }

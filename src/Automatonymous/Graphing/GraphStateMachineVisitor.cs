@@ -1,12 +1,12 @@
-﻿// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -19,7 +19,7 @@ namespace Automatonymous.Graphing
 
 
     public class GraphStateMachineVisitor<TInstance> :
-        StateMachineInspector
+        StateMachineVisitor
         where TInstance : class
     {
         readonly List<Edge> _edges = new List<Edge>();
@@ -39,7 +39,7 @@ namespace Automatonymous.Graphing
             get { return new StateMachineGraph(_states.Values.Union(_events.Values), _edges); }
         }
 
-        public void Inspect(State state, Action<State> next)
+        public void Visit(State state, Action<State> next)
         {
             State<TInstance> s = state.For<TInstance>();
 
@@ -48,7 +48,7 @@ namespace Automatonymous.Graphing
             next(s);
         }
 
-        public void Inspect(Event @event, Action<Event> next)
+        public void Visit(Event @event, Action<Event> next)
         {
             _currentEvent = GetEventVertex(@event);
 
@@ -57,7 +57,7 @@ namespace Automatonymous.Graphing
             next(@event);
         }
 
-        public void Inspect<TData>(Event<TData> @event, Action<Event<TData>> next)
+        public void Visit<TData>(Event<TData> @event, Action<Event<TData>> next)
         {
             _currentEvent = GetEventVertex(@event);
 
@@ -66,27 +66,32 @@ namespace Automatonymous.Graphing
             next(@event);
         }
 
-        public void Inspect(Activity activity)
+        public void Visit(Activity activity)
         {
+            Visit(activity, x => { });
         }
 
-        public void Inspect<T>(Behavior<T> behavior)
+        public void Visit<T>(Behavior<T> behavior)
         {
+            Visit(behavior, x => { });
         }
 
-        public void Inspect<T>(Behavior<T> behavior, Action<Behavior<T>> next)
+        public void Visit<T>(Behavior<T> behavior, Action<Behavior<T>> next)
         {
+            next(behavior);
         }
 
-        public void Inspect<T, TData>(Behavior<T, TData> behavior)
+        public void Visit<T, TData>(Behavior<T, TData> behavior)
         {
+            Visit(behavior, x => { });
         }
 
-        public void Inspect<T, TData>(Behavior<T, TData> behavior, Action<Behavior<T, TData>> next)
+        public void Visit<T, TData>(Behavior<T, TData> behavior, Action<Behavior<T, TData>> next)
         {
+            next(behavior);
         }
 
-        public void Inspect(Activity activity, Action<Activity> next)
+        public void Visit(Activity activity, Action<Activity> next)
         {
             var transitionActivity = activity as TransitionActivity<TInstance>;
             if (transitionActivity != null)
@@ -111,6 +116,13 @@ namespace Automatonymous.Graphing
                 return;
             }
 
+            var tryActivity = activity as TryActivity<TInstance>;
+            if (tryActivity != null)
+            {
+                InspectTryActivity(tryActivity, next);
+                return;
+            }
+
             next(activity);
         }
 
@@ -125,6 +137,15 @@ namespace Automatonymous.Graphing
             _currentEvent = GetEventVertex(exceptionActivity.Event);
 
             _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
+
+            next(exceptionActivity);
+
+            _currentEvent = previousEvent;
+        }
+
+        void InspectTryActivity(TryActivity<TInstance> exceptionActivity, Action<Activity> next)
+        {
+            Vertex previousEvent = _currentEvent;
 
             next(exceptionActivity);
 

@@ -15,7 +15,7 @@ namespace Automatonymous.Tests
     namespace Telephone_Sample
     {
         using System.Diagnostics;
-        using System.Threading;
+        using System.Threading.Tasks;
         using NUnit.Framework;
 
 
@@ -23,17 +23,17 @@ namespace Automatonymous.Tests
         public class A_simple_phone_call
         {
             [Test]
-            public void Should_be_short_and_sweet()
+            public async void Should_be_short_and_sweet()
             {
                 var phone = new PrincessModelTelephone();
-                _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
+                await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
 
-                _machine.RaiseEvent(phone, x => x.CallDialed);
-                _machine.RaiseEvent(phone, x => x.CallConnected);
+                await _machine.RaiseEvent(phone, x => x.CallDialed);
+                await _machine.RaiseEvent(phone, x => x.CallConnected);
 
-                Thread.Sleep(10);
+                await Task.Delay(10);
 
-                _machine.RaiseEvent(phone, x => x.HungUp);
+                await _machine.RaiseEvent(phone, x => x.HungUp);
 
                 Assert.AreEqual(_machine.OffHook, phone.CurrentState);
                 Assert.Greater(phone.CallTimer.ElapsedMilliseconds, 0);

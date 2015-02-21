@@ -16,7 +16,7 @@ namespace Automatonymous
 
 
     public interface Activity :
-        AcceptStateMachineInspector
+        Visitable
     {
     }
 

@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -76,6 +76,7 @@ namespace Automatonymous.Tests
         {
         }
 
+
         class Instance
         {
             public State CurrentState { get; set; }
@@ -99,8 +100,8 @@ namespace Automatonymous.Tests
                 State(() => Pissed);
 
                 Initially(
-                          When(Hello)
-                              .TransitionTo(Greeted));
+                    When(Hello)
+                        .TransitionTo(Greeted));
 
                 During(Greeted,
                     When(Handshake)

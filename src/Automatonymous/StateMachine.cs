@@ -23,6 +23,11 @@ namespace Automatonymous
     public interface StateMachine
     {
         /// <summary>
+        /// The name of the state machine (defaults to the state machine type name)
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
         /// The events defined in the state machine
         /// </summary>
         IEnumerable<Event> Events { get; }

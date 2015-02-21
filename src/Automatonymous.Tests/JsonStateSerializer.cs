@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -38,17 +38,17 @@ namespace Automatonymous.Tests
             get
             {
                 return _deserializer ?? (_deserializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                    ObjectCreationHandling = ObjectCreationHandling.Auto,
+                    ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                    Converters = new List<JsonConverter>(new JsonConverter[]
                     {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        DefaultValueHandling = DefaultValueHandling.Ignore,
-                        MissingMemberHandling = MissingMemberHandling.Ignore,
-                        ObjectCreationHandling = ObjectCreationHandling.Auto,
-                        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                        Converters = new List<JsonConverter>(new JsonConverter[]
-                            {
-                                new StateConverter<TStateMachine>(_machine),
-                            })
-                    }));
+                        new StateConverter<TStateMachine>(_machine),
+                    })
+                }));
             }
         }
 
@@ -57,17 +57,17 @@ namespace Automatonymous.Tests
             get
             {
                 return _serializer ?? (_serializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                    ObjectCreationHandling = ObjectCreationHandling.Auto,
+                    ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                    Converters = new List<JsonConverter>(new JsonConverter[]
                     {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        DefaultValueHandling = DefaultValueHandling.Ignore,
-                        MissingMemberHandling = MissingMemberHandling.Ignore,
-                        ObjectCreationHandling = ObjectCreationHandling.Auto,
-                        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-                        Converters = new List<JsonConverter>(new JsonConverter[]
-                            {
-                                new StateConverter<TStateMachine>(_machine),
-                            }),
-                    }));
+                        new StateConverter<TStateMachine>(_machine),
+                    }),
+                }));
             }
         }
 
@@ -98,7 +98,7 @@ namespace Automatonymous.Tests
             }
         }
 
-        public T Deserialize<T>(string body) 
+        public T Deserialize<T>(string body)
             where T : TInstance
         {
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(body)))
@@ -106,6 +106,7 @@ namespace Automatonymous.Tests
                 return Deserialize<T>(ms);
             }
         }
+
         public T Deserialize<T>(Stream input)
             where T : TInstance
 

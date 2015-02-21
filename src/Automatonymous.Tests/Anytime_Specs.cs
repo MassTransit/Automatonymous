@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -19,41 +19,41 @@ namespace Automatonymous.Tests
     public class Anytime_events
     {
         [Test]
-        public void Should_not_be_handled_on_initial()
+        public async void Should_be_called_regardless_of_state()
         {
             var instance = new Instance();
 
-            _machine.RaiseEvent(instance, x => x.Hello);
-
-            Assert.IsFalse(instance.HelloCalled);
-            Assert.AreEqual(_machine.Initial, instance.CurrentState);
-        }
-
-        [Test]
-        public void Should_be_called_regardless_of_state()
-        {
-            var instance = new Instance();
-
-            _machine.RaiseEvent(instance, x => x.Init);
-            _machine.RaiseEvent(instance, x => x.Hello);
+            await _machine.RaiseEvent(instance, x => x.Init);
+            await _machine.RaiseEvent(instance, x => x.Hello);
 
             Assert.IsTrue(instance.HelloCalled);
             Assert.AreEqual(_machine.Final, instance.CurrentState);
         }
 
         [Test]
-        public void Should_have_value_of_event_data()
+        public async void Should_have_value_of_event_data()
         {
             var instance = new Instance();
 
-            _machine.RaiseEvent(instance, x => x.Init);
-            _machine.RaiseEvent(instance, x => x.EventA, new A
+            await _machine.RaiseEvent(instance, x => x.Init);
+            await _machine.RaiseEvent(instance, x => x.EventA, new A
             {
                 Value = "Test"
             });
 
             Assert.AreEqual("Test", instance.AValue);
             Assert.AreEqual(_machine.Final, instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_not_be_handled_on_initial()
+        {
+            var instance = new Instance();
+
+            Assert.Throws<InvalidEventInStateException>(async () => await _machine.RaiseEvent(instance, x => x.Hello));
+
+            Assert.IsFalse(instance.HelloCalled);
+            Assert.AreEqual(_machine.Initial, instance.CurrentState);
         }
 
         TestStateMachine _machine;
@@ -92,7 +92,7 @@ namespace Automatonymous.Tests
 
                 Initially(
                     When(Init)
-                    .TransitionTo(Ready));
+                        .TransitionTo(Ready));
 
                 DuringAny(
                     When(Hello)

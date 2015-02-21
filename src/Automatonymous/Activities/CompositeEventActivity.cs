@@ -35,9 +35,9 @@ namespace Automatonymous.Activities
             _completeCallback = completeCallback;
         }
 
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

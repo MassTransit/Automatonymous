@@ -26,9 +26,9 @@ namespace Automatonymous.Activities
             _activityFactory = activityFactory;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -66,9 +66,9 @@ namespace Automatonymous.Activities
             return activity.Execute(context, next);
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
     }
 }

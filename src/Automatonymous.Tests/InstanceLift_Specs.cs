@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -33,7 +33,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var instanceLift = _machine.CreateInstanceLift(_instance);
+            InstanceLift<InstanceStateMachine> instanceLift = _machine.CreateInstanceLift(_instance);
 
             instanceLift.Raise(_machine.Initialized)
                 .Wait();
@@ -68,6 +68,7 @@ namespace Automatonymous.Tests
         }
     }
 
+
     [TestFixture]
     public class When_using_an_instance_lift_with_data
     {
@@ -86,7 +87,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            var instanceLift = _machine.CreateInstanceLift(_instance);
+            InstanceLift<InstanceStateMachine> instanceLift = _machine.CreateInstanceLift(_instance);
 
             instanceLift.Raise(_machine.Initialized, new Init())
                 .Wait();

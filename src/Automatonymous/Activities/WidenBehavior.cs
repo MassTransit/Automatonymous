@@ -29,9 +29,9 @@ namespace Automatonymous.Activities
             _event = context.Event;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
 
         public Task Execute(BehaviorContext<TInstance> context)

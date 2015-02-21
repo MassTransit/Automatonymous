@@ -18,9 +18,9 @@ namespace Automatonymous.Behaviors
     public class EmptyBehavior<TInstance> :
         Behavior<TInstance>
     {
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
 
         async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
@@ -40,9 +40,9 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this);
+            visitor.Visit(this);
         }
     }
 }

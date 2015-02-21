@@ -53,7 +53,7 @@ namespace Automatonymous.Binders
 
             contextBinder = handler(contextBinder);
 
-            var handlerActivity = new ExceptionHandlerActivity<TInstance, TException>(contextBinder.GetActivities(), typeof(TException), contextBinder.Event);
+            var handlerActivity = new ExceptionHandlerActivity<TInstance, TException>(contextBinder.GetStateActivityBinders(), typeof(TException), contextBinder.Event);
 
             return new ExceptionOnlyActivityBinder<TInstance>(_machine, _event, _activities, handlerActivity);
         }

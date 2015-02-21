@@ -27,9 +27,9 @@ namespace Automatonymous.Events
             get { return _name; }
         }
 
-        public virtual void Accept(StateMachineInspector inspector)
+        public virtual void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x => { });
+            visitor.Visit(this, x => { });
         }
 
         public int CompareTo(Event other)

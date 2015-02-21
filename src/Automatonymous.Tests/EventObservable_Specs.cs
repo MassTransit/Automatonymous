@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -44,7 +44,7 @@ namespace Automatonymous.Tests
             _observer = new ChangeObserver();
 
             using (IDisposable subscription = _machine.EventRaised(_machine.Initialized).Subscribe(_observer))
-                _machine.RaiseEvent(_instance, x => x.Initialized);
+                _machine.RaiseEvent(_instance, x => x.Initialized).Wait();
         }
 
 

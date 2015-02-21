@@ -12,19 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System;
-
-
-    public interface Event :
-        Visitable,
-        IComparable<Event>
+    public interface Visitable
     {
-        string Name { get; }
-    }
-
-
-    public interface Event<out TData> :
-        Event
-    {
+        void Accept(StateMachineVisitor visitor);
     }
 }

@@ -1,12 +1,12 @@
-// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -17,32 +17,33 @@ namespace Automatonymous.Activities
     using System.Linq;
     using System.Threading.Tasks;
     using Behaviors;
+    using Binders;
 
 
     public class TryActivity<TInstance> :
         Activity<TInstance>
+        where TInstance : class
     {
         readonly Behavior<TInstance> _behavior;
         readonly Dictionary<Type, List<ExceptionActivity<TInstance>>> _exceptionHandlers;
 
-        public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
-            IEnumerable<ExceptionActivity<TInstance>> exceptionHandlers)
+        public TryActivity(EventActivities<TInstance> activities, IEnumerable<ExceptionActivity<TInstance>> exceptionHandlers)
         {
-            _behavior = CreateBehavior(activities.Select(x => (Activity<TInstance>)new EventActivityShim<TInstance>(@event, x)).ToArray());
+            _behavior = CreateBehavior(activities.GetStateActivityBinders().Select(x => x.Activity).ToArray());
 
 
             _exceptionHandlers = new Dictionary<Type, List<ExceptionActivity<TInstance>>>(
                 exceptionHandlers.GroupBy(x => x.ExceptionType).ToDictionary(x => x.Key, x => x.ToList()));
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, _ =>
+            visitor.Visit(this, _ =>
             {
-                _behavior.Accept(inspector);
+                _behavior.Accept(visitor);
 
                 foreach (var handler in _exceptionHandlers.Values)
-                    handler.ForEach(x => x.Accept(inspector));
+                    handler.ForEach(x => x.Accept(visitor));
             });
         }
 
@@ -118,24 +119,24 @@ namespace Automatonymous.Activities
         Activity<TInstance, TData>
         where TInstance : class
     {
+        readonly Behavior<TInstance> _behavior;
         readonly Dictionary<Type, List<ExceptionActivity<TInstance, TData>>> _exceptionHandlers;
-        Behavior<TInstance> _behavior;
 
-        public TryActivity(Event @event, IEnumerable<EventActivity<TInstance>> activities,
+        public TryActivity(Event @event, EventActivities<TInstance> activities,
             IEnumerable<ExceptionActivity<TInstance, TData>> exceptionBinder)
         {
-            _behavior = CreateBehavior(activities.Select(x => (Activity<TInstance>)new EventActivityShim<TInstance>(@event, x)).ToArray());
+            _behavior = CreateBehavior(activities.GetStateActivityBinders().Select(x => x.Activity).ToArray());
 
             _exceptionHandlers = new Dictionary<Type, List<ExceptionActivity<TInstance, TData>>>(
                 exceptionBinder.GroupBy(x => x.ExceptionType).ToDictionary(x => x.Key, x => x.ToList()));
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            _behavior.Accept(inspector);
+            _behavior.Accept(visitor);
 
             foreach (var handler in _exceptionHandlers.Values)
-                handler.ForEach(x => x.Accept(inspector));
+                handler.ForEach(x => x.Accept(visitor));
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)

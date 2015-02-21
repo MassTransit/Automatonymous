@@ -33,9 +33,9 @@ namespace Automatonymous.Activities
             _filter = filter;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x => _activity.Accept(inspector));
+            visitor.Visit(this, x => _activity.Accept(visitor));
         }
 
         Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)

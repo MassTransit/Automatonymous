@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -142,7 +142,8 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized)
+                .Wait();
         }
 
 
@@ -188,6 +189,12 @@ namespace Automatonymous.Tests
         }
 
         [Test]
+        public void Should_have_trigger_the_final_before_enter_event()
+        {
+            Assert.AreEqual(_machine.Running, _instance.FinalState);
+        }
+
+        [Test]
         public void Should_have_triggered_the_after_leave_event()
         {
             Assert.AreEqual(_machine.Initializing, _instance.LeftState);
@@ -199,12 +206,6 @@ namespace Automatonymous.Tests
             Assert.AreEqual(_machine.Initial, _instance.EnteredState);
         }
 
-        [Test]
-        public void Should_have_trigger_the_final_before_enter_event()
-        {
-            Assert.AreEqual(_machine.Running, _instance.FinalState);
-        }
-
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -214,7 +215,8 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized)
+                .Wait();
         }
 
 

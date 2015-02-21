@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -19,6 +19,12 @@ namespace Automatonymous.Tests
     public class When_specifying_an_event_activity_with_data
     {
         [Test]
+        public void Should_capture_passed_value()
+        {
+            Assert.AreEqual(47, _instance.OtherValue);
+        }
+
+        [Test]
         public void Should_have_the_proper_value()
         {
             Assert.AreEqual("Hello", _instance.Value);
@@ -28,12 +34,6 @@ namespace Automatonymous.Tests
         public void Should_transition_to_the_proper_state()
         {
             Assert.AreEqual(_machine.Running, _instance.CurrentState);
-        }
-
-        [Test]
-        public void Should_capture_passed_value()
-        {
-            Assert.AreEqual(47, _instance.OtherValue);
         }
 
         Instance _instance;
@@ -46,11 +46,12 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
 
             _machine.RaiseEvent(_instance, _machine.Initialized, new Init
-                {
-                    Value = "Hello"
-                });
+            {
+                Value = "Hello"
+            }).Wait();
 
-            _machine.RaiseEvent(_instance, _machine.PassedValue, 47);
+            _machine.RaiseEvent(_instance, _machine.PassedValue, 47)
+                .Wait();
         }
 
 
@@ -81,9 +82,9 @@ namespace Automatonymous.Tests
                 Event(() => PassedValue);
 
                 During(Initial,
-                       When(Initialized)
-                            .Then(context => context.Instance.Value = context.Data.Value)
-                            .TransitionTo(Running));
+                    When(Initialized)
+                        .Then(context => context.Instance.Value = context.Data.Value)
+                        .TransitionTo(Running));
 
                 During(Running,
                     When(PassedValue)

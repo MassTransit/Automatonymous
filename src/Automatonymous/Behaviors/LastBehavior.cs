@@ -25,9 +25,9 @@ namespace Automatonymous.Behaviors
             _activity = activity;
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            _activity.Accept(inspector);
+            _activity.Accept(visitor);
         }
 
         public Task Execute(BehaviorContext<TInstance> context)
@@ -57,9 +57,9 @@ namespace Automatonymous.Behaviors
             return _activity.Execute(context, Behavior.Empty<TInstance, TData>());
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            _activity.Accept(inspector);
+            _activity.Accept(visitor);
         }
     }
 }

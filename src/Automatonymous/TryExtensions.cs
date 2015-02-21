@@ -35,7 +35,7 @@ namespace Automatonymous
 
             exceptionBinder = handlers(exceptionBinder);
 
-            return source.Add(new TryActivity<TInstance>(source.Event, contextBinder, exceptionBinder.GetActivities()));
+            return source.Add(new TryActivity<TInstance>(contextBinder, exceptionBinder.GetActivities()));
         }
 
         public static EventActivityBinder<TInstance, TData> Try<TInstance, TData>(

@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -58,7 +58,7 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            _machine.RaiseEvent(_instance, _machine.Initialized);
+            _machine.RaiseEvent(_instance, _machine.Initialized).Wait();
         }
 
 
@@ -91,18 +91,18 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Initialized)
                         .Try(x => x.Then(context => context.Instance.Called = true)
-                                      .Then(_ => { throw new ApplicationException("Boom!"); })
-                                      .Then(context => context.Instance.NotCalled = false),
+                            .Then(_ => { throw new ApplicationException("Boom!"); })
+                            .Then(context => context.Instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
-                                {
-                                    return ex
-                                        .Then(context =>
-                                            {
-                                                context.Instance.ExceptionMessage = context.Data.Message;
-                                                context.Instance.ExceptionType = context.Data.GetType();
-                                            })
-                                        .TransitionTo(Failed);
-                                })));
+                            {
+                                return ex
+                                    .Then(context =>
+                                    {
+                                        context.Instance.ExceptionMessage = context.Data.Message;
+                                        context.Instance.ExceptionType = context.Data.GetType();
+                                    })
+                                    .TransitionTo(Failed);
+                            })));
             }
 
             public State Failed { get; private set; }
@@ -149,12 +149,12 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
 
         [TestFixtureSetUp]
-        public async void Specifying_an_event_activity()
+        public void Specifying_an_event_activity()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
 
-            await _machine.RaiseEvent(_instance, _machine.Initialized, new Init());
+            _machine.RaiseEvent(_instance, _machine.Initialized, new Init()).Wait();
         }
 
 
@@ -192,18 +192,18 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Initialized)
                         .Try(x => x.Then(context => context.Instance.Called = true)
-                                      .Then(_ => { throw new ApplicationException("Boom!"); })
-                                      .Then(context => context.Instance.NotCalled = false),
+                            .Then(_ => { throw new ApplicationException("Boom!"); })
+                            .Then(context => context.Instance.NotCalled = false),
                             x => x.Handle<Exception>(ex =>
-                                {
-                                    return ex
-                                        .Then(context =>
-                                            {
-                                                context.Instance.ExceptionMessage = context.Data.Item2.Message;
-                                                context.Instance.ExceptionType = context.Data.Item2.GetType();
-                                            })
-                                        .TransitionTo(Failed);
-                                })));
+                            {
+                                return ex
+                                    .Then(context =>
+                                    {
+                                        context.Instance.ExceptionMessage = context.Data.Item2.Message;
+                                        context.Instance.ExceptionType = context.Data.Item2.GetType();
+                                    })
+                                    .TransitionTo(Failed);
+                            })));
             }
 
             public State Failed { get; private set; }

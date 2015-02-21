@@ -51,9 +51,9 @@ namespace Automatonymous.Activities
 //            }
         }
 
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x => _exceptionHandler.Accept(inspector));
+            visitor.Visit(this, x => _exceptionHandler.Accept(visitor));
         }
     }
 }

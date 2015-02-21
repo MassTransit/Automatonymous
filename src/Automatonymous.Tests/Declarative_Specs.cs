@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -12,95 +12,97 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-	using NUnit.Framework;
+    using NUnit.Framework;
 
 
-	[TestFixture]
-	public class When_an_instance_has_multiple_states
-	{
-		[Test]
-		public void Should_handle_both_states()
-		{
-			Assert.AreEqual(_top.Greeted, _instance.Top);
-			Assert.AreEqual(_bottom.Ignored, _instance.Bottom);
-		}
+    [TestFixture]
+    public class When_an_instance_has_multiple_states
+    {
+        [Test]
+        public void Should_handle_both_states()
+        {
+            Assert.AreEqual(_top.Greeted, _instance.Top);
+            Assert.AreEqual(_bottom.Ignored, _instance.Bottom);
+        }
 
-		MyState _instance;
-		TopInstanceStateMachine _top;
-		BottomInstanceStateMachine _bottom;
+        MyState _instance;
+        TopInstanceStateMachine _top;
+        BottomInstanceStateMachine _bottom;
 
-		[TestFixtureSetUp]
-		public void Specifying_an_event_activity_with_data()
-		{
-			_instance = new MyState();
+        [TestFixtureSetUp]
+        public void Specifying_an_event_activity_with_data()
+        {
+            _instance = new MyState();
 
-			_top = new TopInstanceStateMachine();
-			_bottom = new BottomInstanceStateMachine();
+            _top = new TopInstanceStateMachine();
+            _bottom = new BottomInstanceStateMachine();
 
-			_top.RaiseEvent(_instance, _top.Initialized, new Init
-			{
-				Value = "Hello"
-			});
+            _top.RaiseEvent(_instance, _top.Initialized, new Init
+            {
+                Value = "Hello"
+            }).Wait();
 
-			_bottom.RaiseEvent(_instance, _bottom.Initialized, new Init
-			{
-				Value = "Goodbye"
-			});
-		}
-
-		class MyState
-		{
-			public State Top { get; set; }
-			public State Bottom { get;  set; }
-		}
+            _bottom.RaiseEvent(_instance, _bottom.Initialized, new Init
+            {
+                Value = "Goodbye"
+            }).Wait();
+        }
 
 
-		class Init
-		{
-			public string Value { get; set; }
-		}
+        class MyState
+        {
+            public State Top { get; set; }
+            public State Bottom { get; set; }
+        }
 
 
-		class TopInstanceStateMachine :
-			AutomatonymousStateMachine<MyState>
-		{
-			public TopInstanceStateMachine()
-			{
-				InstanceState(x => x.Top);
+        class Init
+        {
+            public string Value { get; set; }
+        }
 
-				State(() => Greeted);
 
-				Event(() => Initialized);
+        class TopInstanceStateMachine :
+            AutomatonymousStateMachine<MyState>
+        {
+            public TopInstanceStateMachine()
+            {
+                InstanceState(x => x.Top);
 
-				During(Initial,
-					When(Initialized)
-						.TransitionTo(Greeted));
-			}
+                State(() => Greeted);
 
-			public State Greeted { get; private set; }
+                Event(() => Initialized);
 
-			public Event<Init> Initialized { get; private set; }
-		}
-		
-		class BottomInstanceStateMachine :
-			AutomatonymousStateMachine<MyState>
-		{
-			public BottomInstanceStateMachine()
-			{
-				InstanceState(x => x.Bottom);
+                During(Initial,
+                    When(Initialized)
+                        .TransitionTo(Greeted));
+            }
 
-				State(() => Ignored);
+            public State Greeted { get; private set; }
 
-				Event(() => Initialized);
+            public Event<Init> Initialized { get; private set; }
+        }
 
-				During(Initial,
-					When(Initialized)
-						.TransitionTo(Ignored));
-			}
 
-			public State Ignored { get; private set; }
+        class BottomInstanceStateMachine :
+            AutomatonymousStateMachine<MyState>
+        {
+            public BottomInstanceStateMachine()
+            {
+                InstanceState(x => x.Bottom);
 
-			public Event<Init> Initialized { get; private set; }
-		}
-	}
+                State(() => Ignored);
+
+                Event(() => Initialized);
+
+                During(Initial,
+                    When(Initialized)
+                        .TransitionTo(Ignored));
+            }
+
+            public State Ignored { get; private set; }
+
+            public Event<Init> Initialized { get; private set; }
+        }
+    }
 }

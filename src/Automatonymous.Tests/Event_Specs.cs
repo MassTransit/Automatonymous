@@ -1,5 +1,5 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -32,6 +32,12 @@ namespace Automatonymous.Tests
         }
 
         [Test]
+        public void It_should_create_the_event_for_the_value_type()
+        {
+            Assert.IsInstanceOf<DataEvent<int>>(_machine.EventInt);
+        }
+
+        [Test]
         public void It_should_create_the_proper_event_type_for_data_events()
         {
             Assert.IsInstanceOf<DataEvent<A>>(_machine.EventA);
@@ -43,18 +49,14 @@ namespace Automatonymous.Tests
             Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
         }
 
-        [Test]
-        public void It_should_create_the_event_for_the_value_type()
-        {
-            Assert.IsInstanceOf<DataEvent<int>>(_machine.EventInt);
-        }
-
         TestStateMachine _machine;
-        
+
+
         class Instance
         {
             public State CurrentState { get; set; }
         }
+
 
         [TestFixtureSetUp]
         public void A_state_is_declared()

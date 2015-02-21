@@ -25,9 +25,9 @@ namespace Automatonymous.Events
         {
         }
 
-        public override void Accept(StateMachineInspector inspector)
+        public override void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, x => { });
+            visitor.Visit(this, x => { });
         }
 
         public bool Equals(DataEvent<TData> other)

@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,18 +13,25 @@
 namespace Automatonymous
 {
     using System;
+    using System.Runtime.Serialization;
 
 
-    public interface Event :
-        Visitable,
-        IComparable<Event>
+    [Serializable]
+    public class UnknownEventException :
+        AutomatonymousException
     {
-        string Name { get; }
-    }
+        public UnknownEventException()
+        {
+        }
 
+        public UnknownEventException(string machineType, string eventName)
+            : base(string.Format("The {0} event is not defined for the {1} state machine", eventName, machineType))
+        {
+        }
 
-    public interface Event<out TData> :
-        Event
-    {
+        protected UnknownEventException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

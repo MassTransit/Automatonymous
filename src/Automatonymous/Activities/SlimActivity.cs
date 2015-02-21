@@ -30,9 +30,9 @@ namespace Automatonymous.Activities
             _activity = activity;
         }
 
-        void AcceptStateMachineInspector.Accept(StateMachineInspector inspector)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
-            _activity.Accept(inspector);
+            _activity.Accept(visitor);
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> behavior)

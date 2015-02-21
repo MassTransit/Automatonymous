@@ -56,7 +56,7 @@ namespace Automatonymous
     /// </summary>
     /// <typeparam name="TInstance">The state type</typeparam>
     public interface Behavior<in TInstance> :
-        AcceptStateMachineInspector
+        Visitable
     {
         Task Execute(BehaviorContext<TInstance> context);
 
@@ -70,7 +70,7 @@ namespace Automatonymous
     /// <typeparam name="TInstance">The state type</typeparam>
     /// <typeparam name="TData">The data type of the behavior</typeparam>
     public interface Behavior<in TInstance, in TData> :
-        AcceptStateMachineInspector
+        Visitable
     {
         Task Execute(BehaviorContext<TInstance, TData> context);
     }

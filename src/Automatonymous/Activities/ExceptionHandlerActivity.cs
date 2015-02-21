@@ -1,12 +1,12 @@
-// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
@@ -25,16 +25,16 @@ namespace Automatonymous.Activities
         where TInstance : class
         where TException : Exception
     {
-        readonly Behavior<TInstance, TException> _behavior;
+        readonly Behavior<TInstance> _behavior;
         readonly Event<TException> _event;
         readonly Type _exceptionType;
 
-        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance, TException>> activities, Type exceptionType,
+        public ExceptionHandlerActivity(IEnumerable<StateActivityBinder<TInstance>> activities, Type exceptionType,
             Event<TException> @event)
         {
             _exceptionType = exceptionType;
             _event = @event;
-            _behavior = CreateBehavior(activities.Cast<Activity<TInstance, TException>>().ToArray());
+            _behavior = CreateBehavior(activities.ToArray());
         }
 
         public Event Event
@@ -42,9 +42,9 @@ namespace Automatonymous.Activities
             get { return _event; }
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, _ => _behavior.Accept(inspector));
+            visitor.Visit(this, _ => _behavior.Accept(visitor));
         }
 
         public Type ExceptionType
@@ -67,17 +67,16 @@ namespace Automatonymous.Activities
             await next.Execute(context);
         }
 
-        Behavior<TInstance, TException> CreateBehavior(Activity<TInstance, TException>[] activities)
+        Behavior<TInstance> CreateBehavior(StateActivityBinder<TInstance>[] activities)
         {
             if (activities.Length == 0)
-                return Behavior.Empty<TInstance, TException>();
+                return Behavior.Empty<TInstance>();
 
-            Behavior<TInstance, TException> current = new LastBehavior<TInstance, TException>(activities[activities.Length - 1]);
+            var builder = new ActivityBehaviorBuilder<TInstance>();
+            foreach (var activity in activities)
+                activity.Bind(builder);
 
-            for (int i = activities.Length - 2; i >= 0; i--)
-                current = new ActivityBehavior<TInstance, TException>(activities[i], current);
-
-            return current;
+            return builder.Behavior;
         }
     }
 
@@ -87,17 +86,17 @@ namespace Automatonymous.Activities
         where TInstance : class
         where TException : Exception
     {
-        readonly Behavior<TInstance, Tuple<TData, TException>> _behavior;
+        readonly Behavior<TInstance> _behavior;
         readonly Event<Tuple<TData, Exception>> _event;
         readonly Type _exceptionType;
         readonly Event<Tuple<TData, TException>> _typedEvent;
 
-        public ExceptionHandlerActivity(IEnumerable<EventActivity<TInstance, Tuple<TData, TException>>> activities, Type exceptionType)
+        public ExceptionHandlerActivity(IEnumerable<StateActivityBinder<TInstance>> activities, Type exceptionType)
         {
             _exceptionType = exceptionType;
             _event = new DataEvent<Tuple<TData, Exception>>(typeof(TData).Name + "." + typeof(TException).Name);
             _typedEvent = new DataEvent<Tuple<TData, TException>>(typeof(TData).Name + "." + typeof(TException).Name);
-            _behavior = CreateBehavior(activities.Cast<Activity<TInstance, Tuple<TData, TException>>>().ToArray());
+            _behavior = CreateBehavior(activities.ToArray());
         }
 
         public Event<Tuple<TData, Exception>> Event
@@ -122,9 +121,9 @@ namespace Automatonymous.Activities
             await next.Execute(context);
         }
 
-        public void Accept(StateMachineInspector inspector)
+        public void Accept(StateMachineVisitor visitor)
         {
-            inspector.Inspect(this, _ => _behavior.Accept(inspector));
+            visitor.Visit(this, _ => _behavior.Accept(visitor));
         }
 
         public Type ExceptionType
@@ -132,18 +131,16 @@ namespace Automatonymous.Activities
             get { return _exceptionType; }
         }
 
-        Behavior<TInstance, Tuple<TData, TException>> CreateBehavior(Activity<TInstance, Tuple<TData, TException>>[] activities)
+        Behavior<TInstance> CreateBehavior(StateActivityBinder<TInstance>[] activities)
         {
             if (activities.Length == 0)
-                return Behavior.Empty<TInstance, Tuple<TData, TException>>();
+                return Behavior.Empty<TInstance>();
 
-            Behavior<TInstance, Tuple<TData, TException>> current =
-                new LastBehavior<TInstance, Tuple<TData, TException>>(activities[activities.Length - 1]);
+            var builder = new ActivityBehaviorBuilder<TInstance>();
+            foreach (var activity in activities)
+                activity.Bind(builder);
 
-            for (int i = activities.Length - 2; i >= 0; i--)
-                current = new ActivityBehavior<TInstance, Tuple<TData, TException>>(activities[i], current);
-
-            return current;
+            return builder.Behavior;
         }
     }
 }
