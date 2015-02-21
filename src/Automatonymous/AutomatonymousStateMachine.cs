@@ -429,6 +429,54 @@ namespace Automatonymous
         }
 
         /// <summary>
+        /// When entering the specified state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance> WhenEnter(State state)
+        {
+            State<TInstance> activityState = GetState(state.Name);
+
+            return new SimpleEventActivityBinder<TInstance>(this, activityState.Enter);
+        }
+
+        /// <summary>
+        /// When leaving the specified state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance> WhenLeave(State state)
+        {
+            State<TInstance> activityState = GetState(state.Name);
+
+            return new SimpleEventActivityBinder<TInstance>(this, activityState.Leave);
+        }
+
+        /// <summary>
+        /// Before entering the specified state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance> BeforeEnter(State state)
+        {
+            State<TInstance> activityState = GetState(state.Name);
+
+            return new SimpleEventActivityBinder<TInstance>(this, activityState.BeforeEnter);
+        }
+
+        /// <summary>
+        /// After leaving the specified state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance> AfterLeave(State state)
+        {
+            State<TInstance> activityState = GetState(state.Name);
+
+            return new SimpleEventActivityBinder<TInstance>(this, activityState.AfterLeave);
+        }
+
+        /// <summary>
         /// When the event is fired in this state, execute the chained activities
         /// </summary>
         /// <typeparam name="TData">The event data type</typeparam>
