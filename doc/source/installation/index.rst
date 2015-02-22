@@ -8,8 +8,9 @@ and add Automatonymous to your project and the proper references will be added f
 Requirements
 ============
 
-Automatonymous requires the full version of the .NET 4.0 framework. If you are not seeing
-the namespace in your project, make sure you are not using the client framework. 
+Automatonymous requires .NET 4.5 (or later). Due to the extensive use of the TPL and *async/await*, it is not compatible with .NET versions prior to 4.5.
+
+
 
 .. toctree::
 
