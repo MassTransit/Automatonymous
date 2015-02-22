@@ -14,6 +14,7 @@ namespace Automatonymous.States
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Behaviors;
     using Contexts;
@@ -31,14 +32,18 @@ namespace Automatonymous.States
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;
         readonly IObserver<EventRaising<TInstance>> _raisingObserver;
+        readonly HashSet<State<TInstance>> _subStates;
+        readonly State<TInstance> _superState;
 
-        public StateMachineState(AutomatonymousStateMachine<TInstance> machine, string name, IObserver<EventRaising<TInstance>> raisingObserver,
-            IObserver<EventRaised<TInstance>> raisedObserver)
+        public StateMachineState(AutomatonymousStateMachine<TInstance> machine, string name,
+            IObserver<EventRaising<TInstance>> raisingObserver,
+            IObserver<EventRaised<TInstance>> raisedObserver, State<TInstance> superState = null)
         {
             _machine = machine;
             _name = name;
             _raisingObserver = raisingObserver;
             _raisedObserver = raisedObserver;
+
             _behaviors = new Dictionary<Event, ActivityBehaviorBuilder<TInstance>>();
             _ignoredEvents = new Dictionary<Event, StateEventFilter<TInstance>>();
 
@@ -51,11 +56,23 @@ namespace Automatonymous.States
             Ignore(BeforeEnter);
             AfterLeave = new DataEvent<State>(name + ".AfterLeave");
             Ignore(AfterLeave);
+
+            _subStates = new HashSet<State<TInstance>>();
+            _superState = superState;
+            if (superState != null)
+            {
+                superState.AddSubstate(this);
+            }
         }
 
         public bool Equals(State other)
         {
             return string.CompareOrdinal(_name, other.Name) == 0;
+        }
+
+        public State<TInstance> SuperState
+        {
+            get { return _superState; }
         }
 
         public string Name
@@ -90,6 +107,19 @@ namespace Automatonymous.States
                 if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
                     return;
 
+                if (_superState != null)
+                {
+                    try
+                    {
+                        await _superState.Raise(context);
+                        return;
+                    }
+                    catch (UnhandledEventException)
+                    {
+                        // the exception is better if it's from the substate
+                    }
+                }
+
                 await _machine.UnhandledEvent(context, this);
                 return;
             }
@@ -112,6 +142,19 @@ namespace Automatonymous.States
                 StateEventFilter<TInstance> filter;
                 if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
                     return;
+
+                if (_superState != null)
+                {
+                    try
+                    {
+                        await _superState.Raise(context);
+                        return;
+                    }
+                    catch (UnhandledEventException)
+                    {
+                        // the exception is better if it's from the substate
+                    }
+                }
 
                 await _machine.UnhandledEvent(context, this);
                 return;
@@ -149,9 +192,36 @@ namespace Automatonymous.States
             _ignoredEvents[@event] = new SelectedStateEventFilter<TInstance, T>(filter);
         }
 
+        public void AddSubstate(State<TInstance> subState)
+        {
+            if (subState == null)
+                throw new ArgumentNullException("subState");
+
+            if (_name.Equals(subState.Name))
+                throw new ArgumentException("A state cannot be a substate of itself", "subState");
+
+            _subStates.Add(subState);
+        }
+
+        public bool HasState(State<TInstance> state)
+        {
+            return _name.Equals(state.Name) || _subStates.Any(s => s.HasState(state));
+        }
+
+        public bool IsStateOf(State<TInstance> state)
+        {
+            return _name.Equals(state.Name) || (_superState != null && _superState.IsStateOf(state));
+        }
+
         public IEnumerable<Event> Events
         {
-            get { return _behaviors.Keys; }
+            get
+            {
+                if (_superState != null)
+                    return _superState.Events.Union(_behaviors.Keys);
+
+                return _behaviors.Keys;
+            }
         }
 
         public int CompareTo(State other)

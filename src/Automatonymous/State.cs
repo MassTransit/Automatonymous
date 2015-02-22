@@ -15,6 +15,7 @@ namespace Automatonymous
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using States;
 
 
     public interface State :
@@ -54,6 +55,11 @@ namespace Automatonymous
     {
         IEnumerable<Event> Events { get; }
 
+        /// <summary>
+        /// Returns the superState of the state, if there is one
+        /// </summary>
+        State<TInstance> SuperState { get; }
+
         Task Raise(EventContext<TInstance> context);
 
         /// <summary>
@@ -86,5 +92,25 @@ namespace Automatonymous
         /// <param name="event"></param>
         /// <param name="filter"></param>
         void Ignore<T>(Event<T> @event, StateMachineEventFilter<TInstance, T> filter);
+
+        /// <summary>
+        /// Adds a substate to the state
+        /// </summary>
+        /// <param name="subState"></param>
+        void AddSubstate(State<TInstance> subState);
+
+        /// <summary>
+        /// True if the specified state is included in the state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        bool HasState(State<TInstance> state);
+
+        /// <summary>
+        /// True if the specified state is a substate of the current state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        bool IsStateOf(State<TInstance> state);
     }
 }

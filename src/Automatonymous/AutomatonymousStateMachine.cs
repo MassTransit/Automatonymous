@@ -334,6 +334,34 @@ namespace Automatonymous
             property.SetValue(this, state);
 
             _stateCache[name] = state;
+
+            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(this, state.BeforeEnter);
+            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(this, state.Enter);
+            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(this, state.Leave);
+            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(this, state.AfterLeave);
+        }
+
+        /// <summary>
+        /// Register a State, with a Superstate
+        /// </summary>
+        /// <param name="propertyExpression">The state property expression</param>
+        /// <param name="superState">The superstate of which this state is a substate</param>
+        protected void State(Expression<Func<State>> propertyExpression, State superState)
+        {
+            if (superState == null)
+                throw new ArgumentNullException("superState");
+
+            State<TInstance> superStateInstance = GetState(superState.Name);
+
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+
+            string name = property.Name;
+
+            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver, superStateInstance);
+
+            property.SetValue(this, state);
+
+            _stateCache[name] = state;
         }
 
         protected void During(State state, params EventActivities<TInstance>[] activities)

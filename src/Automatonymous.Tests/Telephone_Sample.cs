@@ -36,7 +36,68 @@ namespace Automatonymous.Tests
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
                 Assert.AreEqual(_machine.OffHook, phone.CurrentState);
-                Assert.Greater(phone.CallTimer.ElapsedMilliseconds, 0);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
+            }
+
+            PhoneStateMachine _machine;
+
+            [TestFixtureSetUp]
+            public void Setup()
+            {
+                _machine = new PhoneStateMachine();
+            }
+        }
+
+        [TestFixture]
+        public class A_short_time_on_hold
+        {
+            [Test]
+            public async void Should_be_short_and_sweet()
+            {
+                var phone = new PrincessModelTelephone();
+                await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
+
+                await _machine.RaiseEvent(phone, x => x.CallDialed);
+                await _machine.RaiseEvent(phone, x => x.CallConnected);
+
+                await Task.Delay(10);
+
+                await _machine.RaiseEvent(phone, x => x.PlacedOnHold);
+                await _machine.RaiseEvent(phone, x => x.TakenOffHold);
+                await _machine.RaiseEvent(phone, x => x.HungUp);
+
+                Assert.AreEqual(_machine.OffHook, phone.CurrentState);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
+            }
+
+            PhoneStateMachine _machine;
+
+            [TestFixtureSetUp]
+            public void Setup()
+            {
+                _machine = new PhoneStateMachine();
+            }
+        }
+
+        [TestFixture]
+        public class An_extended_time_on_hold
+        {
+            [Test]
+            public async void Should_end__badly()
+            {
+                var phone = new PrincessModelTelephone();
+                await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
+
+                await _machine.RaiseEvent(phone, x => x.CallDialed);
+                await _machine.RaiseEvent(phone, x => x.CallConnected);
+                await _machine.RaiseEvent(phone, x => x.PlacedOnHold);
+
+                await Task.Delay(10);
+
+                await _machine.RaiseEvent(phone, x => x.HungUp);
+
+                Assert.AreEqual(_machine.OffHook, phone.CurrentState);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
             }
 
             PhoneStateMachine _machine;
@@ -80,7 +141,7 @@ namespace Automatonymous.Tests
                 State(() => OffHook);
                 State(() => Ringing);
                 State(() => Connected);
-                State(() => OnHold);
+                State(() => OnHold, Connected);
                 State(() => PhoneDestroyed);
 
                 Event(() => ServiceEstablished);
@@ -114,10 +175,7 @@ namespace Automatonymous.Tests
 
                 During(OnHold,
                     When(TakenOffHold).TransitionTo(Connected),
-                    When(HungUp).TransitionTo(OffHook),
                     When(PhoneHurledAgainstWall).TransitionTo(PhoneDestroyed));
-
-                // ?? Not sure what a substate is .SubstateOf(State.Connected)
 
                 DuringAny(
                     When(Connected.Enter)
