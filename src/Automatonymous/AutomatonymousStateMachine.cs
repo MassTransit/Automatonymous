@@ -469,48 +469,68 @@ namespace Automatonymous
         /// When entering the specified state
         /// </summary>
         /// <param name="state"></param>
+        /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance> WhenEnter(State state)
+        protected void WhenEnter(State state, Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            return new SimpleEventActivityBinder<TInstance>(this, activityState.Enter);
+            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, activityState.Enter);
+
+            binder = activityCallback(binder);
+
+            During(state, binder);
         }
 
         /// <summary>
         /// When leaving the specified state
         /// </summary>
         /// <param name="state"></param>
+        /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance> WhenLeave(State state)
+        protected void WhenLeave(State state, Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            return new SimpleEventActivityBinder<TInstance>(this, activityState.Leave);
+            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, activityState.Leave);
+
+            binder = activityCallback(binder);
+
+            During(state, binder);
         }
 
         /// <summary>
         /// Before entering the specified state
         /// </summary>
         /// <param name="state"></param>
+        /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance> BeforeEnter(State state)
+        protected void BeforeEnter(State state, Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            return new SimpleEventActivityBinder<TInstance>(this, activityState.BeforeEnter);
+            EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, activityState.BeforeEnter);
+
+            binder = activityCallback(binder);
+
+            During(state, binder);
         }
 
         /// <summary>
         /// After leaving the specified state
         /// </summary>
         /// <param name="state"></param>
+        /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance> AfterLeave(State state)
+        protected void AfterLeave(State state, Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            return new SimpleEventActivityBinder<TInstance>(this, activityState.AfterLeave);
+            EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, activityState.AfterLeave);
+
+            binder = activityCallback(binder);
+
+            During(state, binder);
         }
 
         /// <summary>

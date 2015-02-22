@@ -148,15 +148,10 @@ namespace Automatonymous.Tests
                     When(Finish)
                         .Finalize());
 
-                DuringAny(
-                    WhenEnter(Running)
-                        .Then(context => { }),
-                    WhenLeave(Running)
-                        .Then(context => { }),
-                    BeforeEnter(Running)
-                        .Then(context => { }),
-                    AfterLeave(Running)
-                        .Then(context => { }));
+                WhenEnter(Running, x => x.Then(context => { }));
+                WhenLeave(Running, x => x.Then(context => { }));
+                BeforeEnter(Running, x => x.Then(context => { }));
+                AfterLeave(Running, x => x.Then(context => { }));
             }
 
             public State Running { get; private set; }
@@ -308,15 +303,10 @@ namespace Automatonymous.Tests
                     When(Recovered)
                         .TransitionTo(Running));
 
-                DuringAny(
-                    WhenEnter(Running)
-                        .Then(context => { }),
-                    WhenLeave(Running)
-                        .Then(context => { }),
-                    BeforeEnter(Running)
-                        .Then(context => { }),
-                    AfterLeave(Running)
-                        .Then(context => { }));
+                WhenEnter(Running, x => x.Then(context => { }));
+                WhenLeave(Running, x => x.Then(context => { }));
+                BeforeEnter(Running, x => x.Then(context => { }));
+                AfterLeave(Running, x => x.Then(context => { }));
             }
 
             public State Running { get; private set; }
