@@ -17,6 +17,7 @@ namespace Automatonymous.Accessors
     using System.Threading.Tasks;
     using Activities;
     using Behaviors;
+    using Contexts;
 
 
     public class InitialIfNullStateAccessor<TInstance> :
@@ -40,7 +41,7 @@ namespace Automatonymous.Accessors
             State<TInstance> state = await _rawStateAccessor.Get(context);
             if (state == null)
             {
-                var behaviorContext = new BehaviorContextImpl<TInstance>(context);
+                var behaviorContext = new EventBehaviorContext<TInstance>(context);
 
                 await _initialBehavior.Execute(behaviorContext);
 

@@ -69,8 +69,6 @@
     <Compile Include="BehaviorExceptionContext.cs" />
     <Compile Include="Behaviors\ActivityBehaviorBuilder.cs" />
     <Compile Include="Behaviors\BehaviorBuilder.cs" />
-    <Compile Include="Behaviors\BehaviorContextImpl.cs" />
-    <Compile Include="Behaviors\BehaviorContextProxy.cs" />
     <Compile Include="Behaviors\EmptyBehavior.cs" />
     <Compile Include="Behaviors\LastBehavior.cs" />
     <Compile Include="Binders\DataEventActivityBinder.cs" />
@@ -83,8 +81,21 @@
     <Compile Include="Binders\ExceptionBinder.cs" />
     <Compile Include="Binders\IgnoreEventStateActivityBinder.cs" />
     <Compile Include="Binders\SimpleEventActivityBinder.cs" />
+    <Compile Include="Binders\StateActivityBinder.cs" />
     <Compile Include="CompositeEventOptions.cs" />
-    <Compile Include="StateActivityBinder.cs" />
+    <Compile Include="Contexts\EventBehaviorContext.cs" />
+    <Compile Include="Contexts\BehaviorContextProxy.cs" />
+    <Compile Include="Contexts\StateMachineInstanceContext.cs" />
+    <Compile Include="Contexts\PayloadCache.cs" />
+    <Compile Include="Contexts\StateMachineEventContext.cs" />
+    <Compile Include="Contexts\StateUnhandledEventContext.cs" />
+    <Compile Include="Exceptions\AutomatonymousException.cs" />
+    <Compile Include="Exceptions\PayloadException.cs" />
+    <Compile Include="Exceptions\PayloadFactoryException.cs" />
+    <Compile Include="Exceptions\PayloadNotFoundException.cs" />
+    <Compile Include="Exceptions\UnhandledEventException.cs" />
+    <Compile Include="Exceptions\UnknownEventException.cs" />
+    <Compile Include="Exceptions\UnknownStateException.cs" />
     <Compile Include="EventContext.cs" />
     <Compile Include="EventRaised.cs" />
     <Compile Include="EventLiftExtensions.cs" />
@@ -93,18 +104,12 @@
     <Compile Include="EventLift.cs" />
     <Compile Include="EventRaising.cs" />
     <Compile Include="Events\DataEvent.cs" />
-    <Compile Include="Events\PayloadCache.cs" />
-    <Compile Include="Events\PayloadException.cs" />
-    <Compile Include="Events\PayloadFactoryException.cs" />
-    <Compile Include="Events\PayloadNotFoundException.cs" />
     <Compile Include="Events\SimpleEvent.cs" />
     <Compile Include="Events\StateMachineEvent.cs" />
-    <Compile Include="Events\StateMachineEventContext.cs" />
     <Compile Include="Graphing\StateMachineGraph.cs" />
     <Compile Include="Graphing\GraphStateMachineExtensions.cs" />
     <Compile Include="Graphing\Edge.cs" />
     <Compile Include="InstanceContext.cs" />
-    <Compile Include="InstanceContextImpl.cs" />
     <Compile Include="InstanceLift.cs" />
     <Compile Include="InstanceLiftExtensions.cs" />
     <Compile Include="Internals\Connectable.cs" />
@@ -112,9 +117,10 @@
     <Compile Include="Internals\Observable.cs" />
     <Compile Include="Internals\ReadOnlyProperty.cs" />
     <Compile Include="Internals\ReadWriteProperty.cs" />
-    <Compile Include="InvalidEventInStateException.cs" />
-    <Compile Include="Lifts\EventLiftImpl.cs" />
-    <Compile Include="Lifts\InstanceLiftImpl.cs" />
+    <Compile Include="UnhandledEventCallback.cs" />
+    <Compile Include="UnhandledEventContext.cs" />
+    <Compile Include="Lifts\StateMachineEventLift.cs" />
+    <Compile Include="Lifts\StateMachineInstanceLift.cs" />
     <Compile Include="Observers\EventRaisedObserver.cs" />
     <Compile Include="Observers\EventRaisingObserver.cs" />
     <Compile Include="PayloadFactory.cs" />
@@ -127,7 +133,6 @@
     <Compile Include="StateMachineExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
     <Compile Include="IntrospectionExtensions.cs" />
-    <Compile Include="AutomatonymousException.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="State.cs" />
     <Compile Include="StateMachineVisitor.cs" />
@@ -140,12 +145,10 @@
     <Compile Include="..\SolutionVersion.cs">
       <Link>SolutionVersion.cs</Link>
     </Compile>
-    <Compile Include="States\StateImpl.cs" />
+    <Compile Include="States\StateMachineState.cs" />
     <Compile Include="ThenExtensions.cs" />
     <Compile Include="TransitionExtensions.cs" />
     <Compile Include="TryExtensions.cs" />
-    <Compile Include="UnknownEventException.cs" />
-    <Compile Include="UnknownStateException.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

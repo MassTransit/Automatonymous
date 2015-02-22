@@ -1,4 +1,4 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,18 +12,13 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using Lifts;
+    using System.Threading.Tasks;
 
-
-    public static class InstanceLiftExtensions
-    {
-        public static InstanceLift<T> CreateInstanceLift<T, TInstance>(this T stateMachine, TInstance instance)
-            where T : StateMachine<TInstance>
-            where TInstance : class
-        {
-            var instanceLift = new StateMachineInstanceLift<T, TInstance>(stateMachine, instance);
-
-            return instanceLift;
-        }
-    }
+    /// <summary>
+    /// Callback for an unhandled event in the state machine
+    /// </summary>
+    /// <typeparam name="TInstance">The state machine instance type</typeparam>
+    /// <param name="context">The event context</param>
+    /// <returns></returns>
+    public delegate Task UnhandledEventCallback<in TInstance>(UnhandledEventContext<TInstance> context);
 }

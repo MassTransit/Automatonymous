@@ -16,7 +16,7 @@ namespace Automatonymous.Tests
 
 
     [TestFixture]
-    public class UnobservedEvent_Specs
+    public class Raising_an_unhandled_event_in_a_state
     {
         [Test]
         public async void Should_throw_an_exception_when_event_is_not_allowed_in_current_state()
@@ -25,7 +25,7 @@ namespace Automatonymous.Tests
 
             await _machine.RaiseEvent(instance, x => x.Start);
 
-            Assert.Throws<InvalidEventInStateException>(async () => await _machine.RaiseEvent(instance, x => x.Start));
+            Assert.Throws<UnhandledEventException>(async () => await _machine.RaiseEvent(instance, x => x.Start));
         }
 
         TestStateMachine _machine;
@@ -74,7 +74,7 @@ namespace Automatonymous.Tests
 
             await _machine.RaiseEvent(instance, x => x.Start);
 
-            Assert.Throws<InvalidEventInStateException>(async () => await _machine.RaiseEvent(instance, x => x.Charge, new A { Volts = 12 }));
+            Assert.Throws<UnhandledEventException>(async () => await _machine.RaiseEvent(instance, x => x.Charge, new A { Volts = 12 }));
         }
 
         TestStateMachine _machine;
@@ -200,6 +200,57 @@ namespace Automatonymous.Tests
         class A
         {
             public int Volts { get; set; }
+        }
+    }
+
+    [TestFixture]
+    public class Raising_an_unhandled_event_when_the_state_machine_ignores_all_unhandled_events
+    {
+        [Test]
+        public async void Should_silenty_ignore_the_invalid_event()
+        {
+            var instance = new Instance();
+
+            await _machine.RaiseEvent(instance, x => x.Start);
+
+            await _machine.RaiseEvent(instance, x => x.Start);
+        }
+
+        TestStateMachine _machine;
+
+
+        class Instance
+        {
+            public State CurrentState { get; set; }
+        }
+
+
+        [TestFixtureSetUp]
+        public void A_state_is_declared()
+        {
+            _machine = new TestStateMachine();
+        }
+
+
+        class TestStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public TestStateMachine()
+            {
+                Event(() => Start);
+
+                State(() => Running);
+
+                OnUnhandledEvent(x => x.Ignore());
+
+                Initially(
+                    When(Start)
+                        .TransitionTo(Running));
+            }
+
+            public Event Start { get; private set; }
+
+            public State Running { get; private set; }
         }
     }
 }

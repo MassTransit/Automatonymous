@@ -1,34 +1,34 @@
-// Copyright 2007-2014 Chris Patterson, Dru Sellers, Travis Smith, et. al.
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
 // 
 //     http://www.apache.org/licenses/LICENSE-2.0 
 // 
-// Unless required by applicable law or agreed to in writing, software distributed
+// Unless required by applicable law or agreed to in writing, software distributed 
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Behaviors
+namespace Automatonymous.Contexts
 {
     using System;
     using System.Threading;
 
 
-    public class BehaviorContextImpl<TInstance> :
+    public class EventBehaviorContext<TInstance> :
         BehaviorContext<TInstance>
     {
         readonly InstanceContext<TInstance> _context;
         readonly Event _event;
 
-        public BehaviorContextImpl(EventContext<TInstance> context)
+        public EventBehaviorContext(EventContext<TInstance> context)
         {
             _context = context;
             _event = context.Event;
         }
 
-        public BehaviorContextImpl(InstanceContext<TInstance> context)
+        public EventBehaviorContext(InstanceContext<TInstance> context)
         {
             _context = context;
         }
@@ -75,13 +75,13 @@ namespace Automatonymous.Behaviors
     }
 
 
-    public class BehaviorContextImpl<TInstance, TData> :
-        BehaviorContextImpl<TInstance>,
+    public class EventBehaviorContext<TInstance, TData> :
+        EventBehaviorContext<TInstance>,
         BehaviorContext<TInstance, TData>
     {
         readonly EventContext<TInstance, TData> _context;
 
-        public BehaviorContextImpl(EventContext<TInstance, TData> context)
+        public EventBehaviorContext(EventContext<TInstance, TData> context)
             : base(context)
         {
             _context = context;

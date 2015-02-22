@@ -17,20 +17,34 @@ namespace Automatonymous
 
 
     [Serializable]
-    public class InvalidEventInStateException :
-        AutomatonymousException
+    public class AutomatonymousException :
+        Exception
     {
-        public InvalidEventInStateException()
+        public AutomatonymousException()
         {
         }
 
-        public InvalidEventInStateException(string machineType, string eventName, string stateName)
-            : base(string.Format("The {0} event is not allowed during the {1} state for the {2} state machine", eventName, stateName,
-                machineType))
+        public AutomatonymousException(string message)
+            : base(message)
         {
         }
 
-        protected InvalidEventInStateException(SerializationInfo info, StreamingContext context)
+        public AutomatonymousException(Type machineType, string message)
+            : base(string.Format("{0}: {1}", machineType.Name, message))
+        {
+        }
+
+        public AutomatonymousException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        public AutomatonymousException(Type machineType, string message, Exception innerException)
+            : base(string.Format("{0}: {1}", machineType.Name, message), innerException)
+        {
+        }
+
+        protected AutomatonymousException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

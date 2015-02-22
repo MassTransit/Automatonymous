@@ -24,7 +24,7 @@ namespace Automatonymous
             Event @event)
             where TInstance : class
         {
-            var eventLift = new EventLiftImpl<TInstance>(stateMachine, @event);
+            var eventLift = new StateMachineEventLift<TInstance>(stateMachine, @event);
 
             return eventLift;
         }
@@ -34,7 +34,7 @@ namespace Automatonymous
             Event<TData> @event)
             where TInstance : class
         {
-            var eventLift = new EventLiftImpl<TInstance, TData>(stateMachine, @event);
+            var eventLift = new StateMachineEventLift<TInstance, TData>(stateMachine, @event);
 
             return eventLift;
         }

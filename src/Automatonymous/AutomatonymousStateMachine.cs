@@ -21,6 +21,7 @@ namespace Automatonymous
     using Accessors;
     using Activities;
     using Binders;
+    using Contexts;
     using Events;
     using Internals;
     using Observers;
@@ -41,6 +42,7 @@ namespace Automatonymous
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         StateAccessor<TInstance> _instanceStateAccessor;
         string _name;
+        UnhandledEventCallback<TInstance> _unhandledEventCallback;
 
         protected AutomatonymousStateMachine()
         {
@@ -51,12 +53,14 @@ namespace Automatonymous
             _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
             _eventRaisedObserver = new EventRaisedObserver<TInstance>(_eventCache);
 
-            _initial = new StateImpl<TInstance>(this, "Initial", _eventRaisingObserver, _eventRaisedObserver);
+            _initial = new StateMachineState<TInstance>(this, "Initial", _eventRaisingObserver, _eventRaisedObserver);
             _stateCache[_initial.Name] = _initial;
-            _final = new StateImpl<TInstance>(this, "Final", _eventRaisingObserver, _eventRaisedObserver);
+            _final = new StateMachineState<TInstance>(this, "Final", _eventRaisingObserver, _eventRaisedObserver);
             _stateCache[_final.Name] = _final;
 
             _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
+
+            _unhandledEventCallback = DefaultUnhandledEventCallback;
 
             _name = GetType().Name;
         }
@@ -192,6 +196,11 @@ namespace Automatonymous
             Final.Accept(visitor);
         }
 
+        Task DefaultUnhandledEventCallback(UnhandledEventContext<TInstance> context)
+        {
+            throw new UnhandledEventException(_name, context.Event.Name, context.CurrentState.Name);
+        }
+
         /// <summary>
         /// Declares what property holds the TInstance's state on the current instance of the state machine
         /// </summary>
@@ -320,7 +329,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var state = new StateImpl<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
+            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
 
             property.SetValue(this, state);
 
@@ -538,6 +547,21 @@ namespace Automatonymous
             EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
 
             return binder.Ignore(filter);
+        }
+
+        protected void OnUnhandledEvent(UnhandledEventCallback<TInstance> callback)
+        {
+            if (callback == null)
+                throw new ArgumentNullException("callback");
+
+            _unhandledEventCallback = callback;
+        }
+
+        internal Task UnhandledEvent(EventContext<TInstance> context, State state)
+        {
+            var unhandledEventContext = new StateUnhandledEventContext<TInstance>(context, state, this);
+
+            return _unhandledEventCallback(unhandledEventContext);
         }
     }
 }

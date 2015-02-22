@@ -40,7 +40,7 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_be_an_instance_of_the_proper_type()
         {
-            Assert.IsInstanceOf<StateImpl<Instance>>(_machine.Initial);
+            Assert.IsInstanceOf<StateMachineState<Instance>>(_machine.Initial);
         }
 
 

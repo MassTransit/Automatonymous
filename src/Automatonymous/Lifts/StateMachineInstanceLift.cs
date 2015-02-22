@@ -17,7 +17,7 @@ namespace Automatonymous.Lifts
     using System.Threading.Tasks;
 
 
-    public class InstanceLiftImpl<TStateMachine, TInstance> :
+    public class StateMachineInstanceLift<TStateMachine, TInstance> :
         InstanceLift<TStateMachine>
         where TStateMachine : StateMachine<TInstance>
         where TInstance : class
@@ -25,7 +25,7 @@ namespace Automatonymous.Lifts
         readonly TInstance _instance;
         readonly TStateMachine _stateMachine;
 
-        public InstanceLiftImpl(TStateMachine stateMachine, TInstance instance)
+        public StateMachineInstanceLift(TStateMachine stateMachine, TInstance instance)
         {
             _stateMachine = stateMachine;
             _instance = instance;

@@ -50,7 +50,7 @@ namespace Automatonymous.Tests
         {
             var instance = new Instance();
 
-            Assert.Throws<InvalidEventInStateException>(async () => await _machine.RaiseEvent(instance, x => x.Hello));
+            Assert.Throws<UnhandledEventException>(async () => await _machine.RaiseEvent(instance, x => x.Hello));
 
             Assert.IsFalse(instance.HelloCalled);
             Assert.AreEqual(_machine.Initial, instance.CurrentState);

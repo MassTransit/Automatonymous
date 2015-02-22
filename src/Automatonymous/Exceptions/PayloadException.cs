@@ -1,4 +1,4 @@
-namespace Automatonymous.Events
+namespace Automatonymous
 {
     using System;
     using System.Runtime.Serialization;

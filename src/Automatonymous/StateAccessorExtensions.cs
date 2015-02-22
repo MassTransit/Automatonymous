@@ -12,12 +12,15 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using Contexts;
+
+
     public static class StateAccessorExtensions
     {
         public static State<TInstance> GetState<TInstance>(this StateAccessor<TInstance> accessor, TInstance instance)
             where TInstance : class
         {
-            var context = new InstanceContextImpl<TInstance>(instance);
+            var context = new StateMachineInstanceContext<TInstance>(instance);
 
             return accessor.Get(context).Result;
         }

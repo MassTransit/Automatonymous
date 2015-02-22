@@ -16,22 +16,23 @@ namespace Automatonymous.States
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Behaviors;
+    using Contexts;
     using Events;
 
 
-    public class StateImpl<TInstance> :
+    public class StateMachineState<TInstance> :
         State<TInstance>,
         IEquatable<State>
         where TInstance : class
     {
         readonly Dictionary<Event, ActivityBehaviorBuilder<TInstance>> _behaviors;
         readonly Dictionary<Event, StateEventFilter<TInstance>> _ignoredEvents;
-        readonly StateMachine<TInstance> _machine;
+        readonly AutomatonymousStateMachine<TInstance> _machine;
         readonly string _name;
         readonly IObserver<EventRaised<TInstance>> _raisedObserver;
         readonly IObserver<EventRaising<TInstance>> _raisingObserver;
 
-        public StateImpl(StateMachine<TInstance> machine, string name, IObserver<EventRaising<TInstance>> raisingObserver,
+        public StateMachineState(AutomatonymousStateMachine<TInstance> machine, string name, IObserver<EventRaising<TInstance>> raisingObserver,
             IObserver<EventRaised<TInstance>> raisedObserver)
         {
             _machine = machine;
@@ -80,17 +81,47 @@ namespace Automatonymous.States
             });
         }
 
+        async Task State<TInstance>.Raise(EventContext<TInstance> context)
+        {
+            ActivityBehaviorBuilder<TInstance> activities;
+            if (!_behaviors.TryGetValue(context.Event, out activities))
+            {
+                StateEventFilter<TInstance> filter;
+                if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
+                    return;
+
+                await _machine.UnhandledEvent(context, this);
+                return;
+            }
+
+            var notification = new EventNotification(context);
+            _raisingObserver.OnNext(notification);
+
+            var behaviorContext = new EventBehaviorContext<TInstance>(context);
+
+            await activities.Behavior.Execute(behaviorContext);
+
+            _raisedObserver.OnNext(notification);
+        }
+
         async Task State<TInstance>.Raise<T>(EventContext<TInstance, T> context)
         {
             ActivityBehaviorBuilder<TInstance> activities;
-            if (!GetBehaviorBuilder(context, out activities))
+            if (!_behaviors.TryGetValue(context.Event, out activities))
+            {
+                StateEventFilter<TInstance> filter;
+                if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
+                    return;
+
+                await _machine.UnhandledEvent(context, this);
                 return;
+            }
 
             var notification = new EventNotification(context);
 
             _raisingObserver.OnNext(notification);
 
-            var behaviorContext = new BehaviorContextImpl<TInstance, T>(context);
+            var behaviorContext = new EventBehaviorContext<TInstance, T>(context);
 
             await activities.Behavior.Execute(behaviorContext);
 
@@ -128,48 +159,6 @@ namespace Automatonymous.States
             return string.CompareOrdinal(_name, other.Name);
         }
 
-        async Task State<TInstance>.Raise(EventContext<TInstance> context)
-        {
-            ActivityBehaviorBuilder<TInstance> activities;
-            if (!GetBehaviorBuilder(context, out activities))
-                return;
-
-            var notification = new EventNotification(context);
-            _raisingObserver.OnNext(notification);
-
-            var behaviorContext = new BehaviorContextImpl<TInstance>(context);
-
-            await activities.Behavior.Execute(behaviorContext);
-
-            _raisedObserver.OnNext(notification);
-        }
-
-        bool GetBehaviorBuilder(EventContext<TInstance> context, out ActivityBehaviorBuilder<TInstance> activities)
-        {
-            if (_behaviors.TryGetValue(context.Event, out activities))
-                return true;
-
-            StateEventFilter<TInstance> filter;
-            if (_ignoredEvents.TryGetValue(context.Event, out filter))
-                if (filter.Filter(context))
-                    return false;
-
-            throw new InvalidEventInStateException(_machine.Name, context.Event.Name, _name);
-        }
-
-        bool GetBehaviorBuilder<T>(EventContext<TInstance, T> context, out ActivityBehaviorBuilder<TInstance> activities)
-        {
-            if (_behaviors.TryGetValue(context.Event, out activities))
-                return true;
-
-            StateEventFilter<TInstance> filter;
-            if (_ignoredEvents.TryGetValue(context.Event, out filter))
-                if (filter.Filter(context))
-                    return false;
-
-            throw new InvalidEventInStateException(_machine.Name, context.Event.Name, _name);
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -185,32 +174,32 @@ namespace Automatonymous.States
             return (_name != null ? _name.GetHashCode() : 0);
         }
 
-        public static bool operator ==(State<TInstance> left, StateImpl<TInstance> right)
+        public static bool operator ==(State<TInstance> left, StateMachineState<TInstance> right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(State<TInstance> left, StateImpl<TInstance> right)
+        public static bool operator !=(State<TInstance> left, StateMachineState<TInstance> right)
         {
             return !Equals(left, right);
         }
 
-        public static bool operator ==(StateImpl<TInstance> left, State<TInstance> right)
+        public static bool operator ==(StateMachineState<TInstance> left, State<TInstance> right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(StateImpl<TInstance> left, State<TInstance> right)
+        public static bool operator !=(StateMachineState<TInstance> left, State<TInstance> right)
         {
             return !Equals(left, right);
         }
 
-        public static bool operator ==(StateImpl<TInstance> left, StateImpl<TInstance> right)
+        public static bool operator ==(StateMachineState<TInstance> left, StateMachineState<TInstance> right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(StateImpl<TInstance> left, StateImpl<TInstance> right)
+        public static bool operator !=(StateMachineState<TInstance> left, StateMachineState<TInstance> right)
         {
             return !Equals(left, right);
         }

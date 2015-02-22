@@ -17,6 +17,7 @@ namespace Automatonymous
     using System.Threading.Tasks;
     using Activities;
     using Behaviors;
+    using Contexts;
     using Events;
 
 
@@ -135,7 +136,7 @@ namespace Automatonymous
 
             var eventContext = new StateMachineEventContext<TInstance>(machine, instance, toState.Enter, cancellationToken);
 
-            var behaviorContext = new BehaviorContextImpl<TInstance>(eventContext);
+            var behaviorContext = new EventBehaviorContext<TInstance>(eventContext);
 
             return behavior.Execute(behaviorContext);
         }
