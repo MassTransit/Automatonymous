@@ -140,7 +140,7 @@ namespace Automatonymous.Tests
 
             await _machine.RaiseEvent(instance, x => x.Charge, new A {Volts = 12});
 
-            Assert.AreEqual(12, instance.Volts);
+            Assert.AreEqual(0, instance.Volts);
         }
 
         [Test]
@@ -186,8 +186,7 @@ namespace Automatonymous.Tests
 
                 During(Running,
                     Ignore(Start),
-                    Ignore(Charge)
-                        .Then(context => context.Instance.Volts = context.Data.Volts));
+                    Ignore(Charge));
             }
 
             public Event Start { get; private set; }

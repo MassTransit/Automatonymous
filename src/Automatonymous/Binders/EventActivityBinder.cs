@@ -12,9 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Binders
 {
-    using System;
-
-
     public interface EventActivityBinder<TInstance> :
         EventActivities<TInstance>
         where TInstance : class
@@ -24,8 +21,6 @@ namespace Automatonymous.Binders
         Event Event { get; }
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
-
-        EventActivityBinder<TInstance> Ignore();
     }
 
 
@@ -40,9 +35,5 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
-
-        EventActivityBinder<TInstance, TData> Ignore();
-
-        EventActivityBinder<TInstance, TData> Ignore(StateMachineEventFilter<TInstance, TData> filter);
     }
 }

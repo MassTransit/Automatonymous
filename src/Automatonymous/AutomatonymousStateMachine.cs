@@ -500,7 +500,8 @@ namespace Automatonymous
         /// <param name="state"></param>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected void BeforeEnter(State state, Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        protected void BeforeEnter(State state,
+            Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
@@ -517,7 +518,8 @@ namespace Automatonymous
         /// <param name="state"></param>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected void AfterLeave(State state, Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        protected void AfterLeave(State state,
+            Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             State<TInstance> activityState = GetState(state.Name);
 
@@ -557,11 +559,11 @@ namespace Automatonymous
         /// </summary>
         /// <param name="event">The ignored event</param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance> Ignore(Event @event)
+        protected EventActivities<TInstance> Ignore(Event @event)
         {
-            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, @event);
+            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(@event);
 
-            return binder.Ignore();
+            return new SimpleEventActivityBinder<TInstance>(this, @event, activityBinder);
         }
 
         /// <summary>
@@ -570,11 +572,11 @@ namespace Automatonymous
         /// <typeparam name="TData">The event data type</typeparam>
         /// <param name="event">The ignored event</param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance, TData> Ignore<TData>(Event<TData> @event)
+        protected EventActivities<TInstance> Ignore<TData>(Event<TData> @event)
         {
-            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
+            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(@event);
 
-            return binder.Ignore();
+            return new DataEventActivityBinder<TInstance, TData>(this, @event, activityBinder);
         }
 
         /// <summary>
@@ -584,12 +586,12 @@ namespace Automatonymous
         /// <param name="event">The ignored event</param>
         /// <param name="filter">The filter to apply to the event data</param>
         /// <returns></returns>
-        protected EventActivityBinder<TInstance, TData> Ignore<TData>(Event<TData> @event,
+        protected EventActivities<TInstance> Ignore<TData>(Event<TData> @event,
             StateMachineEventFilter<TInstance, TData> filter)
         {
-            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(this, @event);
+            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance, TData>(@event, filter);
 
-            return binder.Ignore(filter);
+            return new DataEventActivityBinder<TInstance, TData>(this, @event, activityBinder);
         }
 
         protected void OnUnhandledEvent(UnhandledEventCallback<TInstance> callback)

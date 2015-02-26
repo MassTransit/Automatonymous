@@ -24,11 +24,11 @@ namespace Automatonymous.Binders
         readonly Event _event;
         readonly StateMachine<TInstance> _machine;
 
-        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event)
+        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event, params StateActivityBinder<TInstance>[] activities)
         {
             _event = @event;
             _machine = machine;
-            _activities = new StateActivityBinder<TInstance>[0];
+            _activities = activities ?? new StateActivityBinder<TInstance>[0];
         }
 
         SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event, StateActivityBinder<TInstance>[] activities,
@@ -50,13 +50,6 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance> EventActivityBinder<TInstance>.Add(Activity<TInstance> activity)
         {
             StateActivityBinder<TInstance> activityBinder = new EventStateActivityBinder<TInstance>(_event, activity);
-
-            return new SimpleEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
-        }
-
-        EventActivityBinder<TInstance> EventActivityBinder<TInstance>.Ignore()
-        {
-            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(_event);
 
             return new SimpleEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }
