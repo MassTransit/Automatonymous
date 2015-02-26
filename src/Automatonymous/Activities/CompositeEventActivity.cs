@@ -1,4 +1,4 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,7 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using System;
     using System.Reflection;
     using System.Threading.Tasks;
     using Internals;
@@ -20,19 +19,22 @@ namespace Automatonymous.Activities
 
     public class CompositeEventActivity<TInstance> :
         Activity<TInstance>
+        where TInstance : class
     {
         readonly CompositeEventStatus _complete;
-        readonly Func<BehaviorContext<TInstance>, Task> _completeCallback;
+        readonly Event _event;
         readonly int _flag;
         readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
+        readonly StateMachine<TInstance> _stateMachine;
 
         public CompositeEventActivity(PropertyInfo propertyInfo, int flag, CompositeEventStatus complete,
-            Func<BehaviorContext<TInstance>, Task> completeCallback)
+            StateMachine<TInstance> stateMachine, Event @event)
         {
             _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
             _flag = flag;
             _complete = complete;
-            _completeCallback = completeCallback;
+            _stateMachine = stateMachine;
+            _event = @event;
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
@@ -64,7 +66,14 @@ namespace Automatonymous.Activities
             if (!value.Equals(_complete))
                 return;
 
-            await _completeCallback(context);
+            await RaiseCompositeEvent(context);
+        }
+
+        async Task RaiseCompositeEvent(BehaviorContext<TInstance> context)
+        {
+            BehaviorContext<TInstance> compositeEventContext = context.GetProxy(_event);
+
+            await _stateMachine.RaiseEvent(compositeEventContext);
         }
     }
 }

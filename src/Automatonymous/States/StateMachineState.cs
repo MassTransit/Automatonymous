@@ -93,7 +93,7 @@ namespace Automatonymous.States
                 foreach (var behavior in _behaviors)
                 {
                     behavior.Key.Accept(visitor);
-                    behavior.Value.Accept(visitor);
+                    behavior.Value.Behavior.Accept(visitor);
                 }
             });
         }

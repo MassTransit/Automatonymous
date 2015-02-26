@@ -29,11 +29,13 @@ namespace Automatonymous.Tests
         [Test]
         public void The_machine_should_expose_all_events()
         {
-            Assert.AreEqual(4, ((StateMachine)_machine).Events.Count());
-            Assert.Contains(_machine.Ignored, _machine.Events.ToList());
-            Assert.Contains(_machine.Handshake, _machine.Events.ToList());
-            Assert.Contains(_machine.Hello, _machine.Events.ToList());
-            Assert.Contains(_machine.YelledAt, _machine.Events.ToList());
+            var events = _machine.Events.ToList();
+
+            Assert.AreEqual(4, events.Count);
+            Assert.Contains(_machine.Ignored, events);
+            Assert.Contains(_machine.Handshake, events);
+            Assert.Contains(_machine.Hello, events);
+            Assert.Contains(_machine.YelledAt, events);
         }
 
         [Test]

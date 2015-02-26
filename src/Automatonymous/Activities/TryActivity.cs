@@ -99,7 +99,7 @@ namespace Automatonymous.Activities
                         {
                             BehaviorContext<TInstance, Exception> contextProxy = handler.GetExceptionContext(context, exception);
 
-                            var behavior = new LastBehavior<TInstance, Exception>(handler);
+                            Behavior<TInstance, Exception> behavior = new LastBehavior<TInstance, Exception>(handler);
 
                             await behavior.Execute(contextProxy);
                         }
@@ -164,7 +164,7 @@ namespace Automatonymous.Activities
                             BehaviorContext<TInstance, Tuple<TData, Exception>> contextProxy = handler.GetExceptionContext(context,
                                 exception);
 
-                            var behavior = new LastBehavior<TInstance, Tuple<TData, Exception>>(handler);
+                            Behavior<TInstance,Tuple<TData,Exception>> behavior = new LastBehavior<TInstance, Tuple<TData, Exception>>(handler);
 
                             await behavior.Execute(contextProxy);
                         }

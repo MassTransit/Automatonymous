@@ -14,7 +14,6 @@ namespace Automatonymous.Behaviors
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
 
 
     public class ActivityBehaviorBuilder<TInstance> :
@@ -40,21 +39,6 @@ namespace Automatonymous.Behaviors
                 throw new AutomatonymousException("The behavior was already built, additional activities cannot be added.");
 
             _activities.Add(activity);
-        }
-
-        public void Accept(StateMachineVisitor visitor)
-        {
-            _behavior.Value.Accept(visitor);
-        }
-
-        public Task Execute(BehaviorContext<TInstance> context)
-        {
-            return _behavior.Value.Execute(context);
-        }
-
-        public Task Execute<T>(BehaviorContext<TInstance, T> context)
-        {
-            return _behavior.Value.Execute(context);
         }
 
         Behavior<TInstance> CreateBehavior()

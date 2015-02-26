@@ -15,51 +15,37 @@ namespace Automatonymous.Behaviors
     using System.Threading.Tasks;
 
 
-    public class LastBehavior<TInstance> :
+    public class ActivityBehavior<TInstance> :
         Behavior<TInstance>
     {
         readonly Activity<TInstance> _activity;
+        readonly Behavior<TInstance> _next;
 
-        public LastBehavior(Activity<TInstance> activity)
+        public ActivityBehavior(Activity<TInstance> activity, Behavior<TInstance> next)
         {
             _activity = activity;
+            _next = next;
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {
-            _activity.Accept(visitor);
+            visitor.Visit(this, x =>
+            {
+                _activity.Accept(visitor);
+                _next.Accept(visitor);
+            });
         }
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            return _activity.Execute(context, Behavior.Empty<TInstance>());
+            return _activity.Execute(context, _next);
         }
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            return _activity.Execute(context, Behavior.Empty<TInstance, T>());
-        }
-    }
+            var behavior = new SplitBehavior<TInstance, T>(_next);
 
-
-    public class LastBehavior<TInstance, TData> :
-        Behavior<TInstance, TData>
-    {
-        readonly Activity<TInstance, TData> _activity;
-
-        public LastBehavior(Activity<TInstance, TData> activity)
-        {
-            _activity = activity;
-        }
-
-        Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)
-        {
-            return _activity.Execute(context, Behavior.Empty<TInstance, TData>());
-        }
-
-        void Visitable.Accept(StateMachineVisitor visitor)
-        {
-            _activity.Accept(visitor);
+            return _activity.Execute(context, behavior);
         }
     }
 }

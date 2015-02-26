@@ -12,8 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Behaviors
 {
-    public interface BehaviorBuilder<TInstance> :
-        Behavior<TInstance>
+    public interface BehaviorBuilder<TInstance>
     {
          void Add(Activity<TInstance> activity);
     }

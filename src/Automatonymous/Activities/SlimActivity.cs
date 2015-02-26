@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
+    using Behaviors;
 
 
     /// <summary>

@@ -19,36 +19,6 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class When_an_action_throws_an_exception
     {
-        [Test]
-        public void Should_capture_the_exception_message()
-        {
-            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
-        }
-
-        [Test]
-        public void Should_capture_the_exception_type()
-        {
-            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
-        }
-
-        [Test]
-        public void Should_have_called_the_exception_handler()
-        {
-            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
-        }
-
-        [Test]
-        public void Should_have_called_the_first_action()
-        {
-            Assert.IsTrue(_instance.Called);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_second_action()
-        {
-            Assert.IsTrue(_instance.NotCalled);
-        }
-
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -90,31 +60,26 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(x => x.Then(context => context.Instance.Called = true)
+                        .Try(t => t
+                            .Then(context => context.Instance.Called = true)
                             .Then(_ => { throw new ApplicationException("Boom!"); })
                             .Then(context => context.Instance.NotCalled = false),
-                            x => x.Handle<Exception>(ex =>
-                            {
-                                return ex
+                            h => h
+                                .Handle<Exception>(ex => ex
                                     .Then(context =>
                                     {
                                         context.Instance.ExceptionMessage = context.Data.Message;
                                         context.Instance.ExceptionType = context.Data.GetType();
                                     })
-                                    .TransitionTo(Failed);
-                            })));
+                                    .TransitionTo(Failed))));
             }
 
             public State Failed { get; private set; }
 
             public Event Initialized { get; private set; }
         }
-    }
 
 
-    [TestFixture]
-    public class When_an_action_throws_an_exception_on_data_events
-    {
         [Test]
         public void Should_capture_the_exception_message()
         {
@@ -144,7 +109,12 @@ namespace Automatonymous.Tests
         {
             Assert.IsTrue(_instance.NotCalled);
         }
+    }
 
+
+    [TestFixture]
+    public class When_an_action_throws_an_exception_on_data_events
+    {
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -209,6 +179,37 @@ namespace Automatonymous.Tests
             public State Failed { get; private set; }
 
             public Event<Init> Initialized { get; private set; }
+        }
+
+
+        [Test]
+        public void Should_capture_the_exception_message()
+        {
+            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+        }
+
+        [Test]
+        public void Should_capture_the_exception_type()
+        {
+            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+        }
+
+        [Test]
+        public void Should_have_called_the_exception_handler()
+        {
+            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_action()
+        {
+            Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_second_action()
+        {
+            Assert.IsTrue(_instance.NotCalled);
         }
     }
 }

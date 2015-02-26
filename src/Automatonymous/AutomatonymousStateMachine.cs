@@ -141,7 +141,7 @@ namespace Automatonymous
 
         public IEnumerable<Event> Events
         {
-            get { return _eventCache.Values.Select(x => x.Event); }
+            get { return _eventCache.Values.Where(x => false == x.IsTransitionEvent).Select(x => x.Event); }
         }
 
         public Type InstanceType
@@ -225,7 +225,7 @@ namespace Automatonymous
 
             property.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
 
         protected void Name(string machineName)
@@ -283,7 +283,7 @@ namespace Automatonymous
 
             eventProperty.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
 
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
@@ -293,12 +293,7 @@ namespace Automatonymous
                 int flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
-                    context =>
-                    {
-                        BehaviorContext<TInstance> compositeEventContext = context.GetProxy(@event);
-
-                        return ((StateMachine<TInstance>)this).RaiseEvent(compositeEventContext);
-                    });
+                    this, @event);
 
                 Func<State<TInstance>, bool> filter = x => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
                 foreach (var state in _stateCache.Values.Where(filter))
@@ -320,7 +315,7 @@ namespace Automatonymous
 
             property.SetValue(this, @event);
 
-            _eventCache[name] = new StateMachineEvent<TInstance>(this, @event);
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
 
         protected void State(Expression<Func<State>> propertyExpression)
@@ -335,10 +330,10 @@ namespace Automatonymous
 
             _stateCache[name] = state;
 
-            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(this, state.BeforeEnter);
-            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(this, state.Enter);
-            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(this, state.Leave);
-            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(this, state.AfterLeave);
+            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(state.BeforeEnter, true);
+            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(state.Enter, true);
+            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
+            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
         }
 
         /// <summary>

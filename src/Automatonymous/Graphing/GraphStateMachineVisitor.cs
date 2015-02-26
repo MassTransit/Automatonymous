@@ -41,11 +41,9 @@ namespace Automatonymous.Graphing
 
         public void Visit(State state, Action<State> next)
         {
-            State<TInstance> s = state.For<TInstance>();
+            _currentState = GetStateVertex(state);
 
-            _currentState = GetStateVertex(s);
-
-            next(s);
+            next(state);
         }
 
         public void Visit(Event @event, Action<Event> next)
