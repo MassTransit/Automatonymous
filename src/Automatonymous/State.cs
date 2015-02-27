@@ -15,8 +15,6 @@ namespace Automatonymous
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using States;
-
 
     public interface State :
         Visitable,

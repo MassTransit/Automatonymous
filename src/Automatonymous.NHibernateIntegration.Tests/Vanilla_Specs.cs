@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -24,6 +24,26 @@ namespace Automatonymous.NHibernateIntegration.Tests
     [TestFixture]
     public class When_using_NHibernateRepository
     {
+        [Test]
+        public async void Should_have_the_state_machine()
+        {
+            Guid correlationId = Guid.NewGuid();
+
+            await RaiseEvent(correlationId, _machine.ExitFrontDoor, new GirlfriendYelling
+            {
+                CorrelationId = correlationId
+            });
+
+            await RaiseEvent(correlationId, _machine.GotHitByCar, new GotHitByACar
+            {
+                CorrelationId = correlationId
+            });
+
+            ShoppingChore instance = await GetStateMachine(correlationId);
+
+            Assert.IsTrue(instance.Screwed);
+        }
+
         SuperShopper _machine;
         ISessionFactory _sessionFactory;
 
@@ -48,21 +68,26 @@ namespace Automatonymous.NHibernateIntegration.Tests
             using (ISession session = _sessionFactory.OpenSession())
             using (ITransaction transaction = session.BeginTransaction())
             {
+                bool save = false;
                 var instance = session.Get<ShoppingChore>(id, LockMode.Upgrade);
                 if (instance == null)
                 {
                     instance = new ShoppingChore(id);
+                    save = true;
                 }
 
                 await _machine.RaiseEvent(instance, @event, data);
 
-                session.SaveOrUpdate(instance);
+                if (save)
+                    session.Save(instance);
+                else
+                    session.Update(instance);
 
                 transaction.Commit();
             }
         }
 
-        async Task<ShoppingChore> GetSaga(Guid id)
+        async Task<ShoppingChore> GetStateMachine(Guid id)
         {
             using (ISession session = _sessionFactory.OpenSession())
             using (ITransaction transaction = session.BeginTransaction())
@@ -165,27 +190,6 @@ namespace Automatonymous.NHibernateIntegration.Tests
             public Event EndOfTheWorld { get; private set; }
 
             public State OnTheWayToTheStore { get; private set; }
-        }
-
-
-        [Test]
-        public async void Should_have_the_state_machine()
-        {
-            Guid correlationId = Guid.NewGuid();
-
-            await RaiseEvent(correlationId, _machine.ExitFrontDoor, new GirlfriendYelling
-            {
-                CorrelationId = correlationId
-            });
-
-            await RaiseEvent(correlationId, _machine.GotHitByCar, new GotHitByACar
-            {
-                CorrelationId = correlationId
-            });
-
-            ShoppingChore instance = await GetSaga(correlationId);
-
-            Assert.IsTrue(instance.Screwed);
         }
     }
 }
