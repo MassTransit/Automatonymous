@@ -19,7 +19,7 @@ namespace Automatonymous.Lifts
 
     public class StateMachineInstanceLift<TStateMachine, TInstance> :
         InstanceLift<TStateMachine>
-        where TStateMachine : StateMachine<TInstance>
+        where TStateMachine : class, StateMachine, StateMachine<TInstance>
         where TInstance : class
     {
         readonly TInstance _instance;

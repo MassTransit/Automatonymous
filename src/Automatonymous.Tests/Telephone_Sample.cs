@@ -35,7 +35,7 @@ namespace Automatonymous.Tests
 
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
-                Assert.AreEqual(_machine.OffHook, phone.CurrentState);
+                Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
                 Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
             }
 
@@ -66,7 +66,7 @@ namespace Automatonymous.Tests
                 await _machine.RaiseEvent(phone, x => x.TakenOffHold);
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
-                Assert.AreEqual(_machine.OffHook, phone.CurrentState);
+                Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
                 Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
             }
 
@@ -96,7 +96,7 @@ namespace Automatonymous.Tests
 
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
-                Assert.AreEqual(_machine.OffHook, phone.CurrentState);
+                Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
                 Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
             }
 
@@ -117,7 +117,7 @@ namespace Automatonymous.Tests
                 CallTimer = new Stopwatch();
             }
 
-            public State CurrentState { get; set; }
+            public string CurrentState { get; set; }
 
             public Stopwatch CallTimer { get; private set; }
 

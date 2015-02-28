@@ -12,25 +12,24 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
-    using System.Reflection;
     using System.Threading.Tasks;
-    using Internals;
+    using Accessors;
 
 
     public class CompositeEventActivity<TInstance> :
         Activity<TInstance>
         where TInstance : class
     {
+        readonly CompositeEventStatusAccessor<TInstance> _accessor;
         readonly CompositeEventStatus _complete;
         readonly Event _event;
         readonly int _flag;
-        readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
         readonly StateMachine<TInstance> _stateMachine;
 
-        public CompositeEventActivity(PropertyInfo propertyInfo, int flag, CompositeEventStatus complete,
+        public CompositeEventActivity(CompositeEventStatusAccessor<TInstance> accessor, int flag, CompositeEventStatus complete,
             StateMachine<TInstance> stateMachine, Event @event)
         {
-            _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
+            _accessor = accessor;
             _flag = flag;
             _complete = complete;
             _stateMachine = stateMachine;
@@ -58,10 +57,10 @@ namespace Automatonymous.Activities
 
         async Task Execute(BehaviorContext<TInstance> context)
         {
-            CompositeEventStatus value = _property.Get(context.Instance);
+            CompositeEventStatus value = _accessor.Get(context.Instance);
             value.Set(_flag);
 
-            _property.Set(context.Instance, value);
+            _accessor.Set(context.Instance, value);
 
             if (!value.Equals(_complete))
                 return;

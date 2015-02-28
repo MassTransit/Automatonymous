@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -21,11 +21,10 @@ namespace Automatonymous.Accessors
 
 
     /// <summary>
-    /// The default state accessor will attempt to find and use a single State property on the
-    /// instance type. If no State property is found, or more than one is found, an exception
-    /// will be thrown
+    /// The string state accessor uses the property expression for the string property
+    /// and converts the property between the state name and the State value
     /// </summary>
-    public class DefaultInstanceStateAccessor<TInstance> :
+    public class StringInstanceStateAccessor<TInstance> :
         StateAccessor<TInstance>
         where TInstance : class
     {
@@ -34,8 +33,8 @@ namespace Automatonymous.Accessors
         readonly StateMachine<TInstance> _machine;
         readonly IObserver<StateChanged<TInstance>> _observer;
 
-        public DefaultInstanceStateAccessor(StateMachine<TInstance> machine, State<TInstance> initialState,
-            IObserver<StateChanged<TInstance>> observer)
+        public StringInstanceStateAccessor(StateMachine<TInstance> machine, State<TInstance> initialState,
+            Expression<Func<TInstance, string>> instanceStateProperty, IObserver<StateChanged<TInstance>> observer)
         {
             _machine = machine;
             _initialState = initialState;
@@ -83,4 +82,5 @@ namespace Automatonymous.Accessors
             return new InitialIfNullStateAccessor<TInstance>(_initialState, new RawStateAccessor<TInstance>(_machine, expression, _observer));
         }
     }
+
 }

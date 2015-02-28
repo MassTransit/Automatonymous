@@ -45,9 +45,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accessors\CompositeEventStatusAccessor.cs" />
     <Compile Include="Accessors\DefaultInstanceStateAccessor.cs" />
     <Compile Include="Accessors\InitialIfNullStateAccessor.cs" />
+    <Compile Include="Accessors\IntCompositeEventStatusAccessor.cs" />
+    <Compile Include="Accessors\IntStateAccessor.cs" />
     <Compile Include="Accessors\RawStateAccessor.cs" />
+    <Compile Include="Accessors\StateAccessorIndex.cs" />
+    <Compile Include="Accessors\StringInstanceStateAccessor.cs" />
+    <Compile Include="Accessors\StringStateAccessor.cs" />
+    <Compile Include="Accessors\StructCompositeEventStatusAccessor.cs" />
     <Compile Include="Activities\ActionActivity.cs" />
     <Compile Include="Activities\AsyncFactoryActivity.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />

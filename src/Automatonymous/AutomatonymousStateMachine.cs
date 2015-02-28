@@ -211,8 +211,34 @@ namespace Automatonymous
         /// </remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
-            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(this, instanceStateProperty,
-                _stateCache[Initial.Name], _stateChangedObservable);
+            var stateAccessor = new RawStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
+
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
+        }
+
+        /// <summary>
+        /// Declares the property to hold the instance's state as a string (the state name is stored in the property)
+        /// </summary>
+        /// <param name="instanceStateProperty"></param>
+        protected void InstanceState(Expression<Func<TInstance, string>> instanceStateProperty)
+        {
+            var stateAccessor = new StringStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
+
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
+        }
+
+        /// <summary>
+        /// Declares the property to hold the instance's state as an int (0 - none, 1 = initial, 2 = final, 3... the rest)
+        /// </summary>
+        /// <param name="instanceStateProperty"></param>
+        /// <param name="states">Specifies the states, in order, to which the int values should be assigned</param>
+        protected void InstanceState(Expression<Func<TInstance, int>> instanceStateProperty, params State[] states)
+        {
+            var stateIndex = new StateAccessorIndex<TInstance>(this, _initial, _final, states);
+
+            var stateAccessor = new IntStateAccessor<TInstance>(instanceStateProperty, stateIndex, _stateChangedObservable);
+
+            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
 
         protected void Event(Expression<Func<Event>> propertyExpression)
@@ -248,6 +274,11 @@ namespace Automatonymous
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
+            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+
+            var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
+
+            Event(propertyExpression, accessor, CompositeEventOptions.None, events);
             Event(propertyExpression, trackingPropertyExpression, CompositeEventOptions.None, events);
         }
 
@@ -265,6 +296,56 @@ namespace Automatonymous
             CompositeEventOptions options,
             params Event[] events)
         {
+            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+
+            var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
+
+            Event(propertyExpression, accessor, options, events);
+        }
+
+        /// <summary>
+        /// Adds a composite event to the state machine. A composite event is triggered when all
+        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// state since it would cause extra instances of the state machine to be created
+        /// </summary>
+        /// <param name="propertyExpression">The composite event</param>
+        /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
+        /// <param name="events">The events that must be raised before the composite event is raised</param>
+        protected void Event(Expression<Func<Event>> propertyExpression,
+            Expression<Func<TInstance, int>> trackingPropertyExpression,
+            params Event[] events)
+        {
+            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+
+            var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
+
+            Event(propertyExpression, accessor, CompositeEventOptions.None, events); 
+        }
+
+        /// <summary>
+        /// Adds a composite event to the state machine. A composite event is triggered when all
+        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// state since it would cause extra instances of the state machine to be created
+        /// </summary>
+        /// <param name="propertyExpression">The composite event</param>
+        /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
+        /// <param name="options">Options on the composite event</param>
+        /// <param name="events">The events that must be raised before the composite event is raised</param>
+        protected void Event(Expression<Func<Event>> propertyExpression,
+            Expression<Func<TInstance, int>> trackingPropertyExpression,
+            CompositeEventOptions options,
+            params Event[] events)
+        {
+            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+
+            var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
+
+            Event(propertyExpression, accessor, options, events); 
+        }
+
+
+        void Event(Expression<Func<Event>> propertyExpression,CompositeEventStatusAccessor<TInstance> accessor,CompositeEventOptions options,Event[] events)
+        {
             if (events == null)
                 throw new ArgumentNullException("events");
             if (events.Length > 31)
@@ -275,7 +356,6 @@ namespace Automatonymous
                 throw new ArgumentException("One or more events specified has not yet been initialized");
 
             PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
-            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
             string name = eventProperty.Name;
 
@@ -285,14 +365,14 @@ namespace Automatonymous
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
 
-            var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
+            CompositeEventStatus complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
             {
                 int flag = 1 << i;
 
-                var activity = new CompositeEventActivity<TInstance>(trackingPropertyInfo, flag, complete,
+                var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete,
                     this, @event);
 
                 Func<State<TInstance>, bool> filter = x => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);

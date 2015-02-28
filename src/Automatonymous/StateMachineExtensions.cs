@@ -33,7 +33,7 @@ namespace Automatonymous
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
             Func<T, Event> eventSelector, CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine<TInstance>
+            where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
             Event @event = eventSelector(stateMachine);
@@ -56,7 +56,7 @@ namespace Automatonymous
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TInstance>(this T machine, TInstance instance, Event @event,
             CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine<TInstance>
+            where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
             if (@event == null)
@@ -80,7 +80,7 @@ namespace Automatonymous
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TInstance, TData>(this T machine, TInstance instance, Event<TData> @event, TData data,
             CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine<TInstance>
+            where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
             if (@event == null)
@@ -104,7 +104,7 @@ namespace Automatonymous
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TInstance, TData>(this T stateMachine, TInstance instance,
             Func<T, Event<TData>> eventSelector, TData data, CancellationToken cancellationToken = default(CancellationToken))
-            where T : StateMachine<TInstance>
+            where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
             Event<TData> @event = eventSelector(stateMachine);

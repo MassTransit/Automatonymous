@@ -67,6 +67,7 @@
       <Link>SolutionVersion.cs</Link>
     </Compile>
     <Compile Include="ContextSetup.cs" />
+    <Compile Include="Saving_using_no_custom_types.cs" />
     <Compile Include="SingleConnectionSessionFactory.cs" />
     <Compile Include="SqlLiteSessionFactoryProvider.cs" />
     <Compile Include="Vanilla_Specs.cs" />
