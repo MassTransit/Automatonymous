@@ -46,7 +46,7 @@ namespace Automatonymous.Tests
         [Test]
         public void It_should_create_the_proper_event_type_for_simple_events()
         {
-            Assert.IsInstanceOf<SimpleEvent>(_machine.Hello);
+            Assert.IsInstanceOf<TriggerEvent>(_machine.Hello);
         }
 
         TestStateMachine _machine;

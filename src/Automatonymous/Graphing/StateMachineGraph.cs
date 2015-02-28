@@ -17,9 +17,7 @@ namespace Automatonymous.Graphing
     using System.Linq;
 
 
-#if !NETFX_CORE
     [Serializable]
-#endif
     public class StateMachineGraph
     {
         readonly Edge[] _edges;

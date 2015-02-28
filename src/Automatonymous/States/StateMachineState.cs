@@ -47,9 +47,9 @@ namespace Automatonymous.States
             _behaviors = new Dictionary<Event, ActivityBehaviorBuilder<TInstance>>();
             _ignoredEvents = new Dictionary<Event, StateEventFilter<TInstance>>();
 
-            Enter = new SimpleEvent(name + ".Enter");
+            Enter = new TriggerEvent(name + ".Enter");
             Ignore(Enter);
-            Leave = new SimpleEvent(name + ".Leave");
+            Leave = new TriggerEvent(name + ".Leave");
             Ignore(Leave);
 
             BeforeEnter = new DataEvent<State>(name + ".BeforeEnter");

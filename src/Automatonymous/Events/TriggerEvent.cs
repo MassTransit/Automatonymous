@@ -15,12 +15,12 @@ namespace Automatonymous.Events
     using System;
 
 
-    public class SimpleEvent :
+    public class TriggerEvent :
         Event
     {
         readonly string _name;
 
-        public SimpleEvent(string name)
+        public TriggerEvent(string name)
         {
             _name = name;
         }
@@ -40,7 +40,7 @@ namespace Automatonymous.Events
             return String.Compare(_name, other.Name, StringComparison.Ordinal);
         }
 
-        public bool Equals(SimpleEvent other)
+        public bool Equals(TriggerEvent other)
         {
             if (ReferenceEquals(null, other))
                 return false;
@@ -55,9 +55,9 @@ namespace Automatonymous.Events
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != typeof(SimpleEvent))
+            if (obj.GetType() != typeof(TriggerEvent))
                 return false;
-            return Equals((SimpleEvent)obj);
+            return Equals((TriggerEvent)obj);
         }
 
         public override int GetHashCode()

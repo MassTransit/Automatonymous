@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -15,10 +15,9 @@ namespace Automatonymous.Graphing
     using System;
 
 
-#if !NETFX_CORE
     [Serializable]
-#endif
-    public class Edge
+    public class Edge : 
+        IEquatable<Edge>
     {
         public Edge(Vertex from, Vertex to, string title)
         {
@@ -32,5 +31,36 @@ namespace Automatonymous.Graphing
         public Vertex From { get; private set; }
 
         public string Title { get; private set; }
+
+        public bool Equals(Edge other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return Equals(To, other.To) && Equals(From, other.From) && string.Equals(Title, other.Title);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
+            return Equals((Edge)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (To != null ? To.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (From != null ? From.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
     }
 }

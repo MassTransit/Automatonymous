@@ -22,7 +22,7 @@ namespace Automatonymous.Graphing
         StateMachineVisitor
         where TInstance : class
     {
-        readonly List<Edge> _edges = new List<Edge>();
+        readonly HashSet<Edge> _edges;
         readonly Dictionary<Event, Vertex> _events;
         readonly Dictionary<State, Vertex> _states;
         Vertex _currentEvent;
@@ -30,13 +30,28 @@ namespace Automatonymous.Graphing
 
         public GraphStateMachineVisitor()
         {
+            _edges = new HashSet<Edge>();
             _states = new Dictionary<State, Vertex>();
             _events = new Dictionary<Event, Vertex>();
         }
 
         public StateMachineGraph Graph
         {
-            get { return new StateMachineGraph(_states.Values.Union(_events.Values), _edges); }
+            get
+            {
+                var events = _events.Values
+                    .Where(e => _edges.Any(edge => edge.From.Equals(e)));
+
+                var states = _states.Values
+                    .Where(s => _edges.Any(edge => edge.From.Equals(s)||edge.To.Equals(s)));
+
+                var vertices = new HashSet<Vertex>(states.Union(events));
+
+                var edges = _edges
+                    .Where(e => vertices.Contains(e.From) && vertices.Contains(e.To));
+
+                return new StateMachineGraph(vertices, edges);
+            }
         }
 
         public void Visit(State state, Action<State> next)
@@ -126,6 +141,11 @@ namespace Automatonymous.Graphing
 
         void InspectCompositeEventActivity(CompositeEventActivity<TInstance> compositeActivity)
         {
+            Vertex previousEvent = _currentEvent;
+
+            _currentEvent = GetEventVertex(compositeActivity.Event);
+
+            _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
         }
 
         void InspectExceptionActivity(ExceptionActivity<TInstance> exceptionActivity, Action<Activity> next)

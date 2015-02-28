@@ -16,7 +16,7 @@ namespace Automatonymous.Events
 
 
     public class DataEvent<TData> :
-        SimpleEvent,
+        TriggerEvent,
         Event<TData>,
         IEquatable<DataEvent<TData>>
     {

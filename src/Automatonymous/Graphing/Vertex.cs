@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -14,10 +14,10 @@ namespace Automatonymous.Graphing
 {
     using System;
 
-#if !NETFX_CORE
+
     [Serializable]
-#endif
-    public class Vertex
+    public class Vertex : 
+        IEquatable<Vertex>
     {
         public Vertex(Type type, Type targetType, string title)
         {
@@ -31,5 +31,36 @@ namespace Automatonymous.Graphing
         public Type VertexType { get; private set; }
 
         public Type TargetType { get; private set; }
+
+        public bool Equals(Vertex other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            return string.Equals(Title, other.Title) && Equals(VertexType, other.VertexType) && Equals(TargetType, other.TargetType);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
+            return Equals((Vertex)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (Title != null ? Title.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (VertexType != null ? VertexType.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TargetType != null ? TargetType.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
     }
 }

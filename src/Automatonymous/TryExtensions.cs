@@ -25,7 +25,7 @@ namespace Automatonymous
             Func<ExceptionActivityBinder<TInstance>, ExceptionActivityBinder<TInstance>> handlers)
             where TInstance : class
         {
-            EventActivityBinder<TInstance> contextBinder = new SimpleEventActivityBinder<TInstance>(
+            EventActivityBinder<TInstance> contextBinder = new TriggerEventActivityBinder<TInstance>(
                 source.StateMachine, source.Event);
 
             contextBinder = context(contextBinder);

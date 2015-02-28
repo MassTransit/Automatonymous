@@ -48,7 +48,7 @@ namespace Automatonymous.Visualizer
             if (e.Vertex.VertexType == typeof(Event))
             {
                 e.VertexFormatter.FontColor = GraphvizColor.Black;
-                e.VertexFormatter.Shape = GraphvizVertexShape.Plaintext;
+                e.VertexFormatter.Shape = GraphvizVertexShape.Rectangle;
 
                 if (e.Vertex.TargetType != typeof(Event) && e.Vertex.TargetType != typeof(Exception))
                     e.VertexFormatter.Label += "<" + e.Vertex.TargetType.Name + ">";

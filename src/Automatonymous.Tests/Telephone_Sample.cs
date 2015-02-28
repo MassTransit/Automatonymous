@@ -14,8 +14,10 @@ namespace Automatonymous.Tests
 {
     namespace Telephone_Sample
     {
+        using System;
         using System.Diagnostics;
         using System.Threading.Tasks;
+        using Graphing;
         using NUnit.Framework;
 
 
@@ -47,6 +49,23 @@ namespace Automatonymous.Tests
                 _machine = new PhoneStateMachine();
             }
         }
+
+
+        [TestFixture]
+        public class Visualize
+        {
+            [Test]
+            public void Draw()
+            {
+                var machine = new PhoneStateMachine();
+                var generator = new Visualizer.StateMachineGraphvizGenerator(machine.GetGraph());
+
+                var dotFile = generator.CreateDotFile();
+
+                Console.WriteLine(dotFile);
+            }
+        }
+
 
         [TestFixture]
         public class A_short_time_on_hold

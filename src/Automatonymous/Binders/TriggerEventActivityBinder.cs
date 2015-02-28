@@ -16,7 +16,7 @@ namespace Automatonymous.Binders
     using System.Collections.Generic;
 
 
-    public class SimpleEventActivityBinder<TInstance> :
+    public class TriggerEventActivityBinder<TInstance> :
         EventActivityBinder<TInstance>
         where TInstance : class
     {
@@ -24,14 +24,14 @@ namespace Automatonymous.Binders
         readonly Event _event;
         readonly StateMachine<TInstance> _machine;
 
-        public SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event, params StateActivityBinder<TInstance>[] activities)
+        public TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, params StateActivityBinder<TInstance>[] activities)
         {
             _event = @event;
             _machine = machine;
             _activities = activities ?? new StateActivityBinder<TInstance>[0];
         }
 
-        SimpleEventActivityBinder(StateMachine<TInstance> machine, Event @event, StateActivityBinder<TInstance>[] activities,
+        TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, StateActivityBinder<TInstance>[] activities,
             params StateActivityBinder<TInstance>[] appendActivity)
         {
             _event = @event;
@@ -51,7 +51,7 @@ namespace Automatonymous.Binders
         {
             StateActivityBinder<TInstance> activityBinder = new EventStateActivityBinder<TInstance>(_event, activity);
 
-            return new SimpleEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }
 
         StateMachine<TInstance> EventActivityBinder<TInstance>.StateMachine

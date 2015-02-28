@@ -247,7 +247,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var @event = new SimpleEvent(name);
+            var @event = new TriggerEvent(name);
 
             property.SetValue(this, @event);
 
@@ -358,7 +358,7 @@ namespace Automatonymous
 
             string name = eventProperty.Name;
 
-            var @event = new SimpleEvent(name);
+            var @event = new TriggerEvent(name);
 
             eventProperty.SetValue(this, @event);
 
@@ -536,7 +536,7 @@ namespace Automatonymous
         /// <returns></returns>
         protected EventActivityBinder<TInstance> When(Event @event)
         {
-            return new SimpleEventActivityBinder<TInstance>(this, @event);
+            return new TriggerEventActivityBinder<TInstance>(this, @event);
         }
 
         /// <summary>
@@ -549,7 +549,7 @@ namespace Automatonymous
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, activityState.Enter);
+            EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, activityState.Enter);
 
             binder = activityCallback(binder);
 
@@ -566,7 +566,7 @@ namespace Automatonymous
         {
             State<TInstance> activityState = GetState(state.Name);
 
-            EventActivityBinder<TInstance> binder = new SimpleEventActivityBinder<TInstance>(this, activityState.Leave);
+            EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, activityState.Leave);
 
             binder = activityCallback(binder);
 
@@ -642,7 +642,7 @@ namespace Automatonymous
         {
             StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(@event);
 
-            return new SimpleEventActivityBinder<TInstance>(this, @event, activityBinder);
+            return new TriggerEventActivityBinder<TInstance>(this, @event, activityBinder);
         }
 
         /// <summary>
