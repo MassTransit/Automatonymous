@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Activities
 {
+    using System;
     using System.Threading.Tasks;
     using Accessors;
 
@@ -68,11 +69,12 @@ namespace Automatonymous.Activities
             await RaiseCompositeEvent(context);
         }
 
-        async Task RaiseCompositeEvent(BehaviorContext<TInstance> context)
+        Task RaiseCompositeEvent(BehaviorContext<TInstance> context)
         {
+            Console.WriteLine("Raising composite event: {0}", _event);
             BehaviorContext<TInstance> compositeEventContext = context.GetProxy(_event);
 
-            await _stateMachine.RaiseEvent(compositeEventContext);
+            return _stateMachine.RaiseEvent(compositeEventContext);
         }
     }
 }

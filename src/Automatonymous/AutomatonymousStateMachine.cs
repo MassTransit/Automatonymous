@@ -279,7 +279,6 @@ namespace Automatonymous
             var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
             Event(propertyExpression, accessor, CompositeEventOptions.None, events);
-            Event(propertyExpression, trackingPropertyExpression, CompositeEventOptions.None, events);
         }
 
         /// <summary>
