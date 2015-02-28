@@ -39,6 +39,16 @@ namespace Automatonymous.Behaviors
         {
             return _activity.Execute(context, Behavior.Empty<TInstance, T>());
         }
+
+        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        {
+            return _activity.Compensate(context, Behavior.Empty<TInstance, T>());
+        }
+
+        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        {
+            return _activity.Compensate(context, Behavior.Empty<TInstance>());
+        }
     }
 
 
@@ -55,6 +65,11 @@ namespace Automatonymous.Behaviors
         Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)
         {
             return _activity.Execute(context, Behavior.Empty<TInstance, TData>());
+        }
+
+        Task Behavior<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        {
+            return _activity.Compensate(context, Behavior.Empty<TInstance, TData>());
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)

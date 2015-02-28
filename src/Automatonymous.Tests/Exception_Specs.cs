@@ -60,18 +60,16 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(t => t
-                            .Then(context => context.Instance.Called = true)
-                            .Then(_ => { throw new ApplicationException("Boom!"); })
-                            .Then(context => context.Instance.NotCalled = false),
-                            h => h
-                                .Handle<Exception>(ex => ex
-                                    .Then(context =>
-                                    {
-                                        context.Instance.ExceptionMessage = context.Data.Message;
-                                        context.Instance.ExceptionType = context.Data.GetType();
-                                    })
-                                    .TransitionTo(Failed))));
+                        .Then(context => context.Instance.Called = true)
+                        .Then(_ => { throw new ApplicationException("Boom!"); })
+                        .Then(context => context.Instance.NotCalled = false)
+                        .Catch<Exception>(x => x
+                            .Then(context =>
+                            {
+                                context.Instance.ExceptionMessage = context.Exception.Message;
+                                context.Instance.ExceptionType = context.Exception.GetType();
+                            })
+                            .TransitionTo(Failed)));
             }
 
             public State Failed { get; private set; }
@@ -161,19 +159,18 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(x => x.Then(context => context.Instance.Called = true)
-                            .Then(_ => { throw new ApplicationException("Boom!"); })
-                            .Then(context => context.Instance.NotCalled = false),
-                            x => x.Handle<Exception>(ex =>
-                            {
-                                return ex
-                                    .Then(context =>
-                                    {
-                                        context.Instance.ExceptionMessage = context.Data.Item2.Message;
-                                        context.Instance.ExceptionType = context.Data.Item2.GetType();
-                                    })
-                                    .TransitionTo(Failed);
-                            })));
+                        .Then(context => context.Instance.Called = true)
+                        .Then(_ => { throw new ApplicationException("Boom!"); })
+                        .Then(context => context.Instance.NotCalled = false)
+                        .Catch<Exception>(ex =>ex
+                                .Then(context =>
+                                {
+                                    context.Instance.ExceptionMessage = context.Data.Item2.Message;
+                                    context.Instance.ExceptionType = context.Data.Item2.GetType();
+                                })
+                                .TransitionTo(Failed);
+                        })))
+                ;
             }
 
             public State Failed { get; private set; }

@@ -19,16 +19,17 @@ namespace Automatonymous.Binders
     /// Routes event activities to an activities
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
-    public class EventStateActivityBinder<TInstance> :
+    public class CompensationStateActivityBinder<TInstance> :
         StateActivityBinder<TInstance>
+        where TInstance : class
     {
-        readonly Activity<TInstance> _activity;
+        readonly EventActivities<TInstance> _activities;
         readonly Event _event;
 
-        public EventStateActivityBinder(Event @event, Activity<TInstance> activity)
+        public CompensationStateActivityBinder(Event @event, EventActivities<TInstance> activities)
         {
             _event = @event;
-            _activity = activity;
+            _activities = activities;
         }
 
         public bool IsStateTransitionEvent(State state)
@@ -39,12 +40,18 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            state.Bind(_event, _activity);
+            foreach (var activity in _activities.GetStateActivityBinders())
+            {
+                activity.Bind(state);
+            }
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
-            builder.Add(_activity);
+            foreach (var activity in _activities.GetStateActivityBinders())
+            {
+                activity.Bind(builder);
+            }
         }
     }
 }

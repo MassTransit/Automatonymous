@@ -54,6 +54,18 @@ namespace Automatonymous.Binders
             return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }
 
+        EventActivityBinder<TInstance> EventActivityBinder<TInstance>.Catch<T>(
+            Func<CompensateActivityBinder<TInstance, T>, CompensateActivityBinder<TInstance, T>> activityCallback)
+        {
+            CompensateActivityBinder<TInstance, T> binder = new ExceptionCompensationActivityBinder<TInstance, T>();
+
+            binder = activityCallback(binder);
+
+            StateActivityBinder<TInstance> activityBinder = new CompensationStateActivityBinder<TInstance>(_event, binder);
+
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
+        }
+
         StateMachine<TInstance> EventActivityBinder<TInstance>.StateMachine
         {
             get { return _machine; }
@@ -62,6 +74,44 @@ namespace Automatonymous.Binders
         public IEnumerable<StateActivityBinder<TInstance>> GetStateActivityBinders()
         {
             return _activities;
+        }
+    }
+
+
+    public class ExceptionCompensationActivityBinder<TInstance, TException> :
+        CompensateActivityBinder<TInstance,TException>
+        where TInstance : class
+        where TException : Exception
+    {
+        public IEnumerable<StateActivityBinder<TInstance>> GetStateActivityBinders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public StateMachine<TInstance> StateMachine
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Event Event
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public CompensateActivityBinder<TInstance, TException> Add(Activity<TInstance> activity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CompensateActivityBinder<TInstance, T> Catch<T>(Func<CompensateActivityBinder<TInstance, T>, CompensateActivityBinder<TInstance, T>> activityCallback) where T : Exception
+        {
+            CompensateActivityBinder<TInstance, T> binder = new ExceptionCompensationActivityBinder<TInstance, T>();
+
+            binder = activityCallback(binder);
+
+            StateActivityBinder<TInstance> activityBinder = new CompensationStateActivityBinder<TInstance>(_event, binder);
+
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }
     }
 }

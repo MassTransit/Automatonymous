@@ -17,31 +17,13 @@ namespace Automatonymous.Binders
 
 
     public class IgnoreEventStateActivityBinder<TInstance> :
-        StateActivityBinder<TInstance>,
-        Activity<TInstance>
+        StateActivityBinder<TInstance>
     {
         readonly Event _event;
 
         public IgnoreEventStateActivityBinder(Event @event)
         {
             _event = @event;
-        }
-
-        public void Accept(StateMachineVisitor visitor)
-        {
-        }
-
-        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-        }
-
-        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
-        {
-        }
-
-        public Activity<TInstance> Activity
-        {
-            get { return this; }
         }
 
         public bool IsStateTransitionEvent(State state)
@@ -62,8 +44,7 @@ namespace Automatonymous.Binders
 
 
     public class IgnoreEventStateActivityBinder<TInstance, TData> :
-        StateActivityBinder<TInstance>,
-        Activity<TInstance>
+        StateActivityBinder<TInstance>
     {
         readonly Event<TData> _event;
         readonly StateMachineEventFilter<TInstance, TData> _filter;
@@ -72,23 +53,6 @@ namespace Automatonymous.Binders
         {
             _event = @event;
             _filter = filter;
-        }
-
-        public void Accept(StateMachineVisitor visitor)
-        {
-        }
-
-        public async Task Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-        }
-
-        public async Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
-        {
-        }
-
-        public Activity<TInstance> Activity
-        {
-            get { return this; }
         }
 
         public bool IsStateTransitionEvent(State state)

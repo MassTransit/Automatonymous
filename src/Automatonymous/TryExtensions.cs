@@ -17,44 +17,44 @@ namespace Automatonymous
     using Binders;
 
 
-    public static class TryExtensions
-    {
-        public static EventActivityBinder<TInstance> Try<TInstance>(
-            this EventActivityBinder<TInstance> source,
-            Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> context,
-            Func<ExceptionActivityBinder<TInstance>, ExceptionActivityBinder<TInstance>> handlers)
-            where TInstance : class
-        {
-            EventActivityBinder<TInstance> contextBinder = new TriggerEventActivityBinder<TInstance>(
-                source.StateMachine, source.Event);
-
-            contextBinder = context(contextBinder);
-
-            ExceptionActivityBinder<TInstance> exceptionBinder =
-                new ExceptionOnlyActivityBinder<TInstance>(source.StateMachine, source.Event);
-
-            exceptionBinder = handlers(exceptionBinder);
-
-            return source.Add(new TryActivity<TInstance>(contextBinder, exceptionBinder.GetActivities()));
-        }
-
-        public static EventActivityBinder<TInstance, TData> Try<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source,
-            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> context,
-            Func<ExceptionActivityBinder<TInstance, TData>, ExceptionActivityBinder<TInstance, TData>> handlers)
-            where TInstance : class
-        {
-            EventActivityBinder<TInstance, TData> contextBinder = new DataEventActivityBinder<TInstance, TData>(
-                source.StateMachine, source.Event);
-
-            contextBinder = context(contextBinder);
-
-            ExceptionActivityBinder<TInstance, TData> exceptionBinder =
-                new ExceptionDataActivityBinder<TInstance, TData>(source.StateMachine, source.Event);
-
-            exceptionBinder = handlers(exceptionBinder);
-
-            return source.Add(new TryActivity<TInstance, TData>(source.Event, contextBinder, exceptionBinder.GetActivities()));
-        }
-    }
+//    public static class TryExtensions
+//    {
+//        public static EventActivityBinder<TInstance> Try<TInstance>(
+//            this EventActivityBinder<TInstance> source,
+//            Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> context,
+//            Func<ExceptionActivityBinder<TInstance>, ExceptionActivityBinder<TInstance>> handlers)
+//            where TInstance : class
+//        {
+//            EventActivityBinder<TInstance> contextBinder = new TriggerEventActivityBinder<TInstance>(
+//                source.StateMachine, source.Event);
+//
+//            contextBinder = context(contextBinder);
+//
+//            ExceptionActivityBinder<TInstance> exceptionBinder =
+//                new ExceptionOnlyActivityBinder<TInstance>(source.StateMachine, source.Event);
+//
+//            exceptionBinder = handlers(exceptionBinder);
+//
+//            return source.Add(new TryActivity<TInstance>(contextBinder, exceptionBinder.GetActivities()));
+//        }
+//
+//        public static EventActivityBinder<TInstance, TData> Try<TInstance, TData>(
+//            this EventActivityBinder<TInstance, TData> source,
+//            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> context,
+//            Func<ExceptionActivityBinder<TInstance, TData>, ExceptionActivityBinder<TInstance, TData>> handlers)
+//            where TInstance : class
+//        {
+//            EventActivityBinder<TInstance, TData> contextBinder = new DataEventActivityBinder<TInstance, TData>(
+//                source.StateMachine, source.Event);
+//
+//            contextBinder = context(contextBinder);
+//
+//            ExceptionActivityBinder<TInstance, TData> exceptionBinder =
+//                new ExceptionDataActivityBinder<TInstance, TData>(source.StateMachine, source.Event);
+//
+//            exceptionBinder = handlers(exceptionBinder);
+//
+//            return source.Add(new TryActivity<TInstance, TData>(source.Event, contextBinder, exceptionBinder.GetActivities()));
+//        }
+//    }
 }

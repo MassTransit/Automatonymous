@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using NUnit.Framework;
 
@@ -19,18 +20,6 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Using_an_asynchronous_activity
     {
-        [Test]
-        public async void Should_capture_the_value()
-        {
-            var claim = new TestInstance();
-            var machine = new TestStateMachine();
-
-            await machine.RaiseEvent(claim, machine.Create, new CreateInstance());
-
-            Assert.AreEqual("ExecuteAsync", claim.Value);
-        }
-
-
         class TestInstance
         {
             public State CurrentState { get; set; }
@@ -41,12 +30,18 @@ namespace Automatonymous.Tests
         class SetValueAsyncActivity :
             Activity<TestInstance, CreateInstance>
         {
-            public async Task Execute(BehaviorContext<TestInstance, CreateInstance> context, Behavior<TestInstance, CreateInstance> next)
+            async Task Activity<TestInstance, CreateInstance>.Execute(BehaviorContext<TestInstance, CreateInstance> context, Behavior<TestInstance, CreateInstance> next)
             {
                 context.Instance.Value = "ExecuteAsync";
             }
 
-            public void Accept(StateMachineVisitor visitor)
+            Task Activity<TestInstance, CreateInstance>.Compensate<TException>(BehaviorExceptionContext<TestInstance, CreateInstance, TException> context,
+                Behavior<TestInstance, CreateInstance> next)
+            {
+                return next.Compensate(context);
+            }
+
+            void Visitable.Accept(StateMachineVisitor visitor)
             {
                 visitor.Visit(this);
             }
@@ -80,6 +75,18 @@ namespace Automatonymous.Tests
             public State Running { get; private set; }
 
             public Event<CreateInstance> Create { get; private set; }
+        }
+
+
+        [Test]
+        public async void Should_capture_the_value()
+        {
+            var claim = new TestInstance();
+            var machine = new TestStateMachine();
+
+            await machine.RaiseEvent(claim, machine.Create, new CreateInstance());
+
+            Assert.AreEqual("ExecuteAsync", claim.Value);
         }
     }
 }

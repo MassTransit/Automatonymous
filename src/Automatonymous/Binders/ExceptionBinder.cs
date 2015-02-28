@@ -16,14 +16,14 @@ namespace Automatonymous.Binders
     using Activities;
 
 
-    public interface ExceptionBinder<TInstance>
-    {
-        IEnumerable<ExceptionActivity<TInstance>> GetActivities();
-    }
-
-
-    public interface ExceptionBinder<TInstance, TData>
-    {
-        IEnumerable<ExceptionActivity<TInstance, TData>> GetActivities();
-    }
+//    public interface ExceptionBinder<TInstance>
+//    {
+//        IEnumerable<ExceptionActivity<TInstance>> GetActivities();
+//    }
+//
+//
+//    public interface ExceptionBinder<TInstance, TData>
+//    {
+//        IEnumerable<ExceptionActivity<TInstance, TData>> GetActivities();
+//    }
 }

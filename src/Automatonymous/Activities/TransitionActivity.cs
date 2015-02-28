@@ -52,6 +52,16 @@ namespace Automatonymous.Activities
             await next.Execute(context);
         }
 
+        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        {
+            return next.Compensate(context);
+        }
+
+        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        {
+            return next.Compensate(context);
+        }
+
         async Task Transition(BehaviorContext<TInstance> context)
         {
             State<TInstance> currentState = await _currentStateAccessor.Get(context);

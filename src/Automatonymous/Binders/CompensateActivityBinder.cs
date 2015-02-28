@@ -15,36 +15,38 @@ namespace Automatonymous.Binders
     using System;
 
 
-    public interface EventActivityBinder<TInstance> :
+    public interface CompensateActivityBinder<TInstance, TException> :
         EventActivities<TInstance>
         where TInstance : class
+        where TException : Exception
     {
         StateMachine<TInstance> StateMachine { get; }
 
         Event Event { get; }
 
-        EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
+        CompensateActivityBinder<TInstance, TException> Add(Activity<TInstance> activity);
 
-        EventActivityBinder<TInstance> Catch<T>(
+        CompensateActivityBinder<TInstance, T> Catch<T>(
             Func<CompensateActivityBinder<TInstance, T>, CompensateActivityBinder<TInstance, T>> activityCallback)
             where T : Exception;
     }
 
 
-    public interface EventActivityBinder<TInstance, TData> :
+    public interface CompensateActivityBinder<TInstance, TData, TException> :
         EventActivities<TInstance>
         where TInstance : class
+        where TException : Exception
     {
         StateMachine<TInstance> StateMachine { get; }
 
         Event<TData> Event { get; }
 
-        EventActivityBinder<TInstance, TData> Add(Activity<TInstance> activity);
+        CompensateActivityBinder<TInstance, TData, TException> Add(Activity<TInstance> activity);
 
-        EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
+        CompensateActivityBinder<TInstance, TData, TException> Add(Activity<TInstance, TData> activity);
 
-        EventActivityBinder<TInstance> Catch<T>(
-            Func<CompensateActivityBinder<TInstance, TData, T>, CompensateActivityBinder<TInstance, TData, T>> activityCallback)
+        CompensateActivityBinder<TInstance, TData, T> Catch<T>(
+            Func<CompensateActivityBinder<TInstance,TData,T>, CompensateActivityBinder<TInstance,TData,T>> activityCallback)
             where T : Exception;
     }
 }

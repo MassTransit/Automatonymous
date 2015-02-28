@@ -12,7 +12,9 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Behaviors
 {
+    using System;
     using System.Threading.Tasks;
+    using Contexts;
 
 
     public class ActivityBehavior<TInstance> :
@@ -36,9 +38,24 @@ namespace Automatonymous.Behaviors
             });
         }
 
-        Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
+        async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            return _activity.Execute(context, _next);
+            Exception faultException = null;
+            try
+            {
+                await _activity.Execute(context, _next);
+            }
+            catch (Exception exception)
+            {
+                faultException = exception;
+            }
+
+            if(faultException != null)
+            {
+                var exceptionContext = new ExceptionBehaviorContextProxy<TInstance, Exception>(context, faultException);
+
+                await _next.Compensate(exceptionContext);
+            }
         }
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
@@ -46,6 +63,18 @@ namespace Automatonymous.Behaviors
             var behavior = new SplitBehavior<TInstance, T>(_next);
 
             return _activity.Execute(context, behavior);
+        }
+
+        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        {
+            var behavior = new SplitBehavior<TInstance, T>(_next);
+
+            return _activity.Compensate(context, behavior);
+        }
+
+        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        {
+            return _activity.Compensate(context, _next);
         }
     }
 }

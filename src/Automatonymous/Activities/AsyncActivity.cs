@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -44,6 +44,17 @@ namespace Automatonymous.Activities
 
             await next.Execute(context);
         }
+
+        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        {
+            return next.Compensate(context);
+        }
+
+        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
+            Behavior<TInstance, T> next)
+        {
+            return next.Compensate(context);
+        }
     }
 
 
@@ -67,6 +78,12 @@ namespace Automatonymous.Activities
             await _asyncAction(context);
 
             await next.Execute(context);
+        }
+
+        Task Activity<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
+            Behavior<TInstance, TData> next)
+        {
+            return next.Compensate(context);
         }
     }
 }

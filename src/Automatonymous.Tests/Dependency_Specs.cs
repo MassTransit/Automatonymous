@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using Activities;
     using NUnit.Framework;
@@ -20,12 +21,6 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Having_a_dependency_available
     {
-        [Test]
-        public void Should_capture_the_value()
-        {
-            Assert.AreEqual("79", _claim.Value);
-        }
-
         ClaimAdjustmentInstance _claim;
         InstanceStateMachine _machine;
 
@@ -68,6 +63,13 @@ namespace Automatonymous.Tests
                 Behavior<ClaimAdjustmentInstance, CreateClaim> next)
             {
                 context.Instance.Value = _calculator.Add(context.Data.X, context.Data.Y);
+            }
+
+            public Task Compensate<TException>(BehaviorExceptionContext<ClaimAdjustmentInstance, CreateClaim, TException> context,
+                Behavior<ClaimAdjustmentInstance, CreateClaim> next)
+                where TException : Exception
+            {
+                return next.Compensate(context);
             }
 
             public void Accept(StateMachineVisitor visitor)
@@ -134,6 +136,13 @@ namespace Automatonymous.Tests
             {
                 return (x + y).ToString();
             }
+        }
+
+
+        [Test]
+        public void Should_capture_the_value()
+        {
+            Assert.AreEqual("79", _claim.Value);
         }
     }
 }

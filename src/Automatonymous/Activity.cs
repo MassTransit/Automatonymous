@@ -1,4 +1,4 @@
-// Copyright 2011-2014 Chris Patterson, Dru Sellers
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using System;
     using System.Threading.Tasks;
 
 
@@ -43,6 +44,28 @@ namespace Automatonymous
         /// <param name="next">The behavior that follows this activity</param>
         /// <returns>An awaitable task</returns>
         Task Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next);
+
+        /// <summary>
+        /// The exception path through the behavior allows activities to catch and handle exceptions
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+            where TException : Exception;
+
+        /// <summary>
+        /// The exception path through the behavior allows activities to catch and handle exceptions
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        Task Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+            where TException : Exception;
     }
 
 
@@ -56,5 +79,16 @@ namespace Automatonymous
         /// <param name="next">The behavior that follows this activity</param>
         /// <returns>An awaitable task</returns>
         Task Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next);
+
+        /// <summary>
+        /// The exception path through the behavior allows activities to catch and handle exceptions
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+            where TException : Exception;
     }
 }

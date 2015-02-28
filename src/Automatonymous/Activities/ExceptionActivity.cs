@@ -13,11 +13,20 @@
 namespace Automatonymous.Activities
 {
     using System;
+    using System.Threading.Tasks;
 
 
-    public interface ExceptionActivity<TInstance> :
-        Activity<TInstance, Exception>
+    public interface ExceptionActivity<TInstance, TException> :
+        Activity
     {
+        /// <summary>
+        /// Execute the activity with the given behavior context
+        /// </summary>
+        /// <param name="context">The behavior context</param>
+        /// <param name="next">The behavior that follows this activity</param>
+        /// <returns>An awaitable task</returns>
+        Task Execute(BehaviorContext<TInstance, TException> context, Behavior<TInstance, TException> next);
+
         Type ExceptionType { get; }
 
         Event Event { get; }
@@ -26,14 +35,14 @@ namespace Automatonymous.Activities
     }
 
 
-    public interface ExceptionActivity<TInstance, TData> :
-        Activity<TInstance, Tuple<TData, Exception>>
-    {
-        Type ExceptionType { get; }
-
-        Event<Tuple<TData, Exception>> Event { get; }
-
-        BehaviorContext<TInstance, Tuple<TData, Exception>> GetExceptionContext(BehaviorContext<TInstance, TData> context,
-            Exception exception);
-    }
+//    public interface ExceptionActivity<TInstance, TData> :
+//        Activity<TInstance, Tuple<TData, Exception>>
+//    {
+//        Type ExceptionType { get; }
+//
+//        Event<Tuple<TData, Exception>> Event { get; }
+//
+//        BehaviorContext<TInstance, Tuple<TData, Exception>> GetExceptionContext(BehaviorContext<TInstance, TData> context,
+//            Exception exception);
+//    }
 }

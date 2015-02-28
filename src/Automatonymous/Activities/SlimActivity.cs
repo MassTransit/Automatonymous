@@ -42,5 +42,10 @@ namespace Automatonymous.Activities
 
             await _activity.Execute(context, upconvert);
         }
+
+        Task Activity<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        {
+            return next.Compensate(context);
+        }
     }
 }

@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using System;
     using Activities;
     using Binders;
 
@@ -30,6 +31,27 @@ namespace Automatonymous
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
             return source.Add(activity);
+        }
+
+        /// <summary>
+        /// Transition the state machine to the specified state in response to an exception
+        /// </summary>
+        /// <typeparam name="TInstance"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="toState"></param>
+        /// <returns></returns>
+        public static CompensateActivityBinder<TInstance, TException> TransitionTo<TInstance, TException>(
+            this CompensateActivityBinder<TInstance, TException> source, State toState)
+            where TInstance : class where TException : Exception
+        {
+            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+
+            var compensateActivity = new CompensateActivity<TInstance>(activity);
+
+            return source.Add(compensateActivity);
         }
 
         /// <summary>

@@ -57,6 +57,7 @@
     <Compile Include="Accessors\StructCompositeEventStatusAccessor.cs" />
     <Compile Include="Activities\ActionActivity.cs" />
     <Compile Include="Activities\AsyncFactoryActivity.cs" />
+    <Compile Include="Activities\CompensateActivity.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />
     <Compile Include="Activities\DataConverterActivity.cs" />
     <Compile Include="Activities\ConditionalEventActivity.cs" />
@@ -79,6 +80,8 @@
     <Compile Include="Behaviors\LastBehavior.cs" />
     <Compile Include="Behaviors\SplitBehavior.cs" />
     <Compile Include="Behaviors\WidenBehavior.cs" />
+    <Compile Include="Binders\CompensateActivityBinder.cs" />
+    <Compile Include="Binders\CompensationStateActivityBinder.cs" />
     <Compile Include="Binders\DataEventActivityBinder.cs" />
     <Compile Include="Binders\EventActivities.cs" />
     <Compile Include="Binders\EventActivityBinder.cs" />
@@ -93,6 +96,7 @@
     <Compile Include="CompositeEventOptions.cs" />
     <Compile Include="Contexts\EventBehaviorContext.cs" />
     <Compile Include="Contexts\BehaviorContextProxy.cs" />
+    <Compile Include="Contexts\ExceptionBehaviorContextProxy.cs" />
     <Compile Include="Contexts\StateMachineInstanceContext.cs" />
     <Compile Include="Contexts\PayloadCache.cs" />
     <Compile Include="Contexts\StateMachineEventContext.cs" />

@@ -43,9 +43,24 @@ namespace Automatonymous.Behaviors
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            var nextContext = context as BehaviorContext<TInstance, TData> ?? context.GetProxy(_event, _data);
+            BehaviorContext<TInstance, TData> nextContext = context as BehaviorContext<TInstance, TData> ?? context.GetProxy(_event, _data);
 
             return _next.Execute(nextContext);
+        }
+
+        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        {
+            BehaviorExceptionContext<TInstance, TData, TException> nextContext =
+                context as BehaviorExceptionContext<TInstance, TData, TException> ?? context.GetProxy(_event, _data);
+
+            return _next.Compensate(nextContext);
+        }
+
+        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        {
+            BehaviorExceptionContext<TInstance, TData, TException> nextContext = context.GetProxy(_event, _data);
+
+            return _next.Compensate(nextContext);
         }
     }
 }

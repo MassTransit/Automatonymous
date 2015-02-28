@@ -58,5 +58,10 @@ namespace Automatonymous.Activities
         {
             visitor.Visit(this, x => _exceptionHandler.Accept(visitor));
         }
+
+        Task Activity<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        {
+            return next.Compensate(context);
+        }
     }
 }
