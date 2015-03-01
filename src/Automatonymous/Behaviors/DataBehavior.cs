@@ -20,12 +20,12 @@ namespace Automatonymous.Behaviors
     /// </summary>
     /// <typeparam name="TInstance">The instance type</typeparam>
     /// <typeparam name="TData">The event data type</typeparam>
-    public class SplitBehavior<TInstance, TData> :
+    public class DataBehavior<TInstance, TData> :
         Behavior<TInstance, TData>
     {
         readonly Behavior<TInstance> _behavior;
 
-        public SplitBehavior(Behavior<TInstance> behavior)
+        public DataBehavior(Behavior<TInstance> behavior)
         {
             _behavior = behavior;
         }
@@ -39,6 +39,7 @@ namespace Automatonymous.Behaviors
         {
             return _behavior.Execute(context);
         }
+
         Task Behavior<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
             return _behavior.Compensate(context);

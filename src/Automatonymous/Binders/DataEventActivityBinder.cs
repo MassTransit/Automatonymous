@@ -21,32 +21,33 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance, TData>
         where TInstance : class
     {
-        readonly StateActivityBinder<TInstance>[] _activities;
+        readonly ActivityBinder<TInstance>[] _activities;
         readonly Event<TData> _event;
         readonly StateMachineEventFilter<TInstance, TData> _filter;
         readonly StateMachine<TInstance> _machine;
 
-        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event, params StateActivityBinder<TInstance>[] activities)
+        public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
+            params ActivityBinder<TInstance>[] activities)
         {
             _event = @event;
-            _activities = activities ?? new StateActivityBinder<TInstance>[0];
+            _activities = activities ?? new ActivityBinder<TInstance>[0];
             _machine = machine;
         }
 
         public DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            StateMachineEventFilter<TInstance, TData> filter, params StateActivityBinder<TInstance>[] activities)
+            StateMachineEventFilter<TInstance, TData> filter, params ActivityBinder<TInstance>[] activities)
         {
             _event = @event;
-            _activities = activities ?? new StateActivityBinder<TInstance>[0];
+            _activities = activities ?? new ActivityBinder<TInstance>[0];
             _machine = machine;
             _filter = filter;
         }
 
         DataEventActivityBinder(StateMachine<TInstance> machine, Event<TData> @event,
-            StateMachineEventFilter<TInstance, TData> filter, StateActivityBinder<TInstance>[] activities,
-            params StateActivityBinder<TInstance>[] appendActivity)
+            StateMachineEventFilter<TInstance, TData> filter, ActivityBinder<TInstance>[] activities,
+            params ActivityBinder<TInstance>[] appendActivity)
         {
-            _activities = new StateActivityBinder<TInstance>[activities.Length + appendActivity.Length];
+            _activities = new ActivityBinder<TInstance>[activities.Length + appendActivity.Length];
             Array.Copy(activities, 0, _activities, 0, activities.Length);
             Array.Copy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
 
@@ -77,17 +78,29 @@ namespace Automatonymous.Binders
                 CreateStateActivityBinder(activity));
         }
 
+        EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Catch<T>(
+            Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback)
+        {
+            ExceptionActivityBinder<TInstance, TData, T> binder = new CatchExceptionActivityBinder<TInstance, TData, T>(_machine, _event);
+
+            binder = activityCallback(binder);
+
+            ActivityBinder<TInstance> activityBinder = new CompensateActivityBinder<TInstance, T>(_event, binder);
+
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, activityBinder);
+        }
+
         StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine
         {
             get { return _machine; }
         }
 
-        public IEnumerable<StateActivityBinder<TInstance>> GetStateActivityBinders()
+        public IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders()
         {
             return _activities;
         }
 
-        StateActivityBinder<TInstance> CreateStateActivityBinder(Activity<TInstance, TData> activity)
+        ActivityBinder<TInstance> CreateStateActivityBinder(Activity<TInstance, TData> activity)
         {
             if (_filter == null)
                 return CreateEventActivity(activity);
@@ -95,18 +108,18 @@ namespace Automatonymous.Binders
             return CreateConditionalEventActivity(activity);
         }
 
-        StateActivityBinder<TInstance> CreateConditionalEventActivity(Activity<TInstance, TData> activity)
+        ActivityBinder<TInstance> CreateConditionalEventActivity(Activity<TInstance, TData> activity)
         {
             var conditionalEventActivity = new ConditionalEventActivity<TInstance, TData>(activity, _filter);
 
             return CreateEventActivity(conditionalEventActivity);
         }
 
-        StateActivityBinder<TInstance> CreateEventActivity(Activity<TInstance, TData> activity)
+        ActivityBinder<TInstance> CreateEventActivity(Activity<TInstance, TData> activity)
         {
             var converterActivity = new DataConverterActivity<TInstance, TData>(activity);
 
-            return new EventStateActivityBinder<TInstance>(_event, converterActivity);
+            return new ExecuteActivityBinder<TInstance>(_event, converterActivity);
         }
     }
 }

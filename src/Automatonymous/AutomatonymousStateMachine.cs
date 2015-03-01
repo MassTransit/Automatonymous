@@ -440,48 +440,48 @@ namespace Automatonymous
 
         protected void During(State state, params EventActivities<TInstance>[] activities)
         {
-            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state, stateActivitiesBinder);
+            BindActivitiesToState(state, activitiesBinder);
         }
 
         protected void During(State state1, State state2, params EventActivities<TInstance>[] activities)
         {
-            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, stateActivitiesBinder);
-            BindActivitiesToState(state2, stateActivitiesBinder);
+            BindActivitiesToState(state1, activitiesBinder);
+            BindActivitiesToState(state2, activitiesBinder);
         }
 
         protected void During(State state1, State state2, State state3, params EventActivities<TInstance>[] activities)
         {
-            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, stateActivitiesBinder);
-            BindActivitiesToState(state2, stateActivitiesBinder);
-            BindActivitiesToState(state3, stateActivitiesBinder);
+            BindActivitiesToState(state1, activitiesBinder);
+            BindActivitiesToState(state2, activitiesBinder);
+            BindActivitiesToState(state3, activitiesBinder);
         }
 
         protected void During(State state1, State state2, State state3, State state4,
             params EventActivities<TInstance>[] activities)
         {
-            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            BindActivitiesToState(state1, stateActivitiesBinder);
-            BindActivitiesToState(state2, stateActivitiesBinder);
-            BindActivitiesToState(state3, stateActivitiesBinder);
-            BindActivitiesToState(state4, stateActivitiesBinder);
+            BindActivitiesToState(state1, activitiesBinder);
+            BindActivitiesToState(state2, activitiesBinder);
+            BindActivitiesToState(state3, activitiesBinder);
+            BindActivitiesToState(state4, activitiesBinder);
         }
 
         protected void During(IEnumerable<State> states, params EventActivities<TInstance>[] activities)
         {
-            StateActivityBinder<TInstance>[] stateActivitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             foreach (State state in states)
-                BindActivitiesToState(state, stateActivitiesBinder);
+                BindActivitiesToState(state, activitiesBinder);
         }
 
-        void BindActivitiesToState(State state, IEnumerable<StateActivityBinder<TInstance>> eventActivities)
+        void BindActivitiesToState(State state, IEnumerable<ActivityBinder<TInstance>> eventActivities)
         {
             State<TInstance> activityState = GetState(state.Name);
 
@@ -522,7 +522,7 @@ namespace Automatonymous
 
         void BindTransitionEvents(State<TInstance> state, IEnumerable<EventActivities<TInstance>> activities)
         {
-            IEnumerable<StateActivityBinder<TInstance>> eventActivities = activities
+            IEnumerable<ActivityBinder<TInstance>> eventActivities = activities
                 .SelectMany(activity => activity.GetStateActivityBinders().Where(x => x.IsStateTransitionEvent(state)));
 
             foreach (var eventActivity in eventActivities)
@@ -640,7 +640,7 @@ namespace Automatonymous
         /// <returns></returns>
         protected EventActivities<TInstance> Ignore(Event @event)
         {
-            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(@event);
+            ActivityBinder<TInstance> activityBinder = new IgnoreEventActivityBinder<TInstance>(@event);
 
             return new TriggerEventActivityBinder<TInstance>(this, @event, activityBinder);
         }
@@ -653,7 +653,7 @@ namespace Automatonymous
         /// <returns></returns>
         protected EventActivities<TInstance> Ignore<TData>(Event<TData> @event)
         {
-            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance>(@event);
+            ActivityBinder<TInstance> activityBinder = new IgnoreEventActivityBinder<TInstance>(@event);
 
             return new DataEventActivityBinder<TInstance, TData>(this, @event, activityBinder);
         }
@@ -668,7 +668,7 @@ namespace Automatonymous
         protected EventActivities<TInstance> Ignore<TData>(Event<TData> @event,
             StateMachineEventFilter<TInstance, TData> filter)
         {
-            StateActivityBinder<TInstance> activityBinder = new IgnoreEventStateActivityBinder<TInstance, TData>(@event, filter);
+            ActivityBinder<TInstance> activityBinder = new IgnoreEventActivityBinder<TInstance, TData>(@event, filter);
 
             return new DataEventActivityBinder<TInstance, TData>(this, @event, activityBinder);
         }

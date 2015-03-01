@@ -44,6 +44,8 @@ namespace Automatonymous.Tests
             public Type ExceptionType { get; set; }
             public string ExceptionMessage { get; set; }
             public State CurrentState { get; set; }
+
+            public bool ShouldNotBeCalled { get; set; }
         }
 
 
@@ -63,7 +65,108 @@ namespace Automatonymous.Tests
                         .Then(context => context.Instance.Called = true)
                         .Then(_ => { throw new ApplicationException("Boom!"); })
                         .Then(context => context.Instance.NotCalled = false)
-                        .Catch<Exception>(x => x
+                        .Catch<ApplicationException>(ex => ex
+                            .Then(context =>
+                            {
+                                context.Instance.ExceptionMessage = context.Exception.Message;
+                                context.Instance.ExceptionType = context.Exception.GetType();
+                            })
+                            .TransitionTo(Failed))
+                        .Catch<Exception>(ex => ex
+                            .Then(context => context.Instance.ShouldNotBeCalled = true)));
+            }
+
+            public State Failed { get; private set; }
+
+            public Event Initialized { get; private set; }
+        }
+
+
+        [Test]
+        public void Should_capture_the_exception_message()
+        {
+            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+        }
+
+        [Test]
+        public void Should_capture_the_exception_type()
+        {
+            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+        }
+
+        [Test]
+        public void Should_have_called_the_exception_handler()
+        {
+            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_action()
+        {
+            Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_regular_exception()
+        {
+            Assert.IsFalse(_instance.ShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_second_action()
+        {
+            Assert.IsTrue(_instance.NotCalled);
+        }
+    }
+
+    [TestFixture]
+    public class When_the_exception_does_not_match_the_type
+    {
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [TestFixtureSetUp]
+        public void Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            _machine.RaiseEvent(_instance, _machine.Initialized).Wait();
+        }
+
+
+        class Instance
+        {
+            public Instance()
+            {
+                NotCalled = true;
+            }
+
+            public bool Called { get; set; }
+            public bool NotCalled { get; set; }
+            public Type ExceptionType { get; set; }
+            public string ExceptionMessage { get; set; }
+            public State CurrentState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                InstanceState(x => x.CurrentState);
+
+                State(() => Failed);
+
+                Event(() => Initialized);
+
+                During(Initial,
+                    When(Initialized)
+                        .Then(context => context.Instance.Called = true)
+                        .Then(_ => { throw new ApplicationException("Boom!"); })
+                        .Then(context => context.Instance.NotCalled = false)
+                        .Catch<Exception>(ex => ex
                             .Then(context =>
                             {
                                 context.Instance.ExceptionMessage = context.Exception.Message;
@@ -102,10 +205,63 @@ namespace Automatonymous.Tests
             Assert.IsTrue(_instance.Called);
         }
 
+
         [Test]
         public void Should_not_have_called_the_second_action()
         {
             Assert.IsTrue(_instance.NotCalled);
+        }
+    }
+
+    [TestFixture]
+    public class When_the_exception_is_caught
+    {
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [TestFixtureSetUp]
+        public void Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            _machine.RaiseEvent(_instance, _machine.Initialized).Wait();
+        }
+
+
+        class Instance
+        {
+            public bool Called { get; set; }
+            public State CurrentState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                InstanceState(x => x.CurrentState);
+
+                State(() => Failed);
+
+                Event(() => Initialized);
+
+                During(Initial,
+                    When(Initialized)
+                        .Then(_ => { throw new ApplicationException("Boom!"); })
+                        .Catch<Exception>(ex => ex)
+                        .Then(context => context.Instance.Called = true));
+            }
+
+            public State Failed { get; private set; }
+            public Event Initialized { get; private set; }
+        }
+
+        [Test]
+        public void Should_have_called_the_subsequent_action()
+        {
+            Assert.IsTrue(_instance.Called);
         }
     }
 
@@ -162,14 +318,13 @@ namespace Automatonymous.Tests
                         .Then(context => context.Instance.Called = true)
                         .Then(_ => { throw new ApplicationException("Boom!"); })
                         .Then(context => context.Instance.NotCalled = false)
-                        .Catch<Exception>(ex =>ex
-                                .Then(context =>
-                                {
-                                    context.Instance.ExceptionMessage = context.Data.Item2.Message;
-                                    context.Instance.ExceptionType = context.Data.Item2.GetType();
-                                })
-                                .TransitionTo(Failed);
-                        })))
+                        .Catch<Exception>(ex => ex
+                            .Then(context =>
+                            {
+                                context.Instance.ExceptionMessage = context.Exception.Message;
+                                context.Instance.ExceptionType = context.Exception.GetType();
+                            })
+                            .TransitionTo(Failed)));
                 ;
             }
 

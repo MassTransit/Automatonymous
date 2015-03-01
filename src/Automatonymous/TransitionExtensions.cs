@@ -41,15 +41,15 @@ namespace Automatonymous
         /// <param name="source"></param>
         /// <param name="toState"></param>
         /// <returns></returns>
-        public static CompensateActivityBinder<TInstance, TException> TransitionTo<TInstance, TException>(
-            this CompensateActivityBinder<TInstance, TException> source, State toState)
+        public static ExceptionActivityBinder<TInstance, TException> TransitionTo<TInstance, TException>(
+            this ExceptionActivityBinder<TInstance, TException> source, State toState)
             where TInstance : class where TException : Exception
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
-            var compensateActivity = new CompensateActivity<TInstance>(activity);
+            var compensateActivity = new ExecuteOnCompensateActivity<TInstance>(activity);
 
             return source.Add(compensateActivity);
         }
@@ -66,6 +66,29 @@ namespace Automatonymous
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
             return source.Add(activity);
+        }
+
+        /// <summary>
+        /// Transition the state machine to the specified state in response to an exception
+        /// </summary>
+        /// <typeparam name="TInstance"></typeparam>
+        /// <typeparam name="TException"></typeparam>
+        /// <typeparam name="TData"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="toState"></param>
+        /// <returns></returns>
+        public static ExceptionActivityBinder<TInstance, TData, TException> TransitionTo<TInstance, TData, TException>(
+            this ExceptionActivityBinder<TInstance, TData, TException> source, State toState)
+            where TInstance : class
+            where TException : Exception
+        {
+            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+
+            var compensateActivity = new ExecuteOnCompensateActivity<TInstance>(activity);
+
+            return source.Add(compensateActivity);
         }
 
         /// <summary>

@@ -13,40 +13,54 @@
 namespace Automatonymous.Binders
 {
     using System;
+    using Activities;
+    using Behaviors;
 
 
-    public interface CompensateActivityBinder<TInstance, TException> :
-        EventActivities<TInstance>
+    /// <summary>
+    /// Creates a compensation activity with the compensation behavior
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TException"></typeparam>
+    public class CompensateActivityBinder<TInstance, TException> :
+        ActivityBinder<TInstance>
         where TInstance : class
         where TException : Exception
     {
-        StateMachine<TInstance> StateMachine { get; }
+        readonly EventActivities<TInstance> _activities;
+        readonly Event _event;
 
-        Event Event { get; }
+        public CompensateActivityBinder(Event @event, EventActivities<TInstance> activities)
+        {
+            _event = @event;
+            _activities = activities;
+        }
 
-        CompensateActivityBinder<TInstance, TException> Add(Activity<TInstance> activity);
+        public bool IsStateTransitionEvent(State state)
+        {
+            return Equals(_event, state.Enter) || Equals(_event, state.BeforeEnter)
+                   || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
+        }
 
-        CompensateActivityBinder<TInstance, T> Catch<T>(
-            Func<CompensateActivityBinder<TInstance, T>, CompensateActivityBinder<TInstance, T>> activityCallback)
-            where T : Exception;
-    }
+        public void Bind(State<TInstance> state)
+        {
+            var builder = new CompensateBehaviorBuilder<TInstance>();
+            foreach (var activity in _activities.GetStateActivityBinders())
+            {
+                activity.Bind(builder);
+            }
 
+            var compensateActivity = new CompensateActivity<TInstance, TException>(builder.Behavior);
 
-    public interface CompensateActivityBinder<TInstance, TData, TException> :
-        EventActivities<TInstance>
-        where TInstance : class
-        where TException : Exception
-    {
-        StateMachine<TInstance> StateMachine { get; }
+            state.Bind(_event, compensateActivity);
+        }
 
-        Event<TData> Event { get; }
-
-        CompensateActivityBinder<TInstance, TData, TException> Add(Activity<TInstance> activity);
-
-        CompensateActivityBinder<TInstance, TData, TException> Add(Activity<TInstance, TData> activity);
-
-        CompensateActivityBinder<TInstance, TData, T> Catch<T>(
-            Func<CompensateActivityBinder<TInstance,TData,T>, CompensateActivityBinder<TInstance,TData,T>> activityCallback)
-            where T : Exception;
+        public void Bind(BehaviorBuilder<TInstance> builder)
+        {
+            foreach (var activity in _activities.GetStateActivityBinders())
+            {
+                activity.Bind(builder);
+            }
+        }
     }
 }

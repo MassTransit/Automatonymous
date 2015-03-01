@@ -19,13 +19,13 @@ namespace Automatonymous.Binders
     /// Routes event activities to an activities
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
-    public class EventStateActivityBinder<TInstance> :
-        StateActivityBinder<TInstance>
+    public class ExecuteActivityBinder<TInstance> :
+        ActivityBinder<TInstance>
     {
         readonly Activity<TInstance> _activity;
         readonly Event _event;
 
-        public EventStateActivityBinder(Event @event, Activity<TInstance> activity)
+        public ExecuteActivityBinder(Event @event, Activity<TInstance> activity)
         {
             _event = @event;
             _activity = activity;

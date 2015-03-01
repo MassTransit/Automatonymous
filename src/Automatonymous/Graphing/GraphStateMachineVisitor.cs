@@ -16,6 +16,7 @@ namespace Automatonymous.Graphing
     using System.Collections.Generic;
     using System.Linq;
     using Activities;
+    using Events;
 
 
     public class GraphStateMachineVisitor<TInstance> :
@@ -39,15 +40,15 @@ namespace Automatonymous.Graphing
         {
             get
             {
-                var events = _events.Values
+                IEnumerable<Vertex> events = _events.Values
                     .Where(e => _edges.Any(edge => edge.From.Equals(e)));
 
-                var states = _states.Values
-                    .Where(s => _edges.Any(edge => edge.From.Equals(s)||edge.To.Equals(s)));
+                IEnumerable<Vertex> states = _states.Values
+                    .Where(s => _edges.Any(edge => edge.From.Equals(s) || edge.To.Equals(s)));
 
                 var vertices = new HashSet<Vertex>(states.Union(events));
 
-                var edges = _edges
+                IEnumerable<Edge> edges = _edges
                     .Where(e => vertices.Contains(e.From) && vertices.Contains(e.To));
 
                 return new StateMachineGraph(vertices, edges);
@@ -122,17 +123,24 @@ namespace Automatonymous.Graphing
                 return;
             }
 
-            var exceptionActivity = activity as ExceptionActivity<TInstance>;
-            if (exceptionActivity != null)
-            {
-                InspectExceptionActivity(exceptionActivity, next);
-                return;
-            }
+            Type activityType = activity.GetType();
+            Type compensateType = activityType.IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CompensateActivity<,>)
+                ? activityType.GetGenericArguments().Skip(1).First()
+                : null;
 
-            var tryActivity = activity as TryActivity<TInstance>;
-            if (tryActivity != null)
+            if (compensateType != null)
             {
-                InspectTryActivity(tryActivity, next);
+                Vertex previousEvent = _currentEvent;
+
+                Type eventType = typeof(DataEvent<>).MakeGenericType(compensateType);
+                var evt = (Event)Activator.CreateInstance(eventType, compensateType.Name);
+                _currentEvent = GetEventVertex(evt);
+
+                _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
+
+                next(activity);
+
+                _currentEvent = previousEvent;
                 return;
             }
 
@@ -148,27 +156,27 @@ namespace Automatonymous.Graphing
             _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
         }
 
-        void InspectExceptionActivity(ExceptionActivity<TInstance> exceptionActivity, Action<Activity> next)
-        {
-            Vertex previousEvent = _currentEvent;
+//        void InspectExceptionActivity(ExceptionActivity<TInstance> exceptionActivity, Action<Activity> next)
+//        {
+//            Vertex previousEvent = _currentEvent;
+//
+//            _currentEvent = GetEventVertex(exceptionActivity.Event);
+//
+//            _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
+//
+//            next(exceptionActivity);
+//
+//            _currentEvent = previousEvent;
+//        }
 
-            _currentEvent = GetEventVertex(exceptionActivity.Event);
-
-            _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
-
-            next(exceptionActivity);
-
-            _currentEvent = previousEvent;
-        }
-
-        void InspectTryActivity(TryActivity<TInstance> exceptionActivity, Action<Activity> next)
-        {
-            Vertex previousEvent = _currentEvent;
-
-            next(exceptionActivity);
-
-            _currentEvent = previousEvent;
-        }
+//        void InspectTryActivity(TryActivity<TInstance> exceptionActivity, Action<Activity> next)
+//        {
+//            Vertex previousEvent = _currentEvent;
+//
+//            next(exceptionActivity);
+//
+//            _currentEvent = previousEvent;
+//        }
 
         void InspectTransitionActivity(TransitionActivity<TInstance> transitionActivity)
         {
@@ -218,6 +226,11 @@ namespace Automatonymous.Graphing
                 .Single();
 
             return new Vertex(typeof(Event), targetType, @event.Name);
+        }
+
+        static Vertex CreateEventVertex(Type exceptionType)
+        {
+            return new Vertex(typeof(Event), exceptionType, exceptionType.Name);
         }
     }
 }

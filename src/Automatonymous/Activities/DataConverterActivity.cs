@@ -56,7 +56,15 @@ namespace Automatonymous.Activities
         Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
             Behavior<TInstance, T> next)
         {
-            return next.Compensate(context);
+            var dataContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
+            if (dataContext == null)
+                throw new AutomatonymousException("Expected Type " + typeof(TData).Name + " but was " + context.Data.GetType().Name);
+
+            var dataNext = next as Behavior<TInstance, TData>;
+            if (dataNext == null)
+                throw new AutomatonymousException("The next behavior was not a valid type");
+
+            return _activity.Compensate(dataContext, dataNext);
         }
     }
 }

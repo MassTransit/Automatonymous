@@ -38,16 +38,29 @@ namespace Automatonymous
             return Cached<T, TData>.EmptyBehavior;
         }
 
+        public static Behavior<T> Exception<T>()
+        {
+            return Cached<T>.ExceptionBehavior;
+        }
+
+        public static Behavior<T, TData> Exception<T, TData>()
+        {
+            return Cached<T, TData>.ExceptionBehavior;
+        }
+
 
         static class Cached<T>
         {
             internal static readonly Behavior<T> EmptyBehavior = new EmptyBehavior<T>();
+            internal static readonly Behavior<T> ExceptionBehavior = new ExceptionBehavior<T>();
+
         }
 
 
         static class Cached<T, TData>
         {
             internal static readonly Behavior<T, TData> EmptyBehavior = new EmptyBehavior<T, TData>();
+            internal static readonly Behavior<T, TData> ExceptionBehavior = new ExceptionBehavior<T, TData>();
         }
     }
 

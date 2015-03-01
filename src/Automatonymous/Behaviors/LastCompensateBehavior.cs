@@ -15,12 +15,12 @@ namespace Automatonymous.Behaviors
     using System.Threading.Tasks;
 
 
-    public class LastBehavior<TInstance> :
+    public class LastCompensateBehavior<TInstance> :
         Behavior<TInstance>
     {
         readonly Activity<TInstance> _activity;
 
-        public LastBehavior(Activity<TInstance> activity)
+        public LastCompensateBehavior(Activity<TInstance> activity)
         {
             _activity = activity;
         }
@@ -42,12 +42,12 @@ namespace Automatonymous.Behaviors
 
         Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Exception<TInstance, T>());
+            return _activity.Compensate(context, Behavior.Empty<TInstance, T>());
         }
 
         Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Exception<TInstance>());
+            return _activity.Compensate(context, Behavior.Empty<TInstance>());
         }
     }
 }

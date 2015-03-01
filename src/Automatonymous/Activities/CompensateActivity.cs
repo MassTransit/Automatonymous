@@ -16,66 +16,26 @@ namespace Automatonymous.Activities
     using System.Threading.Tasks;
 
 
-    public class CompensateActionActivity<TInstance, TException> :
+    /// <summary>
+    /// Catches an exception of a specific type and compenstates using the behavior
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
+    /// <typeparam name="TException"></typeparam>
+    public class CompensateActivity<TInstance, TException> :
         Activity<TInstance>
+        where TInstance : class
         where TException : Exception
     {
-        readonly Action<BehaviorExceptionContext<TInstance, TException>> _action;
+        readonly Behavior<TInstance> _behavior;
 
-        public CompensateActionActivity(Action<BehaviorExceptionContext<TInstance, TException>> action)
+        public CompensateActivity(Behavior<TInstance> behavior)
         {
-            _action = action;
+            _behavior = behavior;
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {
-            visitor.Visit(this);
-        }
-
-        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
-        {
-            return next.Execute(context);
-        }
-
-        Task Activity<TInstance>.Execute<TData>(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
-        {
-            return next.Execute(context);
-        }
-
-        async Task Activity<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
-        {
-            var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
-            if (exceptionContext != null)
-                _action(exceptionContext);
-
-            await next.Compensate(context);
-        }
-
-        async Task Activity<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
-            Behavior<TInstance, TData> next)
-        {
-            var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
-            if (exceptionContext != null)
-                _action(exceptionContext);
-
-            await next.Compensate(context);
-        }
-    }
-
-
-    public class CompensateActivity<TInstance> :
-        Activity<TInstance>
-    {
-        readonly Activity<TInstance> _activity;
-
-        public CompensateActivity(Activity<TInstance> activity)
-        {
-            _activity = activity;
-        }
-
-        void Visitable.Accept(StateMachineVisitor visitor)
-        {
-            visitor.Visit(this, x => _activity.Accept(visitor));
+            visitor.Visit(this, x => _behavior.Accept(visitor));
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -88,56 +48,33 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
-            Behavior<TInstance, T> next)
+        async Task Activity<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
         {
-            throw new NotImplementedException();
+            var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
+            if (exceptionContext != null)
+            {
+                await _behavior.Compensate(exceptionContext);
+
+                // if the compensate returns, we should go forward normally
+                await next.Execute(context);
+            }
+            else
+                await next.Compensate(context);
         }
 
-        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        async Task Activity<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
+            Behavior<TInstance, TData> next)
         {
-            var behavior = new CompensateBehavior<TInstance, TException>(next, context);
+            var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
+            if (exceptionContext != null)
+            {
+                await _behavior.Compensate(exceptionContext);
 
-            return _activity.Execute(context, behavior);
-        }
-    }
-
-
-    public class CompensateBehavior<TInstance, TException> :
-        Behavior<TInstance>
-        where TException : Exception
-    {
-        readonly BehaviorExceptionContext<TInstance, TException> _context;
-        readonly Behavior<TInstance> _next;
-
-        public CompensateBehavior(Behavior<TInstance> next, BehaviorExceptionContext<TInstance, TException> context)
-        {
-            _next = next;
-            _context = context;
-        }
-
-        void Visitable.Accept(StateMachineVisitor visitor)
-        {
-        }
-
-        Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
-        {
-            return _next.Compensate(_context);
-        }
-
-        Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
-        {
-            return _next.Compensate(_context);
-        }
-
-        Task Behavior<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
-        {
-            throw new AutomatonymousException("This should not ever be called.");
-        }
-
-        Task Behavior<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context)
-        {
-            throw new AutomatonymousException("This should not ever be called.");
+                // if the compensate returns, we should go forward normally
+                await next.Execute(context);
+            }
+            else
+                await next.Compensate(context);
         }
     }
 }

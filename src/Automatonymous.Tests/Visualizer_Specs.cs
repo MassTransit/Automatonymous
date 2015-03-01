@@ -21,24 +21,6 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class When_visualizing_a_state_machine
     {
-        [Test]
-        public void Should_parse_the_graph()
-        {
-            Assert.IsNotNull(_graph);
-        }
-
-        [Test]
-        public void Should_show_the_goods()
-        {
-            var generator = new StateMachineGraphvizGenerator(_graph);
-
-            string dots = generator.CreateDotFile();
-
-            Console.WriteLine(dots);
-
-            Assert.AreEqual(Expected, dots);
-        }
-
         InstanceStateMachine _machine;
         StateMachineGraph _graph;
 
@@ -103,8 +85,8 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(Initialized)
-                        .Try(x => x.TransitionTo(Running),
-                            c => c.Handle<Exception>(h => h.TransitionTo(Failed))));
+                        .TransitionTo(Running)
+                        .Catch<Exception>(h => h.TransitionTo(Failed)));
 
                 During(Running,
                     When(Finished)
@@ -137,6 +119,25 @@ namespace Automatonymous.Tests
         class RestartData
         {
             public string Name { get; set; }
+        }
+
+
+        [Test]
+        public void Should_parse_the_graph()
+        {
+            Assert.IsNotNull(_graph);
+        }
+
+        [Test]
+        public void Should_show_the_goods()
+        {
+            var generator = new StateMachineGraphvizGenerator(_graph);
+
+            string dots = generator.CreateDotFile();
+
+            Console.WriteLine(dots);
+
+            Assert.AreEqual(Expected, dots);
         }
     }
 }

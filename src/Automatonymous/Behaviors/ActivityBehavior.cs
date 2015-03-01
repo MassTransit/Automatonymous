@@ -14,7 +14,7 @@ namespace Automatonymous.Behaviors
 {
     using System;
     using System.Threading.Tasks;
-    using Contexts;
+    using Internals;
 
 
     public class ActivityBehavior<TInstance> :
@@ -40,34 +40,45 @@ namespace Automatonymous.Behaviors
 
         async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            Exception faultException = null;
+            Exception activityException = null;
             try
             {
                 await _activity.Execute(context, _next);
             }
             catch (Exception exception)
             {
-                faultException = exception;
+                activityException = exception;
             }
 
-            if(faultException != null)
+            if (activityException != null)
             {
-                var exceptionContext = new ExceptionBehaviorContextProxy<TInstance, Exception>(context, faultException);
-
-                await _next.Compensate(exceptionContext);
+                await ExceptionBehaviorCache.Compensate(_next, context, activityException);
             }
         }
 
-        Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
+        async Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            var behavior = new SplitBehavior<TInstance, T>(_next);
+            var behavior = new DataBehavior<TInstance, T>(_next);
 
-            return _activity.Execute(context, behavior);
+            Exception activityException = null;
+            try
+            {
+                await _activity.Execute(context, behavior);
+            }
+            catch (Exception exception)
+            {
+                activityException = exception;
+            }
+
+            if (activityException != null)
+            {
+                await ExceptionBehaviorCache.Compensate(behavior, context, activityException);
+            }
         }
 
         Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            var behavior = new SplitBehavior<TInstance, T>(_next);
+            var behavior = new DataBehavior<TInstance, T>(_next);
 
             return _activity.Compensate(context, behavior);
         }

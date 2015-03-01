@@ -15,7 +15,7 @@ namespace Automatonymous.Binders
     using Behaviors;
 
 
-    public interface StateActivityBinder<TInstance>
+    public interface ActivityBinder<TInstance>
     {
         /// <summary>
         /// Returns True if the event is a state transition event (enter/leave/afterLeave/beforeEnter)

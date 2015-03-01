@@ -18,6 +18,6 @@ namespace Automatonymous.Binders
     public interface EventActivities<TInstance>
         where TInstance : class
     {
-        IEnumerable<StateActivityBinder<TInstance>> GetStateActivityBinders();
+        IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders();
     }
 }

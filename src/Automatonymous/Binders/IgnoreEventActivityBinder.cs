@@ -16,12 +16,12 @@ namespace Automatonymous.Binders
     using Behaviors;
 
 
-    public class IgnoreEventStateActivityBinder<TInstance> :
-        StateActivityBinder<TInstance>
+    public class IgnoreEventActivityBinder<TInstance> :
+        ActivityBinder<TInstance>
     {
         readonly Event _event;
 
-        public IgnoreEventStateActivityBinder(Event @event)
+        public IgnoreEventActivityBinder(Event @event)
         {
             _event = @event;
         }
@@ -43,13 +43,13 @@ namespace Automatonymous.Binders
     }
 
 
-    public class IgnoreEventStateActivityBinder<TInstance, TData> :
-        StateActivityBinder<TInstance>
+    public class IgnoreEventActivityBinder<TInstance, TData> :
+        ActivityBinder<TInstance>
     {
         readonly Event<TData> _event;
         readonly StateMachineEventFilter<TInstance, TData> _filter;
 
-        public IgnoreEventStateActivityBinder(Event<TData> @event, StateMachineEventFilter<TInstance, TData> filter)
+        public IgnoreEventActivityBinder(Event<TData> @event, StateMachineEventFilter<TInstance, TData> filter)
         {
             _event = @event;
             _filter = filter;

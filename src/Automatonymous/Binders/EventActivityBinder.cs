@@ -25,8 +25,14 @@ namespace Automatonymous.Binders
 
         EventActivityBinder<TInstance> Add(Activity<TInstance> activity);
 
+        /// <summary>
+        /// Catch the exception of type T, and execute the compensation chain
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
         EventActivityBinder<TInstance> Catch<T>(
-            Func<CompensateActivityBinder<TInstance, T>, CompensateActivityBinder<TInstance, T>> activityCallback)
+            Func<ExceptionActivityBinder<TInstance, T>, ExceptionActivityBinder<TInstance, T>> activityCallback)
             where T : Exception;
     }
 
@@ -43,8 +49,14 @@ namespace Automatonymous.Binders
 
         EventActivityBinder<TInstance, TData> Add(Activity<TInstance, TData> activity);
 
-        EventActivityBinder<TInstance> Catch<T>(
-            Func<CompensateActivityBinder<TInstance, TData, T>, CompensateActivityBinder<TInstance, TData, T>> activityCallback)
+        /// <summary>
+        /// Catch the exception of type T, and execute the compensation chain
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        EventActivityBinder<TInstance, TData> Catch<T>(
+            Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback)
             where T : Exception;
     }
 }

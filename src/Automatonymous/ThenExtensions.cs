@@ -40,8 +40,8 @@ namespace Automatonymous
         /// <typeparam name="TException">The exception type</typeparam>
         /// <param name="binder">The event binder</param>
         /// <param name="action">The synchronous delegate</param>
-        public static CompensateActivityBinder<TInstance, TException> Then<TInstance, TException>(
-            this CompensateActivityBinder<TInstance, TException> binder, Action<BehaviorExceptionContext<TInstance, TException>> action)
+        public static ExceptionActivityBinder<TInstance, TException> Then<TInstance, TException>(
+            this ExceptionActivityBinder<TInstance, TException> binder, Action<BehaviorExceptionContext<TInstance, TException>> action)
             where TInstance : class
             where TException : Exception
         {
@@ -73,6 +73,22 @@ namespace Automatonymous
             where TInstance : class
         {
             return binder.Add(new ActionActivity<TInstance, TData>(action));
+        }
+
+        /// <summary>
+        /// Adds a synchronous delegate activity to the event's behavior
+        /// </summary>
+        /// <typeparam name="TInstance">The state machine instance type</typeparam>
+        /// <typeparam name="TException">The exception type</typeparam>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="binder">The event binder</param>
+        /// <param name="action">The synchronous delegate</param>
+        public static ExceptionActivityBinder<TInstance, TData, TException> Then<TInstance, TData, TException>(
+            this ExceptionActivityBinder<TInstance, TData, TException> binder, Action<BehaviorExceptionContext<TInstance, TData, TException>> action)
+            where TInstance : class
+            where TException : Exception
+        {
+            return binder.Add(new CompensateActionActivity<TInstance, TData, TException>(action));
         }
 
         /// <summary>

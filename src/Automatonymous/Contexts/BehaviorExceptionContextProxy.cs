@@ -16,14 +16,14 @@ namespace Automatonymous.Contexts
     using System.Threading;
 
 
-    public class ExceptionBehaviorContextProxy<TInstance, TException> :
+    public class BehaviorExceptionContextProxy<TInstance, TException> :
         BehaviorExceptionContext<TInstance, TException>
         where TException : Exception
     {
         readonly BehaviorContext<TInstance> _context;
         readonly TException _exception;
 
-        public ExceptionBehaviorContextProxy(BehaviorContext<TInstance> context, TException exception)
+        public BehaviorExceptionContextProxy(BehaviorContext<TInstance> context, TException exception)
         {
             _context = context;
             _exception = exception;
@@ -69,7 +69,7 @@ namespace Automatonymous.Contexts
         {
             BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
 
-            return new ExceptionBehaviorContextProxy<TInstance, T, TException>(contextProxy, _exception);
+            return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
 
         public TException Exception
@@ -84,14 +84,14 @@ namespace Automatonymous.Contexts
     }
 
 
-    public class ExceptionBehaviorContextProxy<TInstance, TData, TException> :
+    public class BehaviorExceptionContextProxy<TInstance, TData, TException> :
         BehaviorExceptionContext<TInstance, TData, TException>
         where TException : Exception
     {
         readonly BehaviorContext<TInstance, TData> _context;
         readonly TException _exception;
 
-        public ExceptionBehaviorContextProxy(BehaviorContext<TInstance, TData> context, TException exception)
+        public BehaviorExceptionContextProxy(BehaviorContext<TInstance, TData> context, TException exception)
         {
             _context = context;
             _exception = exception;
@@ -137,12 +137,20 @@ namespace Automatonymous.Contexts
             return _context.GetProxy(@event);
         }
 
+        BehaviorExceptionContext<TInstance, T, TException> BehaviorExceptionContext<TInstance, TException>.GetProxy<T>(Event<T> @event,
+            T data)
+        {
+            BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
+
+            return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
+        }
+
         BehaviorExceptionContext<TInstance, T, TException> BehaviorExceptionContext<TInstance, TData, TException>.GetProxy<T>(
             Event<T> @event, T data)
         {
             BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
 
-            return new ExceptionBehaviorContextProxy<TInstance, T, TException>(contextProxy, _exception);
+            return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
 
         public TException Exception
