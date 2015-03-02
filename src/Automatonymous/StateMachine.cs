@@ -20,7 +20,8 @@ namespace Automatonymous
     /// <summary>
     /// A state machine definition
     /// </summary>
-    public interface StateMachine
+    public interface StateMachine :
+        Visitable
     {
         /// <summary>
         /// The name of the state machine (defaults to the state machine type name)

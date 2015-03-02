@@ -94,7 +94,7 @@ namespace Automatonymous
             throw new UnknownStateException(_name, name);
         }
 
-        public async Task RaiseEvent(EventContext<TInstance> context)
+        async Task StateMachine<TInstance>.RaiseEvent(EventContext<TInstance> context)
         {
             State<TInstance> state = await _instanceStateAccessor.Get(context);
 
@@ -105,7 +105,7 @@ namespace Automatonymous
             await instanceState.Raise(context);
         }
 
-        public async Task RaiseEvent<T>(EventContext<TInstance, T> context)
+        async Task StateMachine<TInstance>.RaiseEvent<T>(EventContext<TInstance, T> context)
         {
             State<TInstance> state = await _instanceStateAccessor.Get(context);
 
@@ -144,7 +144,7 @@ namespace Automatonymous
             get { return _eventCache.Values.Where(x => false == x.IsTransitionEvent).Select(x => x.Event); }
         }
 
-        public Type InstanceType
+        Type StateMachine.InstanceType
         {
             get { return typeof(TInstance); }
         }
@@ -181,7 +181,7 @@ namespace Automatonymous
             throw new UnknownEventException(_name, @event.Name);
         }
 
-        public void Accept(StateMachineVisitor visitor)
+        void Visitable.Accept(StateMachineVisitor visitor)
         {
             Initial.Accept(visitor);
 
@@ -242,6 +242,18 @@ namespace Automatonymous
         }
 
         /// <summary>
+        /// Specifies the name of the state machine
+        /// </summary>
+        /// <param name="machineName"></param>
+        protected void Name(string machineName)
+        {
+            if (string.IsNullOrWhiteSpace(machineName))
+                throw new ArgumentException("The machine name must not be empty", "machineName");
+
+            _name = machineName;
+        }
+
+        /// <summary>
         /// Declares an event, and initializes the event property
         /// </summary>
         /// <param name="propertyExpression"></param>
@@ -259,15 +271,45 @@ namespace Automatonymous
         }
 
         /// <summary>
-        /// Specifies the name of the state machine
+        /// Declares a data event on the state machine, and initializes the property
         /// </summary>
-        /// <param name="machineName"></param>
-        protected void Name(string machineName)
+        /// <param name="propertyExpression">The event property</param>
+        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
         {
-            if (string.IsNullOrWhiteSpace(machineName))
-                throw new ArgumentException("The machine name must not be empty", "machineName");
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
 
-            _name = machineName;
+            string name = property.Name;
+
+            var @event = new DataEvent<T>(name);
+
+            property.SetValue(this, @event);
+
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
+        }
+
+        /// <summary>
+        /// Declares a data event on a property of the state machine, and initializes the property
+        /// </summary>
+        /// <param name="propertyExpression">The property</param>
+        /// <param name="eventPropertyExpression">The event property on the property</param>
+        protected void Event<TProperty, T>(Expression<Func<TProperty>> propertyExpression,
+            Expression<Func<TProperty, Event<T>>> eventPropertyExpression)
+            where TProperty : class
+        {
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var propertyValue = property.GetValue(this, null) as TProperty;
+            if (propertyValue == null)
+                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+
+            PropertyInfo eventProperty = eventPropertyExpression.GetPropertyInfo();
+
+            string name = string.Format("{0}.{1}", property.Name, eventProperty.Name);
+
+            var @event = new DataEvent<T>(name);
+
+            eventProperty.SetValue(propertyValue, @event);
+
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
 
         /// <summary>
@@ -394,48 +436,6 @@ namespace Automatonymous
         }
 
         /// <summary>
-        /// Declares a data event on the state machine, and initializes the property
-        /// </summary>
-        /// <param name="propertyExpression">The event property</param>
-        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-            string name = property.Name;
-
-            var @event = new DataEvent<T>(name);
-
-            property.SetValue(this, @event);
-
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
-        }
-
-        /// <summary>
-        /// Declares a data event on a property of the state machine, and initializes the property
-        /// </summary>
-        /// <param name="propertyExpression">The property</param>
-        /// <param name="eventPropertyExpression">The event property on the property</param>
-        protected void Event<TProperty, T>(Expression<Func<TProperty>> propertyExpression,
-            Expression<Func<TProperty, Event<T>>> eventPropertyExpression)
-            where TProperty : class
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-            var propertyValue = property.GetValue(this, null) as TProperty;
-            if (propertyValue == null)
-                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
-
-            PropertyInfo eventProperty = eventPropertyExpression.GetPropertyInfo();
-
-            string name = property.Name;
-
-            var @event = new DataEvent<T>(name);
-
-            eventProperty.SetValue(propertyValue, @event);
-
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
-        }
-
-        /// <summary>
         /// Declares a state on the state machine, and initialized the property
         /// </summary>
         /// <param name="propertyExpression">The state property</param>
@@ -448,6 +448,36 @@ namespace Automatonymous
             var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
 
             property.SetValue(this, state);
+
+            _stateCache[name] = state;
+
+            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(state.BeforeEnter, true);
+            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(state.Enter, true);
+            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
+            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
+        }
+
+        /// <summary>
+        /// Declares a state on the state machine, and initialized the property
+        /// </summary>
+        /// <param name="propertyExpression">The property containing the state</param>
+        /// <param name="statePropertyExpression">The state property</param>
+        protected void State<TProperty>(Expression<Func<TProperty>> propertyExpression,
+            Expression<Func<TProperty, State>> statePropertyExpression)
+            where TProperty : class
+        {
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var propertyValue = property.GetValue(this, null) as TProperty;
+            if (propertyValue == null)
+                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+
+            PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
+
+            string name = string.Format("{0}.{1}", property.Name, stateProperty.Name);
+
+            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
+
+            stateProperty.SetValue(propertyValue, state);
 
             _stateCache[name] = state;
 

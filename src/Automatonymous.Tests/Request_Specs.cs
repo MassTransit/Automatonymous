@@ -17,10 +17,8 @@ namespace Automatonymous.Tests
         using System;
         using System.Linq.Expressions;
         using System.Reflection;
-        using System.Threading;
         using System.Threading.Tasks;
         using Binders;
-        using Events;
         using NUnit.Framework;
 
 
@@ -42,6 +40,8 @@ namespace Automatonymous.Tests
                 ConsumeContext<RequestQuote> consumeContext = new InternalConsumeContext<RequestQuote>(requestQuote);
 
                 await machine.RaiseEvent(instance, machine.QuoteRequested, requestQuote, consumeContext);
+
+                await machine.RaiseEvent(instance, x => x.QuoteRequest.Completed, new Quote {Symbol = requestQuote.Symbol});
             }
         }
 
@@ -56,12 +56,30 @@ namespace Automatonymous.Tests
             where TRequest : class
             where TResponse : class
         {
+            /// <summary>
+            /// The name of the request
+            /// </summary>
+            string Name { get; }
+
+            /// <summary>
+            /// The event that is raised when the request completes and the response is received
+            /// </summary>
             Event<TResponse> Completed { get; set; }
+
+            /// <summary>
+            /// The event raised when the request faults
+            /// </summary>
             Event<Fault<TRequest>> Faulted { get; set; }
+
+            /// <summary>
+            /// The event raised when the request times out with no response received
+            /// </summary>
             Event<TRequest> TimeoutExpired { get; set; }
 
-            Task SendRequest<T>(ConsumeContext<T> context, TRequest requestMessage)
-                where T : class;
+            /// <summary>
+            /// The state that is transitioned to once the request is pending
+            /// </summary>
+            State Pending { get; set; }
         }
 
 
@@ -72,12 +90,74 @@ namespace Automatonymous.Tests
         }
 
 
+        interface RequestConfigurator<T, TRequest, TResponse>
+            where T : class
+            where TRequest : class
+            where TResponse : class
+        {
+            Uri ServiceAddress { set; }
+            TimeSpan Timeout { set; }
+        }
+
+
+        class StateMachineRequestConfigurator<T, TRequest, TResponse> :
+            RequestConfigurator<T, TRequest, TResponse>,
+            RequestSettings
+            where T : class
+            where TRequest : class
+            where TResponse : class
+        {
+            Uri _serviceAddress;
+            TimeSpan _timeout;
+
+            public StateMachineRequestConfigurator()
+            {
+                _timeout = TimeSpan.FromSeconds(30);
+            }
+
+            public RequestSettings Settings
+            {
+                get
+                {
+                    if (_serviceAddress == null)
+                        throw new AutomatonymousException("The ServiceAddress was not specified.");
+
+                    return this;
+                }
+            }
+
+            public Uri ServiceAddress
+            {
+                get { return _serviceAddress; }
+                set { _serviceAddress = value; }
+            }
+
+            public TimeSpan Timeout
+            {
+                get { return _timeout; }
+                set { _timeout = value; }
+            }
+        }
+
+
         class RequestStateMachine<T> :
             AutomatonymousStateMachine<T>
             where T : class
         {
             protected void Request<TRequest, TResponse>(Expression<Func<Request<TRequest, TResponse>>> propertyExpression,
-                Uri serviceAddress, TimeSpan timeout)
+                Action<RequestConfigurator<T, TRequest, TResponse>> configureRequest)
+                where TRequest : class
+                where TResponse : class
+            {
+                var configurator = new StateMachineRequestConfigurator<T, TRequest, TResponse>();
+
+                configureRequest(configurator);
+
+                Request(propertyExpression, configurator.Settings);
+            }
+
+            protected void Request<TRequest, TResponse>(Expression<Func<Request<TRequest, TResponse>>> propertyExpression,
+                RequestSettings settings)
                 where TRequest : class
                 where TResponse : class
             {
@@ -85,14 +165,30 @@ namespace Automatonymous.Tests
 
                 string requestName = property.Name;
 
-                var request = new StateMachineRequest<TRequest, TResponse>(requestName, serviceAddress, timeout);
+                var request = new StateMachineRequest<TRequest, TResponse>(requestName, settings);
 
                 property.SetValue(this, request);
 
                 Event(propertyExpression, x => x.Completed);
                 Event(propertyExpression, x => x.Faulted);
                 Event(propertyExpression, x => x.TimeoutExpired);
+
+                State(propertyExpression, x => x.Pending);
             }
+        }
+
+
+        interface RequestSettings
+        {
+            /// <summary>
+            /// The endpoint address of the service that handles the request
+            /// </summary>
+            Uri ServiceAddress { get; }
+
+            /// <summary>
+            /// The timeout period before the request times out
+            /// </summary>
+            TimeSpan Timeout { get; }
         }
 
 
@@ -101,22 +197,26 @@ namespace Automatonymous.Tests
             where TRequest : class
             where TResponse : class
         {
-            readonly Uri _serviceAddress;
-            readonly TimeSpan _timeout;
+            readonly string _name;
+            readonly RequestSettings _settings;
 
-            public StateMachineRequest(string propertyName, Uri serviceAddress, TimeSpan timeout)
+            public StateMachineRequest(string requestName, RequestSettings settings)
             {
-                _serviceAddress = serviceAddress;
-                _timeout = timeout;
+                _name = requestName;
+                _settings = settings;
+            }
 
-                Completed = new DataEvent<TResponse>(string.Format("{0}.Completed", propertyName));
-                Faulted = new DataEvent<Fault<TRequest>>(string.Format("{0}.Faulted", propertyName));
-                TimeoutExpired = new DataEvent<TRequest>(string.Format("{0}.TimeoutExpired", propertyName));
+            public string Name
+            {
+                get { return _name; }
             }
 
             public Event<TResponse> Completed { get; set; }
             public Event<Fault<TRequest>> Faulted { get; set; }
             public Event<TRequest> TimeoutExpired { get; set; }
+
+            public State Pending { get; set; }
+
 
             public async Task SendRequest<T>(ConsumeContext<T> context, TRequest requestMessage)
                 where T : class
@@ -165,6 +265,8 @@ namespace Automatonymous.Tests
         {
             public string TicketNumber { get; set; }
             public int CurrentState { get; set; }
+
+            public Guid QuoteRequestId { get; set; }
         }
 
 
@@ -172,14 +274,6 @@ namespace Automatonymous.Tests
         {
             public string TicketNumber { get; set; }
             public string Symbol { get; set; }
-        }
-
-
-        interface IRequestClient<in TRequest, TResponse>
-            where TRequest : class
-            where TResponse : class
-        {
-            Task<TResponse> Request(TRequest request, CancellationToken cancellationToken = default(CancellationToken));
         }
 
 
@@ -191,17 +285,16 @@ namespace Automatonymous.Tests
                 InstanceState(x => x.CurrentState);
 
                 Event(() => QuoteRequested);
-                State(() => QuotePending);
 
-                Request(() => QuoteRequest, new Uri("loopback://localhost/my_queue"), TimeSpan.FromSeconds(30));
+                Request(() => QuoteRequest, x => x.ServiceAddress = new Uri("loopback://localhost/my_queue"));
 
                 Initially(
                     When(QuoteRequested)
                         .Then(context => Console.WriteLine("Quote requested: {0}", context.Data.Symbol))
                         .Request(QuoteRequest, context => new GetQuote {Symbol = context.Message.Symbol})
-                        .TransitionTo(QuotePending));
+                        .TransitionTo(QuoteRequest.Pending));
 
-                During(QuotePending,
+                During(QuoteRequest.Pending,
                     When(QuoteRequest.Completed)
                         .Then((context) => Console.WriteLine("Request Completed!")),
                     When(QuoteRequest.Faulted)
@@ -211,8 +304,6 @@ namespace Automatonymous.Tests
             }
 
             public Request<GetQuote, Quote> QuoteRequest { get; set; }
-
-            public State QuotePending { get; set; }
 
             public Event<RequestQuote> QuoteRequested { get; set; }
         }
@@ -263,6 +354,8 @@ namespace Automatonymous.Tests
 
 
                 TRequest requestMessage = _requestMessageFactory(consumeContext);
+
+                await next.Execute(context);
             }
 
             public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
