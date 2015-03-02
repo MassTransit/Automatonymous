@@ -35,10 +35,10 @@ namespace Automatonymous.Tests
                 context.Instance.Value = "ExecuteAsync";
             }
 
-            Task Activity<TestInstance, CreateInstance>.Compensate<TException>(BehaviorExceptionContext<TestInstance, CreateInstance, TException> context,
+            Task Activity<TestInstance, CreateInstance>.Faulted<TException>(BehaviorExceptionContext<TestInstance, CreateInstance, TException> context,
                 Behavior<TestInstance, CreateInstance> next)
             {
-                return next.Compensate(context);
+                return next.Faulted(context);
             }
 
             void Visitable.Accept(StateMachineVisitor visitor)

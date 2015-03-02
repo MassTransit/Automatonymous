@@ -15,12 +15,17 @@ namespace Automatonymous.Behaviors
     using System.Threading.Tasks;
 
 
-    public class LastCompensateBehavior<TInstance> :
+    /// <summary>
+    /// In a catch, after the last activity, the fault is completed as handled. An activity should throw the 
+    /// exception if desired.
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
+    public class LastFaultedBehavior<TInstance> :
         Behavior<TInstance>
     {
         readonly Activity<TInstance> _activity;
 
-        public LastCompensateBehavior(Activity<TInstance> activity)
+        public LastFaultedBehavior(Activity<TInstance> activity)
         {
             _activity = activity;
         }
@@ -40,14 +45,14 @@ namespace Automatonymous.Behaviors
             return _activity.Execute(context, Behavior.Empty<TInstance, T>());
         }
 
-        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Empty<TInstance, T>());
+            return _activity.Faulted(context, Behavior.Empty<TInstance, T>());
         }
 
-        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Empty<TInstance>());
+            return _activity.Faulted(context, Behavior.Empty<TInstance>());
         }
     }
 }

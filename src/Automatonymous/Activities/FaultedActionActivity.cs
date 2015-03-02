@@ -16,13 +16,13 @@ namespace Automatonymous.Activities
     using System.Threading.Tasks;
 
 
-    public class CompensateActionActivity<TInstance, TException> :
+    public class FaultedActionActivity<TInstance, TException> :
         Activity<TInstance>
         where TException : Exception
     {
         readonly Action<BehaviorExceptionContext<TInstance, TException>> _action;
 
-        public CompensateActionActivity(Action<BehaviorExceptionContext<TInstance, TException>> action)
+        public FaultedActionActivity(Action<BehaviorExceptionContext<TInstance, TException>> action)
         {
             _action = action;
         }
@@ -42,35 +42,35 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        async Task Activity<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
+        async Task Activity<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Compensate(context);
+            await next.Faulted(context);
         }
 
-        async Task Activity<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
+        async Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
             Behavior<TInstance, TData> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Compensate(context);
+            await next.Faulted(context);
         }
     }
 
 
-    public class CompensateActionActivity<TInstance, TData, TException> :
+    public class FaultedActionActivity<TInstance, TData, TException> :
         Activity<TInstance, TData>
         where TInstance : class
         where TException : Exception
     {
         readonly Action<BehaviorExceptionContext<TInstance, TData, TException>> _action;
 
-        public CompensateActionActivity(Action<BehaviorExceptionContext<TInstance, TData, TException>> action)
+        public FaultedActionActivity(Action<BehaviorExceptionContext<TInstance, TData, TException>> action)
         {
             _action = action;
         }
@@ -85,14 +85,14 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        async Task Activity<TInstance, TData>.Compensate<T>(BehaviorExceptionContext<TInstance, TData, T> context,
+        async Task Activity<TInstance, TData>.Faulted<T>(BehaviorExceptionContext<TInstance, TData, T> context,
             Behavior<TInstance, TData> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Compensate(context);
+            await next.Faulted(context);
         }
     }
 }

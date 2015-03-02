@@ -52,14 +52,14 @@ namespace Automatonymous.Activities
             await next.Execute(context);
         }
 
-        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
 
-        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
 
         async Task Transition(BehaviorContext<TInstance> context)

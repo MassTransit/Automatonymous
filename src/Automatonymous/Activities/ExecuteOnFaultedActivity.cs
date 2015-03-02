@@ -16,12 +16,12 @@ namespace Automatonymous.Activities
     using System.Threading.Tasks;
 
 
-    public class ExecuteOnCompensateActivity<TInstance> :
+    public class ExecuteOnFaultedActivity<TInstance> :
         Activity<TInstance>
     {
         readonly Activity<TInstance> _activity;
 
-        public ExecuteOnCompensateActivity(Activity<TInstance> activity)
+        public ExecuteOnFaultedActivity(Activity<TInstance> activity)
         {
             _activity = activity;
         }
@@ -41,7 +41,7 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        public Task Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        public Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
             where TException : Exception
         {
             var nextBehavior = new ExceptionBehavior<TInstance, TException>(next, context);
@@ -49,7 +49,7 @@ namespace Automatonymous.Activities
             return _activity.Execute(context, nextBehavior);
         }
 
-        public Task Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        public Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
             where TException : Exception
         {
             var nextBehavior = new ExceptionBehavior<TInstance, T, TException>(next, context);

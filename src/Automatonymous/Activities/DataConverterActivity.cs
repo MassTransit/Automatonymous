@@ -48,12 +48,12 @@ namespace Automatonymous.Activities
             await _activity.Execute(dataContext, dataNext);
         }
 
-        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
 
-        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
+        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
             Behavior<TInstance, T> next)
         {
             var dataContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
@@ -64,7 +64,7 @@ namespace Automatonymous.Activities
             if (dataNext == null)
                 throw new AutomatonymousException("The next behavior was not a valid type");
 
-            return _activity.Compensate(dataContext, dataNext);
+            return _activity.Faulted(dataContext, dataNext);
         }
     }
 }

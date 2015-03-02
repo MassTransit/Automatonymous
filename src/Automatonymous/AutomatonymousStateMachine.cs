@@ -241,6 +241,10 @@ namespace Automatonymous
             _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
 
+        /// <summary>
+        /// Declares an event, and initializes the event property
+        /// </summary>
+        /// <param name="propertyExpression"></param>
         protected void Event(Expression<Func<Event>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
@@ -254,6 +258,10 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
 
+        /// <summary>
+        /// Specifies the name of the state machine
+        /// </summary>
+        /// <param name="machineName"></param>
         protected void Name(string machineName)
         {
             if (string.IsNullOrWhiteSpace(machineName))
@@ -318,7 +326,7 @@ namespace Automatonymous
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, CompositeEventOptions.None, events); 
+            Event(propertyExpression, accessor, CompositeEventOptions.None, events);
         }
 
         /// <summary>
@@ -339,11 +347,12 @@ namespace Automatonymous
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, options, events); 
+            Event(propertyExpression, accessor, options, events);
         }
 
 
-        void Event(Expression<Func<Event>> propertyExpression,CompositeEventStatusAccessor<TInstance> accessor,CompositeEventOptions options,Event[] events)
+        void Event(Expression<Func<Event>> propertyExpression, CompositeEventStatusAccessor<TInstance> accessor,
+            CompositeEventOptions options, Event[] events)
         {
             if (events == null)
                 throw new ArgumentNullException("events");
@@ -364,7 +373,7 @@ namespace Automatonymous
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
 
-            CompositeEventStatus complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
+            var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
             for (int i = 0; i < events.Length; i++)
@@ -384,6 +393,10 @@ namespace Automatonymous
             }
         }
 
+        /// <summary>
+        /// Declares a data event on the state machine, and initializes the property
+        /// </summary>
+        /// <param name="propertyExpression">The event property</param>
         protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
@@ -397,6 +410,10 @@ namespace Automatonymous
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
 
+        /// <summary>
+        /// Declares a state on the state machine, and initialized the property
+        /// </summary>
+        /// <param name="propertyExpression">The state property</param>
         protected void State(Expression<Func<State>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
@@ -438,6 +455,11 @@ namespace Automatonymous
             _stateCache[name] = state;
         }
 
+        /// <summary>
+        /// Declares the events and associated activities that are handled during the specified state
+        /// </summary>
+        /// <param name="state">The state</param>
+        /// <param name="activities">The event and activities</param>
         protected void During(State state, params EventActivities<TInstance>[] activities)
         {
             ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
@@ -445,6 +467,12 @@ namespace Automatonymous
             BindActivitiesToState(state, activitiesBinder);
         }
 
+        /// <summary>
+        /// Declares the events and associated activities that are handled during the specified states
+        /// </summary>
+        /// <param name="state1">The state</param>
+        /// <param name="state2">The other state</param>
+        /// <param name="activities">The event and activities</param>
         protected void During(State state1, State state2, params EventActivities<TInstance>[] activities)
         {
             ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
@@ -453,6 +481,13 @@ namespace Automatonymous
             BindActivitiesToState(state2, activitiesBinder);
         }
 
+        /// <summary>
+        /// Declares the events and associated activities that are handled during the specified states
+        /// </summary>
+        /// <param name="state1">The state</param>
+        /// <param name="state2">The other state</param>
+        /// <param name="state3">The other other state</param>
+        /// <param name="activities">The event and activities</param>
         protected void During(State state1, State state2, State state3, params EventActivities<TInstance>[] activities)
         {
             ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
@@ -462,6 +497,14 @@ namespace Automatonymous
             BindActivitiesToState(state3, activitiesBinder);
         }
 
+        /// <summary>
+        /// Declares the events and associated activities that are handled during the specified states
+        /// </summary>
+        /// <param name="state1">The state</param>
+        /// <param name="state2">The other state</param>
+        /// <param name="state3">The other other state</param>
+        /// <param name="state4">Okay, this is getting a bit ridiculous at this point</param>
+        /// <param name="activities">The event and activities</param>
         protected void During(State state1, State state2, State state3, State state4,
             params EventActivities<TInstance>[] activities)
         {
@@ -473,6 +516,11 @@ namespace Automatonymous
             BindActivitiesToState(state4, activitiesBinder);
         }
 
+        /// <summary>
+        /// Declares the events and associated activities that are handled during the specified states
+        /// </summary>
+        /// <param name="states">The states</param>
+        /// <param name="activities">The event and activities</param>
         protected void During(IEnumerable<State> states, params EventActivities<TInstance>[] activities)
         {
             ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
@@ -489,11 +537,19 @@ namespace Automatonymous
                 activity.Bind(activityState);
         }
 
+        /// <summary>
+        /// Declares the events and activities that are handled during the initial state
+        /// </summary>
+        /// <param name="activities">The event and activities</param>
         protected void Initially(params EventActivities<TInstance>[] activities)
         {
             During(Initial, activities);
         }
 
+        /// <summary>
+        /// Declares events and activities that are handled during any state exception Initial and Final
+        /// </summary>
+        /// <param name="activities">The event and activities</param>
         protected void DuringAny(params EventActivities<TInstance>[] activities)
         {
             IEnumerable<State<TInstance>> states = _stateCache.Values.Where(x => !Equals(x, Initial) && !Equals(x, Final));
@@ -510,7 +566,7 @@ namespace Automatonymous
         /// <summary>
         /// When the Final state is entered, execute the chained activities. This occurs in any state that is not the initial or final state
         /// </summary>
-        /// <param name="activityCallback"></param>
+        /// <param name="activityCallback">Specify the activities that are executes when the Final state is entered.</param>
         protected void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
             EventActivityBinder<TInstance> binder = When(Final.Enter);
@@ -673,6 +729,10 @@ namespace Automatonymous
             return new DataEventActivityBinder<TInstance, TData>(this, @event, activityBinder);
         }
 
+        /// <summary>
+        /// Specifies a callback to invoke when an event is raised in a state where the event is not handled
+        /// </summary>
+        /// <param name="callback">The unhandled event callback</param>
         protected void OnUnhandledEvent(UnhandledEventCallback<TInstance> callback)
         {
             if (callback == null)

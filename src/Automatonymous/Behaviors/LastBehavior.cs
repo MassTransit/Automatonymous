@@ -14,7 +14,11 @@ namespace Automatonymous.Behaviors
 {
     using System.Threading.Tasks;
 
-
+    /// <summary>
+    /// The last behavior either completes the last activity in the behavior or
+    /// throws the exception if a compensation is in progress
+    /// </summary>
+    /// <typeparam name="TInstance"></typeparam>
     public class LastBehavior<TInstance> :
         Behavior<TInstance>
     {
@@ -40,14 +44,14 @@ namespace Automatonymous.Behaviors
             return _activity.Execute(context, Behavior.Empty<TInstance, T>());
         }
 
-        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Exception<TInstance, T>());
+            return _activity.Faulted(context, Behavior.Exception<TInstance, T>());
         }
 
-        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            return _activity.Compensate(context, Behavior.Exception<TInstance>());
+            return _activity.Faulted(context, Behavior.Exception<TInstance>());
         }
     }
 }

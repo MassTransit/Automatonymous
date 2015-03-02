@@ -53,7 +53,7 @@ namespace Automatonymous
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
             where TException : Exception;
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Automatonymous
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        Task Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
             where TException : Exception;
     }
 
@@ -88,7 +88,7 @@ namespace Automatonymous
         /// <param name="context"></param>
         /// <param name="next"></param>
         /// <returns></returns>
-        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
             where TException : Exception;
     }
 }

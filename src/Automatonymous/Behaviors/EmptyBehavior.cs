@@ -31,11 +31,11 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        async Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        async Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
         }
 
-        async Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        async Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
         }
     }
@@ -53,7 +53,7 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        async Task Behavior<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        async Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
         }
     }

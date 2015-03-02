@@ -49,7 +49,7 @@ namespace Automatonymous
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
-            var compensateActivity = new ExecuteOnCompensateActivity<TInstance>(activity);
+            var compensateActivity = new ExecuteOnFaultedActivity<TInstance>(activity);
 
             return source.Add(compensateActivity);
         }
@@ -86,7 +86,7 @@ namespace Automatonymous
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
 
-            var compensateActivity = new ExecuteOnCompensateActivity<TInstance>(activity);
+            var compensateActivity = new ExecuteOnFaultedActivity<TInstance>(activity);
 
             return source.Add(compensateActivity);
         }

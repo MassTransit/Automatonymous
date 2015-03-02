@@ -61,7 +61,7 @@ namespace Automatonymous.Binders
 
             binder = activityCallback(binder);
 
-            ActivityBinder<TInstance> activityBinder = new CompensateActivityBinder<TInstance, T>(_event, binder);
+            ActivityBinder<TInstance> activityBinder = new CatchActivityBinder<TInstance, T>(_event, binder);
 
             return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }

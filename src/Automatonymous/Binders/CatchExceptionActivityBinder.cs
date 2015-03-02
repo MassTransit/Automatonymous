@@ -75,7 +75,7 @@ namespace Automatonymous.Binders
 
             binder = activityCallback(binder);
 
-            ActivityBinder<TInstance> activityBinder = new CompensateActivityBinder<TInstance, T>(_event, binder);
+            ActivityBinder<TInstance> activityBinder = new CatchActivityBinder<TInstance, T>(_event, binder);
 
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, activityBinder);
         }
@@ -147,7 +147,7 @@ namespace Automatonymous.Binders
 
             binder = activityCallback(binder);
 
-            ActivityBinder<TInstance> activityBinder = new CompensateActivityBinder<TInstance, T>(_event, binder);
+            ActivityBinder<TInstance> activityBinder = new CatchActivityBinder<TInstance, T>(_event, binder);
 
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, activityBinder);
         }

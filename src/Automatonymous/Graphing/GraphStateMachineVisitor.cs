@@ -124,7 +124,7 @@ namespace Automatonymous.Graphing
             }
 
             Type activityType = activity.GetType();
-            Type compensateType = activityType.IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CompensateActivity<,>)
+            Type compensateType = activityType.IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
                 ? activityType.GetGenericArguments().Skip(1).First()
                 : null;
 

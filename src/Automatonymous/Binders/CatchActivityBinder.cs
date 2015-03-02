@@ -22,7 +22,7 @@ namespace Automatonymous.Binders
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TException"></typeparam>
-    public class CompensateActivityBinder<TInstance, TException> :
+    public class CatchActivityBinder<TInstance, TException> :
         ActivityBinder<TInstance>
         where TInstance : class
         where TException : Exception
@@ -30,7 +30,7 @@ namespace Automatonymous.Binders
         readonly EventActivities<TInstance> _activities;
         readonly Event _event;
 
-        public CompensateActivityBinder(Event @event, EventActivities<TInstance> activities)
+        public CatchActivityBinder(Event @event, EventActivities<TInstance> activities)
         {
             _event = @event;
             _activities = activities;
@@ -44,13 +44,13 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            var builder = new CompensateBehaviorBuilder<TInstance>();
+            var builder = new CatchBehaviorBuilder<TInstance>();
             foreach (var activity in _activities.GetStateActivityBinders())
             {
                 activity.Bind(builder);
             }
 
-            var compensateActivity = new CompensateActivity<TInstance, TException>(builder.Behavior);
+            var compensateActivity = new CatchFaultActivity<TInstance, TException>(builder.Behavior);
 
             state.Bind(_event, compensateActivity);
         }

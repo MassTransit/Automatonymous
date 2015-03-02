@@ -65,11 +65,11 @@ namespace Automatonymous.Tests
                 context.Instance.Value = _calculator.Add(context.Data.X, context.Data.Y);
             }
 
-            public Task Compensate<TException>(BehaviorExceptionContext<ClaimAdjustmentInstance, CreateClaim, TException> context,
+            public Task Faulted<TException>(BehaviorExceptionContext<ClaimAdjustmentInstance, CreateClaim, TException> context,
                 Behavior<ClaimAdjustmentInstance, CreateClaim> next)
                 where TException : Exception
             {
-                return next.Compensate(context);
+                return next.Faulted(context);
             }
 
             public void Accept(StateMachineVisitor visitor)

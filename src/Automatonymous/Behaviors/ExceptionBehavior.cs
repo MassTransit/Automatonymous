@@ -31,12 +31,12 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        async Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        async Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
             throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
         }
 
-        async Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        async Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
             throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
         }
@@ -55,7 +55,7 @@ namespace Automatonymous.Behaviors
         {
         }
 
-        async Task Behavior<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        async Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
             throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
         }

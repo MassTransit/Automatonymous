@@ -53,7 +53,6 @@ namespace Automatonymous
         {
             internal static readonly Behavior<T> EmptyBehavior = new EmptyBehavior<T>();
             internal static readonly Behavior<T> ExceptionBehavior = new ExceptionBehavior<T>();
-
         }
 
 
@@ -72,8 +71,18 @@ namespace Automatonymous
     public interface Behavior<in TInstance> :
         Visitable
     {
+        /// <summary>
+        /// Execute the activity with the given behavior context
+        /// </summary>
+        /// <param name="context">The behavior context</param>
+        /// <returns>An awaitable task</returns>
         Task Execute(BehaviorContext<TInstance> context);
 
+        /// <summary>
+        /// Execute the activity with the given behavior context
+        /// </summary>
+        /// <param name="context">The behavior context</param>
+        /// <returns>An awaitable task</returns>
         Task Execute<T>(BehaviorContext<TInstance, T> context);
 
         /// <summary>
@@ -83,7 +92,7 @@ namespace Automatonymous
         /// <typeparam name="TException"></typeparam>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        Task Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
             where TException : Exception;
 
         /// <summary>
@@ -92,7 +101,7 @@ namespace Automatonymous
         /// <typeparam name="TException"></typeparam>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        Task Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
             where TException : Exception;
     }
 
@@ -105,6 +114,11 @@ namespace Automatonymous
     public interface Behavior<in TInstance, in TData> :
         Visitable
     {
+        /// <summary>
+        /// Execute the activity with the given behavior context
+        /// </summary>
+        /// <param name="context">The behavior context</param>
+        /// <returns>An awaitable task</returns>
         Task Execute(BehaviorContext<TInstance, TData> context);
 
         /// <summary>
@@ -113,7 +127,7 @@ namespace Automatonymous
         /// <typeparam name="TException"></typeparam>
         /// <param name="context"></param>
         /// <returns></returns>
-        Task Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        Task Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
             where TException : Exception;
     }
 }

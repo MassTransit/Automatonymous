@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -10,7 +10,7 @@
 // under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
-namespace Automatonymous.Internals
+namespace Automatonymous.Behaviors
 {
     using System;
     using System.Collections.Concurrent;
@@ -18,7 +18,7 @@ namespace Automatonymous.Internals
     using Contexts;
 
 
-    public static class ExceptionBehaviorCache
+    public static class ExceptionTypeCache
     {
         static CachedConfigurator GetOrAdd(Type type)
         {
@@ -26,21 +26,21 @@ namespace Automatonymous.Internals
                 (CachedConfigurator)Activator.CreateInstance(typeof(CachedConfigurator<>).MakeGenericType(type)));
         }
 
-        public static Task Compensate<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context, Exception exception)
+        public static Task Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context, Exception exception)
         {
             if (exception == null)
                 throw new ArgumentNullException("exception");
 
-            return GetOrAdd(exception.GetType()).Compensate(behavior, context, exception);
+            return GetOrAdd(exception.GetType()).Faulted(behavior, context, exception);
         }
 
-        public static Task Compensate<TInstance, TData>(Behavior<TInstance, TData> behavior, BehaviorContext<TInstance, TData> context,
+        public static Task Faulted<TInstance, TData>(Behavior<TInstance, TData> behavior, BehaviorContext<TInstance, TData> context,
             Exception exception)
         {
             if (exception == null)
                 throw new ArgumentNullException("exception");
 
-            return GetOrAdd(exception.GetType()).Compensate(behavior, context, exception);
+            return GetOrAdd(exception.GetType()).Faulted(behavior, context, exception);
         }
 
 
@@ -53,9 +53,9 @@ namespace Automatonymous.Internals
 
         interface CachedConfigurator
         {
-            Task Compensate<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context, Exception exception);
+            Task Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context, Exception exception);
 
-            Task Compensate<TInstance, TData>(Behavior<TInstance, TData> behavior, BehaviorContext<TInstance, TData> context,
+            Task Faulted<TInstance, TData>(Behavior<TInstance, TData> behavior, BehaviorContext<TInstance, TData> context,
                 Exception exception);
         }
 
@@ -64,29 +64,35 @@ namespace Automatonymous.Internals
             CachedConfigurator
             where TException : Exception
         {
-            async Task CachedConfigurator.Compensate<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context,
+            async Task CachedConfigurator.Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context,
                 Exception exception)
             {
                 var typedException = exception as TException;
-                if (typedException != null)
+                if (typedException == null)
                 {
-                    var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TException>(context, typedException);
-
-                    await behavior.Compensate(exceptionContext);
+                    throw new ArgumentException(string.Format("The exception type {0} did not match the expected type {1}",
+                        exception.GetType().Name, typeof(TException).Name));
                 }
+
+                var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TException>(context, typedException);
+
+                await behavior.Faulted(exceptionContext);
             }
 
-            async Task CachedConfigurator.Compensate<TInstance, TData>(Behavior<TInstance, TData> behavior,
+            async Task CachedConfigurator.Faulted<TInstance, TData>(Behavior<TInstance, TData> behavior,
                 BehaviorContext<TInstance, TData> context,
                 Exception exception)
             {
                 var typedException = exception as TException;
-                if (typedException != null)
+                if (typedException == null)
                 {
-                    var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TData, TException>(context, typedException);
-
-                    await behavior.Compensate(exceptionContext);
+                    throw new ArgumentException(string.Format("The exception type {0} did not match the expected type {1}",
+                        exception.GetType().Name, typeof(TException).Name));
                 }
+
+                var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TData, TException>(context, typedException);
+
+                await behavior.Faulted(exceptionContext);
             }
         }
     }

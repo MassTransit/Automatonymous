@@ -14,7 +14,6 @@ namespace Automatonymous.Behaviors
 {
     using System;
     using System.Threading.Tasks;
-    using Internals;
 
 
     public class ActivityBehavior<TInstance> :
@@ -50,9 +49,10 @@ namespace Automatonymous.Behaviors
                 activityException = exception;
             }
 
+            // once we can await in a catch, we're golden
             if (activityException != null)
             {
-                await ExceptionBehaviorCache.Compensate(_next, context, activityException);
+                await ExceptionTypeCache.Faulted(_next, context, activityException);
             }
         }
 
@@ -70,22 +70,23 @@ namespace Automatonymous.Behaviors
                 activityException = exception;
             }
 
+            // once we can await in catch we're golden
             if (activityException != null)
             {
-                await ExceptionBehaviorCache.Compensate(behavior, context, activityException);
+                await ExceptionTypeCache.Faulted(behavior, context, activityException);
             }
         }
 
-        Task Behavior<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
             var behavior = new DataBehavior<TInstance, T>(_next);
 
-            return _activity.Compensate(context, behavior);
+            return _activity.Faulted(context, behavior);
         }
 
-        Task Behavior<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            return _activity.Compensate(context, _next);
+            return _activity.Faulted(context, _next);
         }
     }
 }

@@ -48,14 +48,14 @@ namespace Automatonymous.Activities
             await activity.Execute(context, upconvert);
         }
 
-        Task Activity<TInstance>.Compensate<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
 
-        Task Activity<TInstance>.Compensate<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
     }
 
@@ -82,9 +82,9 @@ namespace Automatonymous.Activities
             return activity.Execute(context, next);
         }
 
-        Task Activity<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
         {
-            return next.Compensate(context);
+            return next.Faulted(context);
         }
     }
 }

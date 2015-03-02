@@ -45,7 +45,7 @@ namespace Automatonymous
             where TInstance : class
             where TException : Exception
         {
-            return binder.Add(new CompensateActionActivity<TInstance, TException>(action));
+            return binder.Add(new FaultedActionActivity<TInstance, TException>(action));
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Automatonymous
             where TInstance : class
             where TException : Exception
         {
-            return binder.Add(new CompensateActionActivity<TInstance, TData, TException>(action));
+            return binder.Add(new FaultedActionActivity<TInstance, TData, TException>(action));
         }
 
         /// <summary>

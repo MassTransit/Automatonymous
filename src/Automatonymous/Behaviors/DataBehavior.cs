@@ -40,9 +40,9 @@ namespace Automatonymous.Behaviors
             return _behavior.Execute(context);
         }
 
-        Task Behavior<TInstance, TData>.Compensate<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
-            return _behavior.Compensate(context);
+            return _behavior.Faulted(context);
         }
     }
 }

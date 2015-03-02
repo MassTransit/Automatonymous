@@ -21,14 +21,14 @@ namespace Automatonymous.Activities
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TException"></typeparam>
-    public class CompensateActivity<TInstance, TException> :
+    public class CatchFaultActivity<TInstance, TException> :
         Activity<TInstance>
         where TInstance : class
         where TException : Exception
     {
         readonly Behavior<TInstance> _behavior;
 
-        public CompensateActivity(Behavior<TInstance> behavior)
+        public CatchFaultActivity(Behavior<TInstance> behavior)
         {
             _behavior = behavior;
         }
@@ -48,33 +48,33 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        async Task Activity<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
+        async Task Activity<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
             if (exceptionContext != null)
             {
-                await _behavior.Compensate(exceptionContext);
+                await _behavior.Faulted(exceptionContext);
 
                 // if the compensate returns, we should go forward normally
                 await next.Execute(context);
             }
             else
-                await next.Compensate(context);
+                await next.Faulted(context);
         }
 
-        async Task Activity<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
+        async Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
             Behavior<TInstance, TData> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
             {
-                await _behavior.Compensate(exceptionContext);
+                await _behavior.Faulted(exceptionContext);
 
                 // if the compensate returns, we should go forward normally
                 await next.Execute(context);
             }
             else
-                await next.Compensate(context);
+                await next.Faulted(context);
         }
     }
 }

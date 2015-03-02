@@ -16,13 +16,13 @@ namespace Automatonymous.Behaviors
     using System.Collections.Generic;
 
 
-    public class CompensateBehaviorBuilder<TInstance> :
+    public class CatchBehaviorBuilder<TInstance> :
         BehaviorBuilder<TInstance>
     {
         readonly List<Activity<TInstance>> _activities;
         readonly Lazy<Behavior<TInstance>> _behavior;
 
-        public CompensateBehaviorBuilder()
+        public CatchBehaviorBuilder()
         {
             _activities = new List<Activity<TInstance>>();
             _behavior = new Lazy<Behavior<TInstance>>(CreateBehavior);
@@ -46,7 +46,7 @@ namespace Automatonymous.Behaviors
             if (_activities.Count == 0)
                 return Automatonymous.Behavior.Empty<TInstance>();
 
-            Behavior<TInstance> current = new LastCompensateBehavior<TInstance>(_activities[_activities.Count - 1]);
+            Behavior<TInstance> current = new LastFaultedBehavior<TInstance>(_activities[_activities.Count - 1]);
 
             for (int i = _activities.Count - 2; i >= 0; i--)
                 current = new ActivityBehavior<TInstance>(_activities[i], current);

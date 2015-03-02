@@ -36,20 +36,20 @@ namespace Automatonymous.Activities
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            return _next.Compensate(_context);
+            return _next.Faulted(_context);
         }
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            return _next.Compensate(_context);
+            return _next.Faulted(_context);
         }
 
-        Task Behavior<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
+        Task Behavior<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
         {
             throw new AutomatonymousException("This should not ever be called.");
         }
 
-        Task Behavior<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context)
+        Task Behavior<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context)
         {
             throw new AutomatonymousException("This should not ever be called.");
         }
@@ -76,20 +76,20 @@ namespace Automatonymous.Activities
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            return _next.Compensate(_context);
+            return _next.Faulted(_context);
         }
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            return _next.Compensate(_context);
+            return _next.Faulted(_context);
         }
 
-        Task Behavior<TInstance>.Compensate<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
+        Task Behavior<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
         {
             throw new AutomatonymousException("This should not ever be called.");
         }
 
-        Task Behavior<TInstance>.Compensate<T>(BehaviorExceptionContext<TInstance, T> context)
+        Task Behavior<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context)
         {
             throw new AutomatonymousException("This should not ever be called.");
         }
