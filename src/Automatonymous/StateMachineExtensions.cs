@@ -12,7 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Activities;
@@ -22,98 +21,6 @@ namespace Automatonymous
 
     public static class StateMachineExtensions
     {
-        /// <summary>
-        ///     Raise a simple event on the state machine
-        /// </summary>
-        /// <typeparam name="T">The state machine type</typeparam>
-        /// <typeparam name="TInstance">The instance type</typeparam>
-        /// <param name="stateMachine">The state machine</param>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="eventSelector">Selector to the event on the state machine</param>
-        /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance>(this T stateMachine, TInstance instance,
-            Func<T, Event> eventSelector, CancellationToken cancellationToken = default(CancellationToken))
-            where T : class, StateMachine, StateMachine<TInstance>
-            where TInstance : class
-        {
-            Event @event = eventSelector(stateMachine);
-            if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
-
-            var context = new StateMachineEventContext<TInstance>(stateMachine, instance, @event, cancellationToken);
-
-            return stateMachine.RaiseEvent(context);
-        }
-
-        /// <summary>
-        ///     Raise a simple event on the state machine
-        /// </summary>
-        /// <typeparam name="T">The state machine type</typeparam>
-        /// <typeparam name="TInstance">The instance type</typeparam>
-        /// <param name="machine">The state machine</param>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="event">The event to raise</param>
-        /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance>(this T machine, TInstance instance, Event @event,
-            CancellationToken cancellationToken = default(CancellationToken))
-            where T : class, StateMachine, StateMachine<TInstance>
-            where TInstance : class
-        {
-            if (@event == null)
-                throw new ArgumentNullException("event", "The event selector did not return a valid event from the state machine");
-
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);
-
-            return machine.RaiseEvent(context);
-        }
-
-        /// <summary>
-        ///     Raise a simple event on the state machine
-        /// </summary>
-        /// <typeparam name="T">The state machine type</typeparam>
-        /// <typeparam name="TInstance">The instance type</typeparam>
-        /// <typeparam name="TData"></typeparam>
-        /// <param name="machine">The state machine</param>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="event">The event to raise</param>
-        /// <param name="data"></param>
-        /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance, TData>(this T machine, TInstance instance, Event<TData> @event, TData data,
-            CancellationToken cancellationToken = default(CancellationToken))
-            where T : class, StateMachine, StateMachine<TInstance>
-            where TInstance : class
-        {
-            if (@event == null)
-                throw new ArgumentNullException("event", "The event selector did not return a valid event from the state machine");
-
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);
-
-            return machine.RaiseEvent(context);
-        }
-
-        /// <summary>
-        ///     Raise a simple event on the state machine
-        /// </summary>
-        /// <typeparam name="T">The state machine type</typeparam>
-        /// <typeparam name="TInstance">The instance type</typeparam>
-        /// <typeparam name="TData"></typeparam>
-        /// <param name="stateMachine">The state machine</param>
-        /// <param name="instance">The state machine instance</param>
-        /// <param name="eventSelector">Selector to the event on the state machine</param>
-        /// <param name="data"></param>
-        /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance, TData>(this T stateMachine, TInstance instance,
-            Func<T, Event<TData>> eventSelector, TData data, CancellationToken cancellationToken = default(CancellationToken))
-            where T : class, StateMachine, StateMachine<TInstance>
-            where TInstance : class
-        {
-            Event<TData> @event = eventSelector(stateMachine);
-
-            var context = new StateMachineEventContext<TInstance, TData>(stateMachine, instance, @event, data, cancellationToken);
-
-            return stateMachine.RaiseEvent(context);
-        }
-
         /// <summary>
         ///     Transition a state machine instance to a specific state, producing any events related
         ///     to the transaction such as leaving the previous state and entering the target state

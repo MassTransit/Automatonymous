@@ -67,6 +67,7 @@
     <Compile Include="Introspection_Specs.cs" />
     <Compile Include="JsonStateSerializer.cs" />
     <Compile Include="Observable_Specs.cs" />
+    <Compile Include="Request_Specs.cs" />
     <Compile Include="SerializeState_Specs.cs" />
     <Compile Include="StateChangeObserver.cs" />
     <Compile Include="StateConverter.cs" />

@@ -411,6 +411,31 @@ namespace Automatonymous
         }
 
         /// <summary>
+        /// Declares a data event on a property of the state machine, and initializes the property
+        /// </summary>
+        /// <param name="propertyExpression">The property</param>
+        /// <param name="eventPropertyExpression">The event property on the property</param>
+        protected void Event<TProperty, T>(Expression<Func<TProperty>> propertyExpression,
+            Expression<Func<TProperty, Event<T>>> eventPropertyExpression)
+            where TProperty : class
+        {
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var propertyValue = property.GetValue(this, null) as TProperty;
+            if (propertyValue == null)
+                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+
+            PropertyInfo eventProperty = eventPropertyExpression.GetPropertyInfo();
+
+            string name = property.Name;
+
+            var @event = new DataEvent<T>(name);
+
+            eventProperty.SetValue(propertyValue, @event);
+
+            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
+        }
+
+        /// <summary>
         /// Declares a state on the state machine, and initialized the property
         /// </summary>
         /// <param name="propertyExpression">The state property</param>

@@ -130,6 +130,11 @@
     <Compile Include="Internals\Observable.cs" />
     <Compile Include="Internals\ReadOnlyProperty.cs" />
     <Compile Include="Internals\ReadWriteProperty.cs" />
+    <Compile Include="RaiseEventExtensions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RaiseEventExtensions.tt</DependentUpon>
+    </Compile>
     <Compile Include="UnhandledEventCallback.cs" />
     <Compile Include="UnhandledEventContext.cs" />
     <Compile Include="Lifts\StateMachineEventLift.cs" />
@@ -161,7 +166,15 @@
     <Compile Include="TransitionExtensions.cs" />
     <Compile Include="TryExtensions.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="RaiseEventExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RaiseEventExtensions.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
