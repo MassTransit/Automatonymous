@@ -895,8 +895,7 @@ namespace Automatonymous
 
             Type machineType = GetType();
 
-            IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType.GetTypeInfo())
-                ;
+            IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType.GetTypeInfo());
 
             foreach (PropertyInfo propertyInfo in properties)
             {
@@ -904,7 +903,7 @@ namespace Automatonymous
                 {
                     if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
                     {
-                        Type declarationType = typeof(DataRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
+                        Type declarationType = typeof(DataEventRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
                             propertyInfo.PropertyType.GetGenericArguments().First());
                         object declaration = Activator.CreateInstance(declarationType, propertyInfo);
                         events.Add((StateMachineRegistration)declaration);
@@ -914,7 +913,7 @@ namespace Automatonymous
                 {
                     if (propertyInfo.PropertyType == typeof(Event))
                     {
-                        Type declarationType = typeof(TriggerRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                        Type declarationType = typeof(TriggerEventRegistration<>).MakeGenericType(typeof(TInstance), machineType);
                         object declaration = Activator.CreateInstance(declarationType, propertyInfo);
                         events.Add((StateMachineRegistration)declaration);
                     }
@@ -931,13 +930,13 @@ namespace Automatonymous
         }
 
 
-        class DataRegistration<TStateMachine, TData> :
+        class DataEventRegistration<TStateMachine, TData> :
             StateMachineRegistration
             where TStateMachine : AutomatonymousStateMachine<TInstance>
         {
             readonly PropertyInfo _propertyInfo;
 
-            public DataRegistration(PropertyInfo propertyInfo)
+            public DataEventRegistration(PropertyInfo propertyInfo)
             {
                 _propertyInfo = propertyInfo;
             }
@@ -983,13 +982,13 @@ namespace Automatonymous
         }
 
 
-        class TriggerRegistration<TStateMachine> :
+        class TriggerEventRegistration<TStateMachine> :
             StateMachineRegistration
             where TStateMachine : AutomatonymousStateMachine<TInstance>
         {
             readonly PropertyInfo _propertyInfo;
 
-            public TriggerRegistration(PropertyInfo propertyInfo)
+            public TriggerEventRegistration(PropertyInfo propertyInfo)
             {
                 _propertyInfo = propertyInfo;
             }
