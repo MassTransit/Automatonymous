@@ -74,13 +74,6 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                InstanceState(x => x.CurrentState);
-
-                State(() => Running);
-
-                Event(() => Initialized);
-                Event(() => PassedValue);
-
                 During(Initial,
                     When(Initialized)
                         .Then(context => context.Instance.Value = context.Data.Value)

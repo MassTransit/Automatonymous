@@ -70,7 +70,7 @@ namespace Automatonymous.Accessors
         {
             PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
 
-            return new ReadWriteProperty<TInstance, int>(propertyInfo, true);
+            return new ReadWriteProperty<TInstance, int>(propertyInfo);
         }
 
 

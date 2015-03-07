@@ -90,17 +90,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                InstanceState(x => x.CurrentState);
-
-                Event(() => Hello);
-                Event(() => YelledAt);
-                Event(() => Handshake);
-                Event(() => Ignored);
-
-                State(() => Greeted);
-                State(() => Loved);
-                State(() => Pissed);
-
                 Initially(
                     When(Hello)
                         .TransitionTo(Greeted));

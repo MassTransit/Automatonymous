@@ -29,7 +29,6 @@ namespace Automatonymous
 
 
     public abstract class AutomatonymousStateMachine<TInstance> :
-        Visitable,
         StateMachine<TInstance>
         where TInstance : class
     {
@@ -38,6 +37,7 @@ namespace Automatonymous
         readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
         readonly State<TInstance> _final;
         readonly State<TInstance> _initial;
+        readonly Lazy<StateMachineRegistration[]> _registrations;
         readonly Dictionary<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
         StateAccessor<TInstance> _instanceStateAccessor;
@@ -46,6 +46,7 @@ namespace Automatonymous
 
         protected AutomatonymousStateMachine()
         {
+            _registrations = new Lazy<StateMachineRegistration[]>(GetRegistrations);
             _stateCache = new Dictionary<string, State<TInstance>>();
             _eventCache = new Dictionary<string, StateMachineEvent<TInstance>>();
 
@@ -63,6 +64,8 @@ namespace Automatonymous
             _unhandledEventCallback = DefaultUnhandledEventCallback;
 
             _name = GetType().Name;
+
+            RegisterImplicit();
         }
 
         string StateMachine.Name
@@ -261,6 +264,11 @@ namespace Automatonymous
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
+            DeclareTriggerEvent(property);
+        }
+
+        void DeclareTriggerEvent(PropertyInfo property)
+        {
             string name = property.Name;
 
             var @event = new TriggerEvent(name);
@@ -278,6 +286,11 @@ namespace Automatonymous
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
+            DeclareDataEvent<T>(property);
+        }
+
+        void DeclareDataEvent<T>(PropertyInfo property)
+        {
             string name = property.Name;
 
             var @event = new DataEvent<T>(name);
@@ -320,7 +333,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The composite event</param>
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void Event(Expression<Func<Event>> propertyExpression,
+        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
@@ -328,7 +341,7 @@ namespace Automatonymous
 
             var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, CompositeEventOptions.None, events);
+            CompositeEvent(propertyExpression, accessor, CompositeEventOptions.None, events);
         }
 
         /// <summary>
@@ -340,7 +353,7 @@ namespace Automatonymous
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="options">Options on the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void Event(Expression<Func<Event>> propertyExpression,
+        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
@@ -349,7 +362,7 @@ namespace Automatonymous
 
             var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, options, events);
+            CompositeEvent(propertyExpression, accessor, options, events);
         }
 
         /// <summary>
@@ -360,7 +373,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The composite event</param>
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void Event(Expression<Func<Event>> propertyExpression,
+        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
         {
@@ -368,7 +381,7 @@ namespace Automatonymous
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, CompositeEventOptions.None, events);
+            CompositeEvent(propertyExpression, accessor, CompositeEventOptions.None, events);
         }
 
         /// <summary>
@@ -380,7 +393,7 @@ namespace Automatonymous
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="options">Options on the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void Event(Expression<Func<Event>> propertyExpression,
+        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
@@ -389,11 +402,11 @@ namespace Automatonymous
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
-            Event(propertyExpression, accessor, options, events);
+            CompositeEvent(propertyExpression, accessor, options, events);
         }
 
 
-        void Event(Expression<Func<Event>> propertyExpression, CompositeEventStatusAccessor<TInstance> accessor,
+        void CompositeEvent(Expression<Func<Event>> propertyExpression, CompositeEventStatusAccessor<TInstance> accessor,
             CompositeEventOptions options, Event[] events)
         {
             if (events == null)
@@ -443,18 +456,18 @@ namespace Automatonymous
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
+            DeclareState(property);
+        }
+
+        void DeclareState(PropertyInfo property)
+        {
             string name = property.Name;
 
             var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
 
             property.SetValue(this, state);
 
-            _stateCache[name] = state;
-
-            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(state.BeforeEnter, true);
-            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(state.Enter, true);
-            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
-            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
+            SetState(name, state);
         }
 
         /// <summary>
@@ -479,20 +492,16 @@ namespace Automatonymous
 
             stateProperty.SetValue(propertyValue, state);
 
-            _stateCache[name] = state;
-
-            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(state.BeforeEnter, true);
-            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(state.Enter, true);
-            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
-            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
+            SetState(name, state);
         }
 
         /// <summary>
-        /// Register a State, with a Superstate
+        /// Declares a sub-state on the machine. A sub-state is a state that is valid within a super-state,
+        /// allowing a state machine to have multiple "states" -- nested parts of an overall state.
         /// </summary>
         /// <param name="propertyExpression">The state property expression</param>
         /// <param name="superState">The superstate of which this state is a substate</param>
-        protected void State(Expression<Func<State>> propertyExpression, State superState)
+        protected void SubState(Expression<Func<State>> propertyExpression, State superState)
         {
             if (superState == null)
                 throw new ArgumentNullException("superState");
@@ -507,8 +516,55 @@ namespace Automatonymous
 
             property.SetValue(this, state);
 
-            _stateCache[name] = state;
+            SetState(name, state);
         }
+
+        /// <summary>
+        /// Declares a state on the state machine, and initialized the property
+        /// </summary>
+        /// <param name="propertyExpression">The property containing the state</param>
+        /// <param name="statePropertyExpression">The state property</param>
+        /// <param name="superState">The superstate of which this state is a substate</param>
+        protected void SubState<TProperty>(Expression<Func<TProperty>> propertyExpression,
+            Expression<Func<TProperty, State>> statePropertyExpression, State superState)
+            where TProperty : class
+        {
+            if (superState == null)
+                throw new ArgumentNullException("superState");
+
+            State<TInstance> superStateInstance = GetState(superState.Name);
+
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var propertyValue = property.GetValue(this, null) as TProperty;
+            if (propertyValue == null)
+                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+
+            PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
+
+            string name = string.Format("{0}.{1}", property.Name, stateProperty.Name);
+
+            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver, superStateInstance);
+
+            stateProperty.SetValue(propertyValue, state);
+
+            SetState(name, state);
+        }
+
+        /// <summary>
+        /// Adds the state, and state transition events, to the cache
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="state"></param>
+        void SetState(string name, StateMachineState<TInstance> state)
+        {
+            _stateCache[name] = state;
+
+            _eventCache[state.BeforeEnter.Name] = new StateMachineEvent<TInstance>(state.BeforeEnter, true);
+            _eventCache[state.Enter.Name] = new StateMachineEvent<TInstance>(state.Enter, true);
+            _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
+            _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
+        }
+
 
         /// <summary>
         /// Declares the events and associated activities that are handled during the specified state
@@ -801,6 +857,152 @@ namespace Automatonymous
             var unhandledEventContext = new StateUnhandledEventContext<TInstance>(context, state, this);
 
             return _unhandledEventCallback(unhandledEventContext);
+        }
+
+        /// <summary>
+        /// Register all remaining events and states that have not been explicitly declared.
+        /// </summary>
+        void RegisterImplicit()
+        {
+            foreach (StateMachineRegistration declaration in _registrations.Value)
+                declaration.Declare(this);
+        }
+
+
+        static IEnumerable<PropertyInfo> GetStateMachineProperties(TypeInfo typeInfo)
+        {
+            if (typeInfo.IsInterface)
+                yield break;
+
+            if (typeInfo.BaseType != null)
+            {
+                foreach (PropertyInfo propertyInfo in GetStateMachineProperties(typeInfo.BaseType.GetTypeInfo()))
+                    yield return propertyInfo;
+            }
+
+            IEnumerable<PropertyInfo> properties = typeInfo.DeclaredMethods
+                .Where(x => x.IsSpecialName && x.Name.StartsWith("get_") && !x.IsStatic)
+                .Select(x => typeInfo.GetDeclaredProperty(x.Name.Substring("get_".Length)))
+                .Where(x => x.CanRead && x.CanWrite);
+
+            foreach (PropertyInfo propertyInfo in properties)
+                yield return propertyInfo;
+        }
+
+        StateMachineRegistration[] GetRegistrations()
+        {
+            var events = new List<StateMachineRegistration>();
+
+            Type machineType = GetType();
+
+            IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType.GetTypeInfo())
+                ;
+
+            foreach (PropertyInfo propertyInfo in properties)
+            {
+                if (propertyInfo.PropertyType.IsGenericType)
+                {
+                    if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+                    {
+                        Type declarationType = typeof(DataRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
+                            propertyInfo.PropertyType.GetGenericArguments().First());
+                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                        events.Add((StateMachineRegistration)declaration);
+                    }
+                }
+                else
+                {
+                    if (propertyInfo.PropertyType == typeof(Event))
+                    {
+                        Type declarationType = typeof(TriggerRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                        events.Add((StateMachineRegistration)declaration);
+                    }
+                    else if (propertyInfo.PropertyType == typeof(State))
+                    {
+                        Type declarationType = typeof(StateRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                        events.Add((StateMachineRegistration)declaration);
+                    }
+                }
+            }
+
+            return events.ToArray();
+        }
+
+
+        class DataRegistration<TStateMachine, TData> :
+            StateMachineRegistration
+            where TStateMachine : AutomatonymousStateMachine<TInstance>
+        {
+            readonly PropertyInfo _propertyInfo;
+
+            public DataRegistration(PropertyInfo propertyInfo)
+            {
+                _propertyInfo = propertyInfo;
+            }
+
+            public void Declare(object stateMachine)
+            {
+                var machine = ((TStateMachine)stateMachine);
+                object existing = _propertyInfo.GetValue(machine);
+                if (existing != null)
+                    return;
+
+                machine.DeclareDataEvent<TData>(_propertyInfo);
+            }
+        }
+
+
+        interface StateMachineRegistration
+        {
+            void Declare(object stateMachine);
+        }
+
+
+        class StateRegistration<TStateMachine> :
+            StateMachineRegistration
+            where TStateMachine : AutomatonymousStateMachine<TInstance>
+        {
+            readonly PropertyInfo _propertyInfo;
+
+            public StateRegistration(PropertyInfo propertyInfo)
+            {
+                _propertyInfo = propertyInfo;
+            }
+
+            public void Declare(object stateMachine)
+            {
+                var machine = ((TStateMachine)stateMachine);
+                object existing = _propertyInfo.GetValue(machine);
+                if (existing != null)
+                    return;
+
+                machine.DeclareState(_propertyInfo);
+            }
+        }
+
+
+        class TriggerRegistration<TStateMachine> :
+            StateMachineRegistration
+            where TStateMachine : AutomatonymousStateMachine<TInstance>
+        {
+            readonly PropertyInfo _propertyInfo;
+
+            public TriggerRegistration(PropertyInfo propertyInfo)
+            {
+                _propertyInfo = propertyInfo;
+            }
+
+            public void Declare(object stateMachine)
+            {
+                var machine = ((TStateMachine)stateMachine);
+                object existing = _propertyInfo.GetValue(machine);
+                if (existing != null)
+                    return;
+
+                machine.DeclareTriggerEvent(_propertyInfo);
+            }
         }
     }
 }

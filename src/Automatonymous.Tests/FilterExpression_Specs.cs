@@ -48,11 +48,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => True);
-                State(() => False);
-
-                Event(() => Thing);
-
                 During(Initial,
                     When(Thing, context => context.Data.Condition)
                         .TransitionTo(True),

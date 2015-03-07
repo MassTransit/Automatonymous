@@ -154,7 +154,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
                 Event(() => ExitFrontDoor);
                 Event(() => GotHitByCar);
 
-                Event(() => EndOfTheWorld, x => x.Everything, CompositeEventOptions.IncludeInitial, ExitFrontDoor, GotHitByCar);
+                CompositeEvent(() => EndOfTheWorld, x => x.Everything, CompositeEventOptions.IncludeInitial, ExitFrontDoor, GotHitByCar);
 
                 Initially(
                     When(ExitFrontDoor)

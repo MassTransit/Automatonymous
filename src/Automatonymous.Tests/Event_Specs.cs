@@ -73,13 +73,6 @@ namespace Automatonymous.Tests
         class TestStateMachine :
             AutomatonymousStateMachine<Instance>
         {
-            public TestStateMachine()
-            {
-                Event(() => Hello);
-                Event(() => EventA);
-                Event(() => EventInt);
-            }
-
             public Event Hello { get; private set; }
             public Event<A> EventA { get; private set; }
             public Event<int> EventInt { get; private set; }

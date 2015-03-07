@@ -69,10 +69,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.Top);
 
-                State(() => Greeted);
-
-                Event(() => Initialized);
-
                 During(Initial,
                     When(Initialized)
                         .TransitionTo(Greeted));

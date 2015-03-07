@@ -106,10 +106,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Running);
-
-                Event(() => Create);
-
                 During(Initial,
                     When(Create)
                         .Execute(context => new CalculateValueActivity(new LocalCalculator()))

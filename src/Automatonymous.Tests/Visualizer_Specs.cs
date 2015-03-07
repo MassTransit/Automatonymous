@@ -71,18 +71,6 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                InstanceState(x => x.CurrentState);
-
-                State(() => Running);
-                State(() => Suspended);
-                State(() => Failed);
-
-                Event(() => Initialized);
-                Event(() => Finished);
-                Event(() => Suspend);
-                Event(() => Resume);
-                Event(() => Restart);
-
                 During(Initial,
                     When(Initialized)
                         .TransitionTo(Running)

@@ -49,10 +49,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                Event(() => Start);
-
-                State(() => Running);
-
                 Initially(
                     When(Start)
                         .TransitionTo(Running));
@@ -99,11 +95,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                Event(() => Start);
-                Event(() => Charge);
-
-                State(() => Running);
-
                 Initially(
                     When(Start)
                         .TransitionTo(Running));
@@ -175,11 +166,6 @@ namespace Automatonymous.Tests
         {
             public TestStateMachine()
             {
-                Event(() => Start);
-                Event(() => Charge);
-
-                State(() => Running);
-
                 Initially(
                     When(Start)
                         .TransitionTo(Running));

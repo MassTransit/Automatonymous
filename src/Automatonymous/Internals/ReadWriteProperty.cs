@@ -22,10 +22,10 @@ namespace Automatonymous.Internals
     {
         public readonly Action<T, TProperty> SetProperty;
 
-        public ReadWriteProperty(PropertyInfo property, bool includeNonPublic = false)
+        public ReadWriteProperty(PropertyInfo property)
             : base(property)
         {
-            SetProperty = GetSetMethod(Property, includeNonPublic);
+            SetProperty = GetSetMethod(Property);
         }
 
         public void Set(T instance, TProperty value)
@@ -33,7 +33,7 @@ namespace Automatonymous.Internals
             SetProperty(instance, value);
         }
 
-        static Action<T, TProperty> GetSetMethod(PropertyInfo property, bool includeNonPublic)
+        static Action<T, TProperty> GetSetMethod(PropertyInfo property)
         {
             ParameterExpression instance = Expression.Parameter(typeof(T), "instance");
             ParameterExpression value = Expression.Parameter(typeof(TProperty), "value");

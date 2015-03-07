@@ -50,11 +50,6 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                State(() => Running);
-
-                Event(() => Initialized);
-                Event(() => Finish);
-
                 During(Initial,
                     When(Initialized)
                         .TransitionTo(Running));
@@ -131,12 +126,7 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                State(() => Running);
-                State(() => Resting, Running);
-
-                Event(() => Initialized);
-                Event(() => LegCramped);
-                Event(() => Finish);
+                SubState(() => Resting, Running);
 
                 During(Initial,
                     When(Initialized)
@@ -281,13 +271,7 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                State(() => Running);
-                State(() => Resting, Running);
-
-                Event(() => Initialized);
-                Event(() => LegCramped);
-                Event(() => Recovered);
-                Event(() => Finish);
+                SubState(() => Resting, Running);
 
                 During(Initial,
                     When(Initialized)

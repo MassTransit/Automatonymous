@@ -157,20 +157,7 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => OffHook);
-                State(() => Ringing);
-                State(() => Connected);
-                State(() => OnHold, Connected);
-                State(() => PhoneDestroyed);
-
-                Event(() => ServiceEstablished);
-                Event(() => CallDialed);
-                Event(() => HungUp);
-                Event(() => CallConnected);
-                Event(() => LeftMessage);
-                Event(() => PlacedOnHold);
-                Event(() => TakenOffHold);
-                Event(() => PhoneHurledAgainstWall);
+                SubState(() => OnHold, Connected);
 
                 Initially(
                     When(ServiceEstablished)

@@ -54,12 +54,6 @@ namespace Automatonymous.Tests
         {
             public InstanceStateMachine()
             {
-                InstanceState(x => x.CurrentState);
-
-                State(() => Failed);
-
-                Event(() => Initialized);
-
                 During(Initial,
                     When(Initialized)
                         .Then(context => context.Instance.Called = true)
@@ -157,10 +151,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Failed);
-
-                Event(() => Initialized);
-
                 During(Initial,
                     When(Initialized)
                         .Then(context => context.Instance.Called = true)
@@ -243,10 +233,6 @@ namespace Automatonymous.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => Failed);
-
-                Event(() => Initialized);
-
                 During(Initial,
                     When(Initialized)
                         .Then(_ => { throw new ApplicationException("Boom!"); })
@@ -308,10 +294,6 @@ namespace Automatonymous.Tests
             public InstanceStateMachine()
             {
                 InstanceState(x => x.CurrentState);
-
-                State(() => Failed);
-
-                Event(() => Initialized);
 
                 During(Initial,
                     When(Initialized)
