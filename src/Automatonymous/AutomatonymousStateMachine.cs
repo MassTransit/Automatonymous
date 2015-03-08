@@ -260,7 +260,7 @@ namespace Automatonymous
         /// Declares an event, and initializes the event property
         /// </summary>
         /// <param name="propertyExpression"></param>
-        protected void Event(Expression<Func<Event>> propertyExpression)
+        protected virtual void Event(Expression<Func<Event>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
@@ -282,7 +282,7 @@ namespace Automatonymous
         /// Declares a data event on the state machine, and initializes the property
         /// </summary>
         /// <param name="propertyExpression">The event property</param>
-        protected void Event<T>(Expression<Func<Event<T>>> propertyExpression)
+        protected virtual void Event<T>(Expression<Func<Event<T>>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
@@ -305,7 +305,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression">The property</param>
         /// <param name="eventPropertyExpression">The event property on the property</param>
-        protected void Event<TProperty, T>(Expression<Func<TProperty>> propertyExpression,
+        protected virtual void Event<TProperty, T>(Expression<Func<TProperty>> propertyExpression,
             Expression<Func<TProperty, Event<T>>> eventPropertyExpression)
             where TProperty : class
         {
@@ -333,7 +333,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The composite event</param>
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
+        protected virtual void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
@@ -353,7 +353,7 @@ namespace Automatonymous
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="options">Options on the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
+        protected virtual void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
@@ -373,7 +373,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The composite event</param>
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
+        protected virtual void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
         {
@@ -393,7 +393,7 @@ namespace Automatonymous
         /// <param name="trackingPropertyExpression">The property in the instance used to track the state of the composite event</param>
         /// <param name="options">Options on the composite event</param>
         /// <param name="events">The events that must be raised before the composite event is raised</param>
-        protected void CompositeEvent(Expression<Func<Event>> propertyExpression,
+        protected virtual void CompositeEvent(Expression<Func<Event>> propertyExpression,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
@@ -452,7 +452,7 @@ namespace Automatonymous
         /// Declares a state on the state machine, and initialized the property
         /// </summary>
         /// <param name="propertyExpression">The state property</param>
-        protected void State(Expression<Func<State>> propertyExpression)
+        protected virtual void State(Expression<Func<State>> propertyExpression)
         {
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
@@ -475,7 +475,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression">The property containing the state</param>
         /// <param name="statePropertyExpression">The state property</param>
-        protected void State<TProperty>(Expression<Func<TProperty>> propertyExpression,
+        protected virtual void State<TProperty>(Expression<Func<TProperty>> propertyExpression,
             Expression<Func<TProperty, State>> statePropertyExpression)
             where TProperty : class
         {
@@ -501,7 +501,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression">The state property expression</param>
         /// <param name="superState">The superstate of which this state is a substate</param>
-        protected void SubState(Expression<Func<State>> propertyExpression, State superState)
+        protected virtual void SubState(Expression<Func<State>> propertyExpression, State superState)
         {
             if (superState == null)
                 throw new ArgumentNullException("superState");
@@ -525,7 +525,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The property containing the state</param>
         /// <param name="statePropertyExpression">The state property</param>
         /// <param name="superState">The superstate of which this state is a substate</param>
-        protected void SubState<TProperty>(Expression<Func<TProperty>> propertyExpression,
+        protected virtual void SubState<TProperty>(Expression<Func<TProperty>> propertyExpression,
             Expression<Func<TProperty, State>> statePropertyExpression, State superState)
             where TProperty : class
         {
