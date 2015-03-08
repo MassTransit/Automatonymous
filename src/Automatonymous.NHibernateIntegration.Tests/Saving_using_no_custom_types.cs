@@ -149,11 +149,6 @@ namespace Automatonymous.NHibernateIntegration.Tests
             {
                 InstanceState(x => x.CurrentState);
 
-                State(() => OnTheWayToTheStore);
-
-                Event(() => ExitFrontDoor);
-                Event(() => GotHitByCar);
-
                 CompositeEvent(() => EndOfTheWorld, x => x.Everything, CompositeEventOptions.IncludeInitial, ExitFrontDoor, GotHitByCar);
 
                 Initially(

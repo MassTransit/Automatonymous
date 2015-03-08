@@ -33,12 +33,12 @@ namespace Automatonymous.Tests
                 await _machine.RaiseEvent(phone, x => x.CallDialed);
                 await _machine.RaiseEvent(phone, x => x.CallConnected);
 
-                await Task.Delay(10);
+                await Task.Delay(50);
 
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
                 Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
-                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 45);
             }
 
             PhoneStateMachine _machine;
@@ -79,14 +79,14 @@ namespace Automatonymous.Tests
                 await _machine.RaiseEvent(phone, x => x.CallDialed);
                 await _machine.RaiseEvent(phone, x => x.CallConnected);
 
-                await Task.Delay(10);
+                await Task.Delay(50);
 
                 await _machine.RaiseEvent(phone, x => x.PlacedOnHold);
                 await _machine.RaiseEvent(phone, x => x.TakenOffHold);
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
                 Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
-                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 45);
             }
 
             PhoneStateMachine _machine;
@@ -111,12 +111,12 @@ namespace Automatonymous.Tests
                 await _machine.RaiseEvent(phone, x => x.CallConnected);
                 await _machine.RaiseEvent(phone, x => x.PlacedOnHold);
 
-                await Task.Delay(10);
+                await Task.Delay(50);
 
                 await _machine.RaiseEvent(phone, x => x.HungUp);
 
                 Assert.AreEqual(_machine.OffHook.Name, phone.CurrentState);
-                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 10);
+                Assert.GreaterOrEqual(phone.CallTimer.ElapsedMilliseconds, 45);
             }
 
             PhoneStateMachine _machine;
@@ -209,10 +209,14 @@ namespace Automatonymous.Tests
             void StopCallTimer(PrincessModelTelephone instance)
             {
                 instance.CallTimer.Stop();
+
+                Console.WriteLine("Stopped call timer at {0}ms", instance.CallTimer.ElapsedMilliseconds);
             }
 
             void StartCallTimer(PrincessModelTelephone instance)
             {
+                Console.WriteLine("Started call timer");
+
                 instance.CallTimer.Start();
             }
         }
