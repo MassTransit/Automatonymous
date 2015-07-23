@@ -59,10 +59,8 @@ namespace Automatonymous.States
 
             _subStates = new HashSet<State<TInstance>>();
             _superState = superState;
-            if (superState != null)
-            {
-                superState.AddSubstate(this);
-            }
+
+            superState?.AddSubstate(this);
         }
 
         public bool Equals(State other)
@@ -70,21 +68,15 @@ namespace Automatonymous.States
             return string.CompareOrdinal(_name, other.Name) == 0;
         }
 
-        public State<TInstance> SuperState
-        {
-            get { return _superState; }
-        }
+        public State<TInstance> SuperState => _superState;
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
-        public Event Enter { get; private set; }
-        public Event Leave { get; private set; }
+        public Event Enter { get; }
+        public Event Leave { get; }
 
-        public Event<State> BeforeEnter { get; private set; }
-        public Event<State> AfterLeave { get; private set; }
+        public Event<State> BeforeEnter { get; }
+        public Event<State> AfterLeave { get; }
 
         public void Accept(StateMachineVisitor visitor)
         {
@@ -195,10 +187,10 @@ namespace Automatonymous.States
         public void AddSubstate(State<TInstance> subState)
         {
             if (subState == null)
-                throw new ArgumentNullException("subState");
+                throw new ArgumentNullException(nameof(subState));
 
             if (_name.Equals(subState.Name))
-                throw new ArgumentException("A state cannot be a substate of itself", "subState");
+                throw new ArgumentException("A state cannot be a substate of itself", nameof(subState));
 
             _subStates.Add(subState);
         }
@@ -241,7 +233,7 @@ namespace Automatonymous.States
 
         public override int GetHashCode()
         {
-            return (_name != null ? _name.GetHashCode() : 0);
+            return _name?.GetHashCode() ?? 0;
         }
 
         public static bool operator ==(State<TInstance> left, StateMachineState<TInstance> right)
@@ -276,7 +268,7 @@ namespace Automatonymous.States
 
         public override string ToString()
         {
-            return string.Format("{0} (State)", _name);
+            return $"{_name} (State)";
         }
 
 
@@ -290,8 +282,8 @@ namespace Automatonymous.States
                 Event = context.Event;
             }
 
-            public TInstance Instance { get; private set; }
-            public Event Event { get; private set; }
+            public TInstance Instance { get; }
+            public Event Event { get; }
         }
     }
 }

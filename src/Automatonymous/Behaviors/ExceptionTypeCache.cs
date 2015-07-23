@@ -29,7 +29,7 @@ namespace Automatonymous.Behaviors
         public static Task Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context, Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             return GetOrAdd(exception.GetType()).Faulted(behavior, context, exception);
         }
@@ -38,7 +38,7 @@ namespace Automatonymous.Behaviors
             Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             return GetOrAdd(exception.GetType()).Faulted(behavior, context, exception);
         }
@@ -70,8 +70,8 @@ namespace Automatonymous.Behaviors
                 var typedException = exception as TException;
                 if (typedException == null)
                 {
-                    throw new ArgumentException(string.Format("The exception type {0} did not match the expected type {1}",
-                        exception.GetType().Name, typeof(TException).Name));
+                    throw new ArgumentException(
+                        $"The exception type {exception.GetType().Name} did not match the expected type {typeof(TException).Name}");
                 }
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TException>(context, typedException);
@@ -86,8 +86,8 @@ namespace Automatonymous.Behaviors
                 var typedException = exception as TException;
                 if (typedException == null)
                 {
-                    throw new ArgumentException(string.Format("The exception type {0} did not match the expected type {1}",
-                        exception.GetType().Name, typeof(TException).Name));
+                    throw new ArgumentException(
+                        $"The exception type {exception.GetType().Name} did not match the expected type {typeof(TException).Name}");
                 }
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TData, TException>(context, typedException);

@@ -25,7 +25,7 @@ namespace Automatonymous
         }
 
         public UnknownEventException(string machineType, string eventName)
-            : base(string.Format("The {0} event is not defined for the {1} state machine", eventName, machineType))
+            : base($"The {eventName} event is not defined for the {machineType} state machine")
         {
         }
 

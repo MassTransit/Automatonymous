@@ -24,13 +24,13 @@ namespace Automatonymous.Internals
     /// Maintains a collection of connections of the generic type
     /// </summary>
     /// <typeparam name="T">The connectable type</typeparam>
-     class Connectable<T>
+     abstract class Connectable<T>
         where T : class
     {
         readonly ConcurrentDictionary<long, T> _connections;
         long _nextId;
 
-        public Connectable()
+        protected Connectable()
         {
             _connections = new ConcurrentDictionary<long, T>();
         }
@@ -38,10 +38,7 @@ namespace Automatonymous.Internals
         /// <summary>
         /// The number of connections
         /// </summary>
-        public int Count
-        {
-            get { return _connections.Count; }
-        }
+        public int Count => _connections.Count;
 
         /// <summary>
         /// Connect a connectable type
@@ -51,7 +48,7 @@ namespace Automatonymous.Internals
         public IDisposable Connect(T connection)
         {
             if (connection == null)
-                throw new ArgumentNullException("connection");
+                throw new ArgumentNullException(nameof(connection));
 
             long id = Interlocked.Increment(ref _nextId);
 
@@ -70,7 +67,7 @@ namespace Automatonymous.Internals
         public async Task ForEach(Func<T, Task> callback)
         {
             if (callback == null)
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
 
             if (_connections.Count == 0)
                 return;
@@ -96,7 +93,7 @@ namespace Automatonymous.Internals
         public void ForEach(Action<T> callback)
         {
             if (callback == null)
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
 
             if (_connections.Count == 0)
                 return;
@@ -143,7 +140,7 @@ namespace Automatonymous.Internals
                 _disconnect = disconnect;
             }
 
-            public void Disconnect()
+            void Disconnect()
             {
                 _disconnect(_id);
             }

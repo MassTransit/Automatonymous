@@ -28,10 +28,7 @@ namespace Automatonymous.Behaviors
             _behavior = new Lazy<Behavior<TInstance>>(CreateBehavior);
         }
 
-        public Behavior<TInstance> Behavior
-        {
-            get { return _behavior.Value; }
-        }
+        public Behavior<TInstance> Behavior => _behavior.Value;
 
         public void Add(Activity<TInstance> activity)
         {

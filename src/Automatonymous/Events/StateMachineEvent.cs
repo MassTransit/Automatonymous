@@ -18,37 +18,17 @@ namespace Automatonymous.Events
     class StateMachineEvent<TInstance>
         where TInstance : class
     {
-        readonly Event _event;
-        readonly Observable<EventRaised<TInstance>> _eventRaisedObservable;
-        readonly Observable<EventRaising<TInstance>> _eventRaisingObservable;
-        readonly bool _isTransitionEvent;
-
         public StateMachineEvent(Event @event, bool isTransitionEvent)
         {
-            _event = @event;
-            _isTransitionEvent = isTransitionEvent;
-            _eventRaisedObservable = new Observable<EventRaised<TInstance>>();
-            _eventRaisingObservable = new Observable<EventRaising<TInstance>>();
+            Event = @event;
+            IsTransitionEvent = isTransitionEvent;
+            EventRaised = new Observable<EventRaised<TInstance>>();
+            EventRaising = new Observable<EventRaising<TInstance>>();
         }
 
-        public bool IsTransitionEvent
-        {
-            get { return _isTransitionEvent; }
-        }
-
-        public Event Event
-        {
-            get { return _event; }
-        }
-
-        public Observable<EventRaised<TInstance>> EventRaised
-        {
-            get { return _eventRaisedObservable; }
-        }
-
-        public Observable<EventRaising<TInstance>> EventRaising
-        {
-            get { return _eventRaisingObservable; }
-        }
+        public bool IsTransitionEvent { get; }
+        public Event Event { get; }
+        public Observable<EventRaised<TInstance>> EventRaised { get; }
+        public Observable<EventRaising<TInstance>> EventRaising { get; }
     }
 }

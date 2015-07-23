@@ -42,10 +42,7 @@ namespace Automatonymous.Binders
             Array.Copy(appendActivity, 0, _activities, activities.Length, appendActivity.Length);
         }
 
-        Event EventActivityBinder<TInstance>.Event
-        {
-            get { return _event; }
-        }
+        Event EventActivityBinder<TInstance>.Event => _event;
 
         EventActivityBinder<TInstance> EventActivityBinder<TInstance>.Add(Activity<TInstance> activity)
         {
@@ -66,10 +63,7 @@ namespace Automatonymous.Binders
             return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
         }
 
-        StateMachine<TInstance> EventActivityBinder<TInstance>.StateMachine
-        {
-            get { return _machine; }
-        }
+        StateMachine<TInstance> EventActivityBinder<TInstance>.StateMachine => _machine;
 
         public IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders()
         {

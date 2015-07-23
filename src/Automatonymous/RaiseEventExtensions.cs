@@ -24,9 +24,9 @@
             where TInstance : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken);
 
             return machine.RaiseEvent(context);
         }         
@@ -47,9 +47,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken);
 
             return machine.RaiseEvent(context);
         }  
@@ -70,9 +70,9 @@
             where TInstance : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken);
 
             return machine.RaiseEvent(context);
         }     
@@ -94,9 +94,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken);
 
             return machine.RaiseEvent(context);
         }        
@@ -118,9 +118,9 @@
             where T1 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1);
 
             return machine.RaiseEvent(context);
@@ -144,9 +144,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1);
 
             return machine.RaiseEvent(context);
@@ -170,9 +170,9 @@
             where T1 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1);
 
             return machine.RaiseEvent(context);
@@ -197,9 +197,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1);
 
             return machine.RaiseEvent(context);
@@ -223,9 +223,9 @@
             where T2 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2);
 
@@ -252,9 +252,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2);
 
@@ -281,9 +281,9 @@
             where T2 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2);
 
@@ -311,9 +311,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2);
 
@@ -340,9 +340,9 @@
             where T3 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3);
@@ -372,9 +372,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3);
@@ -404,9 +404,9 @@
             where T3 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3);
@@ -437,9 +437,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3);
@@ -469,9 +469,9 @@
             where T4 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -504,9 +504,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -539,9 +539,9 @@
             where T4 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -575,9 +575,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -610,9 +610,9 @@
             where T5 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -648,9 +648,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -686,9 +686,9 @@
             where T5 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -725,9 +725,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -763,9 +763,9 @@
             where T6 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -804,9 +804,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -845,9 +845,9 @@
             where T6 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -887,9 +887,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -928,9 +928,9 @@
             where T7 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -972,9 +972,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1016,9 +1016,9 @@
             where T7 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1061,9 +1061,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1105,9 +1105,9 @@
             where T8 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1152,9 +1152,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1199,9 +1199,9 @@
             where T8 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1247,9 +1247,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1294,9 +1294,9 @@
             where T9 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1344,9 +1344,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1394,9 +1394,9 @@
             where T9 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1445,9 +1445,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1495,9 +1495,9 @@
             where T10 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1548,9 +1548,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1601,9 +1601,9 @@
             where T10 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1655,9 +1655,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1708,9 +1708,9 @@
             where T11 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1764,9 +1764,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1820,9 +1820,9 @@
             where T11 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1877,9 +1877,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1933,9 +1933,9 @@
             where T12 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -1992,9 +1992,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2051,9 +2051,9 @@
             where T12 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2111,9 +2111,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2170,9 +2170,9 @@
             where T13 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2232,9 +2232,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2294,9 +2294,9 @@
             where T13 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2357,9 +2357,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2419,9 +2419,9 @@
             where T14 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2484,9 +2484,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2549,9 +2549,9 @@
             where T14 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2615,9 +2615,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2680,9 +2680,9 @@
             where T15 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2748,9 +2748,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2816,9 +2816,9 @@
             where T15 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2885,9 +2885,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -2953,9 +2953,9 @@
             where T16 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -3024,9 +3024,9 @@
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance>(instance, @event, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -3095,9 +3095,9 @@
             where T16 : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 
@@ -3167,9 +3167,9 @@
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
-            var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken); 
+            var context = new StateMachineEventContext<TInstance, TData>(instance, @event, data, cancellationToken); 
             context.GetOrAddPayload(() => context1); 
             context.GetOrAddPayload(() => context2); 
             context.GetOrAddPayload(() => context3); 

@@ -32,20 +32,11 @@ namespace Automatonymous.Contexts
             _machine = machine;
         }
 
-        public CancellationToken CancellationToken
-        {
-            get { return _context.CancellationToken; }
-        }
+        public CancellationToken CancellationToken => _context.CancellationToken;
 
-        public State CurrentState
-        {
-            get { return _state; }
-        }
+        public State CurrentState => _state;
 
-        public TInstance Instance
-        {
-            get { return _context.Instance; }
-        }
+        public TInstance Instance => _context.Instance;
 
         public bool HasPayloadType(Type contextType)
         {
@@ -62,10 +53,7 @@ namespace Automatonymous.Contexts
             return _context.GetOrAddPayload(payloadFactory);
         }
 
-        public Event Event
-        {
-            get { return _context.Event; }
-        }
+        public Event Event => _context.Event;
 
         public async Task Ignore()
         {

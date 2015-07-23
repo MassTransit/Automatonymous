@@ -48,7 +48,6 @@ namespace Automatonymous
         /// <summary>
         /// The exception path through the behavior allows activities to catch and handle exceptions
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TException"></typeparam>
         /// <param name="context"></param>
         /// <param name="next"></param>
@@ -83,7 +82,6 @@ namespace Automatonymous
         /// <summary>
         /// The exception path through the behavior allows activities to catch and handle exceptions
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <typeparam name="TException"></typeparam>
         /// <param name="context"></param>
         /// <param name="next"></param>

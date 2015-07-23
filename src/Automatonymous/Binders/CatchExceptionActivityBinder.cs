@@ -50,15 +50,9 @@ namespace Automatonymous.Binders
             return _activities;
         }
 
-        public StateMachine<TInstance> StateMachine
-        {
-            get { return _machine; }
-        }
+        public StateMachine<TInstance> StateMachine => _machine;
 
-        public Event Event
-        {
-            get { return _event; }
-        }
+        public Event Event => _event;
 
         public ExceptionActivityBinder<TInstance, TException> Add(Activity<TInstance> activity)
         {
@@ -114,15 +108,9 @@ namespace Automatonymous.Binders
             return _activities;
         }
 
-        public StateMachine<TInstance> StateMachine
-        {
-            get { return _machine; }
-        }
+        public StateMachine<TInstance> StateMachine => _machine;
 
-        public Event<TData> Event
-        {
-            get { return _event; }
-        }
+        public Event<TData> Event => _event;
 
         public ExceptionActivityBinder<TInstance, TData, TException> Add(Activity<TInstance> activity)
         {

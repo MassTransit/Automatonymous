@@ -27,7 +27,7 @@ namespace Automatonymous.Internals
             GetProperty = GetGetMethod(Property);
         }
 
-        public PropertyInfo Property { get; private set; }
+        public PropertyInfo Property { get; }
 
         public TProperty Get(T instance)
         {

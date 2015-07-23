@@ -39,23 +39,23 @@ namespace Automatonymous.Accessors
             _property = GetCurrentStateProperty(currentStateExpression);
         }
 
-        async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
+        Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
             string stateName = _property.Get(context.Instance);
             if (string.IsNullOrWhiteSpace(stateName))
-                return null;
+                return Task.FromResult<State<TInstance>>(null);
 
-            return _machine.GetState(stateName);
+            return Task.FromResult(_machine.GetState(stateName));
         }
 
-        async Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
+        Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             if (state == null)
-                throw new ArgumentNullException("state");
+                throw new ArgumentNullException(nameof(state));
 
             string previous = _property.Get(context.Instance);
             if (state.Name.Equals(previous))
-                return;
+                return Task.FromResult(false);
 
             _property.Set(context.Instance, state.Name);
 
@@ -64,6 +64,8 @@ namespace Automatonymous.Accessors
                 previousState = _machine.GetState(previous);
 
             _observer.OnNext(new StateChangedEvent(context.Instance, previousState, state));
+
+            return Task.FromResult(true);
         }
 
         static ReadWriteProperty<TInstance, string> GetCurrentStateProperty(Expression<Func<TInstance, string>> currentStateExpression)
@@ -84,11 +86,11 @@ namespace Automatonymous.Accessors
                 Current = current;
             }
 
-            public TInstance Instance { get; private set; }
+            public TInstance Instance { get; }
 
-            public State Previous { get; private set; }
+            public State Previous { get; }
 
-            public State Current { get; private set; }
+            public State Current { get; }
         }
     }
 }

@@ -26,13 +26,13 @@ namespace Automatonymous
             where TInstance : class
         {
             if (machine == null)
-                throw new ArgumentNullException("machine");
+                throw new ArgumentNullException(nameof(machine));
             if (instance == null)
-                throw new ArgumentNullException("instance");
+                throw new ArgumentNullException(nameof(instance));
 
-            var context = new StateMachineEventContext<TInstance>(machine, instance, machine.Initial.Enter, default(CancellationToken));
+            var context = new StateMachineEventContext<TInstance>(instance, machine.Initial.Enter, default(CancellationToken));
 
-            return machine.NextEvents(await machine.InstanceStateAccessor.Get(context));
+            return machine.NextEvents(await machine.Accessor.Get(context));
         }
     }
 }

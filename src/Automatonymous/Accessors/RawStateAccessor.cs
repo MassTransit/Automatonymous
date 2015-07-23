@@ -36,23 +36,23 @@ namespace Automatonymous.Accessors
             _property = GetCurrentStateProperty(currentStateExpression);
         }
 
-        async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
+        Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
             State state = _property.Get(context.Instance);
             if (state == null)
-                return null;
+                return Task.FromResult<State<TInstance>>(null);
 
-            return _machine.GetState(state.Name);
+            return Task.FromResult(_machine.GetState(state.Name));
         }
 
-        async Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
+        Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             if (state == null)
-                throw new ArgumentNullException("state");
+                throw new ArgumentNullException(nameof(state));
 
             State previous = _property.Get(context.Instance);
             if (state.Equals(previous))
-                return;
+                return Task.FromResult(false);
 
             _property.Set(context.Instance, state);
 
@@ -61,6 +61,8 @@ namespace Automatonymous.Accessors
                 previousState = _machine.GetState(previous.Name);
 
             _observer.OnNext(new StateChangedEvent(context.Instance, previousState, state));
+
+            return Task.FromResult(true);
         }
 
         static ReadWriteProperty<TInstance, State> GetCurrentStateProperty(Expression<Func<TInstance, State>> currentStateExpression)
@@ -81,11 +83,11 @@ namespace Automatonymous.Accessors
                 Current = current;
             }
 
-            public TInstance Instance { get; private set; }
+            public TInstance Instance { get; }
 
-            public State Previous { get; private set; }
+            public State Previous { get; }
 
-            public State Current { get; private set; }
+            public State Current { get; }
         }
     }
 }

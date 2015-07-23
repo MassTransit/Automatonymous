@@ -28,10 +28,7 @@ namespace Automatonymous.Activities
             _currentStateAccessor = currentStateAccessor;
         }
 
-        public State ToState
-        {
-            get { return _toState; }
-        }
+        public State ToState => _toState;
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {

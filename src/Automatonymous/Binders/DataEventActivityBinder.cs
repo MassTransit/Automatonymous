@@ -56,15 +56,7 @@ namespace Automatonymous.Binders
             _filter = filter;
         }
 
-        public StateMachineEventFilter<TInstance, TData> Filter
-        {
-            get { return _filter; }
-        }
-
-        Event<TData> EventActivityBinder<TInstance, TData>.Event
-        {
-            get { return _event; }
-        }
+        Event<TData> EventActivityBinder<TInstance, TData>.Event => _event;
 
         EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.Add(Activity<TInstance> activity)
         {
@@ -90,10 +82,7 @@ namespace Automatonymous.Binders
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, activityBinder);
         }
 
-        StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine
-        {
-            get { return _machine; }
-        }
+        StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine => _machine;
 
         public IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders()
         {

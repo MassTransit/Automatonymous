@@ -40,7 +40,7 @@ namespace Automatonymous
         readonly Lazy<StateMachineRegistration[]> _registrations;
         readonly Dictionary<string, State<TInstance>> _stateCache;
         readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
-        StateAccessor<TInstance> _instanceStateAccessor;
+        StateAccessor<TInstance> _accessor;
         string _name;
         UnhandledEventCallback<TInstance> _unhandledEventCallback;
 
@@ -59,7 +59,7 @@ namespace Automatonymous
             _final = new StateMachineState<TInstance>(this, "Final", _eventRaisingObserver, _eventRaisedObserver);
             _stateCache[_final.Name] = _final;
 
-            _instanceStateAccessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
+            _accessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
 
             _unhandledEventCallback = DefaultUnhandledEventCallback;
 
@@ -68,25 +68,10 @@ namespace Automatonymous
             RegisterImplicit();
         }
 
-        string StateMachine.Name
-        {
-            get { return _name; }
-        }
-
-        StateAccessor<TInstance> StateMachine<TInstance>.InstanceStateAccessor
-        {
-            get { return _instanceStateAccessor; }
-        }
-
-        public State Initial
-        {
-            get { return _initial; }
-        }
-
-        public State Final
-        {
-            get { return _final; }
-        }
+        string StateMachine.Name => _name;
+        StateAccessor<TInstance> StateMachine<TInstance>.Accessor => _accessor;
+        public State Initial => _initial;
+        public State Final => _final;
 
         State StateMachine.GetState(string name)
         {
@@ -99,7 +84,7 @@ namespace Automatonymous
 
         async Task StateMachine<TInstance>.RaiseEvent(EventContext<TInstance> context)
         {
-            State<TInstance> state = await _instanceStateAccessor.Get(context);
+            State<TInstance> state = await _accessor.Get(context);
 
             State<TInstance> instanceState;
             if (!_stateCache.TryGetValue(state.Name, out instanceState))
@@ -110,7 +95,7 @@ namespace Automatonymous
 
         async Task StateMachine<TInstance>.RaiseEvent<T>(EventContext<TInstance, T> context)
         {
-            State<TInstance> state = await _instanceStateAccessor.Get(context);
+            State<TInstance> state = await _accessor.Get(context);
 
             State<TInstance> instanceState;
             if (!_stateCache.TryGetValue(state.Name, out instanceState))
@@ -128,10 +113,7 @@ namespace Automatonymous
             throw new UnknownStateException(_name, name);
         }
 
-        public IEnumerable<State> States
-        {
-            get { return _stateCache.Values; }
-        }
+        public IEnumerable<State> States => _stateCache.Values;
 
         Event StateMachine.GetEvent(string name)
         {
@@ -147,10 +129,7 @@ namespace Automatonymous
             get { return _eventCache.Values.Where(x => false == x.IsTransitionEvent).Select(x => x.Event); }
         }
 
-        Type StateMachine.InstanceType
-        {
-            get { return typeof(TInstance); }
-        }
+        Type StateMachine.InstanceType => typeof(TInstance);
 
         public IEnumerable<Event> NextEvents(State state)
         {
@@ -161,10 +140,7 @@ namespace Automatonymous
             throw new UnknownStateException(_name, state.Name);
         }
 
-        public IObservable<StateChanged<TInstance>> StateChanged
-        {
-            get { return _stateChangedObservable; }
-        }
+        public IObservable<StateChanged<TInstance>> StateChanged => _stateChangedObservable;
 
         public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
         {
@@ -216,7 +192,7 @@ namespace Automatonymous
         {
             var stateAccessor = new RawStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
 
-            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
+            _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
 
         /// <summary>
@@ -227,7 +203,7 @@ namespace Automatonymous
         {
             var stateAccessor = new StringStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
 
-            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
+            _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
 
         /// <summary>
@@ -241,7 +217,7 @@ namespace Automatonymous
 
             var stateAccessor = new IntStateAccessor<TInstance>(instanceStateProperty, stateIndex, _stateChangedObservable);
 
-            _instanceStateAccessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
+            _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
 
         /// <summary>
@@ -251,7 +227,7 @@ namespace Automatonymous
         protected void Name(string machineName)
         {
             if (string.IsNullOrWhiteSpace(machineName))
-                throw new ArgumentException("The machine name must not be empty", "machineName");
+                throw new ArgumentException("The machine name must not be empty", nameof(machineName));
 
             _name = machineName;
         }
@@ -312,15 +288,24 @@ namespace Automatonymous
             PropertyInfo property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
-                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+                throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
             PropertyInfo eventProperty = eventPropertyExpression.GetPropertyInfo();
 
-            string name = string.Format("{0}.{1}", property.Name, eventProperty.Name);
+            string name = $"{property.Name}.{eventProperty.Name}";
 
             var @event = new DataEvent<T>(name);
 
-            eventProperty.SetValue(propertyValue, @event);
+            if (eventProperty.CanWrite)
+                eventProperty.SetValue(propertyValue, @event);
+            else
+            {
+                var objectProperty = propertyValue.GetType().GetProperty(eventProperty.Name, typeof(Event<T>));
+                if (objectProperty == null || !objectProperty.CanWrite)
+                    throw new ArgumentException($"The event property is not writable: {eventProperty.Name}");
+
+                objectProperty.SetValue(propertyValue, @event);
+            }
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
@@ -405,12 +390,11 @@ namespace Automatonymous
             CompositeEvent(propertyExpression, accessor, options, events);
         }
 
-
         void CompositeEvent(Expression<Func<Event>> propertyExpression, CompositeEventStatusAccessor<TInstance> accessor,
             CompositeEventOptions options, Event[] events)
         {
             if (events == null)
-                throw new ArgumentNullException("events");
+                throw new ArgumentNullException(nameof(events));
             if (events.Length > 31)
                 throw new ArgumentException("No more than 31 events can be combined into a single event");
             if (events.Length == 0)
@@ -482,17 +466,32 @@ namespace Automatonymous
             PropertyInfo property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
-                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+                throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
             PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
 
-            string name = string.Format("{0}.{1}", property.Name, stateProperty.Name);
+            string name = $"{property.Name}.{stateProperty.Name}";
 
             var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
 
-            stateProperty.SetValue(propertyValue, state);
+            SetStateProperty(stateProperty, propertyValue, state);
 
             SetState(name, state);
+        }
+
+        static void SetStateProperty<TProperty>(PropertyInfo stateProperty, TProperty propertyValue, StateMachineState<TInstance> state)
+            where TProperty : class
+        {
+            if (stateProperty.CanWrite)
+                stateProperty.SetValue(propertyValue, state);
+            else
+            {
+                var objectProperty = propertyValue.GetType().GetProperty(stateProperty.Name, typeof(State));
+                if (objectProperty == null || !objectProperty.CanWrite)
+                    throw new ArgumentException($"The state property is not writable: {stateProperty.Name}");
+
+                objectProperty.SetValue(propertyValue, state);
+            }
         }
 
         /// <summary>
@@ -504,7 +503,7 @@ namespace Automatonymous
         protected virtual void SubState(Expression<Func<State>> propertyExpression, State superState)
         {
             if (superState == null)
-                throw new ArgumentNullException("superState");
+                throw new ArgumentNullException(nameof(superState));
 
             State<TInstance> superStateInstance = GetState(superState.Name);
 
@@ -530,22 +529,22 @@ namespace Automatonymous
             where TProperty : class
         {
             if (superState == null)
-                throw new ArgumentNullException("superState");
+                throw new ArgumentNullException(nameof(superState));
 
             State<TInstance> superStateInstance = GetState(superState.Name);
 
             PropertyInfo property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
-                throw new ArgumentException("The property is not initialized: " + property.Name, "propertyExpression");
+                throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
             PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
 
-            string name = string.Format("{0}.{1}", property.Name, stateProperty.Name);
+            string name = $"{property.Name}.{stateProperty.Name}";
 
             var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver, superStateInstance);
 
-            stateProperty.SetValue(propertyValue, state);
+            SetStateProperty(stateProperty, propertyValue, state);
 
             SetState(name, state);
         }
@@ -564,7 +563,6 @@ namespace Automatonymous
             _eventCache[state.Leave.Name] = new StateMachineEvent<TInstance>(state.Leave, true);
             _eventCache[state.AfterLeave.Name] = new StateMachineEvent<TInstance>(state.AfterLeave, true);
         }
-
 
         /// <summary>
         /// Declares the events and associated activities that are handled during the specified state
@@ -847,7 +845,7 @@ namespace Automatonymous
         protected void OnUnhandledEvent(UnhandledEventCallback<TInstance> callback)
         {
             if (callback == null)
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
 
             _unhandledEventCallback = callback;
         }
@@ -867,7 +865,6 @@ namespace Automatonymous
             foreach (StateMachineRegistration declaration in _registrations.Value)
                 declaration.Declare(this);
         }
-
 
         static IEnumerable<PropertyInfo> GetStateMachineProperties(TypeInfo typeInfo)
         {

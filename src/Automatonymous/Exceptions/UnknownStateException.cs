@@ -25,7 +25,7 @@ namespace Automatonymous
         }
 
         public UnknownStateException(string machineType, string stateName)
-            : base(string.Format("The {0} state is not defined for the {1} state machine", stateName, machineType))
+            : base($"The {stateName} state is not defined for the {machineType} state machine")
         {
         }
 

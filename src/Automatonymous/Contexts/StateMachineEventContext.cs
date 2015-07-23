@@ -23,13 +23,10 @@ namespace Automatonymous.Contexts
         readonly CancellationToken _cancellationToken;
         readonly Event _event;
         readonly TInstance _instance;
-        readonly StateMachine<TInstance> _machine;
         readonly PayloadCache _payloadCache;
 
-        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event,
-            CancellationToken cancellationToken)
+        public StateMachineEventContext(TInstance instance, Event @event, CancellationToken cancellationToken)
         {
-            _machine = machine;
             _instance = instance;
             _event = @event;
             _cancellationToken = cancellationToken;
@@ -52,20 +49,9 @@ namespace Automatonymous.Contexts
             return _payloadCache.GetOrAddPayload(payloadFactory);
         }
 
-        CancellationToken InstanceContext<TInstance>.CancellationToken
-        {
-            get { return _cancellationToken; }
-        }
-
-        Event EventContext<TInstance>.Event
-        {
-            get { return _event; }
-        }
-
-        TInstance InstanceContext<TInstance>.Instance
-        {
-            get { return _instance; }
-        }
+        CancellationToken InstanceContext<TInstance>.CancellationToken => _cancellationToken;
+        Event EventContext<TInstance>.Event => _event;
+        TInstance InstanceContext<TInstance>.Instance => _instance;
     }
 
 
@@ -77,22 +63,14 @@ namespace Automatonymous.Contexts
         readonly TData _data;
         readonly Event<TData> _event;
 
-        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data,
-            CancellationToken cancellationToken)
-            : base(machine, instance, @event, cancellationToken)
+        public StateMachineEventContext(TInstance instance, Event<TData> @event, TData data, CancellationToken cancellationToken)
+            : base(instance, @event, cancellationToken)
         {
             _data = data;
             _event = @event;
         }
 
-        TData EventContext<TInstance, TData>.Data
-        {
-            get { return _data; }
-        }
-
-        Event<TData> EventContext<TInstance, TData>.Event
-        {
-            get { return _event; }
-        }
+        TData EventContext<TInstance, TData>.Data => _data;
+        Event<TData> EventContext<TInstance, TData>.Event => _event;
     }
 }

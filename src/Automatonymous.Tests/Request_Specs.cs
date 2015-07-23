@@ -52,7 +52,7 @@ namespace Automatonymous.Tests
         }
 
 
-        interface Request<TRequest, TResponse>
+        interface Request<TRequest, out TResponse>
             where TRequest : class
             where TResponse : class
         {
@@ -64,22 +64,22 @@ namespace Automatonymous.Tests
             /// <summary>
             /// The event that is raised when the request completes and the response is received
             /// </summary>
-            Event<TResponse> Completed { get; set; }
+            Event<TResponse> Completed { get; }
 
             /// <summary>
             /// The event raised when the request faults
             /// </summary>
-            Event<Fault<TRequest>> Faulted { get; set; }
+            Event<Fault<TRequest>> Faulted { get; }
 
             /// <summary>
             /// The event raised when the request times out with no response received
             /// </summary>
-            Event<TRequest> TimeoutExpired { get; set; }
+            Event<TRequest> TimeoutExpired { get; }
 
             /// <summary>
             /// The state that is transitioned to once the request is pending
             /// </summary>
-            State Pending { get; set; }
+            State Pending { get; }
         }
 
 

@@ -30,7 +30,7 @@ namespace Automatonymous
         }
 
         public AutomatonymousException(Type machineType, string message)
-            : base(string.Format("{0}: {1}", machineType.Name, message))
+            : base($"{machineType.Name}: {message}")
         {
         }
 
@@ -40,7 +40,7 @@ namespace Automatonymous
         }
 
         public AutomatonymousException(Type machineType, string message, Exception innerException)
-            : base(string.Format("{0}: {1}", machineType.Name, message), innerException)
+            : base($"{machineType.Name}: {message}", innerException)
         {
         }
 

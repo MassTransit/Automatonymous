@@ -21,21 +21,17 @@ namespace Automatonymous.Contexts
         where TInstance : class
     {
         readonly CancellationToken _cancellationToken;
-        readonly TInstance _instance;
         readonly PayloadCache _payloadCache;
 
         public StateMachineInstanceContext(TInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            _instance = instance;
+            Instance = instance;
             _cancellationToken = cancellationToken;
 
             _payloadCache = new PayloadCache();
         }
 
-        public TInstance Instance
-        {
-            get { return _instance; }
-        }
+        public TInstance Instance { get; }
 
         public bool HasPayloadType(Type contextType)
         {
@@ -52,9 +48,6 @@ namespace Automatonymous.Contexts
             return _payloadCache.GetOrAddPayload(payloadFactory);
         }
 
-        CancellationToken InstanceContext<TInstance>.CancellationToken
-        {
-            get { return _cancellationToken; }
-        }
+        CancellationToken InstanceContext<TInstance>.CancellationToken => _cancellationToken;
     }
 }

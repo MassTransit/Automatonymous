@@ -25,8 +25,7 @@ namespace Automatonymous
         }
 
         public UnhandledEventException(string machineType, string eventName, string stateName)
-            : base(string.Format("The {0} event is not handled during the {1} state for the {2} state machine", eventName, stateName,
-                machineType))
+            : base($"The {eventName} event is not handled during the {stateName} state for the {machineType} state machine")
         {
         }
 

@@ -29,15 +29,8 @@ namespace Automatonymous.Contexts
             _exception = exception;
         }
 
-        public CancellationToken CancellationToken
-        {
-            get { return _context.CancellationToken; }
-        }
-
-        public TInstance Instance
-        {
-            get { return _context.Instance; }
-        }
+        public CancellationToken CancellationToken => _context.CancellationToken;
+        public TInstance Instance => _context.Instance;
 
         public bool HasPayloadType(Type contextType)
         {
@@ -54,10 +47,7 @@ namespace Automatonymous.Contexts
             return _context.GetOrAddPayload(payloadFactory);
         }
 
-        public Event Event
-        {
-            get { return _context.Event; }
-        }
+        public Event Event => _context.Event;
 
         public BehaviorContext<TInstance> GetProxy(Event @event)
         {
@@ -72,10 +62,7 @@ namespace Automatonymous.Contexts
             return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
 
-        public TException Exception
-        {
-            get { return _exception; }
-        }
+        public TException Exception => _exception;
 
         public BehaviorContext<TInstance, T> GetProxy<T>(Event<T> @event, T data)
         {
@@ -97,15 +84,8 @@ namespace Automatonymous.Contexts
             _exception = exception;
         }
 
-        public CancellationToken CancellationToken
-        {
-            get { return _context.CancellationToken; }
-        }
-
-        public TInstance Instance
-        {
-            get { return _context.Instance; }
-        }
+        public CancellationToken CancellationToken => _context.CancellationToken;
+        public TInstance Instance => _context.Instance;
 
         public bool HasPayloadType(Type contextType)
         {
@@ -122,15 +102,8 @@ namespace Automatonymous.Contexts
             return _context.GetOrAddPayload(payloadFactory);
         }
 
-        public Event Event
-        {
-            get { return _context.Event; }
-        }
-
-        public TData Data
-        {
-            get { return _context.Data; }
-        }
+        public Event Event => _context.Event;
+        public TData Data => _context.Data;
 
         public BehaviorContext<TInstance> GetProxy(Event @event)
         {
@@ -153,19 +126,13 @@ namespace Automatonymous.Contexts
             return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
 
-        public TException Exception
-        {
-            get { return _exception; }
-        }
+        public TException Exception => _exception;
 
         public BehaviorContext<TInstance, T> GetProxy<T>(Event<T> @event, T data)
         {
             return _context.GetProxy(@event, data);
         }
 
-        Event<TData> EventContext<TInstance, TData>.Event
-        {
-            get { return _context.Event; }
-        }
+        Event<TData> EventContext<TInstance, TData>.Event => _context.Event;
     }
 }

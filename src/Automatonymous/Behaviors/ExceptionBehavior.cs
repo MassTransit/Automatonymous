@@ -33,12 +33,12 @@ namespace Automatonymous.Behaviors
 
         async Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
+            throw new EventExecutionException($"The {context.Event} execution faulted", context.Exception);
         }
 
         async Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
+            throw new EventExecutionException($"The {context.Event} execution faulted", context.Exception);
         }
     }
 
@@ -57,7 +57,7 @@ namespace Automatonymous.Behaviors
 
         async Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
-            throw new EventExecutionException(string.Format("The {0} execution faulted", context.Event), context.Exception);
+            throw new EventExecutionException($"The {context.Event} execution faulted", context.Exception);
         }
     }
 }

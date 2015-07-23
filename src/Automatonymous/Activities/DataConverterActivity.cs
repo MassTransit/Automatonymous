@@ -30,7 +30,7 @@ namespace Automatonymous.Activities
             visitor.Visit(this, x => _activity.Accept(visitor));
         }
 
-        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
             throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
         }

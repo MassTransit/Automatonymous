@@ -25,10 +25,7 @@ namespace Automatonymous.Events
             _name = name;
         }
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         public virtual void Accept(StateMachineVisitor visitor)
         {
@@ -62,12 +59,12 @@ namespace Automatonymous.Events
 
         public override int GetHashCode()
         {
-            return (_name != null ? _name.GetHashCode() : 0);
+            return _name?.GetHashCode() ?? 0;
         }
 
         public override string ToString()
         {
-            return string.Format("{0} (Event)", _name);
+            return $"{_name} (Event)";
         }
     }
 }

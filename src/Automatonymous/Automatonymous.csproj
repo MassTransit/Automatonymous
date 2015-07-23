@@ -52,7 +52,6 @@
     <Compile Include="Accessors\IntStateAccessor.cs" />
     <Compile Include="Accessors\RawStateAccessor.cs" />
     <Compile Include="Accessors\StateAccessorIndex.cs" />
-    <Compile Include="Accessors\StringInstanceStateAccessor.cs" />
     <Compile Include="Accessors\StringStateAccessor.cs" />
     <Compile Include="Accessors\StructCompositeEventStatusAccessor.cs" />
     <Compile Include="Activities\ActionActivity.cs" />
@@ -164,7 +163,6 @@
     <Compile Include="States\StateMachineState.cs" />
     <Compile Include="ThenExtensions.cs" />
     <Compile Include="TransitionExtensions.cs" />
-    <Compile Include="TryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RaiseEventExtensions.tt">

@@ -20,12 +20,11 @@ namespace Automatonymous.Contexts
         BehaviorContext<TInstance>
     {
         readonly InstanceContext<TInstance> _context;
-        readonly Event _event;
 
         public EventBehaviorContext(EventContext<TInstance> context)
         {
             _context = context;
-            _event = context.Event;
+            Event = context.Event;
         }
 
         public EventBehaviorContext(InstanceContext<TInstance> context)
@@ -48,20 +47,9 @@ namespace Automatonymous.Contexts
             return _context.GetOrAddPayload(payloadFactory);
         }
 
-        public CancellationToken CancellationToken
-        {
-            get { return _context.CancellationToken; }
-        }
-
-        public Event Event
-        {
-            get { return _event; }
-        }
-
-        public TInstance Instance
-        {
-            get { return _context.Instance; }
-        }
+        public CancellationToken CancellationToken => _context.CancellationToken;
+        public Event Event { get; }
+        public TInstance Instance => _context.Instance;
 
         public BehaviorContext<TInstance> GetProxy(Event @event)
         {
@@ -87,14 +75,7 @@ namespace Automatonymous.Contexts
             _context = context;
         }
 
-        Event<TData> EventContext<TInstance, TData>.Event
-        {
-            get { return _context.Event; }
-        }
-
-        TData EventContext<TInstance, TData>.Data
-        {
-            get { return _context.Data; }
-        }
+        Event<TData> EventContext<TInstance, TData>.Event => _context.Event;
+        TData EventContext<TInstance, TData>.Data => _context.Data;
     }
 }

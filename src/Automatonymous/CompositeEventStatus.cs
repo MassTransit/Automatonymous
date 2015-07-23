@@ -40,10 +40,7 @@ namespace Automatonymous
             }
         }
 
-        public int Bits
-        {
-            get { return _bits; }
-        }
+        public int Bits => _bits;
 
         public int CompareTo(CompositeEventStatus other)
         {

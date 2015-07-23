@@ -36,10 +36,7 @@ namespace Automatonymous.Activities
             _event = @event;
         }
 
-        public Event Event
-        {
-            get { return _event; }
-        }
+        public Event Event => _event;
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {

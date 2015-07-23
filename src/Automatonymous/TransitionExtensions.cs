@@ -28,7 +28,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             return source.Add(activity);
         }
@@ -47,7 +47,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             var compensateActivity = new ExecuteOnFaultedActivity<TInstance>(activity);
 
@@ -63,7 +63,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             return source.Add(activity);
         }
@@ -84,7 +84,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             var compensateActivity = new ExecuteOnFaultedActivity<TInstance>(activity);
 
@@ -100,7 +100,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             return source.Add(activity);
         }
@@ -115,7 +115,7 @@ namespace Automatonymous
         {
             State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
-            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.InstanceStateAccessor);
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
             return source.Add(activity);
         }

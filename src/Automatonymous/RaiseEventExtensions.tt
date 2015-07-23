@@ -28,7 +28,7 @@ namespace Automatonymous
             where TInstance : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
             var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);
 
@@ -51,7 +51,7 @@ namespace Automatonymous
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
             var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);
 
@@ -74,7 +74,7 @@ namespace Automatonymous
             where TInstance : class
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
             var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);
 
@@ -98,7 +98,7 @@ namespace Automatonymous
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
             var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);
 
@@ -129,7 +129,7 @@ namespace Automatonymous
             <#=tWheres#>
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
             var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);<# for(int j = 1; j <= i; j++){ #> 
             context.GetOrAddPayload(() => context<#=j#>);<# } #>
@@ -156,7 +156,7 @@ namespace Automatonymous
         {
             Event @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
             var context = new StateMachineEventContext<TInstance>(machine, instance, @event, cancellationToken);<# for(int j = 1; j <= i; j++){ #> 
             context.GetOrAddPayload(() => context<#=j#>);<# } #>
@@ -183,7 +183,7 @@ namespace Automatonymous
             <#=tWheres#>
         {
             if (@event == null)
-                throw new ArgumentNullException("event");
+                throw new ArgumentNullException(nameof(@event));
 
             var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);<# for(int j = 1; j <= i; j++){ #> 
             context.GetOrAddPayload(() => context<#=j#>);<# } #>
@@ -211,7 +211,7 @@ namespace Automatonymous
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
-                throw new ArgumentNullException("eventSelector", "The event selector did not return a valid event from the state machine");
+                throw new ArgumentNullException(nameof(eventSelector), "The event selector did not return a valid event from the state machine");
 
             var context = new StateMachineEventContext<TInstance, TData>(machine, instance, @event, data, cancellationToken);<# for(int j = 1; j <= i; j++){ #> 
             context.GetOrAddPayload(() => context<#=j#>);<# } #>

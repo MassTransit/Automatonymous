@@ -12,7 +12,6 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Binders
 {
-    using System.Threading.Tasks;
     using Behaviors;
 
 

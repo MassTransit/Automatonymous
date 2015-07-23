@@ -40,30 +40,32 @@ namespace Automatonymous.Accessors
             _property = GetCurrentStateProperty(currentStateExpression);
         }
 
-        async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
+        Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
             int stateIndex = _property.Get(context.Instance);
 
-            return _index[stateIndex];
+            return Task.FromResult(_index[stateIndex]);
         }
 
-        async Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
+        Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             if (state == null)
-                throw new ArgumentNullException("state");
+                throw new ArgumentNullException(nameof(state));
 
             int stateIndex = _index[state.Name];
 
             int previousIndex = _property.Get(context.Instance);
 
             if (stateIndex == previousIndex)
-                return;
+                return Task.FromResult(false);
 
             _property.Set(context.Instance, stateIndex);
 
             State<TInstance> previousState = _index[previousIndex];
 
             _observer.OnNext(new StateChangedEvent(context.Instance, previousState, state));
+
+            return Task.FromResult(true);
         }
 
         static ReadWriteProperty<TInstance, int> GetCurrentStateProperty(Expression<Func<TInstance, int>> currentStateExpression)
@@ -84,11 +86,11 @@ namespace Automatonymous.Accessors
                 Current = current;
             }
 
-            public TInstance Instance { get; private set; }
+            public TInstance Instance { get; }
 
-            public State Previous { get; private set; }
+            public State Previous { get; }
 
-            public State Current { get; private set; }
+            public State Current { get; }
         }
     }
 }

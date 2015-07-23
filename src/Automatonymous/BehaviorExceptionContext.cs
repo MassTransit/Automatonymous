@@ -26,8 +26,6 @@ namespace Automatonymous
         BehaviorExceptionContext<TInstance, TException>
         where TException : Exception
     {
-        TException Exception { get; }
-
         /// <summary>
         /// Return a proxy of the current behavior context with the specified event and data
         /// </summary>

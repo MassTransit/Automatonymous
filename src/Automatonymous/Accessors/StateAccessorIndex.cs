@@ -37,7 +37,7 @@ namespace Automatonymous.Accessors
             get
             {
                 if (string.IsNullOrWhiteSpace("name"))
-                    throw new ArgumentNullException("name");
+                    throw new ArgumentNullException(nameof(name));
 
                 for (int i = 1; i < _states.Value.Length; i++)
                 {
@@ -54,7 +54,7 @@ namespace Automatonymous.Accessors
             get
             {
                 if (index < 0 || index >= _states.Value.Length)
-                    throw new ArgumentOutOfRangeException("index");
+                    throw new ArgumentOutOfRangeException(nameof(index));
 
                 return _states.Value[index];
             }

@@ -32,7 +32,7 @@ namespace Automatonymous.Lifts
 
         Task EventLift<TInstance>.Raise(TInstance instance, CancellationToken cancellationToken)
         {
-            var context = new StateMachineEventContext<TInstance>(_machine, instance, _event, cancellationToken);
+            var context = new StateMachineEventContext<TInstance>(instance, _event, cancellationToken);
 
             return _machine.RaiseEvent(context);
         }
@@ -54,7 +54,7 @@ namespace Automatonymous.Lifts
 
         Task EventLift<TInstance, TData>.Raise(TInstance instance, TData data, CancellationToken cancellationToken)
         {
-            var context = new StateMachineEventContext<TInstance, TData>(_machine, instance, _event, data, cancellationToken);
+            var context = new StateMachineEventContext<TInstance, TData>(instance, _event, data, cancellationToken);
 
             return _machine.RaiseEvent(context);
         }

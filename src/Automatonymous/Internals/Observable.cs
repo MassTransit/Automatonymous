@@ -23,9 +23,9 @@ namespace Automatonymous.Internals
         public IDisposable Subscribe(IObserver<T> observer)
         {
             if (observer == null)
-                throw new ArgumentNullException("observer");
+                throw new ArgumentNullException(nameof(observer));
 
-            return base.Connect(observer);
+            return Connect(observer);
         }
 
         public void OnNext(T value)
@@ -36,7 +36,7 @@ namespace Automatonymous.Internals
         public void OnError(Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             ForEach(x => x.OnError(exception));
         }

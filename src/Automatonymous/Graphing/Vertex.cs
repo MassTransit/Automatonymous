@@ -26,11 +26,11 @@ namespace Automatonymous.Graphing
             Title = title;
         }
 
-        public string Title { get; private set; }
+        public string Title { get; }
 
-        public Type VertexType { get; private set; }
+        public Type VertexType { get; }
 
-        public Type TargetType { get; private set; }
+        public Type TargetType { get; }
 
         public bool Equals(Vertex other)
         {
@@ -38,7 +38,7 @@ namespace Automatonymous.Graphing
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return string.Equals(Title, other.Title) && Equals(VertexType, other.VertexType) && Equals(TargetType, other.TargetType);
+            return string.Equals(Title, other.Title) && VertexType == other.VertexType && TargetType == other.TargetType;
         }
 
         public override bool Equals(object obj)
@@ -56,9 +56,9 @@ namespace Automatonymous.Graphing
         {
             unchecked
             {
-                int hashCode = (Title != null ? Title.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (VertexType != null ? VertexType.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (TargetType != null ? TargetType.GetHashCode() : 0);
+                int hashCode = Title?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (VertexType?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (TargetType?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

@@ -26,11 +26,11 @@ namespace Automatonymous.Graphing
             Title = title;
         }
 
-        public Vertex To { get; private set; }
+        public Vertex To { get; }
 
-        public Vertex From { get; private set; }
+        public Vertex From { get; }
 
-        public string Title { get; private set; }
+        string Title { get; }
 
         public bool Equals(Edge other)
         {
@@ -56,9 +56,9 @@ namespace Automatonymous.Graphing
         {
             unchecked
             {
-                int hashCode = (To != null ? To.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (From != null ? From.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
+                int hashCode = To?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (From?.GetHashCode() ?? 0);
+                hashCode = (hashCode * 397) ^ (Title?.GetHashCode() ?? 0);
                 return hashCode;
             }
         }

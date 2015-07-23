@@ -41,7 +41,7 @@ namespace Automatonymous.Events
 
         public override string ToString()
         {
-            return string.Format("{0}<{1}> (Event)", Name, typeof(TData).Name);
+            return $"{Name}<{typeof(TData).Name}> (Event)";
         }
 
         public override bool Equals(object obj)

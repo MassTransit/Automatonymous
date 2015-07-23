@@ -92,7 +92,7 @@ namespace Automatonymous
         /// <summary>
         /// Exposes the current state on the given instance
         /// </summary>
-        StateAccessor<TInstance> InstanceStateAccessor { get; }
+        StateAccessor<TInstance> Accessor { get; }
 
         /// <summary>
         /// Returns the state requested bound to the instance

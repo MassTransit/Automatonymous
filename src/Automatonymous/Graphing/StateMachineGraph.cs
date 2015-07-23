@@ -29,14 +29,8 @@ namespace Automatonymous.Graphing
             _edges = edges.ToArray();
         }
 
-        public IEnumerable<Vertex> Vertices
-        {
-            get { return _vertices; }
-        }
+        public IEnumerable<Vertex> Vertices => _vertices;
 
-        public IEnumerable<Edge> Edges
-        {
-            get { return _edges; }
-        }
+        public IEnumerable<Edge> Edges => _edges;
     }
 }
