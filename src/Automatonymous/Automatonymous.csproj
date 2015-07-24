@@ -168,6 +168,7 @@
     <Compile Include="TransitionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="RaiseEventExtensions.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RaiseEventExtensions.cs</LastGenOutput>

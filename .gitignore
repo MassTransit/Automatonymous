@@ -1,6 +1,8 @@
 build_artifacts/*
 build_output/*
 
+.fake/**/*
+
 **/*.suo
 **/**/*.suo
 **/*.user
