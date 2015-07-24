@@ -24,11 +24,11 @@ namespace Automatonymous.Accessors
         where TInstance : class
     {
         readonly StateMachine<TInstance> _machine;
-        readonly IObserver<StateChanged<TInstance>> _observer;
+        readonly StateObserver<TInstance> _observer;
         readonly ReadWriteProperty<TInstance, State> _property;
 
         public RawStateAccessor(StateMachine<TInstance> machine, Expression<Func<TInstance, State>> currentStateExpression,
-            IObserver<StateChanged<TInstance>> observer)
+            StateObserver<TInstance> observer)
         {
             _machine = machine;
             _observer = observer;
@@ -52,7 +52,7 @@ namespace Automatonymous.Accessors
 
             State previous = _property.Get(context.Instance);
             if (state.Equals(previous))
-                return Task.FromResult(false);
+                return TaskUtil.Completed;
 
             _property.Set(context.Instance, state);
 
@@ -60,9 +60,7 @@ namespace Automatonymous.Accessors
             if (previous != null)
                 previousState = _machine.GetState(previous.Name);
 
-            _observer.OnNext(new StateChangedEvent(context.Instance, previousState, state));
-
-            return Task.FromResult(true);
+            return _observer.StateChanged(context, state, previousState);
         }
 
         static ReadWriteProperty<TInstance, State> GetCurrentStateProperty(Expression<Func<TInstance, State>> currentStateExpression)
@@ -70,24 +68,6 @@ namespace Automatonymous.Accessors
             PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
 
             return new ReadWriteProperty<TInstance, State>(propertyInfo);
-        }
-
-
-        class StateChangedEvent :
-            StateChanged<TInstance>
-        {
-            public StateChangedEvent(TInstance instance, State previous, State current)
-            {
-                Instance = instance;
-                Previous = previous;
-                Current = current;
-            }
-
-            public TInstance Instance { get; }
-
-            public State Previous { get; }
-
-            public State Current { get; }
         }
     }
 }

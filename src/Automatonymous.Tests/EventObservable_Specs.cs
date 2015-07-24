@@ -13,63 +13,25 @@
 namespace Automatonymous.Tests
 {
     using System;
-    using System.Collections.Generic;
     using NUnit.Framework;
 
 
     [TestFixture]
     public class When_an_event_is_raised_on_an_instance
     {
-        [Test]
-        public void Should_have_raised_the_initialized_event()
-        {
-            Assert.AreEqual(_machine.Initialized, _observer.Events[0].Event);
-        }
-
-        [Test]
-        public void Should_raise_the_event()
-        {
-            Assert.AreEqual(1, _observer.Events.Count);
-        }
-
         Instance _instance;
         InstanceStateMachine _machine;
-        ChangeObserver _observer;
+        EventRaisedObserver<Instance> _observer;
 
         [TestFixtureSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
             _machine = new InstanceStateMachine();
-            _observer = new ChangeObserver();
+            _observer = new EventRaisedObserver<Instance>();
 
-            using (IDisposable subscription = _machine.EventRaised(_machine.Initialized).Subscribe(_observer))
+            using (IDisposable subscription = _machine.ConnectEventObserver(_machine.Initialized, _observer))
                 _machine.RaiseEvent(_instance, x => x.Initialized).Wait();
-        }
-
-
-        class ChangeObserver :
-            IObserver<EventRaised<Instance>>
-        {
-            public ChangeObserver()
-            {
-                Events = new List<EventRaised<Instance>>();
-            }
-
-            public IList<EventRaised<Instance>> Events { get; private set; }
-
-            public void OnNext(EventRaised<Instance> value)
-            {
-                Events.Add(value);
-            }
-
-            public void OnError(Exception error)
-            {
-            }
-
-            public void OnCompleted()
-            {
-            }
         }
 
 
@@ -90,8 +52,20 @@ namespace Automatonymous.Tests
             }
 
             public State Running { get; private set; }
-
             public Event Initialized { get; private set; }
+        }
+
+
+        [Test]
+        public void Should_have_raised_the_initialized_event()
+        {
+            Assert.AreEqual(_machine.Initialized, _observer.Events[0].Event);
+        }
+
+        [Test]
+        public void Should_raise_the_event()
+        {
+            Assert.AreEqual(1, _observer.Events.Count);
         }
     }
 }

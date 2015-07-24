@@ -13,6 +13,7 @@
 namespace Automatonymous.Behaviors
 {
     using System.Threading.Tasks;
+    using Internals;
 
 
     public class EmptyBehavior<TInstance> :
@@ -23,20 +24,24 @@ namespace Automatonymous.Behaviors
             visitor.Visit(this);
         }
 
-        async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
+        Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
+            return TaskUtil.Completed;
         }
 
-        async Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
+        Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
+            return TaskUtil.Completed;
         }
 
-        async Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
+        Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
+            return TaskUtil.Completed;
         }
 
-        async Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
+        Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
+            return TaskUtil.Completed;
         }
     }
 
@@ -49,12 +54,14 @@ namespace Automatonymous.Behaviors
             visitor.Visit(this);
         }
 
-        async Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)
+        Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)
         {
+            return TaskUtil.Completed;
         }
 
-        async Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
+        Task Behavior<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context)
         {
+            return TaskUtil.Completed;
         }
     }
 }

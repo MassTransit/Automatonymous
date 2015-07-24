@@ -12,23 +12,15 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Events
 {
-    using Internals;
-
-
     class StateMachineEvent<TInstance>
-        where TInstance : class
     {
         public StateMachineEvent(Event @event, bool isTransitionEvent)
         {
             Event = @event;
             IsTransitionEvent = isTransitionEvent;
-            EventRaised = new Observable<EventRaised<TInstance>>();
-            EventRaising = new Observable<EventRaising<TInstance>>();
         }
 
         public bool IsTransitionEvent { get; }
         public Event Event { get; }
-        public Observable<EventRaised<TInstance>> EventRaised { get; }
-        public Observable<EventRaising<TInstance>> EventRaising { get; }
     }
 }

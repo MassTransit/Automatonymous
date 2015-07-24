@@ -24,7 +24,7 @@ namespace Automatonymous.Internals
     /// Maintains a collection of connections of the generic type
     /// </summary>
     /// <typeparam name="T">The connectable type</typeparam>
-     abstract class Connectable<T>
+     class Connectable<T>
         where T : class
     {
         readonly ConcurrentDictionary<long, T> _connections;
@@ -64,7 +64,7 @@ namespace Automatonymous.Internals
         /// </summary>
         /// <param name="callback">The callback</param>
         /// <returns>An awaitable Task for the operation</returns>
-        public async Task ForEach(Func<T, Task> callback)
+        protected async Task ForEach(Func<T, Task> callback)
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
@@ -90,7 +90,7 @@ namespace Automatonymous.Internals
                 throw new AggregateException(exceptions);
         }
 
-        public void ForEach(Action<T> callback)
+        protected void ForEach(Action<T> callback)
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));

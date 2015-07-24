@@ -32,10 +32,10 @@ namespace Automatonymous.Accessors
         readonly Lazy<StateAccessor<TInstance>> _accessor;
         readonly State<TInstance> _initialState;
         readonly StateMachine<TInstance> _machine;
-        readonly IObserver<StateChanged<TInstance>> _observer;
+        readonly StateObserver<TInstance> _observer;
 
         public DefaultInstanceStateAccessor(StateMachine<TInstance> machine, State<TInstance> initialState,
-            IObserver<StateChanged<TInstance>> observer)
+            StateObserver<TInstance> observer)
         {
             _machine = machine;
             _initialState = initialState;

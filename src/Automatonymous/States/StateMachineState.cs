@@ -30,19 +30,16 @@ namespace Automatonymous.States
         readonly Dictionary<Event, StateEventFilter<TInstance>> _ignoredEvents;
         readonly AutomatonymousStateMachine<TInstance> _machine;
         readonly string _name;
-        readonly IObserver<EventRaised<TInstance>> _raisedObserver;
-        readonly IObserver<EventRaising<TInstance>> _raisingObserver;
+        readonly EventObserver<TInstance> _observer;
         readonly HashSet<State<TInstance>> _subStates;
         readonly State<TInstance> _superState;
 
         public StateMachineState(AutomatonymousStateMachine<TInstance> machine, string name,
-            IObserver<EventRaising<TInstance>> raisingObserver,
-            IObserver<EventRaised<TInstance>> raisedObserver, State<TInstance> superState = null)
+            EventObserver<TInstance> observer, State<TInstance> superState = null)
         {
             _machine = machine;
             _name = name;
-            _raisingObserver = raisingObserver;
-            _raisedObserver = raisedObserver;
+            _observer = observer;
 
             _behaviors = new Dictionary<Event, ActivityBehaviorBuilder<TInstance>>();
             _ignoredEvents = new Dictionary<Event, StateEventFilter<TInstance>>();
@@ -69,12 +66,9 @@ namespace Automatonymous.States
         }
 
         public State<TInstance> SuperState => _superState;
-
         public string Name => _name;
-
         public Event Enter { get; }
         public Event Leave { get; }
-
         public Event<State> BeforeEnter { get; }
         public Event<State> AfterLeave { get; }
 
@@ -116,14 +110,20 @@ namespace Automatonymous.States
                 return;
             }
 
-            var notification = new EventNotification(context);
-            _raisingObserver.OnNext(notification);
+            try
+            {
+                await _observer.PreExecute(context);
 
-            var behaviorContext = new EventBehaviorContext<TInstance>(context);
+                await activities.Behavior.Execute(new EventBehaviorContext<TInstance>(context));
 
-            await activities.Behavior.Execute(behaviorContext);
+                await _observer.PostExecute(context);
+            }
+            catch (Exception ex)
+            {
+                await _observer.ExecuteFault(context, ex);
 
-            _raisedObserver.OnNext(notification);
+                throw;
+            }
         }
 
         async Task State<TInstance>.Raise<T>(EventContext<TInstance, T> context)
@@ -152,15 +152,20 @@ namespace Automatonymous.States
                 return;
             }
 
-            var notification = new EventNotification(context);
+            try
+            {
+                await _observer.PreExecute(context);
 
-            _raisingObserver.OnNext(notification);
+                await activities.Behavior.Execute(new EventBehaviorContext<TInstance, T>(context));
 
-            var behaviorContext = new EventBehaviorContext<TInstance, T>(context);
+                await _observer.PostExecute(context);
+            }
+            catch (Exception ex)
+            {
+                await _observer.ExecuteFault(context, ex);
 
-            await activities.Behavior.Execute(behaviorContext);
-
-            _raisedObserver.OnNext(notification);
+                throw;
+            }
         }
 
         public void Bind(Event @event, Activity<TInstance> activity)
@@ -269,21 +274,6 @@ namespace Automatonymous.States
         public override string ToString()
         {
             return $"{_name} (State)";
-        }
-
-
-        class EventNotification :
-            EventRaising<TInstance>,
-            EventRaised<TInstance>
-        {
-            public EventNotification(EventContext<TInstance> context)
-            {
-                Instance = context.Instance;
-                Event = context.Event;
-            }
-
-            public TInstance Instance { get; }
-            public Event Event { get; }
         }
     }
 }

@@ -100,6 +100,7 @@
     <Compile Include="Contexts\PayloadCache.cs" />
     <Compile Include="Contexts\StateMachineEventContext.cs" />
     <Compile Include="Contexts\StateUnhandledEventContext.cs" />
+    <Compile Include="EventObserver.cs" />
     <Compile Include="Exceptions\AutomatonymousException.cs" />
     <Compile Include="Exceptions\EventExecutionException.cs" />
     <Compile Include="Exceptions\PayloadException.cs" />
@@ -109,12 +110,10 @@
     <Compile Include="Exceptions\UnknownEventException.cs" />
     <Compile Include="Exceptions\UnknownStateException.cs" />
     <Compile Include="EventContext.cs" />
-    <Compile Include="EventRaised.cs" />
     <Compile Include="EventLiftExtensions.cs" />
     <Compile Include="AutomatonymousStateMachine.cs" />
     <Compile Include="CompositeEventStatus.cs" />
     <Compile Include="EventLift.cs" />
-    <Compile Include="EventRaising.cs" />
     <Compile Include="Events\DataEvent.cs" />
     <Compile Include="Events\TriggerEvent.cs" />
     <Compile Include="Events\StateMachineEvent.cs" />
@@ -126,20 +125,24 @@
     <Compile Include="InstanceLiftExtensions.cs" />
     <Compile Include="Internals\Connectable.cs" />
     <Compile Include="Internals\ExpressionExtensions.cs" />
-    <Compile Include="Internals\Observable.cs" />
     <Compile Include="Internals\ReadOnlyProperty.cs" />
     <Compile Include="Internals\ReadWriteProperty.cs" />
+    <Compile Include="Internals\TaskUtil.cs" />
+    <Compile Include="ObserverExtensions.cs" />
+    <Compile Include="Observers\EventObservable.cs" />
+    <Compile Include="Observers\NonTransitionEventObserver.cs" />
+    <Compile Include="Observers\SelectedEventObserver.cs" />
+    <Compile Include="Observers\StateObservable.cs" />
     <Compile Include="RaiseEventExtensions.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>RaiseEventExtensions.tt</DependentUpon>
     </Compile>
+    <Compile Include="StateObserver.cs" />
     <Compile Include="UnhandledEventCallback.cs" />
     <Compile Include="UnhandledEventContext.cs" />
     <Compile Include="Lifts\StateMachineEventLift.cs" />
     <Compile Include="Lifts\StateMachineInstanceLift.cs" />
-    <Compile Include="Observers\EventRaisedObserver.cs" />
-    <Compile Include="Observers\EventRaisingObserver.cs" />
     <Compile Include="PayloadFactory.cs" />
     <Compile Include="StateAccessor.cs" />
     <Compile Include="StateAccessorExtensions.cs" />
@@ -173,6 +176,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

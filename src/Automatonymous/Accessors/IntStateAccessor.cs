@@ -28,11 +28,11 @@ namespace Automatonymous.Accessors
         where TInstance : class
     {
         readonly StateAccessorIndex<TInstance> _index;
-        readonly IObserver<StateChanged<TInstance>> _observer;
+        readonly StateObserver<TInstance> _observer;
         readonly ReadWriteProperty<TInstance, int> _property;
 
-        public IntStateAccessor(Expression<Func<TInstance, int>> currentStateExpression,
-            StateAccessorIndex<TInstance> index, IObserver<StateChanged<TInstance>> observer)
+        public IntStateAccessor(Expression<Func<TInstance, int>> currentStateExpression, StateAccessorIndex<TInstance> index,
+            StateObserver<TInstance> observer)
         {
             _observer = observer;
             _index = index;
@@ -57,15 +57,13 @@ namespace Automatonymous.Accessors
             int previousIndex = _property.Get(context.Instance);
 
             if (stateIndex == previousIndex)
-                return Task.FromResult(false);
+                return TaskUtil.Completed;
 
             _property.Set(context.Instance, stateIndex);
 
             State<TInstance> previousState = _index[previousIndex];
 
-            _observer.OnNext(new StateChangedEvent(context.Instance, previousState, state));
-
-            return Task.FromResult(true);
+            return _observer.StateChanged(context, state, previousState);
         }
 
         static ReadWriteProperty<TInstance, int> GetCurrentStateProperty(Expression<Func<TInstance, int>> currentStateExpression)
@@ -73,24 +71,6 @@ namespace Automatonymous.Accessors
             PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
 
             return new ReadWriteProperty<TInstance, int>(propertyInfo);
-        }
-
-
-        class StateChangedEvent :
-            StateChanged<TInstance>
-        {
-            public StateChangedEvent(TInstance instance, State previous, State current)
-            {
-                Instance = instance;
-                Previous = previous;
-                Current = current;
-            }
-
-            public TInstance Instance { get; }
-
-            public State Previous { get; }
-
-            public State Current { get; }
         }
     }
 }

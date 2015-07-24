@@ -13,7 +13,6 @@
 namespace Automatonymous.Tests
 {
     using System;
-    using System.Collections.Generic;
     using NUnit.Framework;
 
 
@@ -31,7 +30,7 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
             _observer = new StateChangeObserver<Instance>();
 
-            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
+            using (IDisposable subscription = _machine.ConnectStateObserver(_observer))
             {
                 _machine.RaiseEvent(_instance, x => x.Initialized).Wait();
                 _machine.RaiseEvent(_instance, x => x.Finish).Wait();
@@ -60,7 +59,6 @@ namespace Automatonymous.Tests
             }
 
             public State Running { get; private set; }
-
             public Event Initialized { get; private set; }
             public Event Finish { get; private set; }
         }
@@ -94,7 +92,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
-        EventRaisedObserver _eventObserver;
+        EventRaisedObserver<Instance> _eventObserver;
 
         [TestFixtureSetUp]
         public void Specifying_an_event_activity()
@@ -102,11 +100,11 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
             _observer = new StateChangeObserver<Instance>();
-            _eventObserver = new EventRaisedObserver();
+            _eventObserver = new EventRaisedObserver<Instance>();
 
-            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
-            using (IDisposable beforeEnterSub = _machine.EventRaised(_machine.Running.BeforeEnter).Subscribe(_eventObserver))
-            using (IDisposable afterLeaveSub = _machine.EventRaised(_machine.Running.AfterLeave).Subscribe(_eventObserver))
+            using (IDisposable subscription = _machine.ConnectStateObserver(_observer))
+            using (IDisposable beforeEnterSub = _machine.ConnectEventObserver(_machine.Initialized, _eventObserver))
+            using (IDisposable afterLeaveSub = _machine.ConnectEventObserver(_machine.LegCramped, _eventObserver))
             {
                 _machine.RaiseEvent(_instance, x => x.Initialized).Wait();
                 _machine.RaiseEvent(_instance, x => x.LegCramped).Wait();
@@ -146,35 +144,9 @@ namespace Automatonymous.Tests
 
             public State Running { get; private set; }
             public State Resting { get; private set; }
-
             public Event Initialized { get; private set; }
             public Event LegCramped { get; private set; }
             public Event Finish { get; private set; }
-        }
-
-
-        class EventRaisedObserver :
-            IObserver<EventRaised<Instance>>
-        {
-            public EventRaisedObserver()
-            {
-                Events = new List<EventRaised<Instance>>();
-            }
-
-            public IList<EventRaised<Instance>> Events { get; private set; }
-
-            public void OnNext(EventRaised<Instance> value)
-            {
-                Events.Add(value);
-            }
-
-            public void OnError(Exception error)
-            {
-            }
-
-            public void OnCompleted()
-            {
-            }
         }
 
 
@@ -215,13 +187,13 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_have_transition_1()
         {
-            Assert.AreEqual("Running.BeforeEnter", _eventObserver.Events[0].Event.Name);
+            Assert.AreEqual("Initialized", _eventObserver.Events[0].Event.Name);
         }
 
         [Test]
         public void Should_have_transition_2()
         {
-            Assert.AreEqual("Running.AfterLeave", _eventObserver.Events[1].Event.Name);
+            Assert.AreEqual("LegCramped", _eventObserver.Events[1].Event.Name);
         }
 
         [Test]
@@ -238,7 +210,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
-        EventRaisedObserver _eventObserver;
+        EventRaisedObserver<Instance> _eventObserver;
 
         [TestFixtureSetUp]
         public void Specifying_an_event_activity()
@@ -246,11 +218,11 @@ namespace Automatonymous.Tests
             _instance = new Instance();
             _machine = new InstanceStateMachine();
             _observer = new StateChangeObserver<Instance>();
-            _eventObserver = new EventRaisedObserver();
+            _eventObserver = new EventRaisedObserver<Instance>();
 
-            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
-            using (IDisposable beforeEnterSub = _machine.EventRaised(_machine.Running.BeforeEnter).Subscribe(_eventObserver))
-            using (IDisposable afterLeaveSub = _machine.EventRaised(_machine.Running.AfterLeave).Subscribe(_eventObserver))
+            using (IDisposable subscription = _machine.ConnectStateObserver(_observer))
+            using (IDisposable beforeEnterSub = _machine.ConnectEventObserver(_machine.Running.BeforeEnter, _eventObserver))
+            using (IDisposable afterLeaveSub = _machine.ConnectEventObserver(_machine.Running.AfterLeave, _eventObserver))
             {
                 _machine.RaiseEvent(_instance, x => x.Initialized).Wait();
                 _machine.RaiseEvent(_instance, x => x.LegCramped).Wait();
@@ -295,36 +267,10 @@ namespace Automatonymous.Tests
 
             public State Running { get; private set; }
             public State Resting { get; private set; }
-
             public Event Initialized { get; private set; }
             public Event LegCramped { get; private set; }
             public Event Recovered { get; private set; }
             public Event Finish { get; private set; }
-        }
-
-
-        class EventRaisedObserver :
-            IObserver<EventRaised<Instance>>
-        {
-            public EventRaisedObserver()
-            {
-                Events = new List<EventRaised<Instance>>();
-            }
-
-            public IList<EventRaised<Instance>> Events { get; private set; }
-
-            public void OnNext(EventRaised<Instance> value)
-            {
-                Events.Add(value);
-            }
-
-            public void OnError(Exception error)
-            {
-            }
-
-            public void OnCompleted()
-            {
-            }
         }
 
 

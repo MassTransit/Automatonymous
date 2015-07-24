@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -85,11 +85,6 @@ namespace Automatonymous
         where TInstance : class
     {
         /// <summary>
-        /// Exposes state change events to observers
-        /// </summary>
-        IObservable<StateChanged<TInstance>> StateChanged { get; }
-
-        /// <summary>
         /// Exposes the current state on the given instance
         /// </summary>
         StateAccessor<TInstance> Accessor { get; }
@@ -114,18 +109,8 @@ namespace Automatonymous
         /// <param name="context"></param>
         Task RaiseEvent<T>(EventContext<TInstance, T> context);
 
-        /// <summary>
-        /// Exposes a raised event to observers before it is raised on the instance
-        /// </summary>
-        /// <param name="event"></param>
-        /// <returns></returns>
-        IObservable<EventRaising<TInstance>> EventRaising(Event @event);
-
-        /// <summary>
-        /// Exposes a raised event to observers after it is raised on the instance
-        /// </summary>
-        /// <param name="event"></param>
-        /// <returns></returns>
-        IObservable<EventRaised<TInstance>> EventRaised(Event @event);
+        IDisposable ConnectEventObserver(EventObserver<TInstance> observer);
+        IDisposable ConnectEventObserver(Event @event, EventObserver<TInstance> observer);
+        IDisposable ConnectStateObserver(StateObserver<TInstance> observer);
     }
 }

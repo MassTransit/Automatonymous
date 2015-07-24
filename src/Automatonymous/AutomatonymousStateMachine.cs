@@ -33,13 +33,12 @@ namespace Automatonymous
         where TInstance : class
     {
         readonly Dictionary<string, StateMachineEvent<TInstance>> _eventCache;
-        readonly EventRaisedObserver<TInstance> _eventRaisedObserver;
-        readonly EventRaisingObserver<TInstance> _eventRaisingObserver;
+        readonly EventObservable<TInstance> _eventObservers;
         readonly State<TInstance> _final;
         readonly State<TInstance> _initial;
         readonly Lazy<StateMachineRegistration[]> _registrations;
         readonly Dictionary<string, State<TInstance>> _stateCache;
-        readonly Observable<StateChanged<TInstance>> _stateChangedObservable;
+        readonly StateObservable<TInstance> _stateObservers;
         StateAccessor<TInstance> _accessor;
         string _name;
         UnhandledEventCallback<TInstance> _unhandledEventCallback;
@@ -50,16 +49,15 @@ namespace Automatonymous
             _stateCache = new Dictionary<string, State<TInstance>>();
             _eventCache = new Dictionary<string, StateMachineEvent<TInstance>>();
 
-            _stateChangedObservable = new Observable<StateChanged<TInstance>>();
-            _eventRaisingObserver = new EventRaisingObserver<TInstance>(_eventCache);
-            _eventRaisedObserver = new EventRaisedObserver<TInstance>(_eventCache);
+            _eventObservers = new EventObservable<TInstance>();
+            _stateObservers = new StateObservable<TInstance>();
 
-            _initial = new StateMachineState<TInstance>(this, "Initial", _eventRaisingObserver, _eventRaisedObserver);
+            _initial = new StateMachineState<TInstance>(this, "Initial", _eventObservers);
             _stateCache[_initial.Name] = _initial;
-            _final = new StateMachineState<TInstance>(this, "Final", _eventRaisingObserver, _eventRaisedObserver);
+            _final = new StateMachineState<TInstance>(this, "Final", _eventObservers);
             _stateCache[_final.Name] = _final;
 
-            _accessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateChangedObservable);
+            _accessor = new DefaultInstanceStateAccessor<TInstance>(this, _stateCache[Initial.Name], _stateObservers);
 
             _unhandledEventCallback = DefaultUnhandledEventCallback;
 
@@ -131,33 +129,13 @@ namespace Automatonymous
 
         Type StateMachine.InstanceType => typeof(TInstance);
 
-        public IEnumerable<Event> NextEvents(State state)
+        IEnumerable<Event> StateMachine.NextEvents(State state)
         {
             State<TInstance> result;
             if (_stateCache.TryGetValue(state.Name, out result))
                 return result.Events;
 
             throw new UnknownStateException(_name, state.Name);
-        }
-
-        public IObservable<StateChanged<TInstance>> StateChanged => _stateChangedObservable;
-
-        public IObservable<EventRaising<TInstance>> EventRaising(Event @event)
-        {
-            StateMachineEvent<TInstance> result;
-            if (_eventCache.TryGetValue(@event.Name, out result))
-                return result.EventRaising;
-
-            throw new UnknownEventException(_name, @event.Name);
-        }
-
-        public IObservable<EventRaised<TInstance>> EventRaised(Event @event)
-        {
-            StateMachineEvent<TInstance> result;
-            if (_eventCache.TryGetValue(@event.Name, out result))
-                return result.EventRaised;
-
-            throw new UnknownEventException(_name, @event.Name);
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
@@ -175,6 +153,25 @@ namespace Automatonymous
             Final.Accept(visitor);
         }
 
+        IDisposable StateMachine<TInstance>.ConnectEventObserver(EventObserver<TInstance> observer)
+        {
+            var eventObserver = new NonTransitionEventObserver<TInstance>(_eventCache, observer);
+
+            return _eventObservers.Connect(eventObserver);
+        }
+
+        IDisposable StateMachine<TInstance>.ConnectEventObserver(Event @event, EventObserver<TInstance> observer)
+        {
+            var eventObserver = new SelectedEventObserver<TInstance>(@event, observer);
+
+            return _eventObservers.Connect(eventObserver);
+        }
+
+        IDisposable StateMachine<TInstance>.ConnectStateObserver(StateObserver<TInstance> observer)
+        {
+            return _stateObservers.Connect(observer);
+        }
+
         Task DefaultUnhandledEventCallback(UnhandledEventContext<TInstance> context)
         {
             throw new UnhandledEventException(_name, context.Event.Name, context.CurrentState.Name);
@@ -190,7 +187,7 @@ namespace Automatonymous
         /// </remarks>
         protected void InstanceState(Expression<Func<TInstance, State>> instanceStateProperty)
         {
-            var stateAccessor = new RawStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
+            var stateAccessor = new RawStateAccessor<TInstance>(this, instanceStateProperty, _stateObservers);
 
             _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
@@ -201,7 +198,7 @@ namespace Automatonymous
         /// <param name="instanceStateProperty"></param>
         protected void InstanceState(Expression<Func<TInstance, string>> instanceStateProperty)
         {
-            var stateAccessor = new StringStateAccessor<TInstance>(this, instanceStateProperty, _stateChangedObservable);
+            var stateAccessor = new StringStateAccessor<TInstance>(this, instanceStateProperty, _stateObservers);
 
             _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
@@ -215,7 +212,7 @@ namespace Automatonymous
         {
             var stateIndex = new StateAccessorIndex<TInstance>(this, _initial, _final, states);
 
-            var stateAccessor = new IntStateAccessor<TInstance>(instanceStateProperty, stateIndex, _stateChangedObservable);
+            var stateAccessor = new IntStateAccessor<TInstance>(instanceStateProperty, stateIndex, _stateObservers);
 
             _accessor = new InitialIfNullStateAccessor<TInstance>(_stateCache[Initial.Name], stateAccessor);
         }
@@ -447,7 +444,7 @@ namespace Automatonymous
         {
             string name = property.Name;
 
-            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
+            var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
             property.SetValue(this, state);
 
@@ -472,7 +469,7 @@ namespace Automatonymous
 
             string name = $"{property.Name}.{stateProperty.Name}";
 
-            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver);
+            var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
             SetStateProperty(stateProperty, propertyValue, state);
 
@@ -511,7 +508,7 @@ namespace Automatonymous
 
             string name = property.Name;
 
-            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver, superStateInstance);
+            var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
             property.SetValue(this, state);
 
@@ -542,7 +539,7 @@ namespace Automatonymous
 
             string name = $"{property.Name}.{stateProperty.Name}";
 
-            var state = new StateMachineState<TInstance>(this, name, _eventRaisingObserver, _eventRaisedObserver, superStateInstance);
+            var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
             SetStateProperty(stateProperty, propertyValue, state);
 

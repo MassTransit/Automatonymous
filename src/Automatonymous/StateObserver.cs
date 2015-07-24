@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,15 +12,18 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    /// <summary>
-    /// Used to visit the state machine structure, so it can be displayed, etc.
-    /// </summary>
-    public interface Visitable
+    using System.Threading.Tasks;
+
+
+    public interface StateObserver<in TInstance>
     {
         /// <summary>
-        /// A visitable site can accept the visitor and pass control to internal elements
+        /// Invoked prior to changing the state of the state machine
         /// </summary>
-        /// <param name="visitor"></param>
-        void Accept(StateMachineVisitor visitor);
+        /// <param name="context">The instance context of the state machine</param>
+        /// <param name="currentState">The current state (after the change)</param>
+        /// <param name="previousState">The previous state (before the change)</param>
+        /// <returns></returns>
+        Task StateChanged(InstanceContext<TInstance> context, State currentState, State previousState);
     }
 }

@@ -84,7 +84,7 @@ namespace Automatonymous.Activities
             return _next.Faulted(_context);
         }
 
-        Task Behavior<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context)
+        Task Behavior<TInstance>.Faulted<TD, T>(BehaviorExceptionContext<TInstance, TD, T> context)
         {
             throw new AutomatonymousException("This should not ever be called.");
         }

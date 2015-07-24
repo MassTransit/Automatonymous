@@ -12,34 +12,39 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
-    using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
 
     class StateChangeObserver<T> :
-        IObserver<StateChanged<T>>
+        StateObserver<T>
         where T : class
     {
         public StateChangeObserver()
         {
-            Events = new List<StateChanged<T>>();
+            Events = new List<StateChange>();
         }
 
-        public IList<StateChanged<T>> Events { get; private set; }
-        public bool Completed { get; private set; }
+        public IList<StateChange> Events { get; private set; }
 
-        public void OnNext(StateChanged<T> value)
+        public async Task StateChanged(InstanceContext<T> context, State currentState, State previousState)
         {
-            Events.Add(value);
+            Events.Add(new StateChange(context, currentState, previousState));
         }
 
-        public void OnError(Exception error)
-        {
-        }
 
-        public void OnCompleted()
+        public struct StateChange
         {
-            Completed = true;
+            public InstanceContext<T> Context;
+            public readonly State Current;
+            public readonly State Previous;
+
+            public StateChange(InstanceContext<T> context, State current, State previous)
+            {
+                Context = context;
+                Current = current;
+                Previous = previous;
+            }
         }
     }
 }

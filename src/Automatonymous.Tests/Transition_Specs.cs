@@ -30,7 +30,7 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
             _observer = new StateChangeObserver<Instance>();
 
-            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
+            using (IDisposable subscription = _machine.ConnectStateObserver(_observer))
             {
                 _machine.TransitionToState(_instance, _machine.Running)
                     .Wait();
@@ -110,7 +110,7 @@ namespace Automatonymous.Tests
             _machine = new InstanceStateMachine();
             _observer = new StateChangeObserver<Instance>();
 
-            using (IDisposable subscription = _machine.StateChanged.Subscribe(_observer))
+            using (IDisposable subscription = _machine.ConnectStateObserver(_observer))
             {
                 _machine.RaiseEvent(_instance, x => x.Initialized)
                     .Wait();

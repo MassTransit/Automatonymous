@@ -15,6 +15,7 @@ namespace Automatonymous.Contexts
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using Internals;
 
 
     public class StateUnhandledEventContext<TInstance> :
@@ -55,11 +56,12 @@ namespace Automatonymous.Contexts
 
         public Event Event => _context.Event;
 
-        public async Task Ignore()
+        public Task Ignore()
         {
+            return TaskUtil.Completed;
         }
 
-        public async Task Throw()
+        public Task Throw()
         {
             throw new UnhandledEventException(_machine.Name, _context.Event.Name, _state.Name);
         }
