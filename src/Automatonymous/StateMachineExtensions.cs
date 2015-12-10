@@ -40,7 +40,7 @@ namespace Automatonymous
             Activity<TInstance> activity = new TransitionActivity<TInstance>(toState, accessor);
             Behavior<TInstance> behavior = new LastBehavior<TInstance>(activity);
 
-            var eventContext = new StateMachineEventContext<TInstance>(instance, toState.Enter, cancellationToken);
+            var eventContext = new StateMachineEventContext<TInstance>(machine, instance, toState.Enter, cancellationToken);
 
             BehaviorContext<TInstance> behaviorContext = new EventBehaviorContext<TInstance>(eventContext);
 

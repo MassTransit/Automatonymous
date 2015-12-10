@@ -14,6 +14,7 @@ namespace Automatonymous.Contexts
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class BehaviorExceptionContextProxy<TInstance, TException> :
@@ -45,6 +46,16 @@ namespace Automatonymous.Contexts
         public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
         {
             return _context.GetOrAddPayload(payloadFactory);
+        }
+
+        public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, cancellationToken);
+        }
+
+        public Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, data, cancellationToken);
         }
 
         public Event Event => _context.Event;
@@ -100,6 +111,16 @@ namespace Automatonymous.Contexts
         public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
         {
             return _context.GetOrAddPayload(payloadFactory);
+        }
+
+        public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, cancellationToken);
+        }
+
+        public Task Raise<TData1>(Event<TData1> @event, TData1 data, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, data, cancellationToken);
         }
 
         public Event Event => _context.Event;

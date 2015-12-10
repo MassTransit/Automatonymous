@@ -416,8 +416,7 @@ namespace Automatonymous
             {
                 int flag = 1 << i;
 
-                var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete,
-                    this, @event);
+                var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete, @event);
 
                 Func<State<TInstance>, bool> filter = x => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
                 foreach (var state in _stateCache.Values.Where(filter))

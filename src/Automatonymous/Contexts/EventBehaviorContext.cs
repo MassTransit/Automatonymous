@@ -14,16 +14,20 @@ namespace Automatonymous.Contexts
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class EventBehaviorContext<TInstance> :
         BehaviorContext<TInstance>
     {
         readonly InstanceContext<TInstance> _context;
+        readonly EventContext<TInstance> _eventContext; 
 
         public EventBehaviorContext(EventContext<TInstance> context)
         {
             _context = context;
+            _eventContext = context;
+
             Event = context.Event;
         }
 
@@ -45,6 +49,22 @@ namespace Automatonymous.Contexts
         public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
         {
             return _context.GetOrAddPayload(payloadFactory);
+        }
+
+        public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
+        {
+            if(_eventContext == null)
+                throw new AutomatonymousException($"Events cannot be raised from an instance only: {@event.Name}");
+
+            return _eventContext.Raise(@event, cancellationToken);
+        }
+
+        public Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = new CancellationToken())
+        {
+            if (_eventContext == null)
+                throw new AutomatonymousException($"Events cannot be raised from an instance only: {@event.Name}");
+
+            return _eventContext.Raise(@event, data, cancellationToken);
         }
 
         public CancellationToken CancellationToken => _context.CancellationToken;

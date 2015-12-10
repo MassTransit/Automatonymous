@@ -96,6 +96,7 @@
     <Compile Include="Contexts\EventBehaviorContext.cs" />
     <Compile Include="Contexts\BehaviorContextProxy.cs" />
     <Compile Include="Contexts\BehaviorExceptionContextProxy.cs" />
+    <Compile Include="Contexts\EventContextProxy.cs" />
     <Compile Include="Contexts\StateMachineInstanceContext.cs" />
     <Compile Include="Contexts\PayloadCache.cs" />
     <Compile Include="Contexts\StateMachineEventContext.cs" />

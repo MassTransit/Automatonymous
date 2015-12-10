@@ -14,6 +14,7 @@ namespace Automatonymous.Contexts
 {
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
 
 
     public class StateMachineEventContext<TInstance> :
@@ -22,11 +23,13 @@ namespace Automatonymous.Contexts
     {
         readonly CancellationToken _cancellationToken;
         readonly Event _event;
+        readonly StateMachine<TInstance> _machine;
         readonly TInstance _instance;
         readonly PayloadCache _payloadCache;
 
-        public StateMachineEventContext(TInstance instance, Event @event, CancellationToken cancellationToken)
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event, CancellationToken cancellationToken)
         {
+            _machine = machine;
             _instance = instance;
             _event = @event;
             _cancellationToken = cancellationToken;
@@ -49,6 +52,24 @@ namespace Automatonymous.Contexts
             return _payloadCache.GetOrAddPayload(payloadFactory);
         }
 
+        public async Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var eventContext = new EventContextProxy<TInstance>(this, @event, cancellationToken);
+            using (eventContext)
+            {
+                await _machine.RaiseEvent(eventContext).ConfigureAwait(false);
+            }
+        }
+
+        public async Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var eventContext = new EventContextProxy<TInstance, TData>(this, @event, data, cancellationToken);
+            using (eventContext)
+            {
+                await _machine.RaiseEvent(eventContext).ConfigureAwait(false);
+            }
+        }
+
         CancellationToken InstanceContext<TInstance>.CancellationToken => _cancellationToken;
         Event EventContext<TInstance>.Event => _event;
         TInstance InstanceContext<TInstance>.Instance => _instance;
@@ -63,8 +84,8 @@ namespace Automatonymous.Contexts
         readonly TData _data;
         readonly Event<TData> _event;
 
-        public StateMachineEventContext(TInstance instance, Event<TData> @event, TData data, CancellationToken cancellationToken)
-            : base(instance, @event, cancellationToken)
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data, CancellationToken cancellationToken)
+            : base(machine, instance, @event, cancellationToken)
         {
             _data = data;
             _event = @event;

@@ -67,6 +67,7 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
+        /// <param name="data">The event data</param>
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TData, TInstance>(this T machine, TInstance instance, Event<TData> @event, TData data,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -90,6 +91,7 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
+        /// <param name="data">The event data</param>
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TData, TInstance>(this T machine, TInstance instance, Func<T, Event<TData>> eventSelector, TData data,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -174,6 +176,7 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
+        /// <param name="data">The event data</param>
         <#=tComments#>
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TData, TInstance<#=tInputArgs#>>(this T machine, TInstance instance, Event<TData> @event, TData data, <#=tParms#>,
@@ -201,6 +204,7 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
+        /// <param name="data">The event data</param>
         <#=tComments#>
         /// <param name="cancellationToken"></param>
         public static Task RaiseEvent<T, TData, TInstance<#=tInputArgs#>>(this T machine, TInstance instance, Func<T, Event<TData>> eventSelector, TData data, <#=tParms#>,

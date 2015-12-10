@@ -24,15 +24,12 @@ namespace Automatonymous.Activities
         readonly CompositeEventStatus _complete;
         readonly Event _event;
         readonly int _flag;
-        readonly StateMachine<TInstance> _stateMachine;
 
-        public CompositeEventActivity(CompositeEventStatusAccessor<TInstance> accessor, int flag, CompositeEventStatus complete,
-            StateMachine<TInstance> stateMachine, Event @event)
+        public CompositeEventActivity(CompositeEventStatusAccessor<TInstance> accessor, int flag, CompositeEventStatus complete, Event @event)
         {
             _accessor = accessor;
             _flag = flag;
             _complete = complete;
-            _stateMachine = stateMachine;
             _event = @event;
         }
 
@@ -72,9 +69,7 @@ namespace Automatonymous.Activities
 
         Task RaiseCompositeEvent(BehaviorContext<TInstance> context)
         {
-            BehaviorContext<TInstance> compositeEventContext = context.GetProxy(_event);
-
-            return _stateMachine.RaiseEvent(compositeEventContext);
+            return context.Raise(_event);
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)

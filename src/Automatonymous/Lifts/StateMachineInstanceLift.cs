@@ -36,9 +36,9 @@ namespace Automatonymous.Lifts
             return _stateMachine.RaiseEvent(_instance, @event, cancellationToken);
         }
 
-        Task InstanceLift<TStateMachine>.Raise<T>(Event<T> @event, T value, CancellationToken cancellationToken)
+        Task InstanceLift<TStateMachine>.Raise<T>(Event<T> @event, T data, CancellationToken cancellationToken)
         {
-            return _stateMachine.RaiseEvent(_instance, @event, value, cancellationToken);
+            return _stateMachine.RaiseEvent(_instance, @event, data, cancellationToken);
         }
 
         Task InstanceLift<TStateMachine>.Raise(Func<TStateMachine, Event> eventSelector, CancellationToken cancellationToken)

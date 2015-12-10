@@ -22,7 +22,7 @@ namespace Automatonymous
     {
         Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task Raise<TData>(Event<TData> @event, TData value, CancellationToken cancellationToken = default(CancellationToken));
+        Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default(CancellationToken));
 
         Task Raise(Func<T, Event> eventSelector, CancellationToken cancellationToken = default(CancellationToken));
 

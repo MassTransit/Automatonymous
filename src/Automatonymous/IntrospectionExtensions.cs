@@ -30,7 +30,7 @@ namespace Automatonymous
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
 
-            var context = new StateMachineEventContext<TInstance>(instance, machine.Initial.Enter, default(CancellationToken));
+            var context = new StateMachineEventContext<TInstance>(machine, instance, machine.Initial.Enter, default(CancellationToken));
 
             return machine.NextEvents(await machine.Accessor.Get(context));
         }

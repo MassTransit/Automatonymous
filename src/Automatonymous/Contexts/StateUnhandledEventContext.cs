@@ -55,6 +55,15 @@ namespace Automatonymous.Contexts
         }
 
         public Event Event => _context.Event;
+        public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, cancellationToken);
+        }
+
+        public Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = new CancellationToken())
+        {
+            return _context.Raise(@event, data, cancellationToken);
+        }
 
         public Task Ignore()
         {

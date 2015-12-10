@@ -67,7 +67,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class TestStateMachine :
+        sealed class TestStateMachine :
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
@@ -160,7 +160,7 @@ namespace Automatonymous.Tests
         }
 
 
-        class TestStateMachine :
+        sealed class TestStateMachine :
             AutomatonymousStateMachine<Instance>
         {
             public TestStateMachine()
