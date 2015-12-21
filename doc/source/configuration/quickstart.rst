@@ -34,7 +34,7 @@ changed. Either way, here it is, your first state machine configured using Autom
                 When(PissOff)
                     .TransitionTo(Enemy),
                 When(Introduce)
-                    .Then((instance,data) => instance.Name = data.Name)
+                    .Then((ctx) => ctx.Instance.Name = ctx.Data.Name)
                     .TransitionTo(Friend)                   
             );
         }
