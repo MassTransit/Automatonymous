@@ -11,6 +11,7 @@ changed. Either way, here it is, your first state machine configured using Autom
 
     class Relationship
     {
+        public State CurrentState { get; set; }
         public string Name { get; set; }
     }
 
