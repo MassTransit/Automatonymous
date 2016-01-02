@@ -9,10 +9,8 @@ changed. Either way, here it is, your first state machine configured using Autom
 .. sourcecode:: csharp
     :linenos:
 
-    class Relationship :
-        StateMachineInstance
+    class Relationship
     {
-        public State CurrentState { get; set; }
         public string Name { get; set; }
     }
 
@@ -34,7 +32,7 @@ changed. Either way, here it is, your first state machine configured using Autom
                 When(PissOff)
                     .TransitionTo(Enemy),
                 When(Introduce)
-                    .Then((instance,data) => instance.Name = data.Name)
+                    .Then(ctx => ctx.Instance.Name = ctx.Data.Name)
                     .TransitionTo(Friend)                   
             );
         }
@@ -73,9 +71,7 @@ a single state machine.
 Tracking State
 --------------
 
-State is managed in Automatonymous using a class, shown above as the ``Relationship``. Instances
-must implement the ``StateMachineInstance`` interface so that the current state can be stored along
-with any other properties used by your application.
+State is managed in Automatonymous using a class, shown above as the ``Relationship``.
 
 
 Defining Behavior
