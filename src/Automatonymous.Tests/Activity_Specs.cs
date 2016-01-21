@@ -183,13 +183,13 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_have_triggered_the_after_leave_event()
         {
-            Assert.AreEqual(_machine.Initializing, _instance.LeftState);
+            Assert.AreEqual(_machine.Initial, _instance.LeftState);
         }
 
         [Test]
         public void Should_have_triggered_the_before_enter_event()
         {
-            Assert.AreEqual(_machine.Initial, _instance.EnteredState);
+            Assert.AreEqual(_machine.Initializing, _instance.EnteredState);
         }
 
         Instance _instance;
@@ -236,7 +236,7 @@ namespace Automatonymous.Tests
                     When(Running.Enter)
                         .Finalize(),
                     When(Final.BeforeEnter)
-                        .Then(context => context.Instance.FinalState = context.Data));
+                        .Then(context => context.Instance.FinalState = context.Instance.CurrentState));
             }
 
             public State Running { get; private set; }

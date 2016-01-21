@@ -106,7 +106,7 @@ namespace Automatonymous.Activities
             if (currentState != null && toState.HasState(currentState))
                 return;
 
-            BehaviorContext<TInstance, State> beforeContext = context.GetProxy(toState.BeforeEnter, currentState);
+            BehaviorContext<TInstance, State> beforeContext = context.GetProxy(toState.BeforeEnter, toState);
             await toState.Raise(beforeContext);
         }
 
@@ -115,7 +115,7 @@ namespace Automatonymous.Activities
             if (fromState.HasState(toState))
                 return;
 
-            BehaviorContext<TInstance, State> afterContext = context.GetProxy(fromState.AfterLeave, toState);
+            BehaviorContext<TInstance, State> afterContext = context.GetProxy(fromState.AfterLeave, fromState);
             await fromState.Raise(afterContext);
 
             State<TInstance> superState = fromState.SuperState;

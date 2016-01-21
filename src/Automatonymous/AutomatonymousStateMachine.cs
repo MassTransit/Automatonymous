@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -715,6 +715,88 @@ namespace Automatonymous
             binder = activityCallback(binder);
 
             During(state, binder);
+        }
+
+        /// <summary>
+        /// When entering any state
+        /// </summary>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        protected void WhenEnterAny(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
+        {
+            BindEveryTransitionEvent(activityCallback, x => x.Enter);
+        }
+
+        /// <summary>
+        /// When leaving any state
+        /// </summary>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        protected void WhenLeaveAny(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
+        {
+            BindEveryTransitionEvent(activityCallback, x => x.Leave);
+        }
+
+        void BindEveryTransitionEvent(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback,
+            Func<State<TInstance>, Event> eventProvider)
+        {
+            State<TInstance>[] states = _stateCache.Values.ToArray();
+
+            ActivityBinder<TInstance>[] binders = states.Select(state =>
+            {
+                EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, eventProvider(state));
+
+                return activityCallback(binder);
+            }).SelectMany(x => x.GetStateActivityBinders()).ToArray();
+
+            foreach (var state in states)
+            {
+                foreach (var binder in binders)
+                {
+                    binder.Bind(state);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Before entering any state
+        /// </summary>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        protected void BeforeEnterAny(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        {
+            BindEveryTransitionEvent(activityCallback, x => x.BeforeEnter);
+        }
+
+        /// <summary>
+        /// After leaving any state
+        /// </summary>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        protected void AfterLeaveAny(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        {
+            BindEveryTransitionEvent(activityCallback, x => x.AfterLeave);
+        }
+
+        void BindEveryTransitionEvent(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback,
+            Func<State<TInstance>, Event<State>> eventProvider)
+        {
+            State<TInstance>[] states = _stateCache.Values.ToArray();
+
+            ActivityBinder<TInstance>[] binders = states.Select(state =>
+            {
+                EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, eventProvider(state));
+
+                return activityCallback(binder);
+            }).SelectMany(x => x.GetStateActivityBinders()).ToArray();
+
+            foreach (var state in states)
+            {
+                foreach (var binder in binders)
+                {
+                    binder.Bind(state);
+                }
+            }
         }
 
         /// <summary>
