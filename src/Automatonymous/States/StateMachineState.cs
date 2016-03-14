@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -80,6 +80,11 @@ namespace Automatonymous.States
                 {
                     behavior.Key.Accept(visitor);
                     behavior.Value.Behavior.Accept(visitor);
+                }
+
+                foreach (var ignoredEvent in _ignoredEvents)
+                {
+                    ignoredEvent.Key.Accept(visitor);
                 }
             });
         }
@@ -215,15 +220,23 @@ namespace Automatonymous.States
             get
             {
                 if (_superState != null)
-                    return _superState.Events.Union(_behaviors.Keys);
+                    return _superState.Events.Union(GetStateEvents()).Distinct();
 
-                return _behaviors.Keys;
+                return GetStateEvents();
             }
         }
 
         public int CompareTo(State other)
         {
             return string.CompareOrdinal(_name, other.Name);
+        }
+
+        IEnumerable<Event> GetStateEvents()
+        {
+            return _behaviors.Keys
+                .Union(_ignoredEvents.Keys
+                    .Where(x => !Equals(x, Enter) && !Equals(x, Leave) && !Equals(x, AfterLeave) && !Equals(x, BeforeEnter)))
+                .Distinct();
         }
 
         public override bool Equals(object obj)

@@ -12,6 +12,8 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Linq;
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -123,7 +125,7 @@ namespace Automatonymous.Tests
     public class Raising_an_ignored_event
     {
         [Test]
-        public async void Should_also_ignore_yet_process_invalid_events()
+        public async Task Should_also_ignore_yet_process_invalid_events()
         {
             var instance = new Instance();
 
@@ -135,13 +137,27 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_silenty_ignore_the_invalid_event()
+        public async Task Should_silenty_ignore_the_invalid_event()
         {
             var instance = new Instance();
 
             await _machine.RaiseEvent(instance, x => x.Start);
 
             await _machine.RaiseEvent(instance, x => x.Start);
+        }
+
+        [Test]
+        public async Task Should_have_the_next_event_even_though_ignored()
+        {
+            var instance = new Instance();
+
+            await _machine.RaiseEvent(instance, x => x.Start);
+
+            Assert.AreEqual(_machine.Running, await _machine.GetState(instance));
+
+            var nextEvents = await _machine.NextEvents(instance);
+
+            Assert.IsTrue(nextEvents.Any(x => x.Name.Equals("Charge")));
         }
 
         TestStateMachine _machine;
