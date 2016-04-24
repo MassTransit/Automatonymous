@@ -190,7 +190,7 @@ nuspec :create_nuspec_masstransit do |nuspec|
   nuspec.language = "en-US"
   nuspec.licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0"
   nuspec.requireLicenseAcceptance = "false"
-  nuspec.dependency "MassTransit", "2.10.1"
+  nuspec.dependency "MassTransit", "2.10.2"
   nuspec.dependency "Taskell", "0.1.2"
   nuspec.dependency "Automatonymous", NUGET_VERSION
   nuspec.output_file = File.join(props[:artifacts], 'Automatonymous.MassTransit.nuspec')
