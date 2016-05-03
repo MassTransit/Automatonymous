@@ -443,6 +443,13 @@ namespace Automatonymous
         {
             string name = property.Name;
 
+            var propertyValue = property.GetValue(this);
+
+            // If the state was already defined, don't define it again
+            var existingState = propertyValue as StateMachineState<TInstance>;
+            if (name.Equals(existingState?.Name))
+                return;
+
             var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
             property.SetValue(this, state);
@@ -468,6 +475,10 @@ namespace Automatonymous
 
             string name = $"{property.Name}.{stateProperty.Name}";
 
+            var existingState = GetStateProperty(stateProperty, propertyValue);
+            if (name.Equals(existingState?.Name))
+                return;
+
             var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
             SetStateProperty(stateProperty, propertyValue, state);
@@ -490,6 +501,19 @@ namespace Automatonymous
             }
         }
 
+        static StateMachineState<TInstance> GetStateProperty<TProperty>(PropertyInfo stateProperty, TProperty propertyValue)
+            where TProperty : class
+        {
+            if (stateProperty.CanRead)
+                return stateProperty.GetValue(propertyValue) as StateMachineState<TInstance>;
+
+            var objectProperty = propertyValue.GetType().GetProperty(stateProperty.Name, typeof(State));
+            if (objectProperty == null || !objectProperty.CanRead)
+                throw new ArgumentException($"The state property is not readable: {stateProperty.Name}");
+
+            return objectProperty.GetValue(propertyValue) as StateMachineState<TInstance>;
+        }
+
         /// <summary>
         /// Declares a sub-state on the machine. A sub-state is a state that is valid within a super-state,
         /// allowing a state machine to have multiple "states" -- nested parts of an overall state.
@@ -506,6 +530,13 @@ namespace Automatonymous
             PropertyInfo property = propertyExpression.GetPropertyInfo();
 
             string name = property.Name;
+
+            var propertyValue = property.GetValue(this);
+
+            // If the state was already defined, don't define it again
+            var existingState = propertyValue as StateMachineState<TInstance>;
+            if (name.Equals(existingState?.Name) && superState.Name.Equals(existingState?.SuperState?.Name))
+                return;
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
@@ -537,6 +568,10 @@ namespace Automatonymous
             PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
 
             string name = $"{property.Name}.{stateProperty.Name}";
+
+            var existingState = GetStateProperty(stateProperty, propertyValue);
+            if (name.Equals(existingState?.Name) && superState.Name.Equals(existingState?.SuperState?.Name))
+                return;
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
