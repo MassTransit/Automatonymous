@@ -84,7 +84,7 @@ Target "Build" (fun _ ->
                 "Configuration", buildMode
                 "SignAssembly", "True"
                 "AssemblyOriginatorKeyFile", keyFile
-                "TargetFrameworkVersion", "v4.5"
+                "TargetFrameworkVersion", "v4.5.2"
                 "Platform", "Any CPU"
             ]
   }
@@ -116,17 +116,17 @@ Target "Package" (fun _ ->
   let nugs = [| { Project = "Automatonymous"
                   Summary = "Automatonymous, an open source state machine library, usable with MassTransit"
                   PackageFile = @".\src\Automatonymous\packages.config"
-                  Files = [ (@"..\src\Automatonymous\bin\Release\Automatonymous.*", Some @"lib\net45", None);
+                  Files = [ (@"..\src\Automatonymous\bin\Release\Automatonymous.*", Some @"lib\net452", None);
                             (@"..\src\Automatonymous\**\*.cs", Some "src", None) ] }
                 { Project = "Automatonymous.NHibernate"
                   Summary = "Automatonymous NHibernate Support"
                   PackageFile = @".\src\Automatonymous.NHibernateIntegration\packages.config"
-                  Files = [ (@"..\src\Automatonymous.NHibernateIntegration\bin\Release\Automatonymous.NHibernateIntegration.*", Some @"lib\net45", None);
+                  Files = [ (@"..\src\Automatonymous.NHibernateIntegration\bin\Release\Automatonymous.NHibernateIntegration.*", Some @"lib\net452", None);
                             (@"..\src\Automatonymous.NHibernateIntegration\**\*.cs", Some @"src", None) ] } 
                 { Project = "Automatonymous.Visualizer"
                   Summary = "Automatonymous Visualizer Support"
                   PackageFile = @".\src\Automatonymous.Visualizer\packages.config"
-                  Files = [ (@"..\src\Automatonymous.Visualizer\bin\Release\Automatonymous.Visualizer.*", Some @"lib\net45", None);
+                  Files = [ (@"..\src\Automatonymous.Visualizer\bin\Release\Automatonymous.Visualizer.*", Some @"lib\net452", None);
                             (@"..\src\Automatonymous.Visualizer\**\*.cs", Some @"src", None) ] } 
              |]
 
