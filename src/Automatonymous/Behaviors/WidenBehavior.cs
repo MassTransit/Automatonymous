@@ -13,6 +13,7 @@
 namespace Automatonymous.Behaviors
 {
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class WidenBehavior<TInstance, TData> :
@@ -32,6 +33,11 @@ namespace Automatonymous.Behaviors
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            _next.Probe(context);
         }
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)

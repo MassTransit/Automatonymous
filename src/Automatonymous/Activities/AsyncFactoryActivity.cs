@@ -15,6 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Threading.Tasks;
     using Behaviors;
+    using GreenPipes;
 
 
     public class AsyncFactoryActivity<TInstance, TData> :
@@ -30,6 +31,11 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.CreateScope("activityFactory");
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
@@ -60,6 +66,11 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.CreateScope("activityFactory");
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

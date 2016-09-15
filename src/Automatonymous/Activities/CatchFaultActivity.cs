@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System;
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     /// <summary>
@@ -36,6 +37,13 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this, x => _behavior.Accept(visitor));
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("catchFault");
+
+            _behavior.Probe(scope);
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

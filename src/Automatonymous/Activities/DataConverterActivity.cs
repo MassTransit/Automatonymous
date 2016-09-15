@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class DataConverterActivity<TInstance, TData> :
@@ -28,6 +29,11 @@ namespace Automatonymous.Activities
         public void Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this, x => _activity.Accept(visitor));
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            _activity.Probe(context);
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
     using Accessors;
+    using GreenPipes;
     using GreenPipes.Util;
 
 
@@ -39,6 +40,13 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("compositeEvent");
+            scope.Add("event", _event.Name);
+            scope.Add("flag", _flag.ToString("X8"));
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

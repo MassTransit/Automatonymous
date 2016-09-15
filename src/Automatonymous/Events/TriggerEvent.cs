@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,6 +13,7 @@
 namespace Automatonymous.Events
 {
     using System;
+    using GreenPipes;
 
 
     public class TriggerEvent :
@@ -29,7 +30,15 @@ namespace Automatonymous.Events
 
         public virtual void Accept(StateMachineVisitor visitor)
         {
-            visitor.Visit(this, x => { });
+            visitor.Visit(this, x =>
+            {
+            });
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("event");
+            scope.Add("name", _name);
         }
 
         public int CompareTo(Event other)

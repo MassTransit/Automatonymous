@@ -16,6 +16,7 @@ namespace Automatonymous.Accessors
     using Activities;
     using Behaviors;
     using Contexts;
+    using GreenPipes;
 
 
     public class InitialIfNullStateAccessor<TInstance> :
@@ -50,6 +51,11 @@ namespace Automatonymous.Accessors
         Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             return _stateAccessor.Set(context, state);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            _stateAccessor.Probe(context);
         }
     }
 }

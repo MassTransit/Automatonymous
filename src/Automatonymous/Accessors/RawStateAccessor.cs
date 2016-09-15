@@ -16,6 +16,7 @@ namespace Automatonymous.Accessors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GreenPipes;
     using GreenPipes.Internals.Extensions;
     using GreenPipes.Internals.Reflection;
     using GreenPipes.Util;
@@ -63,6 +64,11 @@ namespace Automatonymous.Accessors
                 previousState = _machine.GetState(previous.Name);
 
             return _observer.StateChanged(context, state, previousState);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.Add("currentStateProperty", _property.Property.Name);
         }
 
         static ReadWriteProperty<TInstance, State> GetCurrentStateProperty(Expression<Func<TInstance, State>> currentStateExpression)

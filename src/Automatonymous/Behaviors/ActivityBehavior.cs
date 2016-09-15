@@ -14,6 +14,7 @@ namespace Automatonymous.Behaviors
 {
     using System;
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class ActivityBehavior<TInstance> :
@@ -35,6 +36,12 @@ namespace Automatonymous.Behaviors
                 _activity.Accept(visitor);
                 _next.Accept(visitor);
             });
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            _activity.Probe(context);
+            _next.Probe(context);
         }
 
         async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)

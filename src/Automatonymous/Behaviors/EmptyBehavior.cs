@@ -13,6 +13,7 @@
 namespace Automatonymous.Behaviors
 {
     using System.Threading.Tasks;
+    using GreenPipes;
     using GreenPipes.Util;
 
 
@@ -22,6 +23,10 @@ namespace Automatonymous.Behaviors
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
         }
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
@@ -52,6 +57,10 @@ namespace Automatonymous.Behaviors
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
         }
 
         Task Behavior<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context)

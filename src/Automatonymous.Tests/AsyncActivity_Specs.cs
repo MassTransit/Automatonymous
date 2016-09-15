@@ -14,6 +14,7 @@ namespace Automatonymous.Tests
 {
     using System;
     using System.Threading.Tasks;
+    using GreenPipes;
     using NUnit.Framework;
 
 
@@ -44,6 +45,10 @@ namespace Automatonymous.Tests
             void Visitable.Accept(StateMachineVisitor visitor)
             {
                 visitor.Visit(this);
+            }
+
+            public void Probe(ProbeContext context)
+            {
             }
         }
 

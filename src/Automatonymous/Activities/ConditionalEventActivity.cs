@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     /// <summary>
@@ -35,6 +36,13 @@ namespace Automatonymous.Activities
         public void Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this, x => _activity.Accept(visitor));
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("conditional");
+
+            _activity.Probe(scope);
         }
 
         Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)

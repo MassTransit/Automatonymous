@@ -19,6 +19,7 @@ namespace Automatonymous.States
     using Behaviors;
     using Contexts;
     using Events;
+    using GreenPipes;
 
 
     public class StateMachineState<TInstance> :
@@ -87,6 +88,27 @@ namespace Automatonymous.States
                     ignoredEvent.Key.Accept(visitor);
                 }
             });
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("state");
+            scope.Add("name", _name);
+
+            foreach (var behavior in _behaviors)
+            {
+                var behaviorScope = scope.CreateScope(behavior.Key.Name);
+                behavior.Value.Behavior.Probe(behaviorScope);
+            }
+
+            if (_ignoredEvents.Any())
+            {
+                var ignoredScope = scope.CreateScope("ignored");
+                foreach (var ignoredEvent in _ignoredEvents)
+                {
+                    ignoredEvent.Key.Probe(ignoredScope);
+                }
+            }
         }
 
         async Task State<TInstance>.Raise(EventContext<TInstance> context)

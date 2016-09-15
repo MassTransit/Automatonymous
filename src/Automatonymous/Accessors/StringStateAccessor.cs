@@ -16,6 +16,7 @@ namespace Automatonymous.Accessors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GreenPipes;
     using GreenPipes.Internals.Extensions;
     using GreenPipes.Internals.Reflection;
     using GreenPipes.Util;
@@ -74,6 +75,11 @@ namespace Automatonymous.Accessors
             PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
 
             return new ReadWriteProperty<TInstance, string>(propertyInfo);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.Add("currentStateProperty", _property.Property.Name);
         }
     }
 }

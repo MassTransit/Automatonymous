@@ -23,6 +23,7 @@ namespace Automatonymous
     using Binders;
     using Contexts;
     using Events;
+    using GreenPipes;
     using GreenPipes.Internals.Extensions;
     using Observers;
     using States;
@@ -152,6 +153,25 @@ namespace Automatonymous
 
             Final.Accept(visitor);
         }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("stateMachine");
+            scope.Add("type", TypeNameCache.GetShortName(GetType()));
+
+            Initial.Probe(scope);
+
+            foreach (var state in _stateCache.Values)
+            {
+                if (Equals(state, Initial) || Equals(state, Final))
+                    continue;
+
+                state.Probe(scope);
+            }
+
+            Final.Probe(scope);
+        }
+
 
         IDisposable StateMachine<TInstance>.ConnectEventObserver(EventObserver<TInstance> observer)
         {

@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -15,6 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Threading.Tasks;
     using Behaviors;
+    using GreenPipes;
 
 
     public class FactoryActivity<TInstance> :
@@ -30,6 +31,11 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.CreateScope("factory");
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -53,7 +59,8 @@ namespace Automatonymous.Activities
             return next.Faulted(context);
         }
 
-        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context, Behavior<TInstance, T> next)
+        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
+            Behavior<TInstance, T> next)
         {
             return next.Faulted(context);
         }
@@ -75,6 +82,11 @@ namespace Automatonymous.Activities
             visitor.Visit(this);
         }
 
+        public void Probe(ProbeContext context)
+        {
+            context.CreateScope("factory");
+        }
+
         Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
             Activity<TInstance, TData> activity = _activityFactory(context);
@@ -82,7 +94,8 @@ namespace Automatonymous.Activities
             return activity.Execute(context, next);
         }
 
-        Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)
+        Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
+            Behavior<TInstance, TData> next)
         {
             return next.Faulted(context);
         }

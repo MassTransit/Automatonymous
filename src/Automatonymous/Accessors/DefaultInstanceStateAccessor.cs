@@ -18,6 +18,7 @@ namespace Automatonymous.Accessors
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     /// <summary>
@@ -81,6 +82,11 @@ namespace Automatonymous.Accessors
                 instance);
 
             return new InitialIfNullStateAccessor<TInstance>(_initialState, new RawStateAccessor<TInstance>(_machine, expression, _observer));
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            _accessor.Value.Probe(context);
         }
     }
 }

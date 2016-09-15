@@ -19,6 +19,7 @@ namespace Automatonymous.Tests
         using System.Reflection;
         using System.Threading.Tasks;
         using Binders;
+        using GreenPipes;
         using NUnit.Framework;
 
 
@@ -362,6 +363,10 @@ namespace Automatonymous.Tests
                 where TException : Exception
             {
                 return next.Faulted(context);
+            }
+
+            public void Probe(ProbeContext context)
+            {
             }
         }
 

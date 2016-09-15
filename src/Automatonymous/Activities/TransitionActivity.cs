@@ -13,6 +13,7 @@
 namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class TransitionActivity<TInstance> :
@@ -33,6 +34,12 @@ namespace Automatonymous.Activities
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             visitor.Visit(this);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            var scope = context.CreateScope("transition");
+            scope.Add("toState", _toState.Name);
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

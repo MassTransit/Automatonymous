@@ -12,10 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
+    using GreenPipes;
+
+
     /// <summary>
     /// Used to visit the state machine structure, so it can be displayed, etc.
     /// </summary>
-    public interface Visitable
+    public interface Visitable :
+        IProbeSite
     {
         /// <summary>
         /// A visitable site can accept the visitor and pass control to internal elements
