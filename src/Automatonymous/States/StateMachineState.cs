@@ -62,7 +62,7 @@ namespace Automatonymous.States
 
         public bool Equals(State other)
         {
-            return string.CompareOrdinal(_name, other.Name) == 0;
+            return string.CompareOrdinal(_name, other?.Name ?? "") == 0;
         }
 
         public State<TInstance> SuperState => _superState;
@@ -102,7 +102,7 @@ namespace Automatonymous.States
                 {
                     try
                     {
-                        await _superState.Raise(context);
+                        await _superState.Raise(context).ConfigureAwait(false);
                         return;
                     }
                     catch (UnhandledEventException)
@@ -111,21 +111,21 @@ namespace Automatonymous.States
                     }
                 }
 
-                await _machine.UnhandledEvent(context, this);
+                await _machine.UnhandledEvent(context, this).ConfigureAwait(false);
                 return;
             }
 
             try
             {
-                await _observer.PreExecute(context);
+                await _observer.PreExecute(context).ConfigureAwait(false);
 
-                await activities.Behavior.Execute(new EventBehaviorContext<TInstance>(context));
+                await activities.Behavior.Execute(new EventBehaviorContext<TInstance>(context)).ConfigureAwait(false);
 
-                await _observer.PostExecute(context);
+                await _observer.PostExecute(context).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                await _observer.ExecuteFault(context, ex);
+                await _observer.ExecuteFault(context, ex).ConfigureAwait(false);
 
                 throw;
             }
@@ -144,7 +144,7 @@ namespace Automatonymous.States
                 {
                     try
                     {
-                        await _superState.Raise(context);
+                        await _superState.Raise(context).ConfigureAwait(false);
                         return;
                     }
                     catch (UnhandledEventException)
@@ -153,21 +153,21 @@ namespace Automatonymous.States
                     }
                 }
 
-                await _machine.UnhandledEvent(context, this);
+                await _machine.UnhandledEvent(context, this).ConfigureAwait(false);
                 return;
             }
 
             try
             {
-                await _observer.PreExecute(context);
+                await _observer.PreExecute(context).ConfigureAwait(false);
 
-                await activities.Behavior.Execute(new EventBehaviorContext<TInstance, T>(context));
+                await activities.Behavior.Execute(new EventBehaviorContext<TInstance, T>(context)).ConfigureAwait(false);
 
-                await _observer.PostExecute(context);
+                await _observer.PostExecute(context).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                await _observer.ExecuteFault(context, ex);
+                await _observer.ExecuteFault(context, ex).ConfigureAwait(false);
 
                 throw;
             }

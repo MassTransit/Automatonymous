@@ -14,6 +14,7 @@ namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
     using Accessors;
+    using GreenPipes.Util;
 
 
     public class CompositeEventActivity<TInstance> :
@@ -42,19 +43,19 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            await Execute(context);
+            await Execute(context).ConfigureAwait(false);
 
-            await next.Execute(context);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
         async Task Activity<TInstance>.Execute<TData>(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            await Execute(context);
+            await Execute(context).ConfigureAwait(false);
 
-            await next.Execute(context);
+            await next.Execute(context).ConfigureAwait(false);
         }
 
-        async Task Execute(BehaviorContext<TInstance> context)
+        Task Execute(BehaviorContext<TInstance> context)
         {
             CompositeEventStatus value = _accessor.Get(context.Instance);
             value.Set(_flag);
@@ -62,9 +63,9 @@ namespace Automatonymous.Activities
             _accessor.Set(context.Instance, value);
 
             if (!value.Equals(_complete))
-                return;
+                return TaskUtil.Completed;
 
-            await RaiseCompositeEvent(context);
+            return RaiseCompositeEvent(context);
         }
 
         Task RaiseCompositeEvent(BehaviorContext<TInstance> context)

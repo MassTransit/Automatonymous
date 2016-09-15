@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,42 +12,28 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
-    using System;
     using System.Threading;
+    using GreenPipes;
+    using GreenPipes.Payloads;
 
 
     public class StateMachineInstanceContext<TInstance> :
+        BasePipeContext,
         InstanceContext<TInstance>
         where TInstance : class
     {
-        readonly CancellationToken _cancellationToken;
-        readonly PayloadCache _payloadCache;
-
         public StateMachineInstanceContext(TInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+            : base(new PayloadCache(), cancellationToken)
         {
             Instance = instance;
-            _cancellationToken = cancellationToken;
+        }
 
-            _payloadCache = new PayloadCache();
+        public StateMachineInstanceContext(PipeContext context, TInstance instance)
+            : base(context)
+        {
+            Instance = instance;
         }
 
         public TInstance Instance { get; }
-
-        public bool HasPayloadType(Type contextType)
-        {
-            return _payloadCache.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload context) where TPayload : class
-        {
-            return _payloadCache.TryGetPayload(out context);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _payloadCache.GetOrAddPayload(payloadFactory);
-        }
-
-        CancellationToken InstanceContext<TInstance>.CancellationToken => _cancellationToken;
     }
 }

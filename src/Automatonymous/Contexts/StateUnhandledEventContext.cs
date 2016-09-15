@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,13 +12,14 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
-    using Internals;
+    using GreenPipes;
+    using GreenPipes.Util;
 
 
     public class StateUnhandledEventContext<TInstance> :
+        BasePipeContext,
         UnhandledEventContext<TInstance>
         where TInstance : class
     {
@@ -27,34 +28,17 @@ namespace Automatonymous.Contexts
         readonly State _state;
 
         public StateUnhandledEventContext(EventContext<TInstance> context, State state, StateMachine<TInstance> machine)
+            : base(context)
         {
             _context = context;
             _state = state;
             _machine = machine;
         }
 
-        public CancellationToken CancellationToken => _context.CancellationToken;
-
         public State CurrentState => _state;
-
         public TInstance Instance => _context.Instance;
-
-        public bool HasPayloadType(Type contextType)
-        {
-            return _context.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
-        {
-            return _context.TryGetPayload(out payload);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _context.GetOrAddPayload(payloadFactory);
-        }
-
         public Event Event => _context.Event;
+
         public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
         {
             return _context.Raise(@event, cancellationToken);

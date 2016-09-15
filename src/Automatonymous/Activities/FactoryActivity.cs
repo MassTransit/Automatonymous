@@ -32,20 +32,20 @@ namespace Automatonymous.Activities
             visitor.Visit(this);
         }
 
-        async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
             Activity<TInstance> activity = _activityFactory(context);
 
-            await activity.Execute(context, next);
+            return activity.Execute(context, next);
         }
 
-        async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
+        Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
             Activity<TInstance> activity = _activityFactory(context);
 
             var upconvert = new WidenBehavior<TInstance, T>(next, context);
 
-            await activity.Execute(context, upconvert);
+            return activity.Execute(context, upconvert);
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)

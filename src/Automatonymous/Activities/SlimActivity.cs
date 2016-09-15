@@ -36,11 +36,11 @@ namespace Automatonymous.Activities
             _activity.Accept(visitor);
         }
 
-        async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> behavior)
+        Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> behavior)
         {
             var upconvert = new WidenBehavior<TInstance, TData>(behavior, context);
 
-            await _activity.Execute(context, upconvert);
+            return _activity.Execute(context, upconvert);
         }
 
         Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context, Behavior<TInstance, TData> next)

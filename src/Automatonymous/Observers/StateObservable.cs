@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,7 @@
 namespace Automatonymous.Observers
 {
     using System.Threading.Tasks;
-    using Internals;
+    using GreenPipes.Util;
 
 
     class StateObservable<TInstance> :
@@ -22,7 +22,7 @@ namespace Automatonymous.Observers
     {
         public Task StateChanged(InstanceContext<TInstance> context, State currentState, State previousState)
         {
-            return ForEach(x => x.StateChanged(context, currentState, previousState));
+            return ForEachAsync(x => x.StateChanged(context, currentState, previousState));
         }
     }
 }

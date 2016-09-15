@@ -200,7 +200,7 @@ namespace Automatonymous
         {
             var activity = new AsyncFactoryActivity<TInstance, TData>(async context =>
             {
-                Activity<TInstance> newActivity = await activityFactory(context);
+                Activity<TInstance> newActivity = await activityFactory(context).ConfigureAwait(false);
 
                 return new SlimActivity<TInstance, TData>(newActivity);
             });

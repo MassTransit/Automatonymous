@@ -64,7 +64,7 @@ namespace Automatonymous.Behaviors
             CachedConfigurator
             where TException : Exception
         {
-            async Task CachedConfigurator.Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context,
+            Task CachedConfigurator.Faulted<TInstance>(Behavior<TInstance> behavior, BehaviorContext<TInstance> context,
                 Exception exception)
             {
                 var typedException = exception as TException;
@@ -76,10 +76,10 @@ namespace Automatonymous.Behaviors
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TException>(context, typedException);
 
-                await behavior.Faulted(exceptionContext);
+                return behavior.Faulted(exceptionContext);
             }
 
-            async Task CachedConfigurator.Faulted<TInstance, TData>(Behavior<TInstance, TData> behavior,
+            Task CachedConfigurator.Faulted<TInstance, TData>(Behavior<TInstance, TData> behavior,
                 BehaviorContext<TInstance, TData> context,
                 Exception exception)
             {
@@ -92,7 +92,7 @@ namespace Automatonymous.Behaviors
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TData, TException>(context, typedException);
 
-                await behavior.Faulted(exceptionContext);
+                return behavior.Faulted(exceptionContext);
             }
         }
     }

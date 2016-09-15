@@ -35,14 +35,14 @@ namespace Automatonymous.Accessors
 
         async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
-            State<TInstance> state = await _stateAccessor.Get(context);
+            State<TInstance> state = await _stateAccessor.Get(context).ConfigureAwait(false);
             if (state == null)
             {
                 var behaviorContext = new EventBehaviorContext<TInstance>(context);
 
-                await _initialBehavior.Execute(behaviorContext);
+                await _initialBehavior.Execute(behaviorContext).ConfigureAwait(false);
 
-                state = await _stateAccessor.Get(context);
+                state = await _stateAccessor.Get(context).ConfigureAwait(false);
             }
             return state;
         }

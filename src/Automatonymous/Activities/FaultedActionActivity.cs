@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -42,23 +42,23 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        async Task Activity<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
+        Task Activity<TInstance>.Faulted<T>(BehaviorExceptionContext<TInstance, T> context, Behavior<TInstance> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Faulted(context);
+            return next.Faulted(context);
         }
 
-        async Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
+        Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
             Behavior<TInstance, TData> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Faulted(context);
+            return next.Faulted(context);
         }
     }
 
@@ -85,14 +85,14 @@ namespace Automatonymous.Activities
             return next.Execute(context);
         }
 
-        async Task Activity<TInstance, TData>.Faulted<T>(BehaviorExceptionContext<TInstance, TData, T> context,
+        Task Activity<TInstance, TData>.Faulted<T>(BehaviorExceptionContext<TInstance, TData, T> context,
             Behavior<TInstance, TData> next)
         {
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
                 _action(exceptionContext);
 
-            await next.Faulted(context);
+            return next.Faulted(context);
         }
     }
 }

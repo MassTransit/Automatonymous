@@ -98,15 +98,11 @@
     <Compile Include="Contexts\BehaviorExceptionContextProxy.cs" />
     <Compile Include="Contexts\EventContextProxy.cs" />
     <Compile Include="Contexts\StateMachineInstanceContext.cs" />
-    <Compile Include="Contexts\PayloadCache.cs" />
     <Compile Include="Contexts\StateMachineEventContext.cs" />
     <Compile Include="Contexts\StateUnhandledEventContext.cs" />
     <Compile Include="EventObserver.cs" />
     <Compile Include="Exceptions\AutomatonymousException.cs" />
     <Compile Include="Exceptions\EventExecutionException.cs" />
-    <Compile Include="Exceptions\PayloadException.cs" />
-    <Compile Include="Exceptions\PayloadFactoryException.cs" />
-    <Compile Include="Exceptions\PayloadNotFoundException.cs" />
     <Compile Include="Exceptions\UnhandledEventException.cs" />
     <Compile Include="Exceptions\UnknownEventException.cs" />
     <Compile Include="Exceptions\UnknownStateException.cs" />
@@ -124,11 +120,6 @@
     <Compile Include="InstanceContext.cs" />
     <Compile Include="InstanceLift.cs" />
     <Compile Include="InstanceLiftExtensions.cs" />
-    <Compile Include="Internals\Connectable.cs" />
-    <Compile Include="Internals\ExpressionExtensions.cs" />
-    <Compile Include="Internals\ReadOnlyProperty.cs" />
-    <Compile Include="Internals\ReadWriteProperty.cs" />
-    <Compile Include="Internals\TaskUtil.cs" />
     <Compile Include="ObserverExtensions.cs" />
     <Compile Include="Observers\EventObservable.cs" />
     <Compile Include="Observers\NonTransitionEventObserver.cs" />
@@ -144,10 +135,8 @@
     <Compile Include="UnhandledEventContext.cs" />
     <Compile Include="Lifts\StateMachineEventLift.cs" />
     <Compile Include="Lifts\StateMachineInstanceLift.cs" />
-    <Compile Include="PayloadFactory.cs" />
     <Compile Include="StateAccessor.cs" />
     <Compile Include="StateAccessorExtensions.cs" />
-    <Compile Include="StateChanged.cs" />
     <Compile Include="StateMachineEventFilter.cs" />
     <Compile Include="StateMachineExtensions.cs" />
     <Compile Include="Graphing\GraphStateMachineVisitor.cs" />
@@ -178,7 +167,12 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GreenPipes\src\GreenPipes\GreenPipes.csproj">
+      <Project>{59052db9-b527-4683-a56a-56c4d8fb6584}</Project>
+      <Name>GreenPipes</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

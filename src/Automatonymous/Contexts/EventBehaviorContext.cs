@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,18 +12,20 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class EventBehaviorContext<TInstance> :
+        BasePipeContext,
         BehaviorContext<TInstance>
     {
         readonly InstanceContext<TInstance> _context;
-        readonly EventContext<TInstance> _eventContext; 
+        readonly EventContext<TInstance> _eventContext;
 
         public EventBehaviorContext(EventContext<TInstance> context)
+            : base(context)
         {
             _context = context;
             _eventContext = context;
@@ -32,28 +34,14 @@ namespace Automatonymous.Contexts
         }
 
         public EventBehaviorContext(InstanceContext<TInstance> context)
+            : base(context)
         {
             _context = context;
         }
 
-        public bool HasPayloadType(Type contextType)
-        {
-            return _context.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
-        {
-            return _context.TryGetPayload(out payload);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _context.GetOrAddPayload(payloadFactory);
-        }
-
         public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
         {
-            if(_eventContext == null)
+            if (_eventContext == null)
                 throw new AutomatonymousException($"Events cannot be raised from an instance only: {@event.Name}");
 
             return _eventContext.Raise(@event, cancellationToken);
@@ -67,7 +55,6 @@ namespace Automatonymous.Contexts
             return _eventContext.Raise(@event, data, cancellationToken);
         }
 
-        public CancellationToken CancellationToken => _context.CancellationToken;
         public Event Event { get; }
         public TInstance Instance => _context.Instance;
 

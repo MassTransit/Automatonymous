@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -14,6 +14,7 @@ namespace Automatonymous.Tests
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using GreenPipes.Util;
 
 
     class StateChangeObserver<T> :
@@ -27,9 +28,11 @@ namespace Automatonymous.Tests
 
         public IList<StateChange> Events { get; private set; }
 
-        public async Task StateChanged(InstanceContext<T> context, State currentState, State previousState)
+        public Task StateChanged(InstanceContext<T> context, State currentState, State previousState)
         {
             Events.Add(new StateChange(context, currentState, previousState));
+
+            return TaskUtil.Completed;
         }
 
 

@@ -39,41 +39,26 @@ namespace Automatonymous.Behaviors
 
         async Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            Exception activityException = null;
             try
             {
-                await _activity.Execute(context, _next);
+                await _activity.Execute(context, _next).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                activityException = exception;
-            }
-
-            // once we can await in a catch, we're golden
-            if (activityException != null)
-            {
-                await ExceptionTypeCache.Faulted(_next, context, activityException);
+                await ExceptionTypeCache.Faulted(_next, context, exception).ConfigureAwait(false);
             }
         }
 
         async Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
             var behavior = new DataBehavior<TInstance, T>(_next);
-
-            Exception activityException = null;
             try
             {
-                await _activity.Execute(context, behavior);
+                await _activity.Execute(context, behavior).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
-                activityException = exception;
-            }
-
-            // once we can await in catch we're golden
-            if (activityException != null)
-            {
-                await ExceptionTypeCache.Faulted(behavior, context, activityException);
+                await ExceptionTypeCache.Faulted(behavior, context, exception).ConfigureAwait(false);
             }
         }
 

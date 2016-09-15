@@ -53,13 +53,13 @@ namespace Automatonymous.Activities
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TException>;
             if (exceptionContext != null)
             {
-                await _behavior.Faulted(exceptionContext);
+                await _behavior.Faulted(exceptionContext).ConfigureAwait(false);
 
                 // if the compensate returns, we should go forward normally
-                await next.Execute(context);
+                await next.Execute(context).ConfigureAwait(false);
             }
             else
-                await next.Faulted(context);
+                await next.Faulted(context).ConfigureAwait(false);
         }
 
         async Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
@@ -68,13 +68,13 @@ namespace Automatonymous.Activities
             var exceptionContext = context as BehaviorExceptionContext<TInstance, TData, TException>;
             if (exceptionContext != null)
             {
-                await _behavior.Faulted(exceptionContext);
+                await _behavior.Faulted(exceptionContext).ConfigureAwait(false);
 
                 // if the compensate returns, we should go forward normally
-                await next.Execute(context);
+                await next.Execute(context).ConfigureAwait(false);
             }
             else
-                await next.Faulted(context);
+                await next.Faulted(context).ConfigureAwait(false);
         }
     }
 }

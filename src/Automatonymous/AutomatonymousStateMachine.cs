@@ -23,7 +23,7 @@ namespace Automatonymous
     using Binders;
     using Contexts;
     using Events;
-    using Internals;
+    using GreenPipes.Internals.Extensions;
     using Observers;
     using States;
 
@@ -82,24 +82,24 @@ namespace Automatonymous
 
         async Task StateMachine<TInstance>.RaiseEvent(EventContext<TInstance> context)
         {
-            State<TInstance> state = await _accessor.Get(context);
+            State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
 
             State<TInstance> instanceState;
             if (!_stateCache.TryGetValue(state.Name, out instanceState))
                 throw new UnknownStateException(_name, state.Name);
 
-            await instanceState.Raise(context);
+            await instanceState.Raise(context).ConfigureAwait(false);
         }
 
         async Task StateMachine<TInstance>.RaiseEvent<T>(EventContext<TInstance, T> context)
         {
-            State<TInstance> state = await _accessor.Get(context);
+            State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
 
             State<TInstance> instanceState;
             if (!_stateCache.TryGetValue(state.Name, out instanceState))
                 throw new UnknownStateException(_name, state.Name);
 
-            await instanceState.Raise(context);
+            await instanceState.Raise(context).ConfigureAwait(false);
         }
 
         public State<TInstance> GetState(string name)

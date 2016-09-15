@@ -34,9 +34,9 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            Activity<TInstance, TData> activity = await _activityFactory(context);
+            Activity<TInstance, TData> activity = await _activityFactory(context).ConfigureAwait(false);
 
-            await activity.Execute(context, next);
+            await activity.Execute(context, next).ConfigureAwait(false);
         }
 
         Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
@@ -64,18 +64,18 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            Activity<TInstance> activity = await _activityFactory(context);
+            Activity<TInstance> activity = await _activityFactory(context).ConfigureAwait(false);
 
-            await activity.Execute(context, next);
+            await activity.Execute(context, next).ConfigureAwait(false);
         }
 
         async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            Activity<TInstance> activity = await _activityFactory(context);
+            Activity<TInstance> activity = await _activityFactory(context).ConfigureAwait(false);
 
             var upconvert = new WidenBehavior<TInstance, T>(next, context);
 
-            await activity.Execute(context, upconvert);
+            await activity.Execute(context, upconvert).ConfigureAwait(false);
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)

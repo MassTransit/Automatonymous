@@ -75,6 +75,10 @@
     <Compile Include="Vanilla_Specs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GreenPipes\src\GreenPipes\GreenPipes.csproj">
+      <Project>{59052db9-b527-4683-a56a-56c4d8fb6584}</Project>
+      <Name>GreenPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj">
       <Project>{c0932502-0847-4966-8d0a-2ca80b1669ed}</Project>
       <Name>Automatonymous.NHibernateIntegration</Name>

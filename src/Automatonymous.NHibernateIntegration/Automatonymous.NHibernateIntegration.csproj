@@ -60,6 +60,10 @@
     <Compile Include="UserTypes\StringStateUserTypeConverter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GreenPipes\src\GreenPipes\GreenPipes.csproj">
+      <Project>{59052db9-b527-4683-a56a-56c4d8fb6584}</Project>
+      <Name>GreenPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
       <Project>{fd8f92eb-5818-4c59-8859-19d3a74f979b}</Project>
       <Name>Automatonymous</Name>

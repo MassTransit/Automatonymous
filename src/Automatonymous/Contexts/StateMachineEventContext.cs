@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,44 +12,36 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
-    using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GreenPipes;
+    using GreenPipes.Payloads;
 
 
     public class StateMachineEventContext<TInstance> :
+        BasePipeContext,
         EventContext<TInstance>
         where TInstance : class
     {
-        readonly CancellationToken _cancellationToken;
         readonly Event _event;
-        readonly StateMachine<TInstance> _machine;
         readonly TInstance _instance;
-        readonly PayloadCache _payloadCache;
+        readonly StateMachine<TInstance> _machine;
 
-        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event, CancellationToken cancellationToken)
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event,
+            CancellationToken cancellationToken)
+            : base(new PayloadCache(), cancellationToken)
         {
             _machine = machine;
             _instance = instance;
             _event = @event;
-            _cancellationToken = cancellationToken;
-
-            _payloadCache = new PayloadCache();
         }
 
-        public bool HasPayloadType(Type contextType)
+        public StateMachineEventContext(PipeContext context, StateMachine<TInstance> machine, TInstance instance, Event @event)
+            : base(context)
         {
-            return _payloadCache.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload context) where TPayload : class
-        {
-            return _payloadCache.TryGetPayload(out context);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _payloadCache.GetOrAddPayload(payloadFactory);
+            _machine = machine;
+            _instance = instance;
+            _event = @event;
         }
 
         public async Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken))
@@ -70,7 +62,6 @@ namespace Automatonymous.Contexts
             }
         }
 
-        CancellationToken InstanceContext<TInstance>.CancellationToken => _cancellationToken;
         Event EventContext<TInstance>.Event => _event;
         TInstance InstanceContext<TInstance>.Instance => _instance;
     }
@@ -84,8 +75,17 @@ namespace Automatonymous.Contexts
         readonly TData _data;
         readonly Event<TData> _event;
 
-        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data, CancellationToken cancellationToken)
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data,
+            CancellationToken cancellationToken)
             : base(machine, instance, @event, cancellationToken)
+        {
+            _data = data;
+            _event = @event;
+        }
+
+        public StateMachineEventContext(PipeContext context, StateMachine<TInstance> machine, TInstance instance, Event<TData> @event,
+            TData data)
+            : base(context, machine, instance, @event)
         {
             _data = data;
             _event = @event;

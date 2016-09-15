@@ -61,6 +61,10 @@
     <Compile Include="StateMachineGraphGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GreenPipes\src\GreenPipes\GreenPipes.csproj">
+      <Project>{59052db9-b527-4683-a56a-56c4d8fb6584}</Project>
+      <Name>GreenPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
       <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
       <Name>Automatonymous</Name>

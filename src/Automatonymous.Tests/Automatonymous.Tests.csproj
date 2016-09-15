@@ -83,6 +83,10 @@
     <Compile Include="FilterExpression_Specs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GreenPipes\src\GreenPipes\GreenPipes.csproj">
+      <Project>{59052db9-b527-4683-a56a-56c4d8fb6584}</Project>
+      <Name>GreenPipes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Automatonymous.Visualizer\Automatonymous.Visualizer.csproj">
       <Project>{CD346A24-EEBB-493C-AAC0-E9896340B66A}</Project>
       <Name>Automatonymous.Visualizer</Name>

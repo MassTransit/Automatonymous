@@ -35,7 +35,7 @@ namespace Automatonymous.Activities
             throw new AutomatonymousException("This activity requires a body with the event, but no body was specified.");
         }
 
-        async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
+        Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
             var dataContext = context as BehaviorContext<TInstance, TData>;
             if (dataContext == null)
@@ -45,7 +45,7 @@ namespace Automatonymous.Activities
             if (dataNext == null)
                 throw new AutomatonymousException("The next behavior was not a valid type");
 
-            await _activity.Execute(dataContext, dataNext);
+            return _activity.Execute(dataContext, dataNext);
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)

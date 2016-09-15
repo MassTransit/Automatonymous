@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -15,9 +15,11 @@ namespace Automatonymous.Contexts
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using GreenPipes;
 
 
     public class EventContextProxy<TInstance> :
+        BasePipeContext,
         EventContext<TInstance>,
         IDisposable
     {
@@ -27,6 +29,7 @@ namespace Automatonymous.Contexts
         CancellationTokenRegistration _registration;
 
         public EventContextProxy(EventContext<TInstance> context, Event @event, CancellationToken cancellationToken)
+            : base(context)
         {
             _context = context;
             Event = @event;
@@ -34,21 +37,6 @@ namespace Automatonymous.Contexts
             _cancellationTokenSource = new CancellationTokenSource();
             _registration = cancellationToken.Register(() => _cancellationTokenSource.Cancel());
             _contextRegistration = context.CancellationToken.Register(() => _cancellationTokenSource.Cancel());
-        }
-
-        public bool HasPayloadType(Type contextType)
-        {
-            return _context.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
-        {
-            return _context.TryGetPayload(out payload);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _context.GetOrAddPayload(payloadFactory);
         }
 
         public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
@@ -61,7 +49,7 @@ namespace Automatonymous.Contexts
             return _context.Raise(@event, data, cancellationToken);
         }
 
-        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
+        public override CancellationToken CancellationToken => _cancellationTokenSource.Token;
         public Event Event { get; }
         public TInstance Instance => _context.Instance;
 
@@ -75,6 +63,7 @@ namespace Automatonymous.Contexts
 
 
     public class EventContextProxy<TInstance, TData> :
+        BasePipeContext,
         EventContext<TInstance, TData>,
         IDisposable
     {
@@ -85,6 +74,7 @@ namespace Automatonymous.Contexts
         CancellationTokenRegistration _registration;
 
         public EventContextProxy(EventContext<TInstance> context, Event<TData> @event, TData data, CancellationToken cancellationToken)
+            : base(context)
         {
             _context = context;
             _event = @event;
@@ -93,21 +83,6 @@ namespace Automatonymous.Contexts
             _cancellationTokenSource = new CancellationTokenSource();
             _registration = cancellationToken.Register(() => _cancellationTokenSource.Cancel());
             _contextRegistration = context.CancellationToken.Register(() => _cancellationTokenSource.Cancel());
-        }
-
-        public bool HasPayloadType(Type contextType)
-        {
-            return _context.HasPayloadType(contextType);
-        }
-
-        public bool TryGetPayload<TPayload>(out TPayload payload) where TPayload : class
-        {
-            return _context.TryGetPayload(out payload);
-        }
-
-        public TPayload GetOrAddPayload<TPayload>(PayloadFactory<TPayload> payloadFactory) where TPayload : class
-        {
-            return _context.GetOrAddPayload(payloadFactory);
         }
 
         public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
@@ -121,7 +96,7 @@ namespace Automatonymous.Contexts
         }
 
         public TData Data { get; }
-        public CancellationToken CancellationToken => _cancellationTokenSource.Token;
+        public override CancellationToken CancellationToken => _cancellationTokenSource.Token;
         Event EventContext<TInstance>.Event => _event;
         Event<TData> EventContext<TInstance, TData>.Event => _event;
         public TInstance Instance => _context.Instance;

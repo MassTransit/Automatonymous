@@ -32,7 +32,7 @@ namespace Automatonymous
 
             var context = new StateMachineEventContext<TInstance>(machine, instance, machine.Initial.Enter, default(CancellationToken));
 
-            return machine.NextEvents(await machine.Accessor.Get(context));
+            return machine.NextEvents(await machine.Accessor.Get(context).ConfigureAwait(false));
         }
     }
 }
