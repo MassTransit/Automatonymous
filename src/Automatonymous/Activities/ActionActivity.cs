@@ -34,7 +34,7 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("action");
+            context.CreateScope("then");
         }
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -81,7 +81,7 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("action");
+            context.CreateScope("then");
         }
 
         async Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)

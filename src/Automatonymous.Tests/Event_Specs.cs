@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -12,7 +12,10 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
     using Events;
+    using GreenPipes;
+    using GreenPipes.Introspection;
     using NUnit.Framework;
 
 
@@ -47,6 +50,14 @@ namespace Automatonymous.Tests
         public void It_should_create_the_proper_event_type_for_simple_events()
         {
             Assert.IsInstanceOf<TriggerEvent>(_machine.Hello);
+        }
+
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
         }
 
         TestStateMachine _machine;

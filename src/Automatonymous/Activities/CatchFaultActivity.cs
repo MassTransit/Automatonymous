@@ -15,6 +15,7 @@ namespace Automatonymous.Activities
     using System;
     using System.Threading.Tasks;
     using GreenPipes;
+    using GreenPipes.Internals.Extensions;
 
 
     /// <summary>
@@ -41,9 +42,11 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            var scope = context.CreateScope("catchFault");
+            var scope = context.CreateScope("catch");
 
-            _behavior.Probe(scope);
+            scope.Add("exceptionType", TypeNameCache<TException>.ShortName);
+
+            _behavior.Probe(scope.CreateScope("behavior"));
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)

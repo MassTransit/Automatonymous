@@ -45,6 +45,7 @@ namespace Automatonymous.Activities
         public void Probe(ProbeContext context)
         {
             var scope = context.CreateScope("compositeEvent");
+            _accessor.Probe(scope);
             scope.Add("event", _event.Name);
             scope.Add("flag", _flag.ToString("X8"));
         }

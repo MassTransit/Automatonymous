@@ -95,18 +95,32 @@ namespace Automatonymous.States
             var scope = context.CreateScope("state");
             scope.Add("name", _name);
 
-            foreach (var behavior in _behaviors)
+            if (_subStates.Any())
             {
-                var behaviorScope = scope.CreateScope(behavior.Key.Name);
-                behavior.Value.Behavior.Probe(behaviorScope);
+                var subStateScope = scope.CreateScope("substates");
+                foreach (var subState in _subStates)
+                {
+                    subStateScope.Add("name", subState.Name);
+                }
             }
 
-            if (_ignoredEvents.Any())
+            if (_behaviors.Any())
             {
-                var ignoredScope = scope.CreateScope("ignored");
-                foreach (var ignoredEvent in _ignoredEvents)
+                foreach (var behavior in _behaviors)
                 {
-                    ignoredEvent.Key.Probe(ignoredScope);
+                    var eventScope = scope.CreateScope("event");
+                    behavior.Key.Probe(eventScope);
+
+                    behavior.Value.Behavior.Probe(eventScope.CreateScope("behavior"));
+                }
+            }
+
+            var ignored = _ignoredEvents.Where(x => IsRealEvent(x.Key)).ToList();
+            if (ignored.Any())
+            {
+                foreach (var ignoredEvent in ignored)
+                {
+                    ignoredEvent.Key.Probe(scope.CreateScope("event-ignored"));
                 }
             }
         }
@@ -251,6 +265,14 @@ namespace Automatonymous.States
         public int CompareTo(State other)
         {
             return string.CompareOrdinal(_name, other.Name);
+        }
+
+        bool IsRealEvent(Event @event)
+        {
+            if (Equals(@event, Enter) || Equals(@event, Leave) || Equals(@event, BeforeEnter) || Equals(@event, AfterLeave))
+                return false;
+
+            return true;
         }
 
         IEnumerable<Event> GetStateEvents()

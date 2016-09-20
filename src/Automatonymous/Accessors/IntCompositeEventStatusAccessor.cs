@@ -13,6 +13,7 @@
 namespace Automatonymous.Accessors
 {
     using System.Reflection;
+    using GreenPipes;
     using GreenPipes.Internals.Reflection;
 
 
@@ -34,6 +35,11 @@ namespace Automatonymous.Accessors
         public void Set(TInstance instance, CompositeEventStatus status)
         {
             _property.Set(instance, status.Bits);
+        }
+
+        public void Probe(ProbeContext context)
+        {
+            context.Add("property", _property.Property.Name);
         }
     }
 }

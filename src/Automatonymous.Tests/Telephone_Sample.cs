@@ -18,6 +18,8 @@ namespace Automatonymous.Tests
         using System.Diagnostics;
         using System.Threading.Tasks;
         using Graphing;
+        using GreenPipes;
+        using GreenPipes.Introspection;
         using NUnit.Framework;
 
 
@@ -64,6 +66,15 @@ namespace Automatonymous.Tests
 
                 Console.WriteLine(dotFile);
             }
+
+            [Test]
+            public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+            {
+                ProbeResult result = new PhoneStateMachine().GetProbeResult();
+
+                Console.WriteLine(result.ToJsonString());
+            }
+
         }
 
 

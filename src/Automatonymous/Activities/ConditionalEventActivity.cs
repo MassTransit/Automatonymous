@@ -40,7 +40,7 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            var scope = context.CreateScope("conditional");
+            var scope = context.CreateScope("when");
 
             _activity.Probe(scope);
         }

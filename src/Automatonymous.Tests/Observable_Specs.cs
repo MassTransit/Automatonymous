@@ -13,7 +13,10 @@
 namespace Automatonymous.Tests
 {
     using System;
+    using GreenPipes;
+    using GreenPipes.Introspection;
     using NUnit.Framework;
+    using Telephone_Sample;
 
 
     [TestFixture]
@@ -149,6 +152,14 @@ namespace Automatonymous.Tests
             public Event Finish { get; private set; }
         }
 
+
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
+        }
 
         [Test]
         public void Should_have_all_events()

@@ -12,7 +12,11 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Accessors
 {
-    public interface CompositeEventStatusAccessor<in TInstance>
+    using GreenPipes;
+
+
+    public interface CompositeEventStatusAccessor<in TInstance> :
+        IProbeSite
     {
         CompositeEventStatus Get(TInstance instance);
 

@@ -67,6 +67,24 @@ namespace Automatonymous
             RegisterImplicit();
         }
 
+        IEnumerable<State<TInstance>> IntrospectionStates
+        {
+            get
+            {
+                yield return _initial;
+
+                foreach (var x in _stateCache.Values)
+                {
+                    if (Equals(x, Initial) || Equals(x, Final))
+                        continue;
+
+                    yield return x;
+                }
+
+                yield return _final;
+            }
+        }
+
         string StateMachine.Name => _name;
         StateAccessor<TInstance> StateMachine<TInstance>.Accessor => _accessor;
         public State Initial => _initial;
@@ -141,37 +159,27 @@ namespace Automatonymous
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {
-            Initial.Accept(visitor);
-
-            foreach (var x in _stateCache.Values)
+            foreach (var x in IntrospectionStates)
             {
-                if (Equals(x, Initial) || Equals(x, Final))
-                    continue;
-
                 x.Accept(visitor);
             }
-
-            Final.Accept(visitor);
         }
 
         public void Probe(ProbeContext context)
         {
             var scope = context.CreateScope("stateMachine");
-            scope.Add("type", TypeNameCache.GetShortName(GetType()));
 
-            Initial.Probe(scope);
+            var stateMachineType = GetType();
+            scope.Add("name", stateMachineType.Name);
+            scope.Add("instanceType", TypeNameCache<TInstance>.ShortName);
 
-            foreach (var state in _stateCache.Values)
+            _accessor.Probe(scope);
+
+            foreach (var state in IntrospectionStates)
             {
-                if (Equals(state, Initial) || Equals(state, Final))
-                    continue;
-
                 state.Probe(scope);
             }
-
-            Final.Probe(scope);
         }
-
 
         IDisposable StateMachine<TInstance>.ConnectEventObserver(EventObserver<TInstance> observer)
         {

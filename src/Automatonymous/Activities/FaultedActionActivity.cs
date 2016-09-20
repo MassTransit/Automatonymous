@@ -35,7 +35,7 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("faultedAction");
+            context.CreateScope("then-faulted");
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -88,7 +88,7 @@ namespace Automatonymous.Activities
 
         public void Probe(ProbeContext context)
         {
-            context.CreateScope("faultedAction");
+            context.CreateScope("then-faulted");
         }
 
         Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)

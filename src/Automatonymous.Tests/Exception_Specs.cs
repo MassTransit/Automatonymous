@@ -13,6 +13,8 @@
 namespace Automatonymous.Tests
 {
     using System;
+    using GreenPipes;
+    using GreenPipes.Introspection;
     using NUnit.Framework;
 
 
@@ -73,6 +75,15 @@ namespace Automatonymous.Tests
             public State Failed { get; private set; }
 
             public Event Initialized { get; private set; }
+        }
+
+
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
         }
 
 

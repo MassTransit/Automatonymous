@@ -1,5 +1,5 @@
-// Copyright 2011 Chris Patterson, Dru Sellers
-//  
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
+// 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
 // License at 
@@ -13,6 +13,8 @@
 namespace Automatonymous.Events
 {
     using System;
+    using GreenPipes;
+    using GreenPipes.Internals.Extensions;
 
 
     public class DataEvent<TData> :
@@ -27,7 +29,16 @@ namespace Automatonymous.Events
 
         public override void Accept(StateMachineVisitor visitor)
         {
-            visitor.Visit(this, x => { });
+            visitor.Visit(this, x =>
+            {
+            });
+        }
+
+        public override void Probe(ProbeContext context)
+        {
+            base.Probe(context);
+
+            context.Add("dataType", TypeNameCache<TData>.ShortName);
         }
 
         public bool Equals(DataEvent<TData> other)
@@ -55,7 +66,7 @@ namespace Automatonymous.Events
 
         public override int GetHashCode()
         {
-            return base.GetHashCode()*27 + typeof(TData).GetHashCode();
+            return base.GetHashCode() * 27 + typeof(TData).GetHashCode();
         }
     }
 }

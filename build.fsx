@@ -11,7 +11,7 @@ let nugetWorkingPath = FullName "./build_temp"
 let packagesPath = FullName "./src/packages"
 let keyFile = FullName "./Automatonymous.snk"
 
-let assemblyVersion = "3.3.0.0"
+let assemblyVersion = "3.5.0.0"
 let baseVersion = "3.5.0"
 
 let semVersion : SemVerInfo = parse baseVersion

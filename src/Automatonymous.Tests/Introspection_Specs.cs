@@ -12,8 +12,11 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GreenPipes;
+    using GreenPipes.Introspection;
     using NUnit.Framework;
 
 
@@ -54,6 +57,14 @@ namespace Automatonymous.Tests
         {
             List<Event> events = (await _machine.NextEvents(_instance)).ToList();
             Assert.AreEqual(3, events.Count);
+        }
+
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
         }
 
         Instance _instance;

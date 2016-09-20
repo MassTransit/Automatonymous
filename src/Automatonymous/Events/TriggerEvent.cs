@@ -35,10 +35,9 @@ namespace Automatonymous.Events
             });
         }
 
-        public void Probe(ProbeContext context)
+        public virtual void Probe(ProbeContext context)
         {
-            var scope = context.CreateScope("event");
-            scope.Add("name", _name);
+            context.Add("name", _name);
         }
 
         public int CompareTo(Event other)
