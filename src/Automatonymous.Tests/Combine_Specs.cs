@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -19,7 +20,7 @@ namespace Automatonymous.Tests
     public class When_combining_events_into_a_single_event
     {
         [Test]
-        public async void Should_have_called_combined_event()
+        public async Task Should_have_called_combined_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -32,7 +33,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_not_call_for_one_event()
+        public async Task Should_not_call_for_one_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -44,7 +45,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_not_call_for_one_other_event()
+        public async Task Should_not_call_for_one_other_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -98,7 +99,7 @@ namespace Automatonymous.Tests
     public class When_combining_events_with_an_int_for_state
     {
         [Test]
-        public async void Should_have_called_combined_event()
+        public async Task Should_have_called_combined_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -115,7 +116,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_not_call_for_one_event()
+        public async Task Should_not_call_for_one_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -127,7 +128,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_have_initial_state_with_zero()
+        public async Task Should_have_initial_state_with_zero()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();
@@ -137,7 +138,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_not_call_for_one_other_event()
+        public async Task Should_not_call_for_one_other_event()
         {
             _machine = new TestStateMachine();
             _instance = new Instance();

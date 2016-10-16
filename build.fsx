@@ -12,7 +12,7 @@ let packagesPath = FullName "./src/packages"
 let keyFile = FullName "./Automatonymous.snk"
 
 let assemblyVersion = "3.5.0.0"
-let baseVersion = "3.5.2"
+let baseVersion = "3.5.3"
 
 let semVersion : SemVerInfo = parse baseVersion
 
@@ -93,17 +93,6 @@ Target "Build" (fun _ ->
       |> DoNothing
 )
 
-let testDlls = !! ("./src/Automatonymous.Tests/bin/Release/*.Tests.dll")
-
-Target "UnitTests" (fun _ ->
-    testDlls
-        |> NUnit (fun p -> 
-            {p with
-                Framework = "v4.0.30319"
-                DisableShadowCopy = true; 
-                OutputFile = buildArtifactPath + "/nunit-test-results.xml"})
-)
-
 type packageInfo = {
     Project: string
     PackageFile: string
@@ -162,7 +151,6 @@ Target "Default" (fun _ ->
 "Clean"
   ==> "RestorePackages"
   ==> "Build"
-  ==> "UnitTests"
   ==> "Package"
   ==> "Default"
 

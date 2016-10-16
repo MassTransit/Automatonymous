@@ -23,7 +23,7 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -103,7 +103,7 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();

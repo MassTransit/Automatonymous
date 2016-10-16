@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -19,7 +20,7 @@ namespace Automatonymous.Tests
     public class When_specifying_a_conditional_event_activity
     {
         [Test]
-        public async void Should_transition_to_the_proper_state()
+        public async Task Should_transition_to_the_proper_state()
         {
             var instance = new Instance();
             var machine = new InstanceStateMachine();

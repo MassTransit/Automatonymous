@@ -80,7 +80,7 @@ namespace Automatonymous.Tests
 
 
         [Test]
-        public async void Should_capture_the_value()
+        public async Task Should_capture_the_value()
         {
             var claim = new TestInstance();
             var machine = new TestStateMachine();

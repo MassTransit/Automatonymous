@@ -171,7 +171,7 @@ namespace Automatonymous
 
             var stateMachineType = GetType();
             scope.Add("name", stateMachineType.Name);
-            scope.Add("instanceType", TypeNameCache<TInstance>.ShortName);
+            scope.Add("instanceType", TypeCache<TInstance>.ShortName);
 
             _accessor.Probe(scope);
 

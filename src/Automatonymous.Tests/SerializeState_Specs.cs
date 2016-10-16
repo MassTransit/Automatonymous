@@ -13,6 +13,7 @@
 namespace Automatonymous.Tests
 {
     using System;
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -20,7 +21,7 @@ namespace Automatonymous.Tests
     public class Serializing_a_state_instance
     {
         [Test]
-        public async void Should_properly_handle_the_state_property()
+        public async Task Should_properly_handle_the_state_property()
         {
             var instance = new Instance();
             var machine = new InstanceStateMachine();

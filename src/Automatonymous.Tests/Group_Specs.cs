@@ -34,7 +34,7 @@ namespace Automatonymous.Tests
         PitStop _machine;
         PitStopInstance _instance;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _machine = new PitStop();

@@ -39,7 +39,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity_with_data()
         {
             _instance = new Instance();

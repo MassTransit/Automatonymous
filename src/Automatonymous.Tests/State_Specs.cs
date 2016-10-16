@@ -27,7 +27,7 @@ namespace Automatonymous.Tests
 
         TestStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();
@@ -78,7 +78,7 @@ namespace Automatonymous.Tests
         TestStateMachine _machine;
         Instance _instance;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();
@@ -135,7 +135,7 @@ namespace Automatonymous.Tests
         TestStateMachine _machine;
         Instance _instance;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();

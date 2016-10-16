@@ -38,7 +38,7 @@ namespace Automatonymous.Events
         {
             base.Probe(context);
 
-            context.Add("dataType", TypeNameCache<TData>.ShortName);
+            context.Add("dataType", TypeCache<TData>.ShortName);
         }
 
         public bool Equals(DataEvent<TData> other)

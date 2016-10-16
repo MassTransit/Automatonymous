@@ -12,22 +12,21 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using Binders;
+    using GreenPipes;
+    using NUnit.Framework;
+
     namespace Request_Specs
     {
-        using System;
-        using System.Linq.Expressions;
-        using System.Reflection;
-        using System.Threading.Tasks;
-        using Binders;
-        using GreenPipes;
-        using NUnit.Framework;
-
-
         [TestFixture]
         public class Using_a_request_in_a_state_machine
         {
             [Test]
-            public async void Should_property_initialize()
+            public async Task Should_property_initialize()
             {
                 var machine = new TestStateMachine();
                 var instance = new TestState();
@@ -84,7 +83,7 @@ namespace Automatonymous.Tests
         }
 
 
-        interface ConsumeContext<T>
+        interface ConsumeContext<out T>
             where T : class
         {
             T Message { get; }

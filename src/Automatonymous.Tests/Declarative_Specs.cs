@@ -29,7 +29,7 @@ namespace Automatonymous.Tests
         TopInstanceStateMachine _top;
         BottomInstanceStateMachine _bottom;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity_with_data()
         {
             _instance = new MyState();

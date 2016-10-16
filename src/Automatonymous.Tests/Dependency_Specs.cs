@@ -25,7 +25,7 @@ namespace Automatonymous.Tests
         ClaimAdjustmentInstance _claim;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _claim = new ClaimAdjustmentInstance();

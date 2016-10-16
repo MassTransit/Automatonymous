@@ -16,7 +16,6 @@ namespace Automatonymous.Tests
     using GreenPipes;
     using GreenPipes.Introspection;
     using NUnit.Framework;
-    using Telephone_Sample;
 
 
     [TestFixture]
@@ -26,7 +25,7 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -97,7 +96,7 @@ namespace Automatonymous.Tests
         StateChangeObserver<Instance> _observer;
         EventRaisedObserver<Instance> _eventObserver;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -223,7 +222,7 @@ namespace Automatonymous.Tests
         StateChangeObserver<Instance> _observer;
         EventRaisedObserver<Instance> _eventObserver;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();

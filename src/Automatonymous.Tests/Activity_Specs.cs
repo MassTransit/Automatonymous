@@ -27,7 +27,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -75,7 +75,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -126,7 +126,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();
@@ -195,7 +195,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Specifying_an_event_activity()
         {
             _instance = new Instance();

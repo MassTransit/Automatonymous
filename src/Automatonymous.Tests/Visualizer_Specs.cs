@@ -24,7 +24,7 @@ namespace Automatonymous.Tests
         InstanceStateMachine _machine;
         StateMachineGraph _graph;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _machine = new InstanceStateMachine();

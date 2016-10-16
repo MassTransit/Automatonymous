@@ -15,6 +15,7 @@ namespace Automatonymous.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using GreenPipes;
     using GreenPipes.Introspection;
     using NUnit.Framework;
@@ -53,7 +54,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void The_next_events_should_be_known()
+        public async Task The_next_events_should_be_known()
         {
             List<Event> events = (await _machine.NextEvents(_instance)).ToList();
             Assert.AreEqual(3, events.Count);
@@ -70,7 +71,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         TestStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _instance = new Instance();

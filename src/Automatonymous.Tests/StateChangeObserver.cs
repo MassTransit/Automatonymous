@@ -26,7 +26,7 @@ namespace Automatonymous.Tests
             Events = new List<StateChange>();
         }
 
-        public IList<StateChange> Events { get; private set; }
+        public IList<StateChange> Events { get; }
 
         public Task StateChanged(InstanceContext<T> context, State currentState, State previousState)
         {

@@ -12,22 +12,21 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using Graphing;
+    using GreenPipes;
+    using GreenPipes.Introspection;
+    using NUnit.Framework;
+
     namespace Telephone_Sample
     {
-        using System;
-        using System.Diagnostics;
-        using System.Threading.Tasks;
-        using Graphing;
-        using GreenPipes;
-        using GreenPipes.Introspection;
-        using NUnit.Framework;
-
-
         [TestFixture]
         public class A_simple_phone_call
         {
             [Test]
-            public async void Should_be_short_and_sweet()
+            public async Task Should_be_short_and_sweet()
             {
                 var phone = new PrincessModelTelephone();
                 await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
@@ -45,7 +44,7 @@ namespace Automatonymous.Tests
 
             PhoneStateMachine _machine;
 
-            [TestFixtureSetUp]
+            [OneTimeSetUp]
             public void Setup()
             {
                 _machine = new PhoneStateMachine();
@@ -82,7 +81,7 @@ namespace Automatonymous.Tests
         public class A_short_time_on_hold
         {
             [Test]
-            public async void Should_be_short_and_sweet()
+            public async Task Should_be_short_and_sweet()
             {
                 var phone = new PrincessModelTelephone();
                 await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
@@ -102,7 +101,7 @@ namespace Automatonymous.Tests
 
             PhoneStateMachine _machine;
 
-            [TestFixtureSetUp]
+            [OneTimeSetUp]
             public void Setup()
             {
                 _machine = new PhoneStateMachine();
@@ -113,7 +112,7 @@ namespace Automatonymous.Tests
         public class An_extended_time_on_hold
         {
             [Test]
-            public async void Should_end__badly()
+            public async Task Should_end__badly()
             {
                 var phone = new PrincessModelTelephone();
                 await _machine.RaiseEvent(phone, _machine.ServiceEstablished, new PhoneServiceEstablished {Digits = "555-1212"});
@@ -132,7 +131,7 @@ namespace Automatonymous.Tests
 
             PhoneStateMachine _machine;
 
-            [TestFixtureSetUp]
+            [OneTimeSetUp]
             public void Setup()
             {
                 _machine = new PhoneStateMachine();

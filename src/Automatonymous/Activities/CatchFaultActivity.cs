@@ -44,7 +44,7 @@ namespace Automatonymous.Activities
         {
             var scope = context.CreateScope("catch");
 
-            scope.Add("exceptionType", TypeNameCache<TException>.ShortName);
+            scope.Add("exceptionType", TypeCache<TException>.ShortName);
 
             _behavior.Probe(scope.CreateScope("behavior"));
         }

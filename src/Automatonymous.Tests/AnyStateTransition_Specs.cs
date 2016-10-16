@@ -39,7 +39,7 @@ namespace Automatonymous.Tests
         Instance _instance;
         InstanceStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _instance = new Instance();

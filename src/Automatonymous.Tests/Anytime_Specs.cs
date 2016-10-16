@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Tests
 {
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
 
@@ -19,7 +20,7 @@ namespace Automatonymous.Tests
     public class Anytime_events
     {
         [Test]
-        public async void Should_be_called_regardless_of_state()
+        public async Task Should_be_called_regardless_of_state()
         {
             var instance = new Instance();
 
@@ -31,7 +32,7 @@ namespace Automatonymous.Tests
         }
 
         [Test]
-        public async void Should_have_value_of_event_data()
+        public async Task Should_have_value_of_event_data()
         {
             var instance = new Instance();
 
@@ -50,7 +51,7 @@ namespace Automatonymous.Tests
         {
             var instance = new Instance();
 
-            Assert.Throws<UnhandledEventException>(async () => await _machine.RaiseEvent(instance, x => x.Hello));
+            Assert.That(async () => await _machine.RaiseEvent(instance, x => x.Hello), Throws.TypeOf<UnhandledEventException>());
 
             Assert.IsFalse(instance.HelloCalled);
             Assert.AreEqual(_machine.Initial, instance.CurrentState);
@@ -58,7 +59,7 @@ namespace Automatonymous.Tests
 
         TestStateMachine _machine;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();

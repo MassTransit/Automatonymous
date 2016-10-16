@@ -69,7 +69,7 @@ namespace Automatonymous.Tests
         }
 
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void A_state_is_declared()
         {
             _machine = new TestStateMachine();
