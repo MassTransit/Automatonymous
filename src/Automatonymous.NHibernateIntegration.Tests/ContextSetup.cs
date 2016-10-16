@@ -23,7 +23,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
     [SetUpFixture]
     public class ContextSetup
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void Before_any()
         {
             string path = AppDomain.CurrentDomain.BaseDirectory;
@@ -35,7 +35,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
             Trace.WriteLine("Loading Log4net: " + file);
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void After_all()
         {
             LogManager.Shutdown();

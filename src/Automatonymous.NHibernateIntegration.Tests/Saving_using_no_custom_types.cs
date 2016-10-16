@@ -13,7 +13,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
     public class Saving_using_no_custom_types
     {
         [Test]
-        public async void Should_have_the_state_machine()
+        public async Task Should_have_the_state_machine()
         {
             Guid correlationId = Guid.NewGuid();
 
@@ -35,7 +35,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
         SuperShopper _machine;
         ISessionFactory _sessionFactory;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _machine = new SuperShopper();
@@ -45,7 +45,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
                 .GetSessionFactory();
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void Teardown()
         {
             _sessionFactory.Dispose();

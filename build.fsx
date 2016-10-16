@@ -12,7 +12,7 @@ let packagesPath = FullName "./src/packages"
 let keyFile = FullName "./Automatonymous.snk"
 
 let assemblyVersion = "3.5.0.0"
-let baseVersion = "3.5.3"
+let baseVersion = "3.5.4"
 
 let semVersion : SemVerInfo = parse baseVersion
 
