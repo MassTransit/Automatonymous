@@ -65,10 +65,10 @@
     <Compile Include="Activities\ExceptionBehavior.cs" />
     <Compile Include="Activities\CompositeEventActivity.cs" />
     <Compile Include="Activities\DataConverterActivity.cs" />
-    <Compile Include="Activities\ConditionalEventActivity.cs" />
     <Compile Include="Activities\ExecuteOnFaultedActivity.cs" />
     <Compile Include="Activities\FactoryActivity.cs" />
     <Compile Include="Activities\AsyncActivity.cs" />
+    <Compile Include="Activities\ConditionActivity.cs" />
     <Compile Include="Activities\SlimActivity.cs" />
     <Compile Include="Activities\TransitionActivity.cs" />
     <Compile Include="Activity.cs" />
@@ -86,6 +86,7 @@
     <Compile Include="Behaviors\LastFaultedBehavior.cs" />
     <Compile Include="Behaviors\DataBehavior.cs" />
     <Compile Include="Behaviors\WidenBehavior.cs" />
+    <Compile Include="Binders\ConditionalActivityBinder.cs" />
     <Compile Include="Binders\ExceptionActivityBinder.cs" />
     <Compile Include="Binders\CatchActivityBinder.cs" />
     <Compile Include="Binders\DataEventActivityBinder.cs" />
@@ -134,6 +135,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RaiseEventExtensions.tt</DependentUpon>
     </Compile>
+    <Compile Include="StateMachineCondition.cs" />
     <Compile Include="StateObserver.cs" />
     <Compile Include="UnhandledEventCallback.cs" />
     <Compile Include="UnhandledEventContext.cs" />

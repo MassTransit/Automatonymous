@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -35,6 +35,15 @@ namespace Automatonymous.Binders
         ExceptionActivityBinder<TInstance, TException> Catch<T>(
             Func<ExceptionActivityBinder<TInstance, T>, ExceptionActivityBinder<TInstance, T>> activityCallback)
             where T : Exception;
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        ExceptionActivityBinder<TInstance, TException> If(StateMachineCondition<TInstance> condition,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback);
     }
 
 
@@ -60,5 +69,15 @@ namespace Automatonymous.Binders
         ExceptionActivityBinder<TInstance, TData, TException> Catch<T>(
             Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback)
             where T : Exception;
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineCondition<TInstance, TData> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>>
+                activityCallback);
     }
 }

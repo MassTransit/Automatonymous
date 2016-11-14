@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -62,7 +62,7 @@ namespace Automatonymous.Binders
         }
 
         public ExceptionActivityBinder<TInstance, TException> Catch<T>(
-            Func<ExceptionActivityBinder<TInstance, T>, ExceptionActivityBinder<TInstance, T>> activityCallback) 
+            Func<ExceptionActivityBinder<TInstance, T>, ExceptionActivityBinder<TInstance, T>> activityCallback)
             where T : Exception
         {
             ExceptionActivityBinder<TInstance, T> binder = new CatchExceptionActivityBinder<TInstance, T>(_machine, _event);
@@ -73,7 +73,20 @@ namespace Automatonymous.Binders
 
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, activityBinder);
         }
+
+        public ExceptionActivityBinder<TInstance, TException> If(StateMachineCondition<TInstance> condition,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback)
+        {
+            ExceptionActivityBinder<TInstance, TException> binder = new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event);
+
+            binder = activityCallback(binder);
+
+            var conditionBinder = new ConditionalActivityBinder<TInstance>(_event, condition, binder);
+
+            return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
+        }
     }
+
 
     public class CatchExceptionActivityBinder<TInstance, TData, TException> :
         ExceptionActivityBinder<TInstance, TData, TException>
@@ -129,7 +142,8 @@ namespace Automatonymous.Binders
         }
 
         public ExceptionActivityBinder<TInstance, TData, TException> Catch<T>(
-            Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback) where T : Exception
+            Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback)
+            where T : Exception
         {
             ExceptionActivityBinder<TInstance, TData, T> binder = new CatchExceptionActivityBinder<TInstance, TData, T>(_machine, _event);
 
@@ -138,6 +152,20 @@ namespace Automatonymous.Binders
             ActivityBinder<TInstance> activityBinder = new CatchActivityBinder<TInstance, T>(_event, binder);
 
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, activityBinder);
+        }
+
+        public ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineCondition<TInstance, TData> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>>
+                activityCallback)
+        {
+            ExceptionActivityBinder<TInstance, TData, TException> binder =
+                new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event);
+
+            binder = activityCallback(binder);
+
+            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, binder);
+
+            return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
         }
     }
 }

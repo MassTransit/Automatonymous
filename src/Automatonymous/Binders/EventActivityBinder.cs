@@ -1,4 +1,4 @@
-// Copyright 2011-2015 Chris Patterson, Dru Sellers
+// Copyright 2011-2016 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -34,6 +34,15 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance> Catch<T>(
             Func<ExceptionActivityBinder<TInstance, T>, ExceptionActivityBinder<TInstance, T>> activityCallback)
             where T : Exception;
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        EventActivityBinder<TInstance> If(StateMachineCondition<TInstance> condition,
+            Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback);
     }
 
 
@@ -58,5 +67,14 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance, TData> Catch<T>(
             Func<ExceptionActivityBinder<TInstance, TData, T>, ExceptionActivityBinder<TInstance, TData, T>> activityCallback)
             where T : Exception;
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        EventActivityBinder<TInstance, TData> If(StateMachineCondition<TInstance, TData> condition,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback);
     }
 }
