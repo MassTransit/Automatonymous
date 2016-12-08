@@ -14,6 +14,7 @@ namespace Automatonymous.Binders
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
 
     public class TriggerEventActivityBinder<TInstance> :
@@ -22,6 +23,7 @@ namespace Automatonymous.Binders
     {
         readonly ActivityBinder<TInstance>[] _activities;
         readonly Event _event;
+        readonly StateMachineEventFilter<TInstance> _filter;
         readonly StateMachine<TInstance> _machine;
 
         public TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, params ActivityBinder<TInstance>[] activities)
@@ -31,10 +33,21 @@ namespace Automatonymous.Binders
             _activities = activities ?? new ActivityBinder<TInstance>[0];
         }
 
-        TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, ActivityBinder<TInstance>[] activities,
+        public TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, StateMachineEventFilter<TInstance> filter,
+            params ActivityBinder<TInstance>[] activities)
+        {
+            _event = @event;
+            _filter = filter;
+            _machine = machine;
+            _activities = activities ?? new ActivityBinder<TInstance>[0];
+        }
+
+        TriggerEventActivityBinder(StateMachine<TInstance> machine, Event @event, StateMachineEventFilter<TInstance> filter,
+            ActivityBinder<TInstance>[] activities,
             params ActivityBinder<TInstance>[] appendActivity)
         {
             _event = @event;
+            _filter = filter;
             _machine = machine;
 
             _activities = new ActivityBinder<TInstance>[activities.Length + appendActivity.Length];
@@ -48,7 +61,7 @@ namespace Automatonymous.Binders
         {
             ActivityBinder<TInstance> activityBinder = new ExecuteActivityBinder<TInstance>(_event, activity);
 
-            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _filter, _activities, activityBinder);
         }
 
         EventActivityBinder<TInstance> EventActivityBinder<TInstance>.Catch<T>(
@@ -60,7 +73,7 @@ namespace Automatonymous.Binders
 
             ActivityBinder<TInstance> activityBinder = new CatchActivityBinder<TInstance, T>(_event, binder);
 
-            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, activityBinder);
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _filter, _activities, activityBinder);
         }
 
         EventActivityBinder<TInstance> EventActivityBinder<TInstance>.If(StateMachineCondition<TInstance> condition,
@@ -72,14 +85,26 @@ namespace Automatonymous.Binders
 
             var conditionBinder = new ConditionalActivityBinder<TInstance>(_event, condition, binder);
 
-            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities, conditionBinder);
+            return new TriggerEventActivityBinder<TInstance>(_machine, _event, _filter, _activities, conditionBinder);
         }
 
         StateMachine<TInstance> EventActivityBinder<TInstance>.StateMachine => _machine;
 
         public IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders()
         {
+            if (_filter != null)
+                return Enumerable.Repeat(CreateConditionalActivityBinder(), 1);
+
             return _activities;
+        }
+
+        ActivityBinder<TInstance> CreateConditionalActivityBinder()
+        {
+            EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(_machine, _event, _activities);
+
+            var conditionBinder = new ConditionalActivityBinder<TInstance>(_event, context => _filter(context), binder);
+
+            return conditionBinder;
         }
     }
 }

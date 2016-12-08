@@ -764,6 +764,19 @@ namespace Automatonymous
         }
 
         /// <summary>
+        /// When the event is fired in this state, and the event data matches the filter expression, execute the chained activities
+        /// </summary>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="event">The fired event</param>
+        /// <param name="filter">The filter applied to the event</param>
+        /// <returns></returns>
+        protected EventActivityBinder<TInstance> When(Event @event, StateMachineEventFilter<TInstance> filter)
+        {
+            return new TriggerEventActivityBinder<TInstance>(this, @event, filter);
+        }
+
+
+        /// <summary>
         /// When entering the specified state
         /// </summary>
         /// <param name="state"></param>
