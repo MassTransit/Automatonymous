@@ -33,3 +33,6 @@ tests/*
 doc/*
 SolutionVersion.cs
 AppPackages/
+
+_book
+/node_modules
