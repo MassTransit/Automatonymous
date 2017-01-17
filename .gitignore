@@ -33,6 +33,8 @@ tests/*
 doc/*
 SolutionVersion.cs
 AppPackages/
+.DS_Store
+*.DS_Store
 
 _book
 /node_modules
