@@ -3,10 +3,11 @@ branches:
   only:
   - master
   - develop
-image: Visuaskip_commits:
+skip_commits:
   files:
     - docs/*
-    - '**/*.html'l Studio 2015
+    - '**/*.html'
+image: Visual Studio 2015
 build_script:
 - cmd: >-
     @echo off
