@@ -2,8 +2,8 @@
 
 ## Requirements
 
-Automatonymous requires .NET 4.5 (or later). Due to the extensive use of 
-the TPL and *async/await*, it is not compatible with .NET versions prior to 4.5.
+Automatonymous requires .NET 4.5.2 (or later). Due to the extensive use of 
+the TPL and *async/await*, earlier .NET versions are not supported.
 
 ## How to install
 
@@ -11,6 +11,7 @@ the TPL and *async/await*, it is not compatible with .NET versions prior to 4.5.
 
 The simplest way to install MassTransit into your solution/project is to use
 NuGet:
+
 ```
 Install-Package Automatonymous
 ```
