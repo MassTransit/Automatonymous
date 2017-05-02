@@ -1,26 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Automatonymous.Tests</RootNamespace>
-    <AssemblyName>Automatonymous.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <TargetFrameworkProfile />
+   <TargetFrameworks>net452</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,94 +14,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GreenPipes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\GreenPipes.1.0.9\lib\net452\GreenPipes.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <PackageReference Include="GreenPipes" Version="1.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="NUnit" Version="3.5.0" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <ProjectReference Include="..\Automatonymous.Visualizer\Automatonymous.Visualizer.csproj" />
+    <ProjectReference Include="..\Automatonymous\Automatonymous.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\SolutionVersion.cs">
-      <Link>SolutionVersion.cs</Link>
-    </Compile>
-    <Compile Include="AsyncActivity_Specs.cs" />
-    <Compile Include="AutomatonymousStateMachine_Specs.cs" />
-    <Compile Include="CompositeCondition_Specs.cs" />
-    <Compile Include="CompositeOrder_Specs.cs" />
-    <Compile Include="Condition_Specs.cs" />
-    <Compile Include="Declarative_Specs.cs" />
-    <Compile Include="EventObservable_Specs.cs" />
-    <Compile Include="EventLift_Specs.cs" />
-    <Compile Include="Activity_Specs.cs" />
-    <Compile Include="Anytime_Specs.cs" />
-    <Compile Include="Combine_Specs.cs" />
-    <Compile Include="DataActivity_Specs.cs" />
-    <Compile Include="Dependency_Specs.cs" />
-    <Compile Include="EventRaisedObserver.cs" />
-    <Compile Include="Event_Specs.cs" />
-    <Compile Include="Exception_Specs.cs" />
-    <Compile Include="Group_Specs.cs" />
-    <Compile Include="InstanceLift_Specs.cs" />
-    <Compile Include="InterfaceExtensions.cs" />
-    <Compile Include="InterfaceReflectionCache.cs" />
-    <Compile Include="IntrospectionExtensions.cs" />
-    <Compile Include="Introspection_Specs.cs" />
-    <Compile Include="JsonStateSerializer.cs" />
-    <Compile Include="Observable_Specs.cs" />
-    <Compile Include="AnyStateTransition_Specs.cs" />
-    <Compile Include="RaiseEvent_Specs.cs" />
-    <Compile Include="Request_Specs.cs" />
-    <Compile Include="SerializerCache.cs" />
-    <Compile Include="SerializeState_Specs.cs" />
-    <Compile Include="StateChangeObserver.cs" />
-    <Compile Include="StateConverter.cs" />
-    <Compile Include="State_Specs.cs" />
-    <Compile Include="Telephone_Sample.cs" />
-    <Compile Include="Transition_Specs.cs" />
-    <Compile Include="UnobservedEvent_Specs.cs" />
-    <Compile Include="Visualizer_Specs.cs" />
-    <Compile Include="FilterExpression_Specs.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Automatonymous.Visualizer\Automatonymous.Visualizer.csproj">
-      <Project>{CD346A24-EEBB-493C-AAC0-E9896340B66A}</Project>
-      <Name>Automatonymous.Visualizer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Automatonymous\Automatonymous.csproj">
-      <Project>{FD8F92EB-5818-4C59-8859-19D3A74F979B}</Project>
-      <Name>Automatonymous</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
