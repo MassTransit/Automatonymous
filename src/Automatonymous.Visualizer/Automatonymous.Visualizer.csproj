@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net452</TargetFrameworks>
   </PropertyGroup>
@@ -19,9 +19,20 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Automatonymous.Visualizer</PackageId>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Automatonymous.Visualizer.xml</DocumentationFile>
+    <Description>Automatonymous, an open source state machine library, usable with MassTransit</Description>
+    <Version>3.5.11</Version>
+    <PackageProjectUrl>https://github.com/MassTransit/Automatonymous</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/MassTransit/Automatonymous/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/MassTransit/Automatonymous</RepositoryUrl>
+    <PackageTags>MassTransit</PackageTags>
+    <Authors>Chris Patterson</Authors>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="1.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="GreenPipes" Version="1.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

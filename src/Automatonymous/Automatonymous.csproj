@@ -13,6 +13,16 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Automatonymous.xml</DocumentationFile>
+    <Description>Automatonymous, an open source state machine library, usable with MassTransit</Description>
+    <Version>3.5.11</Version>
+    <PackageProjectUrl>https://github.com/MassTransit/Automatonymous</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/MassTransit/Automatonymous/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/MassTransit/Automatonymous</RepositoryUrl>
+    <PackageTags>MassTransit</PackageTags>
+    <Authors>Chris Patterson</Authors>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -23,7 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="1.0.9" />
+    <PackageReference Include="GreenPipes" Version="1.0.10" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

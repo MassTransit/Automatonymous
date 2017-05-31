@@ -5,9 +5,7 @@ open Fake.AssemblyInfoFile
 open Fake.Git.Information
 open Fake.SemVerHelper
 
-let buildOutputPath = "./build_output"
-let buildArtifactPath = "./build_artifacts"
-let nugetWorkingPath = FullName "./build_temp"
+let buildArtifactPath = FullName "./build_artifacts"
 let packagesPath = FullName "./src/packages"
 let keyFile = FullName "./Automatonymous.snk"
 
@@ -39,29 +37,22 @@ let nugetVersion = (fun _ ->
 let InfoVersion = informationalVersion()
 let NuGetVersion = nugetVersion()
 
+let versionArgs = [ @"/p:Version=""" + NuGetVersion + @""""; @"/p:AssemblyVersion=""" + FileVersion + @""""; @"/p:FileVersion=""" + FileVersion + @""""; @"/p:InformationalVersion=""" + InfoVersion + @"""" ]
+
 
 printfn "Using version: %s" Version
 
 Target "Clean" (fun _ ->
-  ensureDirectory buildOutputPath
   ensureDirectory buildArtifactPath
-  ensureDirectory nugetWorkingPath
 
-  CleanDir buildOutputPath
   CleanDir buildArtifactPath
-  CleanDir nugetWorkingPath
 )
 
 Target "RestorePackages" (fun _ -> 
-     "./src/Automatonymous.sln"
-     |> RestoreMSSolutionPackages (fun p ->
-         { p with
-             OutputPath = packagesPath
-             Retries = 4 })
+  DotNetCli.Restore (fun p -> { p with Project = "./src/" } )
 )
 
 Target "Build" (fun _ ->
-
   CreateCSharpAssemblyInfo @".\src\SolutionVersion.cs"
     [ Attribute.Title "Automatonymous"
       Attribute.Description "Automatonymous, an open source state machine library, usable with MassTransit"
@@ -71,26 +62,10 @@ Target "Build" (fun _ ->
       Attribute.InformationalVersion InfoVersion
     ]
 
-  let buildMode = getBuildParamOrDefault "buildMode" "Release"
-  let setParams defaults = { 
-    defaults with
-        Verbosity = Some(Quiet)
-        Targets = ["Clean"; "Build"]
-        Properties =
-            [
-                "Optimize", "True"
-                "DebugSymbols", "True"
-                "RestorePackages", "True"
-                "Configuration", buildMode
-                "SignAssembly", "True"
-                "AssemblyOriginatorKeyFile", keyFile
-                "TargetFrameworkVersion", "v4.5.2"
-                "Platform", "Any CPU"
-            ]
-  }
-
-  build setParams @".\src\Automatonymous.sln"
-      |> DoNothing
+  DotNetCli.Build (fun p-> { p with Project = @".\src\Automatonymous"
+                                    Configuration= "Release"
+                                    Output = buildArtifactPath
+                                    AdditionalArgs = versionArgs @ [ @"/p:AssemblyOriginatorKeyFile=" + keyFile + @""""; @"/p:SignAssembly=True" ] })
 )
 
 type packageInfo = {
@@ -101,47 +76,21 @@ type packageInfo = {
 }
 
 Target "Package" (fun _ ->
-
-  let nugs = [| { Project = "Automatonymous"
-                  Summary = "Automatonymous, an open source state machine library, usable with MassTransit"
-                  PackageFile = @".\src\Automatonymous\packages.config"
-                  Files = [ (@"..\src\Automatonymous\bin\Release\Automatonymous.*", Some @"lib\net452", None);
-                            (@"..\src\Automatonymous\**\*.cs", Some "src", None) ] }
-                { Project = "Automatonymous.NHibernate"
-                  Summary = "Automatonymous NHibernate Support"
-                  PackageFile = @".\src\Automatonymous.NHibernateIntegration\packages.config"
-                  Files = [ (@"..\src\Automatonymous.NHibernateIntegration\bin\Release\Automatonymous.NHibernateIntegration.*", Some @"lib\net452", None);
-                            (@"..\src\Automatonymous.NHibernateIntegration\**\*.cs", Some @"src", None) ] } 
-                { Project = "Automatonymous.Visualizer"
-                  Summary = "Automatonymous Visualizer Support"
-                  PackageFile = @".\src\Automatonymous.Visualizer\packages.config"
-                  Files = [ (@"..\src\Automatonymous.Visualizer\bin\Release\Automatonymous.Visualizer.*", Some @"lib\net452", None);
-                            (@"..\src\Automatonymous.Visualizer\**\*.cs", Some @"src", None) ] } 
-             |]
-
-  nugs
-    |> Array.iter (fun nug ->
-
-      let getDeps daNug : NugetDependencies =
-        if daNug.Project = "Automatonymous" then (getDependencies daNug.PackageFile)
-        else ("Automatonymous", NuGetVersion) :: (getDependencies daNug.PackageFile)
-
-      let setParams defaults = {
-        defaults with 
-          Authors = ["Chris Patterson"]
-          Description = "Automatonymous, an open source state machine library, usable with MassTransit."
-          OutputPath = buildArtifactPath
-          Project = nug.Project
-          Dependencies = (getDeps nug)
-          Summary = nug.Summary
-          SymbolPackage = NugetSymbolPackage.Nuspec
-          Version = NuGetVersion
-          WorkingDir = nugetWorkingPath
-          Files = nug.Files
-      } 
-
-      NuGet setParams (FullName "./template.nuspec")
-    )
+  DotNetCli.Pack (fun p-> { p with 
+                                Project = @".\src\Automatonymous"
+                                Configuration= "Release"
+                                OutputPath= buildArtifactPath
+                                AdditionalArgs = versionArgs @ [ @"--include-symbols"; @"--include-source" ] })
+  DotNetCli.Pack (fun p-> { p with 
+                                Project = @".\src\Automatonymous.NHibernateIntegration"
+                                Configuration= "Release"
+                                OutputPath= buildArtifactPath
+                                AdditionalArgs = versionArgs @ [ @"--include-symbols"; @"--include-source" ] })
+  DotNetCli.Pack (fun p-> { p with 
+                                Project = @".\src\Automatonymous.Visualizer"
+                                Configuration= "Release"
+                                OutputPath= buildArtifactPath
+                                AdditionalArgs = versionArgs @ [ @"--include-symbols"; @"--include-source" ] })
 )
 
 Target "Default" (fun _ ->

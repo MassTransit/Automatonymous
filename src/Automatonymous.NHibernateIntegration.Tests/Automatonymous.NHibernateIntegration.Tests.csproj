@@ -20,12 +20,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="1.0.9" />
+    <PackageReference Include="GreenPipes" Version="1.0.10" />
     <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="NHibernate" Version="4.1.0.4000" />
-    <PackageReference Include="log4net" Version="2.0.7.0" />
-    <PackageReference Include="NUnit" Version="3.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="NHibernate" Version="4.1.1.4000" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="NUnit" Version="3.7.0" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
