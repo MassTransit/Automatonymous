@@ -44,9 +44,11 @@ namespace Automatonymous
         {
         }
 
+#if !NETCORE
         protected AutomatonymousException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

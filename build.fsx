@@ -7,7 +7,6 @@ open Fake.SemVerHelper
 
 let buildArtifactPath = FullName "./build_artifacts"
 let packagesPath = FullName "./src/packages"
-let keyFile = FullName "./Automatonymous.snk"
 
 let assemblyVersion = "3.5.0.0"
 let baseVersion = "3.5.11"
@@ -65,7 +64,7 @@ Target "Build" (fun _ ->
   DotNetCli.Build (fun p-> { p with Project = @".\src\Automatonymous"
                                     Configuration= "Release"
                                     Output = buildArtifactPath
-                                    AdditionalArgs = versionArgs @ [ @"/p:AssemblyOriginatorKeyFile=" + keyFile + @""""; @"/p:SignAssembly=True" ] })
+                                    AdditionalArgs = versionArgs })
 )
 
 type packageInfo = {

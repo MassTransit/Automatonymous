@@ -29,9 +29,11 @@ namespace Automatonymous
         {
         }
 
+#if !NETCORE
         protected UnknownEventException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

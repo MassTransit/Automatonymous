@@ -17,7 +17,7 @@ namespace Automatonymous.Graphing
     using System.Linq;
     using Activities;
     using Events;
-
+    using System.Reflection;
 
     public class GraphStateMachineVisitor<TInstance> :
         StateMachineVisitor
@@ -124,7 +124,7 @@ namespace Automatonymous.Graphing
             }
 
             Type activityType = activity.GetType();
-            Type compensateType = activityType.IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
+            Type compensateType = activityType.GetTypeInfo().IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
                 ? activityType.GetGenericArguments().Skip(1).First()
                 : null;
 
@@ -219,7 +219,7 @@ namespace Automatonymous.Graphing
             Type targetType = @event
                 .GetType()
                 .GetInterfaces()
-                .Where(x => x.IsGenericType)
+                .Where(x => x.GetTypeInfo().IsGenericType)
                 .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
                 .Select(x => x.GetGenericArguments()[0])
                 .DefaultIfEmpty(typeof(Event))

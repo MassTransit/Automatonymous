@@ -1050,7 +1050,7 @@ namespace Automatonymous
 
             foreach (PropertyInfo propertyInfo in properties)
             {
-                if (propertyInfo.PropertyType.IsGenericType)
+                if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType)
                 {
                     if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
                     {

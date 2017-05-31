@@ -30,10 +30,12 @@ namespace Automatonymous
         {
         }
 
+#if !NETCORE
         protected EventExecutionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
 
         public EventExecutionException()
         {
