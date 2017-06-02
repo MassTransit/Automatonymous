@@ -9,7 +9,7 @@ let buildArtifactPath = FullName "./build_artifacts"
 let packagesPath = FullName "./src/packages"
 
 let assemblyVersion = "3.5.0.0"
-let baseVersion = "3.5.11"
+let baseVersion = "3.5.12"
 
 let semVersion : SemVerInfo = parse baseVersion
 
