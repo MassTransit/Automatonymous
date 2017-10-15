@@ -29,6 +29,9 @@ packages
 TestResult.xml
 submit.xml
 src/tests/*
+src/.vs
+src/.idea
+
 tests/*
 doc/*
 SolutionVersion.cs

@@ -51,7 +51,7 @@ namespace Automatonymous.Tests
             }
         }
 
-
+#if !NETCORE
         [TestFixture]
         public class Visualize
         {
@@ -75,7 +75,7 @@ namespace Automatonymous.Tests
             }
 
         }
-
+#endif
 
         [TestFixture]
         public class A_short_time_on_hold
