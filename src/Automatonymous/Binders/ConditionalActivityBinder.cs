@@ -34,7 +34,7 @@ namespace Automatonymous.Binders
         public bool IsStateTransitionEvent(State state)
         {
             return Equals(_event, state.Enter) || Equals(_event, state.BeforeEnter)
-                || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
+                   || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
         }
 
         public void Bind(State<TInstance> state)
@@ -53,12 +53,19 @@ namespace Automatonymous.Binders
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
+            var stateBuilder = new ActivityBehaviorBuilder<TInstance>();
+
             foreach (var activity in _activities.GetStateActivityBinders())
             {
-                activity.Bind(builder);
+                activity.Bind(stateBuilder);
             }
+
+            var conditionActivity = new ConditionActivity<TInstance>(_condition, stateBuilder.Behavior);
+
+            builder.Add(conditionActivity);
         }
     }
+
 
     public class ConditionalActivityBinder<TInstance, TData> :
         ActivityBinder<TInstance>
@@ -68,7 +75,8 @@ namespace Automatonymous.Binders
         readonly StateMachineCondition<TInstance, TData> _condition;
         readonly Event _event;
 
-        public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance, TData> condition, EventActivities<TInstance> activities)
+        public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance, TData> condition,
+            EventActivities<TInstance> activities)
         {
             _activities = activities;
             _condition = condition;
@@ -78,7 +86,7 @@ namespace Automatonymous.Binders
         public bool IsStateTransitionEvent(State state)
         {
             return Equals(_event, state.Enter) || Equals(_event, state.BeforeEnter)
-                || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
+                   || Equals(_event, state.AfterLeave) || Equals(_event, state.Leave);
         }
 
         public void Bind(State<TInstance> state)
@@ -90,17 +98,23 @@ namespace Automatonymous.Binders
                 activity.Bind(builder);
             }
 
-            var conditionActivity = new ConditionActivity<TInstance,TData>(_condition, builder.Behavior);
+            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, builder.Behavior);
 
             state.Bind(_event, conditionActivity);
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
+            var stateBuilder = new ActivityBehaviorBuilder<TInstance>();
+
             foreach (var activity in _activities.GetStateActivityBinders())
             {
-                activity.Bind(builder);
+                activity.Bind(stateBuilder);
             }
+
+            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, stateBuilder.Behavior);
+
+            builder.Add(conditionActivity);
         }
     }
 }

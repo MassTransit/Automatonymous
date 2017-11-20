@@ -75,8 +75,8 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(ExplicitFilterStarted, context => true)
-                        .If(context => false, binder => 
-                            binder.Then(context => Console.WriteLine("Should not be here!"))
+                        .If(context => false, binder => binder
+                            .Then(context => Console.WriteLine("Should not be here!"))
                             .TransitionTo(ShouldNotBeHere))
                         .If(context => true, binder => binder.Then(context => Console.WriteLine("Initializing Only!"))));
 
@@ -104,6 +104,8 @@ namespace Automatonymous.Tests
         }
 
 
-        class StartedExplicitFilter {}
+        class StartedExplicitFilter
+        {
+        }
     }
 }
