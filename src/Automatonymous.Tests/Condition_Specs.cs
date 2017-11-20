@@ -36,6 +36,14 @@ namespace Automatonymous.Tests
             Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Running));
         }
 
+        [Test]
+        public async Task Should_allow_if_condition_to_be_evaluated()
+        {
+            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
+
+            Assert.That(_instance.CurrentState, Is.Not.EqualTo(_machine.ShouldNotBeHere));
+        }
+
         [SetUp]
         public void Specifying_an_event_activity()
         {
@@ -65,6 +73,13 @@ namespace Automatonymous.Tests
                         .If(context => context.Data.InitializeOnly, x => x.Then(context => Console.WriteLine("Initializing Only!")))
                         .TransitionTo(Initialized));
 
+                During(Initial,
+                    When(ExplicitFilterStarted, context => true)
+                        .If(context => false, binder => 
+                            binder.Then(context => Console.WriteLine("Should not be here!"))
+                            .TransitionTo(ShouldNotBeHere))
+                        .If(context => true, binder => binder.Then(context => Console.WriteLine("Initializing Only!"))));
+
                 During(Running,
                     When(Finish)
                         .Finalize());
@@ -74,8 +89,11 @@ namespace Automatonymous.Tests
 
             public State Running { get; private set; }
             public State Initialized { get; private set; }
+            public State ShouldNotBeHere { get; private set; }
 
             public Event<Start> Started { get; private set; }
+            public Event<StartedExplicitFilter> ExplicitFilterStarted { get; private set; }
+
             public Event Finish { get; private set; }
         }
 
@@ -84,5 +102,8 @@ namespace Automatonymous.Tests
         {
             public bool InitializeOnly { get; set; }
         }
+
+
+        class StartedExplicitFilter {}
     }
 }
