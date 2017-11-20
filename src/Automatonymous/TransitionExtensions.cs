@@ -92,7 +92,7 @@ namespace Automatonymous
         }
 
         /// <summary>
-        /// Transition the state machine to the Completed state
+        /// Transition the state machine to the Final state
         /// </summary>
         public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(
             this EventActivityBinder<TInstance, TData> source)
@@ -105,13 +105,43 @@ namespace Automatonymous
             return source.Add(activity);
         }
 
-
         /// <summary>
-        /// Transition the state machine to the Completed state
+        /// Transition the state machine to the Final state
         /// </summary>
         public static EventActivityBinder<TInstance> Finalize<TInstance>(
             this EventActivityBinder<TInstance> source)
             where TInstance : class
+        {
+            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
+
+            return source.Add(activity);
+        }
+
+        /// <summary>
+        /// Transition the state machine to the Final state
+        /// </summary>
+        public static ExceptionActivityBinder<TInstance, TData, TException> Finalize<TInstance, TData, TException>(
+            this ExceptionActivityBinder<TInstance, TData, TException> source)
+            where TInstance : class
+            where TException : Exception
+        {
+            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+
+            var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
+
+            return source.Add(activity);
+        }
+
+
+        /// <summary>
+        /// Transition the state machine to the Final state
+        /// </summary>
+        public static ExceptionActivityBinder<TInstance, TException> Finalize<TInstance, TException>(
+            this ExceptionActivityBinder<TInstance, TException> source)
+            where TInstance : class
+            where TException : Exception
         {
             State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
