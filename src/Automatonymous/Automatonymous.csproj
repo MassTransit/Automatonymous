@@ -18,9 +18,6 @@
     <Copyright>Copyright 2012-2017 Chris Patterson</Copyright>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="1.2.0" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,5 +37,8 @@
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GreenPipes" Version="1.2.1" />
   </ItemGroup>
 </Project>

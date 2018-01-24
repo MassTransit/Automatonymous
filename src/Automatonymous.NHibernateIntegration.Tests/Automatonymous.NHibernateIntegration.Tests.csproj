@@ -20,7 +20,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="1.2.0" />
+    <PackageReference Include="GreenPipes" Version="1.2.1" />
     <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
