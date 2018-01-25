@@ -18,13 +18,6 @@ class RelationshipStateMachine :
 {
     public RelationshipStateMachine()
     {
-        Event(() => Hello);
-        Event(() => PissOff);
-        Event(() => Introduce);
-
-        State(() => Friend);
-        State(() => Enemy);
-
         Initially(
             When(Hello)
                 .TransitionTo(Friend),
@@ -81,11 +74,38 @@ experience.
 > It also makes Intellisense work better.
     
 
-In a state machine, states must be defined along with the events that can be raised. 
-In the constructor, each state and event must be explicitly defined. As each state or 
-event is defined, the specified property is initialized with the appropriate object 
-type (either a State or an Event), which is why a lambda method
-is used to specify the property.
+In a state machine, states must be defined along with the events that can be raised.
+
+By default all public properties with the appropriate object type (either a State or an
+Event) will automatically be defined and initialized in the constructor of the base class.
+
+It is possible to be more explicit with the definition of the events and states by using
+the `Event()` and `State()` methods in the constructor using lambda methods.
+
+```csharp
+public RelationshipStateMachine()
+{
+    // Explicit definition of the events.
+    Event(() => Hello);
+    Event(() => PissOff);
+    Event(() => Introduce);
+
+    // Explicit definition of the states.
+    State(() => Friend);
+    State(() => Enemy);
+
+    Initially(
+        When(Hello)
+            .TransitionTo(Friend),
+        When(PissOff)
+            .TransitionTo(Enemy),
+        When(Introduce)
+            .Then(ctx => ctx.Instance.Name = ctx.Data.Name)
+            .TransitionTo(Friend)                   
+    );
+}
+```
+ 
 
 > Configuration of a state machine is done using an internal DSL, using an approach 
 > known as Object Scoping, and is explained in Martin Fowler's Domain Specific Languages book.
