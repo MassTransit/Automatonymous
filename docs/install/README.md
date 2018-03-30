@@ -1,4 +1,4 @@
-# Installing Autonatonymous
+# Installing Automatonymous
 
 ## Requirements
 
