@@ -14,6 +14,7 @@ namespace Automatonymous.NHibernateIntegration.Tests
 {
     using System;
     using System.Data;
+    using System.Data.Common;
     using System.Data.SQLite;
     using NHibernate;
     using NHibernate.Cache;
@@ -91,14 +92,14 @@ namespace Automatonymous.NHibernateIntegration.Tests
             BuildSchema(Configuration, _openConnection);
 
             _innerSessionFactory = base.GetSessionFactory();
-            _innerSessionFactory.OpenSession(_openConnection);
+            _innerSessionFactory.WithOptions().Connection(_openConnection).OpenSession();
 
             _sessionFactory = new SingleConnectionSessionFactory(_innerSessionFactory, _openConnection);
 
             return _sessionFactory;
         }
 
-        static void BuildSchema(Configuration config, IDbConnection connection)
+        static void BuildSchema(Configuration config, DbConnection connection)
         {
             new SchemaExport(config).Execute(true, true, false, connection, null);
         }

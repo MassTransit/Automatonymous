@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2014 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2018 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -14,9 +14,10 @@ namespace Automatonymous.UserTypes
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
+    using System.Data.Common;
     using System.Linq;
     using NHibernate;
+    using NHibernate.Engine;
     using NHibernate.SqlTypes;
 
 
@@ -52,26 +53,26 @@ namespace Automatonymous.UserTypes
             get { return _types; }
         }
 
-        public State Get(IDataReader rs, string[] names)
+        public State Get(DbDataReader rs, string[] names, ISessionImplementor session)
         {
-            var value = (Int32)NHibernateUtil.Int32.NullSafeGet(rs, names);
+            var value = (Int32)NHibernateUtil.Int32.NullSafeGet(rs, names, session);
 
             State state = _valueToStateCache[value];
 
             return state;
         }
 
-        public void Set(IDbCommand command, object value, int index)
+        public void Set(DbCommand command, object value, int index, ISessionImplementor session)
         {
             if (value == null)
             {
-                NHibernateUtil.Int32.NullSafeSet(command, null, index);
+                NHibernateUtil.Int32.NullSafeSet(command, null, index, session);
                 return;
             }
 
             int setValue = _stateToValueCache[(State)value];
 
-            NHibernateUtil.Int32.NullSafeSet(command, setValue, index);
+            NHibernateUtil.Int32.NullSafeSet(command, setValue, index, session);
         }
     }
 }

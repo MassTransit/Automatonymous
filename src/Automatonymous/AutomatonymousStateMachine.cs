@@ -766,7 +766,6 @@ namespace Automatonymous
         /// <summary>
         /// When the event is fired in this state, and the event data matches the filter expression, execute the chained activities
         /// </summary>
-        /// <typeparam name="TData">The event data type</typeparam>
         /// <param name="event">The fired event</param>
         /// <param name="filter">The filter applied to the event</param>
         /// <returns></returns>

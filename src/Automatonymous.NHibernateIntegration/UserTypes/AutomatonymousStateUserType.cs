@@ -1,4 +1,4 @@
-﻿// Copyright 2011-2013 Chris Patterson, Dru Sellers
+﻿// Copyright 2011-2018 Chris Patterson, Dru Sellers
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 // this file except in compliance with the License. You may obtain a copy of the 
@@ -13,7 +13,8 @@
 namespace Automatonymous.UserTypes
 {
     using System;
-    using System.Data;
+    using System.Data.Common;
+    using NHibernate.Engine;
     using NHibernate.SqlTypes;
     using NHibernate.UserTypes;
 
@@ -39,18 +40,18 @@ namespace Automatonymous.UserTypes
             return ((State)x).Name.GetHashCode();
         }
 
-        public object NullSafeGet(IDataReader rs, string[] names, object owner)
+        public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
             StateUserTypeConverter converter = GetConverter();
 
-            return converter.Get(rs, names);
+            return converter.Get(rs, names, session);
         }
 
-        public void NullSafeSet(IDbCommand cmd, object value, int index)
+        public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
         {
             StateUserTypeConverter converter = GetConverter();
 
-            converter.Set(cmd, value, index);
+            converter.Set(cmd, value, index, session);
         }
 
         public object DeepCopy(object value)

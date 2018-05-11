@@ -14,7 +14,9 @@ namespace Automatonymous.UserTypes
 {
     using System;
     using System.Data;
+    using System.Data.Common;
     using NHibernate;
+    using NHibernate.Engine;
     using NHibernate.SqlTypes;
     using NHibernate.UserTypes;
 
@@ -41,9 +43,9 @@ namespace Automatonymous.UserTypes
             return ((CompositeEventStatus)x).GetHashCode();
         }
 
-        public object NullSafeGet(IDataReader rs, string[] names, object owner)
+        public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
-            object value = NHibernateUtil.Int32.NullSafeGet(rs, names);
+            object value = NHibernateUtil.Int32.NullSafeGet(rs, names, session, owner);
             if (value == null)
                 return new CompositeEventStatus();
 
@@ -52,17 +54,17 @@ namespace Automatonymous.UserTypes
             return status;
         }
 
-        public void NullSafeSet(IDbCommand cmd, object value, int index)
+        public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
         {
             if (value == null)
             {
-                NHibernateUtil.Int32.NullSafeSet(cmd, 0, index);
+                NHibernateUtil.Int32.NullSafeSet(cmd, 0, index, session);
                 return;
             }
 
             int setValue = ((CompositeEventStatus)value).Bits;
 
-            NHibernateUtil.Int32.NullSafeSet(cmd, setValue, index);
+            NHibernateUtil.Int32.NullSafeSet(cmd, setValue, index, session);
         }
 
         public object DeepCopy(object value)
