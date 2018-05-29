@@ -24,9 +24,9 @@ namespace Automatonymous.States
 
         public bool Filter<T>(EventContext<TInstance, T> context)
         {
-            var filterContext = context as EventContext<TInstance, TData>;
-            if (filterContext != null)
+            if (context is EventContext<TInstance, TData> filterContext)
                 return _filter(filterContext);
+
             return false;
         }
 

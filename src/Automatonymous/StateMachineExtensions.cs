@@ -30,12 +30,12 @@ namespace Automatonymous
         /// <param name="instance">The state instance</param>
         /// <param name="state">The target state</param>
         /// <param name="cancellationToken"></param>
-        public static Task TransitionToState<TInstance>(this StateMachine<TInstance> machine, TInstance instance,
-            State state, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task TransitionToState<TInstance>(this StateMachine<TInstance> machine, TInstance instance, State state,
+            CancellationToken cancellationToken = default)
             where TInstance : class
         {
             StateAccessor<TInstance> accessor = machine.Accessor;
-            State<TInstance> toState = machine.GetState(state.Name); // state.For<TInstance>();
+            State<TInstance> toState = machine.GetState(state.Name);
 
             Activity<TInstance> activity = new TransitionActivity<TInstance>(toState, accessor);
             Behavior<TInstance> behavior = new LastBehavior<TInstance>(activity);

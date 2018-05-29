@@ -92,8 +92,7 @@ namespace Automatonymous
 
         State StateMachine.GetState(string name)
         {
-            State<TInstance> result;
-            if (_stateCache.TryGetValue(name, out result))
+            if (_stateCache.TryGetValue(name, out var result))
                 return result;
 
             throw new UnknownStateException(_name, name);
@@ -103,8 +102,7 @@ namespace Automatonymous
         {
             State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
 
-            State<TInstance> instanceState;
-            if (!_stateCache.TryGetValue(state.Name, out instanceState))
+            if (!_stateCache.TryGetValue(state.Name, out var instanceState))
                 throw new UnknownStateException(_name, state.Name);
 
             await instanceState.Raise(context).ConfigureAwait(false);
@@ -114,8 +112,7 @@ namespace Automatonymous
         {
             State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
 
-            State<TInstance> instanceState;
-            if (!_stateCache.TryGetValue(state.Name, out instanceState))
+            if (!_stateCache.TryGetValue(state.Name, out var instanceState))
                 throw new UnknownStateException(_name, state.Name);
 
             await instanceState.Raise(context).ConfigureAwait(false);
@@ -123,8 +120,7 @@ namespace Automatonymous
 
         public State<TInstance> GetState(string name)
         {
-            State<TInstance> result;
-            if (_stateCache.TryGetValue(name, out result))
+            if (_stateCache.TryGetValue(name, out var result))
                 return result;
 
             throw new UnknownStateException(_name, name);
@@ -134,8 +130,7 @@ namespace Automatonymous
 
         Event StateMachine.GetEvent(string name)
         {
-            StateMachineEvent<TInstance> result;
-            if (_eventCache.TryGetValue(name, out result))
+            if (_eventCache.TryGetValue(name, out var result))
                 return result.Event;
 
             throw new UnknownEventException(_name, name);
@@ -150,8 +145,7 @@ namespace Automatonymous
 
         IEnumerable<Event> StateMachine.NextEvents(State state)
         {
-            State<TInstance> result;
-            if (_stateCache.TryGetValue(state.Name, out result))
+            if (_stateCache.TryGetValue(state.Name, out var result))
                 return result.Events;
 
             throw new UnknownStateException(_name, state.Name);
@@ -446,8 +440,9 @@ namespace Automatonymous
 
                 var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete, @event);
 
-                Func<State<TInstance>, bool> filter = x => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
-                foreach (var state in _stateCache.Values.Where(filter))
+                bool Filter(State<TInstance> x) => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+
+                foreach (var state in _stateCache.Values.Where(Filter))
                 {
                     During(state,
                         When(events[i])

@@ -127,11 +127,9 @@ namespace Automatonymous.States
 
         async Task State<TInstance>.Raise(EventContext<TInstance> context)
         {
-            ActivityBehaviorBuilder<TInstance> activities;
-            if (!_behaviors.TryGetValue(context.Event, out activities))
+            if (!_behaviors.TryGetValue(context.Event, out var activities))
             {
-                StateEventFilter<TInstance> filter;
-                if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
+                if (_ignoredEvents.TryGetValue(context.Event, out var filter) && filter.Filter(context))
                     return;
 
                 if (_superState != null)
@@ -169,11 +167,9 @@ namespace Automatonymous.States
 
         async Task State<TInstance>.Raise<T>(EventContext<TInstance, T> context)
         {
-            ActivityBehaviorBuilder<TInstance> activities;
-            if (!_behaviors.TryGetValue(context.Event, out activities))
+            if (!_behaviors.TryGetValue(context.Event, out var activities))
             {
-                StateEventFilter<TInstance> filter;
-                if (_ignoredEvents.TryGetValue(context.Event, out filter) && filter.Filter(context))
+                if (_ignoredEvents.TryGetValue(context.Event, out var filter) && filter.Filter(context))
                     return;
 
                 if (_superState != null)
@@ -211,8 +207,7 @@ namespace Automatonymous.States
 
         public void Bind(Event @event, Activity<TInstance> activity)
         {
-            ActivityBehaviorBuilder<TInstance> builder;
-            if (!_behaviors.TryGetValue(@event, out builder))
+            if (!_behaviors.TryGetValue(@event, out var builder))
             {
                 builder = new ActivityBehaviorBuilder<TInstance>();
                 _behaviors.Add(@event, builder);
@@ -278,8 +273,8 @@ namespace Automatonymous.States
         IEnumerable<Event> GetStateEvents()
         {
             return _behaviors.Keys
-                .Union(_ignoredEvents.Keys
-                    .Where(x => !Equals(x, Enter) && !Equals(x, Leave) && !Equals(x, AfterLeave) && !Equals(x, BeforeEnter)))
+                .Union(_ignoredEvents.Keys)
+                .Where(IsRealEvent)
                 .Distinct();
         }
 

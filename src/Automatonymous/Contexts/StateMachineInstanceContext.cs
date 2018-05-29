@@ -22,7 +22,7 @@ namespace Automatonymous.Contexts
         InstanceContext<TInstance>
         where TInstance : class
     {
-        public StateMachineInstanceContext(TInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        public StateMachineInstanceContext(TInstance instance, CancellationToken cancellationToken = default)
             : base(new PayloadCache(), cancellationToken)
         {
             Instance = instance;

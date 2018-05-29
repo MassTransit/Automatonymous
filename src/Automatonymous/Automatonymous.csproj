@@ -4,6 +4,7 @@
     <DebugType>portable</DebugType>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Automatonymous.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Automatonymous</PackageId>

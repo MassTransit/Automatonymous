@@ -112,6 +112,8 @@ namespace Automatonymous.Tests
                     When(Ignored)
                         .TransitionTo(Pissed));
 
+                WhenEnter(Greeted, x => x.Then(context => { }));
+
                 DuringAny(When(YelledAt).TransitionTo(Final));
             }
 

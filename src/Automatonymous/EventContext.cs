@@ -27,7 +27,7 @@ namespace Automatonymous
         /// <param name="event">The event to raise</param>
         /// <param name="cancellationToken">A cancellation token for this event (also cancelled if the parent event is cancelled)</param>
         /// <returns>An awaitable Task</returns>
-        Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken));
+        Task Raise(Event @event, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Raise an event on the current instance, pushing the current event on the stack
@@ -36,7 +36,7 @@ namespace Automatonymous
         /// <param name="data">THe event data</param>
         /// <param name="cancellationToken">A cancellation token for this event (also cancelled if the parent event is cancelled)</param>
         /// <returns>An awaitable Task</returns>
-        Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default(CancellationToken));
+        Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default);
     }
 
 

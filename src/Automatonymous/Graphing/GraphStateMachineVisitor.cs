@@ -187,8 +187,7 @@ namespace Automatonymous.Graphing
 
         Vertex GetStateVertex(State state)
         {
-            Vertex vertex;
-            if (_states.TryGetValue(state, out vertex))
+            if (_states.TryGetValue(state, out var vertex))
                 return vertex;
 
             vertex = CreateStateVertex(state);
@@ -199,8 +198,7 @@ namespace Automatonymous.Graphing
 
         Vertex GetEventVertex(Event state)
         {
-            Vertex vertex;
-            if (_events.TryGetValue(state, out vertex))
+            if (_events.TryGetValue(state, out var vertex))
                 return vertex;
 
             vertex = CreateEventVertex(state);

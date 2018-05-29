@@ -22,8 +22,7 @@ namespace Automatonymous
         /// <summary>
         /// Transition the state machine to the specified state
         /// </summary>
-        public static EventActivityBinder<TInstance> TransitionTo<TInstance>(
-            this EventActivityBinder<TInstance> source, State toState)
+        public static EventActivityBinder<TInstance> TransitionTo<TInstance>(this EventActivityBinder<TInstance> source, State toState)
             where TInstance : class
         {
             State<TInstance> state = source.StateMachine.GetState(toState.Name);
@@ -94,8 +93,7 @@ namespace Automatonymous
         /// <summary>
         /// Transition the state machine to the Final state
         /// </summary>
-        public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(
-            this EventActivityBinder<TInstance, TData> source)
+        public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(this EventActivityBinder<TInstance, TData> source)
             where TInstance : class
         {
             State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
@@ -108,8 +106,7 @@ namespace Automatonymous
         /// <summary>
         /// Transition the state machine to the Final state
         /// </summary>
-        public static EventActivityBinder<TInstance> Finalize<TInstance>(
-            this EventActivityBinder<TInstance> source)
+        public static EventActivityBinder<TInstance> Finalize<TInstance>(this EventActivityBinder<TInstance> source)
             where TInstance : class
         {
             State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);

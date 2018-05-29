@@ -44,7 +44,7 @@ namespace Automatonymous.Contexts
             _event = @event;
         }
 
-        public async Task Raise(Event @event, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task Raise(Event @event, CancellationToken cancellationToken = default)
         {
             var eventContext = new EventContextProxy<TInstance>(this, @event, cancellationToken);
             using (eventContext)
@@ -53,7 +53,7 @@ namespace Automatonymous.Contexts
             }
         }
 
-        public async Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default)
         {
             var eventContext = new EventContextProxy<TInstance, TData>(this, @event, data, cancellationToken);
             using (eventContext)

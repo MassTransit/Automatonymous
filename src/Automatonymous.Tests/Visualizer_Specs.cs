@@ -125,7 +125,9 @@ namespace Automatonymous.Tests
 
             Console.WriteLine(dots);
 
-            Assert.AreEqual(Expected, dots);
+            var expected = Expected.Replace("\r", "").Replace("\n", Environment.NewLine);
+
+            Assert.AreEqual(expected, dots);
         }
     }
 }

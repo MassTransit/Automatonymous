@@ -34,8 +34,7 @@ namespace Automatonymous.Observers
 
         public Task PreExecute(EventContext<TInstance> context)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.PreExecute(context);
 
             return TaskUtil.Completed;
@@ -43,8 +42,7 @@ namespace Automatonymous.Observers
 
         public Task PreExecute<T>(EventContext<TInstance, T> context)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.PreExecute(context);
 
             return TaskUtil.Completed;
@@ -52,8 +50,7 @@ namespace Automatonymous.Observers
 
         public Task PostExecute(EventContext<TInstance> context)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.PostExecute(context);
 
             return TaskUtil.Completed;
@@ -61,8 +58,7 @@ namespace Automatonymous.Observers
 
         public Task PostExecute<T>(EventContext<TInstance, T> context)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.PostExecute(context);
 
             return TaskUtil.Completed;
@@ -70,8 +66,7 @@ namespace Automatonymous.Observers
 
         public Task ExecuteFault(EventContext<TInstance> context, Exception exception)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.ExecuteFault(context, exception);
 
             return TaskUtil.Completed;
@@ -79,8 +74,7 @@ namespace Automatonymous.Observers
 
         public Task ExecuteFault<T>(EventContext<TInstance, T> context, Exception exception)
         {
-            StateMachineEvent<TInstance> stateMachineEvent;
-            if (_eventCache.TryGetValue(context.Event.Name, out stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
+            if (_eventCache.TryGetValue(context.Event.Name, out var stateMachineEvent) && !stateMachineEvent.IsTransitionEvent)
                 return _observer.ExecuteFault(context, exception);
 
             return TaskUtil.Completed;
