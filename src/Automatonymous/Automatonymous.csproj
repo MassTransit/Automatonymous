@@ -25,6 +25,6 @@
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="2.1.1" />
+    <PackageReference Include="GreenPipes" Version="2.1.2" />
   </ItemGroup>
 </Project>
