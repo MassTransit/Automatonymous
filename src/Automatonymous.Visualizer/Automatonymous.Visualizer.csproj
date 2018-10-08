@@ -14,7 +14,7 @@
     <Authors>Chris Patterson</Authors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GreenPipes" Version="2.1.2" />
+    <PackageReference Include="GreenPipes" Version="2.1.3" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
