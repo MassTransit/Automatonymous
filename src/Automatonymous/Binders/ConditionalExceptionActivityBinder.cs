@@ -23,10 +23,10 @@ namespace Automatonymous.Binders
         where TException : Exception
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineCondition<TInstance> _condition;
+        readonly StateMachineExceptionCondition<TInstance, TException> _condition;
         readonly Event _event;
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineCondition<TInstance> condition, EventActivities<TInstance> activities)
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TException> condition, EventActivities<TInstance> activities)
         {
             _activities = activities;
             _condition = condition;
@@ -75,10 +75,10 @@ namespace Automatonymous.Binders
         where TException : Exception
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineCondition<TInstance, TData> _condition;
+        readonly StateMachineExceptionCondition<TInstance, TData, TException> _condition;
         readonly Event _event;
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineCondition<TInstance, TData> condition,
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TData, TException> condition,
             EventActivities<TInstance> activities)
         {
             _activities = activities;
