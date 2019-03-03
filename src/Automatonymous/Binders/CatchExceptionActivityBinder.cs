@@ -81,7 +81,7 @@ namespace Automatonymous.Binders
 
             binder = activityCallback(binder);
 
-            var conditionBinder = new ConditionalActivityBinder<TInstance>(_event, condition, binder);
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TException>(_event, condition, binder);
 
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
         }
@@ -163,7 +163,7 @@ namespace Automatonymous.Binders
 
             binder = activityCallback(binder);
 
-            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, binder);
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TData, TException>(_event, condition, binder);
 
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
         }
