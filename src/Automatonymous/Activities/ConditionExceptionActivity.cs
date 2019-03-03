@@ -22,25 +22,30 @@ namespace Automatonymous.Activities
         where TInstance : class
         where TConditionException : Exception
     {
-        readonly Behavior<TInstance> _behavior;
+        readonly Behavior<TInstance> _thenBehavior;
+        readonly Behavior<TInstance> _elseBehavior;
         readonly StateMachineAsyncExceptionCondition<TInstance, TConditionException> _condition;
 
-        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TConditionException> condition, Behavior<TInstance> behavior)
+        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TConditionException> condition,
+            Behavior<TInstance> thenBehavior, Behavior<TInstance> elseBehavior)
         {
             _condition = condition;
-            _behavior = behavior;
+            _thenBehavior = thenBehavior;
+            _elseBehavior = elseBehavior;
         }
 
         void IProbeSite.Probe(ProbeContext context)
         {
             var scope = context.CreateScope("condition");
 
-            _behavior.Probe(scope);
+            _thenBehavior.Probe(scope);
+            _elseBehavior.Probe(scope);
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {
-            visitor.Visit(this, x => _behavior.Accept(visitor));
+            visitor.Visit(this, x => _thenBehavior.Accept(visitor));
+            visitor.Visit(this, x => _elseBehavior.Accept(visitor));
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -60,7 +65,11 @@ namespace Automatonymous.Activities
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
-                    await _behavior.Faulted(context).ConfigureAwait(false);
+                    await _thenBehavior.Faulted(context).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _elseBehavior.Faulted(context).ConfigureAwait(false);
                 }
             }
 
@@ -75,7 +84,11 @@ namespace Automatonymous.Activities
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
-                    await _behavior.Faulted(context).ConfigureAwait(false);
+                    await _thenBehavior.Faulted(context).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _elseBehavior.Faulted(context).ConfigureAwait(false);
                 }
             }
 
@@ -89,25 +102,30 @@ namespace Automatonymous.Activities
         where TInstance : class
         where TConditionException : Exception
     {
-        readonly Behavior<TInstance> _behavior;
+        readonly Behavior<TInstance> _thenBehavior;
+        readonly Behavior<TInstance> _elseBehavior;
         readonly StateMachineAsyncExceptionCondition<TInstance, TData, TConditionException> _condition;
 
-        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TData, TConditionException> condition, Behavior<TInstance> behavior)
+        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TData, TConditionException> condition,
+            Behavior<TInstance> thenBehavior, Behavior<TInstance> elseBehavior)
         {
             _condition = condition;
-            _behavior = behavior;
+            _thenBehavior = thenBehavior;
+            _elseBehavior = elseBehavior;
         }
 
         void IProbeSite.Probe(ProbeContext context)
         {
             var scope = context.CreateScope("condition");
 
-            _behavior.Probe(scope);
+            _thenBehavior.Probe(scope);
+            _elseBehavior.Probe(scope);
         }
 
         void Visitable.Accept(StateMachineVisitor visitor)
         {
-            visitor.Visit(this, x => _behavior.Accept(visitor));
+            visitor.Visit(this, x => _thenBehavior.Accept(visitor));
+            visitor.Visit(this, x => _elseBehavior.Accept(visitor));
         }
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
@@ -133,7 +151,11 @@ namespace Automatonymous.Activities
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
-                    await _behavior.Faulted(context).ConfigureAwait(false);
+                    await _thenBehavior.Faulted(context).ConfigureAwait(false);
+                }
+                else
+                {
+                    await _elseBehavior.Faulted(context).ConfigureAwait(false);
                 }
             }
 
