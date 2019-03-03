@@ -85,25 +85,44 @@ namespace Automatonymous.Binders
         EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.If(StateMachineCondition<TInstance, TData> condition,
             Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback)
         {
-            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);
-
-            binder = activityCallback(binder);
-
-            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, binder);
-
-            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, conditionBinder);
+            return IfElse(condition, activityCallback, _ => _);
         }
 
         EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.IfAsync(StateMachineAsyncCondition<TInstance, TData> condition,
             Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback)
         {
-            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);
+            return IfElseAsync(condition, activityCallback, _ => _);
+        }
 
-            binder = activityCallback(binder);
+        public EventActivityBinder<TInstance, TData> IfElse(StateMachineCondition<TInstance, TData> condition,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> thenActivityCallback,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
 
-            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, binder);
+            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, thenBinder, elseBinder);
 
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, conditionBinder);
+        }
+
+        public EventActivityBinder<TInstance, TData> IfElseAsync(StateMachineAsyncCondition<TInstance, TData> condition,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> thenActivityCallback,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
+
+            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, thenBinder, elseBinder);
+
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, conditionBinder);
+        }
+
+        private EventActivityBinder<TInstance, TData> GetBinder(Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback)
+        {
+            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);
+
+            return activityCallback(binder);
         }
 
         StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine => _machine;
@@ -125,9 +144,10 @@ namespace Automatonymous.Binders
 
         ActivityBinder<TInstance> CreateConditionalActivityBinder()
         {
-            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event, _activities);
+            EventActivityBinder<TInstance, TData> thenBinder = new DataEventActivityBinder<TInstance, TData>(_machine, _event, _activities);
+            EventActivityBinder<TInstance, TData> elseBinder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);
 
-            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, context => _filter(context), binder);
+            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, context => _filter(context), thenBinder, elseBinder);
 
             return conditionBinder;
         }

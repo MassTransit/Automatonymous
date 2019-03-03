@@ -78,26 +78,44 @@ namespace Automatonymous.Binders
             StateMachineExceptionCondition<TInstance, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback)
         {
-            ExceptionActivityBinder<TInstance, TException> binder = new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event);
-
-            binder = activityCallback(binder);
-
-            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TException>(_event, condition, binder);
-
-            return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
+            return IfElse(condition, activityCallback, _ => _);
         }
 
         public ExceptionActivityBinder<TInstance, TException> IfAsync(
             StateMachineAsyncExceptionCondition<TInstance, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback)
         {
-            ExceptionActivityBinder<TInstance, TException> binder = new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event);
+            return IfElseAsync(condition, activityCallback, _ => _);
+        }
 
-            binder = activityCallback(binder);
-
-            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TException>(_event, condition, binder);
+        public ExceptionActivityBinder<TInstance, TException> IfElse(StateMachineExceptionCondition<TInstance, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> thenActivityCallback,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
+            
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TException>(_event, condition, thenBinder, elseBinder);
 
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
+        }
+
+        public ExceptionActivityBinder<TInstance, TException> IfElseAsync(StateMachineAsyncExceptionCondition<TInstance, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> thenActivityCallback,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
+
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TException>(_event, condition, thenBinder, elseBinder);
+
+            return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
+        }
+
+        private ExceptionActivityBinder<TInstance, TException> GetBinder(Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> callback)
+        {
+            ExceptionActivityBinder<TInstance, TException> thenBinder = new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event);
+            return callback(thenBinder);
         }
     }
 
@@ -171,27 +189,43 @@ namespace Automatonymous.Binders
         public ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineExceptionCondition<TInstance, TData, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> activityCallback)
         {
-            ExceptionActivityBinder<TInstance, TData, TException> binder =
-                new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event);
-
-            binder = activityCallback(binder);
-
-            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TData, TException>(_event, condition, binder);
-
-            return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
+            return IfElse(condition, activityCallback, _ => _);
         }
 
         public ExceptionActivityBinder<TInstance, TData, TException> IfAsync(StateMachineAsyncExceptionCondition<TInstance, TData, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> activityCallback)
         {
-            ExceptionActivityBinder<TInstance, TData, TException> binder =
-                new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event);
+            return IfElseAsync(condition, activityCallback, _ => _);
+        }
 
-            binder = activityCallback(binder);
+        public ExceptionActivityBinder<TInstance, TData, TException> IfElse(StateMachineExceptionCondition<TInstance, TData, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> thenActivityCallback,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
 
-            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TData, TException>(_event, condition, binder);
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TData, TException>(_event, condition, thenBinder, elseBinder);
 
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
+        }
+
+        public ExceptionActivityBinder<TInstance, TData, TException> IfElseAsync(StateMachineAsyncExceptionCondition<TInstance, TData, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> thenActivityCallback,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> elseActivityCallback)
+        {
+            var thenBinder = GetBinder(thenActivityCallback);
+            var elseBinder = GetBinder(elseActivityCallback);
+
+            var conditionBinder = new ConditionalExceptionActivityBinder<TInstance, TData, TException>(_event, condition, thenBinder, elseBinder);
+
+            return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
+        }
+
+        private ExceptionActivityBinder<TInstance, TData, TException> GetBinder(Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> callback)
+        {
+            ExceptionActivityBinder<TInstance, TData, TException> binder = new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event);
+            return callback(binder);
         }
     }
 }

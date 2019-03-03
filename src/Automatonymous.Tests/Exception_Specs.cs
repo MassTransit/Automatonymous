@@ -51,7 +51,12 @@ namespace Automatonymous.Tests
             public bool ShouldNotBeCalled { get; set; }
 
             public bool CalledThenClause { get; set; }
-            public bool CalledSecondThenClause { get; set; }
+            public bool CalledThenClauseAsync { get; set; }
+
+            public bool ThenShouldNotBeCalled { get; set; }
+            public bool ElseShouldBeCalled { get; set; }
+            public bool ThenAsyncShouldNotBeCalled { get; set; }
+            public bool ElseAsyncShouldBeCalled { get; set; }
         }
 
 
@@ -70,7 +75,15 @@ namespace Automatonymous.Tests
                                 .Then(context => context.Instance.CalledThenClause = true)
                             )
                             .IfAsync(context => Task.FromResult(true), b => b
-                                .Then(context => context.Instance.CalledSecondThenClause = true)
+                                .Then(context => context.Instance.CalledThenClauseAsync = true)
+                            )
+                            .IfElse(context => false, 
+                                b => b.Then(context => context.Instance.ThenShouldNotBeCalled = true),
+                                b => b.Then(context => context.Instance.ElseShouldBeCalled = true)
+                            )
+                            .IfElseAsync(context => Task.FromResult(false), 
+                                b => b.Then(context => context.Instance.ThenAsyncShouldNotBeCalled = true),
+                                b => b.Then(context => context.Instance.ElseAsyncShouldBeCalled = true)
                             )
                             .Then(context =>
                             {
@@ -142,7 +155,31 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_have_called_the_async_if_block()
         {
-            Assert.IsTrue(_instance.CalledSecondThenClause);
+            Assert.IsTrue(_instance.CalledThenClauseAsync);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_async_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_async_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
         }
     }
 
@@ -316,6 +353,11 @@ namespace Automatonymous.Tests
 
             public bool CalledThenClause { get; set; }
             public bool CalledSecondThenClause { get; set; }
+
+            public bool ThenShouldNotBeCalled { get; set; }
+            public bool ElseShouldBeCalled { get; set; }
+            public bool ThenAsyncShouldNotBeCalled { get; set; }
+            public bool ElseAsyncShouldBeCalled { get; set; }
         }
 
 
@@ -342,6 +384,14 @@ namespace Automatonymous.Tests
                             )
                             .IfAsync(context => Task.FromResult(true), b => b
                                 .Then(context => context.Instance.CalledSecondThenClause = true)
+                            )
+                            .IfElse(context => false, 
+                                b => b.Then(context => context.Instance.ThenShouldNotBeCalled = true),
+                                b => b.Then(context => context.Instance.ElseShouldBeCalled = true)
+                            )
+                            .IfElseAsync(context => Task.FromResult(false), 
+                                b => b.Then(context => context.Instance.ThenAsyncShouldNotBeCalled = true),
+                                b => b.Then(context => context.Instance.ElseAsyncShouldBeCalled = true)
                             )
                             .Then(context =>
                             {
@@ -398,5 +448,30 @@ namespace Automatonymous.Tests
         {
             Assert.IsTrue(_instance.CalledSecondThenClause);
         }
+
+        [Test]
+        public void Should_not_have_called_the_false_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_async_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_async_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
+        }
     }
+
 }
