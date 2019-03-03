@@ -74,7 +74,8 @@ namespace Automatonymous.Binders
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, activityBinder);
         }
 
-        public ExceptionActivityBinder<TInstance, TException> If(StateMachineCondition<TInstance> condition,
+        public ExceptionActivityBinder<TInstance, TException> If(
+            StateMachineExceptionCondition<TInstance, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback)
         {
             ExceptionActivityBinder<TInstance, TException> binder = new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event);
@@ -154,9 +155,8 @@ namespace Automatonymous.Binders
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, activityBinder);
         }
 
-        public ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineCondition<TInstance, TData> condition,
-            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>>
-                activityCallback)
+        public ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineExceptionCondition<TInstance, TData, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> activityCallback)
         {
             ExceptionActivityBinder<TInstance, TData, TException> binder =
                 new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event);

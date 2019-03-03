@@ -42,7 +42,7 @@ namespace Automatonymous.Binders
         /// <param name="condition"></param>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        ExceptionActivityBinder<TInstance, TException> If(StateMachineCondition<TInstance> condition,
+        ExceptionActivityBinder<TInstance, TException> If(StateMachineExceptionCondition<TInstance, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback);
     }
 
@@ -76,7 +76,7 @@ namespace Automatonymous.Binders
         /// <param name="condition"></param>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineCondition<TInstance, TData> condition,
+        ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineExceptionCondition<TInstance, TData, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>>
                 activityCallback);
     }
