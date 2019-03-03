@@ -94,6 +94,18 @@ namespace Automatonymous.Binders
             return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, conditionBinder);
         }
 
+        EventActivityBinder<TInstance, TData> EventActivityBinder<TInstance, TData>.IfAsync(StateMachineAsyncCondition<TInstance, TData> condition,
+            Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback)
+        {
+            EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);
+
+            binder = activityCallback(binder);
+
+            var conditionBinder = new ConditionalActivityBinder<TInstance, TData>(_event, condition, binder);
+
+            return new DataEventActivityBinder<TInstance, TData>(_machine, _event, _filter, _activities, conditionBinder);
+        }
+
         StateMachine<TInstance> EventActivityBinder<TInstance, TData>.StateMachine => _machine;
 
         public IEnumerable<ActivityBinder<TInstance>> GetStateActivityBinders()

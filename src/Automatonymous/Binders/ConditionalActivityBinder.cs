@@ -12,6 +12,7 @@
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Binders
 {
+    using System.Threading.Tasks;
     using Activities;
     using Behaviors;
 
@@ -21,10 +22,15 @@ namespace Automatonymous.Binders
         where TInstance : class
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineCondition<TInstance> _condition;
+        readonly StateMachineAsyncCondition<TInstance> _condition;
         readonly Event _event;
 
         public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance> condition, EventActivities<TInstance> activities)
+            : this(@event, context => Task.FromResult(condition(context)), activities)
+        {
+        }
+
+        public ConditionalActivityBinder(Event @event, StateMachineAsyncCondition<TInstance> condition, EventActivities<TInstance> activities)
         {
             _activities = activities;
             _condition = condition;
@@ -72,10 +78,16 @@ namespace Automatonymous.Binders
         where TInstance : class
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineCondition<TInstance, TData> _condition;
+        readonly StateMachineAsyncCondition<TInstance, TData> _condition;
         readonly Event _event;
 
         public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance, TData> condition,
+            EventActivities<TInstance> activities)
+            : this(@event, context => Task.FromResult(condition(context)), activities)
+        {
+        }
+
+        public ConditionalActivityBinder(Event @event, StateMachineAsyncCondition<TInstance, TData> condition,
             EventActivities<TInstance> activities)
         {
             _activities = activities;

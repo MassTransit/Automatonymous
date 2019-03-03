@@ -13,6 +13,7 @@
 namespace Automatonymous.Binders
 {
     using System;
+    using System.Threading.Tasks;
     using Activities;
     using Behaviors;
 
@@ -23,10 +24,15 @@ namespace Automatonymous.Binders
         where TException : Exception
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineExceptionCondition<TInstance, TException> _condition;
+        readonly StateMachineAsyncExceptionCondition<TInstance, TException> _condition;
         readonly Event _event;
 
         public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TException> condition, EventActivities<TInstance> activities)
+            :this(@event, context => Task.FromResult(condition(context)), activities)
+        {
+        }
+
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineAsyncExceptionCondition<TInstance, TException> condition, EventActivities<TInstance> activities)
         {
             _activities = activities;
             _condition = condition;
@@ -75,10 +81,15 @@ namespace Automatonymous.Binders
         where TException : Exception
     {
         readonly EventActivities<TInstance> _activities;
-        readonly StateMachineExceptionCondition<TInstance, TData, TException> _condition;
+        readonly StateMachineAsyncExceptionCondition<TInstance, TData, TException> _condition;
         readonly Event _event;
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TData, TException> condition,
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TData, TException> condition, EventActivities<TInstance> activities)
+            : this(@event, context => Task.FromResult(condition(context)), activities)
+        {
+        }
+
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineAsyncExceptionCondition<TInstance, TData, TException> condition,
             EventActivities<TInstance> activities)
         {
             _activities = activities;

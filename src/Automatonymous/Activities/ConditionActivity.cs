@@ -21,9 +21,9 @@ namespace Automatonymous.Activities
         where TInstance : class
     {
         readonly Behavior<TInstance> _behavior;
-        readonly StateMachineCondition<TInstance> _condition;
+        readonly StateMachineAsyncCondition<TInstance> _condition;
 
-        public ConditionActivity(StateMachineCondition<TInstance> condition, Behavior<TInstance> behavior)
+        public ConditionActivity(StateMachineAsyncCondition<TInstance> condition, Behavior<TInstance> behavior)
         {
             _condition = condition;
             _behavior = behavior;
@@ -43,7 +43,7 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            if (_condition(context))
+            if (await _condition(context).ConfigureAwait(false))
                 await _behavior.Execute(context).ConfigureAwait(false);
 
             await next.Execute(context).ConfigureAwait(false);
@@ -51,7 +51,7 @@ namespace Automatonymous.Activities
 
         async Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            if (_condition(context))
+            if (await _condition(context).ConfigureAwait(false))
                 await _behavior.Execute(context).ConfigureAwait(false);
 
             await next.Execute(context).ConfigureAwait(false);
@@ -75,9 +75,9 @@ namespace Automatonymous.Activities
         where TInstance : class
     {
         readonly Behavior<TInstance> _behavior;
-        readonly StateMachineCondition<TInstance, TData> _condition;
+        readonly StateMachineAsyncCondition<TInstance, TData> _condition;
 
-        public ConditionActivity(StateMachineCondition<TInstance, TData> condition, Behavior<TInstance> behavior)
+        public ConditionActivity(StateMachineAsyncCondition<TInstance, TData> condition, Behavior<TInstance> behavior)
         {
             _condition = condition;
             _behavior = behavior;
@@ -105,7 +105,7 @@ namespace Automatonymous.Activities
             var behaviorContext = context as BehaviorContext<TInstance, TData>;
             if (behaviorContext != null)
             {
-                if (_condition(behaviorContext))
+                if (await _condition(behaviorContext).ConfigureAwait(false))
                     await _behavior.Execute(behaviorContext).ConfigureAwait(false);
             }
 
