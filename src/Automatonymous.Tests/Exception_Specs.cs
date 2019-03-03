@@ -48,6 +48,8 @@ namespace Automatonymous.Tests
             public State CurrentState { get; set; }
 
             public bool ShouldNotBeCalled { get; set; }
+
+            public bool CalledThenClause { get; set; }
         }
 
 
@@ -62,6 +64,9 @@ namespace Automatonymous.Tests
                         .Then(_ => { throw new ApplicationException("Boom!"); })
                         .Then(context => context.Instance.NotCalled = false)
                         .Catch<ApplicationException>(ex => ex
+                            .If(context => true, b => b
+                                .Then(context => context.Instance.CalledThenClause = true)
+                            )
                             .Then(context =>
                             {
                                 context.Instance.ExceptionMessage = context.Exception.Message;
@@ -121,6 +126,12 @@ namespace Automatonymous.Tests
         public void Should_not_have_called_the_second_action()
         {
             Assert.IsTrue(_instance.NotCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_if_block()
+        {
+            Assert.IsTrue(_instance.CalledThenClause);
         }
     }
 
@@ -291,6 +302,8 @@ namespace Automatonymous.Tests
             public Type ExceptionType { get; set; }
             public string ExceptionMessage { get; set; }
             public State CurrentState { get; set; }
+
+            public bool CalledThenClause { get; set; }
         }
 
 
@@ -312,13 +325,15 @@ namespace Automatonymous.Tests
                         .Then(_ => { throw new ApplicationException("Boom!"); })
                         .Then(context => context.Instance.NotCalled = false)
                         .Catch<Exception>(ex => ex
+                            .If(context => true, b => b
+                                .Then(context => context.Instance.CalledThenClause = true)
+                            )
                             .Then(context =>
                             {
                                 context.Instance.ExceptionMessage = context.Exception.Message;
                                 context.Instance.ExceptionType = context.Exception.GetType();
                             })
                             .TransitionTo(Failed)));
-                
             }
 
             public State Failed { get; private set; }
@@ -355,6 +370,12 @@ namespace Automatonymous.Tests
         public void Should_not_have_called_the_second_action()
         {
             Assert.IsTrue(_instance.NotCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_if_block()
+        {
+            Assert.IsTrue(_instance.CalledThenClause);
         }
     }
 }
