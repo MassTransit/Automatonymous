@@ -44,6 +44,15 @@ namespace Automatonymous.Binders
         /// <returns></returns>
         ExceptionActivityBinder<TInstance, TException> If(StateMachineExceptionCondition<TInstance, TException> condition,
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback);
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        ExceptionActivityBinder<TInstance, TException> IfAsync(StateMachineAsyncExceptionCondition<TInstance, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> activityCallback);
     }
 
 
@@ -77,7 +86,15 @@ namespace Automatonymous.Binders
         /// <param name="activityCallback"></param>
         /// <returns></returns>
         ExceptionActivityBinder<TInstance, TData, TException> If(StateMachineExceptionCondition<TInstance, TData, TException> condition,
-            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>>
-                activityCallback);
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> activityCallback);
+
+        /// <summary>
+        /// Create a conditional branch of activities for processing
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <param name="activityCallback"></param>
+        /// <returns></returns>
+        ExceptionActivityBinder<TInstance, TData, TException> IfAsync(StateMachineAsyncExceptionCondition<TInstance, TData, TException> condition,
+            Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> activityCallback);
     }
 }
