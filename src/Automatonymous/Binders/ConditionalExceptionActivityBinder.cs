@@ -23,18 +23,22 @@ namespace Automatonymous.Binders
         where TInstance : class
         where TException : Exception
     {
-        readonly EventActivities<TInstance> _activities;
+        readonly EventActivities<TInstance> _thenActivities;
+        readonly EventActivities<TInstance> _elseActivities;
         readonly StateMachineAsyncExceptionCondition<TInstance, TException> _condition;
         readonly Event _event;
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TException> condition, EventActivities<TInstance> activities)
-            :this(@event, context => Task.FromResult(condition(context)), activities)
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TException> condition,
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
+            :this(@event, context => Task.FromResult(condition(context)), thenActivities, elseActivities)
         {
         }
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineAsyncExceptionCondition<TInstance, TException> condition, EventActivities<TInstance> activities)
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineAsyncExceptionCondition<TInstance, TException> condition,
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
         {
-            _activities = activities;
+            _thenActivities = thenActivities;
+            _elseActivities = elseActivities;
             _condition = condition;
             _event = @event;
         }
@@ -47,30 +51,33 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            var catchBuilder = new CatchBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(catchBuilder);
-            }
-
-            var conditionActivity = new ConditionExceptionActivity<TInstance, TException>(_condition, catchBuilder.Behavior);
+            var conditionActivity = new ConditionExceptionActivity<TInstance, TException>(_condition, thenBehavior, elseBehavior);
 
             state.Bind(_event, conditionActivity);
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
+
+            var conditionActivity = new ConditionExceptionActivity<TInstance, TException>(_condition, thenBehavior, elseBehavior);
+
+            builder.Add(conditionActivity);
+        }
+
+        private Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        {
             var catchBuilder = new CatchBehaviorBuilder<TInstance>();
 
-            foreach (var activity in _activities.GetStateActivityBinders())
+            foreach (var activity in activities.GetStateActivityBinders())
             {
                 activity.Bind(catchBuilder);
             }
-
-            var conditionActivity = new ConditionExceptionActivity<TInstance, TException>(_condition, catchBuilder.Behavior);
-
-            builder.Add(conditionActivity);
+            return catchBuilder.Behavior;
         }
     }
 
@@ -80,19 +87,22 @@ namespace Automatonymous.Binders
         where TInstance : class
         where TException : Exception
     {
-        readonly EventActivities<TInstance> _activities;
+        readonly EventActivities<TInstance> _thenActivities;
+        readonly EventActivities<TInstance> _elseActivities;
         readonly StateMachineAsyncExceptionCondition<TInstance, TData, TException> _condition;
         readonly Event _event;
 
-        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TData, TException> condition, EventActivities<TInstance> activities)
-            : this(@event, context => Task.FromResult(condition(context)), activities)
+        public ConditionalExceptionActivityBinder(Event @event, StateMachineExceptionCondition<TInstance, TData, TException> condition,
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
+            : this(@event, context => Task.FromResult(condition(context)), thenActivities, elseActivities)
         {
         }
 
         public ConditionalExceptionActivityBinder(Event @event, StateMachineAsyncExceptionCondition<TInstance, TData, TException> condition,
-            EventActivities<TInstance> activities)
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
         {
-            _activities = activities;
+            _thenActivities = thenActivities;
+            _elseActivities = elseActivities;
             _condition = condition;
             _event = @event;
         }
@@ -105,30 +115,34 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            var catchBuilder = new CatchBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(catchBuilder);
-            }
-
-            var conditionActivity = new ConditionExceptionActivity<TInstance, TData, TException>(_condition, catchBuilder.Behavior);
+            var conditionActivity = new ConditionExceptionActivity<TInstance, TData, TException>(_condition, thenBehavior, elseBehavior);
 
             state.Bind(_event, conditionActivity);
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
+
+            var conditionActivity = new ConditionExceptionActivity<TInstance, TData, TException>(_condition, thenBehavior, elseBehavior);
+
+            builder.Add(conditionActivity);
+        }
+
+        private Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        {
             var catchBuilder = new CatchBehaviorBuilder<TInstance>();
 
-            foreach (var activity in _activities.GetStateActivityBinders())
+            foreach (var activity in activities.GetStateActivityBinders())
             {
                 activity.Bind(catchBuilder);
             }
 
-            var conditionActivity = new ConditionExceptionActivity<TInstance, TData, TException>(_condition, catchBuilder.Behavior);
-
-            builder.Add(conditionActivity);
+            return catchBuilder.Behavior;
         }
     }
 }

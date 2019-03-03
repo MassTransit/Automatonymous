@@ -44,6 +44,15 @@ namespace Automatonymous.Tests
             Assert.That(_instance.CurrentState, Is.Not.EqualTo(_machine.ShouldNotBeHere));
         }
 
+        [Test]
+        public async Task Should_evaluate_else_statement_when_if_condition__is_false()
+        {
+            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
+
+            Assert.That(_instance.ShouldBeCalled, Is.True);
+        }
+        
+
         [SetUp]
         public void Specifying_an_event_activity()
         {
@@ -59,6 +68,8 @@ namespace Automatonymous.Tests
         {
             public bool InitializeOnly { get; set; }
             public State CurrentState { get; set; }
+            
+            public bool ShouldBeCalled { get; set; }
         }
 
 
@@ -75,10 +86,13 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(ExplicitFilterStarted, context => true)
-                        .If(context => false, binder => binder
-                            .Then(context => Console.WriteLine("Should not be here!"))
-                            .TransitionTo(ShouldNotBeHere))
-                        .If(context => true, binder => binder.Then(context => Console.WriteLine("Initializing Only!"))));
+                        .IfElse(context => false, 
+                            binder => binder
+                                .Then(context => Console.WriteLine("Should not be here!"))
+                                .TransitionTo(ShouldNotBeHere),
+                            binder => binder
+                                .Then(context => context.Instance.ShouldBeCalled = true)
+                                .Then(context => Console.WriteLine("Initializing Only!"))));
 
                 During(Running,
                     When(Finish)
@@ -136,6 +150,14 @@ namespace Automatonymous.Tests
             Assert.That(_instance.CurrentState, Is.Not.EqualTo(_machine.ShouldNotBeHere));
         }
 
+        [Test]
+        public async Task Should_evaluate_else_statement_when_if_condition__is_false()
+        {
+            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
+
+            Assert.That(_instance.ShouldBeCalled, Is.True);
+        }
+
         [SetUp]
         public void Specifying_an_event_activity()
         {
@@ -151,6 +173,7 @@ namespace Automatonymous.Tests
         {
             public bool InitializeOnly { get; set; }
             public State CurrentState { get; set; }
+            public bool ShouldBeCalled { get; set; }
         }
 
 
@@ -167,10 +190,13 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(ExplicitFilterStarted, context => true)
-                        .IfAsync(context => Task.FromResult(false), binder => binder
-                            .Then(context => Console.WriteLine("Should not be here!"))
-                            .TransitionTo(ShouldNotBeHere))
-                        .IfAsync(context => Task.FromResult(true), binder => binder.Then(context => Console.WriteLine("Initializing Only!"))));
+                        .IfElseAsync(context => Task.FromResult(false), 
+                            binder => binder
+                                .Then(context => Console.WriteLine("Should not be here!"))
+                                .TransitionTo(ShouldNotBeHere),
+                            binder => binder
+                                .Then(context => context.Instance.ShouldBeCalled = true)
+                                .Then(context => Console.WriteLine("Initializing Only!"))));
 
                 During(Running,
                     When(Finish)

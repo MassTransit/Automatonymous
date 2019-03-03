@@ -21,18 +21,24 @@ namespace Automatonymous.Binders
         ActivityBinder<TInstance>
         where TInstance : class
     {
-        readonly EventActivities<TInstance> _activities;
+        readonly EventActivities<TInstance> _thenActivities;
+        readonly EventActivities<TInstance> _elseActivities;
         readonly StateMachineAsyncCondition<TInstance> _condition;
         readonly Event _event;
 
-        public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance> condition, EventActivities<TInstance> activities)
-            : this(@event, context => Task.FromResult(condition(context)), activities)
+
+
+        public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance> condition,
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
+            : this(@event, context => Task.FromResult(condition(context)), thenActivities, elseActivities)
         {
         }
 
-        public ConditionalActivityBinder(Event @event, StateMachineAsyncCondition<TInstance> condition, EventActivities<TInstance> activities)
+        public ConditionalActivityBinder(Event @event, StateMachineAsyncCondition<TInstance> condition,
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
         {
-            _activities = activities;
+            _thenActivities = thenActivities;
+            _elseActivities = elseActivities;
             _condition = condition;
             _event = @event;
         }
@@ -45,30 +51,34 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            var builder = new ActivityBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(builder);
-            }
-
-            var conditionActivity = new ConditionActivity<TInstance>(_condition, builder.Behavior);
+            var conditionActivity = new ConditionActivity<TInstance>(_condition, thenBehavior, elseBehavior);
 
             state.Bind(_event, conditionActivity);
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
-            var stateBuilder = new ActivityBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(stateBuilder);
-            }
-
-            var conditionActivity = new ConditionActivity<TInstance>(_condition, stateBuilder.Behavior);
+            var conditionActivity = new ConditionActivity<TInstance>(_condition, thenBehavior, elseBehavior);
 
             builder.Add(conditionActivity);
+        }
+
+        private static Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        {
+            var builder = new ActivityBehaviorBuilder<TInstance>();
+
+            foreach (var activity in activities.GetStateActivityBinders())
+            {
+                activity.Bind(builder);
+            }
+
+            return builder.Behavior;
         }
     }
 
@@ -77,20 +87,22 @@ namespace Automatonymous.Binders
         ActivityBinder<TInstance>
         where TInstance : class
     {
-        readonly EventActivities<TInstance> _activities;
+        readonly EventActivities<TInstance> _thenActivities;
+        readonly EventActivities<TInstance> _elseActivities;
         readonly StateMachineAsyncCondition<TInstance, TData> _condition;
         readonly Event _event;
 
         public ConditionalActivityBinder(Event @event, StateMachineCondition<TInstance, TData> condition,
-            EventActivities<TInstance> activities)
-            : this(@event, context => Task.FromResult(condition(context)), activities)
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
+            : this(@event, context => Task.FromResult(condition(context)), thenActivities, elseActivities)
         {
         }
 
         public ConditionalActivityBinder(Event @event, StateMachineAsyncCondition<TInstance, TData> condition,
-            EventActivities<TInstance> activities)
+            EventActivities<TInstance> thenActivities, EventActivities<TInstance> elseActivities)
         {
-            _activities = activities;
+            _thenActivities = thenActivities;
+            _elseActivities = elseActivities;
             _condition = condition;
             _event = @event;
         }
@@ -103,30 +115,34 @@ namespace Automatonymous.Binders
 
         public void Bind(State<TInstance> state)
         {
-            var builder = new ActivityBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(builder);
-            }
-
-            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, builder.Behavior);
+            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, thenBehavior, elseBehavior);
 
             state.Bind(_event, conditionActivity);
         }
 
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
-            var stateBuilder = new ActivityBehaviorBuilder<TInstance>();
+            var thenBehavior = GetBehavior(_thenActivities);
+            var elseBehavior = GetBehavior(_elseActivities);
 
-            foreach (var activity in _activities.GetStateActivityBinders())
-            {
-                activity.Bind(stateBuilder);
-            }
-
-            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, stateBuilder.Behavior);
+            var conditionActivity = new ConditionActivity<TInstance, TData>(_condition, thenBehavior, elseBehavior);
 
             builder.Add(conditionActivity);
+        }
+
+        private static Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        {
+            var builder = new ActivityBehaviorBuilder<TInstance>();
+
+            foreach (var activity in activities.GetStateActivityBinders())
+            {
+                activity.Bind(builder);
+            }
+
+            return builder.Behavior;
         }
     }
 }
