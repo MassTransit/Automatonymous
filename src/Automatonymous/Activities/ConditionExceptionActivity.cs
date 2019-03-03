@@ -23,9 +23,9 @@ namespace Automatonymous.Activities
         where TConditionException : Exception
     {
         readonly Behavior<TInstance> _behavior;
-        readonly StateMachineExceptionCondition<TInstance, TConditionException> _condition;
+        readonly StateMachineAsyncExceptionCondition<TInstance, TConditionException> _condition;
 
-        public ConditionExceptionActivity(StateMachineExceptionCondition<TInstance, TConditionException> condition, Behavior<TInstance> behavior)
+        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TConditionException> condition, Behavior<TInstance> behavior)
         {
             _condition = condition;
             _behavior = behavior;
@@ -58,7 +58,7 @@ namespace Automatonymous.Activities
             var behaviorContext = context as BehaviorExceptionContext<TInstance, TConditionException>;
             if (behaviorContext != null)
             {
-                if (_condition(behaviorContext))
+                if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
                     await _behavior.Faulted(context).ConfigureAwait(false);
                 }
@@ -73,7 +73,7 @@ namespace Automatonymous.Activities
             var behaviorContext = context as BehaviorExceptionContext<TInstance, T, TConditionException>;
             if (behaviorContext != null)
             {
-                if (_condition(behaviorContext))
+                if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
                     await _behavior.Faulted(context).ConfigureAwait(false);
                 }
@@ -90,9 +90,9 @@ namespace Automatonymous.Activities
         where TConditionException : Exception
     {
         readonly Behavior<TInstance> _behavior;
-        readonly StateMachineExceptionCondition<TInstance, TData, TConditionException> _condition;
+        readonly StateMachineAsyncExceptionCondition<TInstance, TData, TConditionException> _condition;
 
-        public ConditionExceptionActivity(StateMachineExceptionCondition<TInstance, TData, TConditionException> condition, Behavior<TInstance> behavior)
+        public ConditionExceptionActivity(StateMachineAsyncExceptionCondition<TInstance, TData, TConditionException> condition, Behavior<TInstance> behavior)
         {
             _condition = condition;
             _behavior = behavior;
@@ -131,7 +131,7 @@ namespace Automatonymous.Activities
             var behaviorContext = context as BehaviorExceptionContext<TInstance, TData, TConditionException>;
             if (behaviorContext != null)
             {
-                if (_condition(behaviorContext))
+                if (await _condition(behaviorContext).ConfigureAwait(false))
                 {
                     await _behavior.Faulted(context).ConfigureAwait(false);
                 }
