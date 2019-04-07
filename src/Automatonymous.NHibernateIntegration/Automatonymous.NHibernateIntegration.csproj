@@ -1,24 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
+    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>Automatonymous</RootNamespace>
     <AssemblyName>Automatonymous.NHibernateIntegration</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Automatonymous.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
+
   <PropertyGroup>
     <PackageId>Automatonymous.NHibernate</PackageId>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Automatonymous.NHibernateIntegration.xml</DocumentationFile>
-    <Description>Automatonymous, an open source state machine library, usable with MassTransit</Description>
-    <PackageProjectUrl>https://github.com/MassTransit/Automatonymous</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/MassTransit/Automatonymous/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/MassTransit/Automatonymous</RepositoryUrl>
-    <PackageTags>MassTransit</PackageTags>
-    <Authors>Chris Patterson</Authors>
-    <NoWarn>1701;1702;1705;1591;1712</NoWarn>
+    <Description>$(Description)</Description>
+    <PackageTags>MassTransit;Automatonymous;NHibernate</PackageTags>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;1712</NoWarn>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
     <PackageReference Include="NHibernate" Version="5.2.3" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

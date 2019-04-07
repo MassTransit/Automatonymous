@@ -1,31 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
-    <DebugType>portable</DebugType>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Automatonymous.snk</AssemblyOriginatorKeyFile>
-    <LangVersion>7.2</LangVersion>
+    <NoWarn>$(NoWarn);1701;1702;1705;1591;1712</NoWarn>
   </PropertyGroup>
+
   <PropertyGroup>
-    <PackageId>Automatonymous</PackageId>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Automatonymous.xml</DocumentationFile>
+    <PackageTags>MassTransit;Automatonymous</PackageTags>
     <Description>Automatonymous, an open source state machine library, usable with MassTransit</Description>
-    <PackageProjectUrl>https://github.com/MassTransit/Automatonymous</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/MassTransit/Automatonymous/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/MassTransit/Automatonymous</RepositoryUrl>
-    <PackageTags>MassTransit state-machine state event</PackageTags>
-    <Authors>Chris Patterson</Authors>
-    <Copyright>Copyright 2012-2018 Chris Patterson</Copyright>
-    <NoWarn>1701;1702;1705;1591;1712</NoWarn>
   </PropertyGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETCORE</DefineConstants>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="GreenPipes" Version="2.1.4" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
   </ItemGroup>
 </Project>
