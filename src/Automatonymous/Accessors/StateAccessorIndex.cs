@@ -36,7 +36,7 @@ namespace Automatonymous.Accessors
         {
             get
             {
-                if (string.IsNullOrWhiteSpace("name"))
+                if (string.IsNullOrWhiteSpace(name))
                     throw new ArgumentNullException(nameof(name));
 
                 for (int i = 1; i < _states.Value.Length; i++)
