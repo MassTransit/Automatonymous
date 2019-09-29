@@ -331,7 +331,7 @@ namespace Automatonymous
 
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
-        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// of the required events have been raised. Note that required events cannot be in the initial
         /// state since it would cause extra instances of the state machine to be created
         /// </summary>
         /// <param name="propertyExpression">The composite event</param>
@@ -350,7 +350,7 @@ namespace Automatonymous
 
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
-        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// of the required events have been raised. Note that required events cannot be in the initial
         /// state since it would cause extra instances of the state machine to be created
         /// </summary>
         /// <param name="propertyExpression">The composite event</param>
@@ -371,7 +371,7 @@ namespace Automatonymous
 
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
-        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// of the required events have been raised. Note that required events cannot be in the initial
         /// state since it would cause extra instances of the state machine to be created
         /// </summary>
         /// <param name="propertyExpression">The composite event</param>
@@ -390,7 +390,7 @@ namespace Automatonymous
 
         /// <summary>
         /// Adds a composite event to the state machine. A composite event is triggered when all
-        /// off the required events have been raised. Note that required events cannot be in the initial
+        /// of the required events have been raised. Note that required events cannot be in the initial
         /// state since it would cause extra instances of the state machine to be created
         /// </summary>
         /// <param name="propertyExpression">The composite event</param>
