@@ -1,18 +1,17 @@
 ﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
-    using System.Threading;
     using System.Threading.Tasks;
 
 
@@ -25,18 +24,16 @@ namespace Automatonymous
         /// Raise an event on the current instance, pushing the current event on the stack
         /// </summary>
         /// <param name="event">The event to raise</param>
-        /// <param name="cancellationToken">A cancellation token for this event (also cancelled if the parent event is cancelled)</param>
         /// <returns>An awaitable Task</returns>
-        Task Raise(Event @event, CancellationToken cancellationToken = default);
+        Task Raise(Event @event);
 
         /// <summary>
         /// Raise an event on the current instance, pushing the current event on the stack
         /// </summary>
         /// <param name="event">The event to raise</param>
         /// <param name="data">THe event data</param>
-        /// <param name="cancellationToken">A cancellation token for this event (also cancelled if the parent event is cancelled)</param>
         /// <returns>An awaitable Task</returns>
-        Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default);
+        Task Raise<TData>(Event<TData> @event, TData data);
     }
 
 

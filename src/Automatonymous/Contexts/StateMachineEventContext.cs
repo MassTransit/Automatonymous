@@ -1,21 +1,20 @@
 // Copyright 2011-2016 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
     using System.Threading;
     using System.Threading.Tasks;
     using GreenPipes;
-    using GreenPipes.Payloads;
 
 
     public class StateMachineEventContext<TInstance> :
@@ -29,37 +28,25 @@ namespace Automatonymous.Contexts
 
         public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event,
             CancellationToken cancellationToken)
-            : base(new PayloadCache(), cancellationToken)
+            : base(cancellationToken)
         {
             _machine = machine;
             _instance = instance;
             _event = @event;
         }
 
-        public StateMachineEventContext(PipeContext context, StateMachine<TInstance> machine, TInstance instance, Event @event)
-            : base(context)
+        public Task Raise(Event @event)
         {
-            _machine = machine;
-            _instance = instance;
-            _event = @event;
+            var eventContext = new EventContextProxy<TInstance>(this, @event);
+
+            return _machine.RaiseEvent(eventContext);
         }
 
-        public async Task Raise(Event @event, CancellationToken cancellationToken = default)
+        public Task Raise<TData>(Event<TData> @event, TData data)
         {
-            var eventContext = new EventContextProxy<TInstance>(this, @event, cancellationToken);
-            using (eventContext)
-            {
-                await _machine.RaiseEvent(eventContext).ConfigureAwait(false);
-            }
-        }
+            var eventContext = new EventContextProxy<TInstance, TData>(this, @event, data);
 
-        public async Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = default)
-        {
-            var eventContext = new EventContextProxy<TInstance, TData>(this, @event, data, cancellationToken);
-            using (eventContext)
-            {
-                await _machine.RaiseEvent(eventContext).ConfigureAwait(false);
-            }
+            return _machine.RaiseEvent(eventContext);
         }
 
         Event EventContext<TInstance>.Event => _event;
@@ -78,14 +65,6 @@ namespace Automatonymous.Contexts
         public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data,
             CancellationToken cancellationToken)
             : base(machine, instance, @event, cancellationToken)
-        {
-            _data = data;
-            _event = @event;
-        }
-
-        public StateMachineEventContext(PipeContext context, StateMachine<TInstance> machine, TInstance instance, Event<TData> @event,
-            TData data)
-            : base(context, machine, instance, @event)
         {
             _data = data;
             _event = @event;

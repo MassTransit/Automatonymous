@@ -1,14 +1,14 @@
 // Copyright 2011-2016 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Contexts
 {
@@ -18,7 +18,7 @@ namespace Automatonymous.Contexts
 
 
     public class EventBehaviorContext<TInstance> :
-        BasePipeContext,
+        ProxyPipeContext,
         BehaviorContext<TInstance>
     {
         readonly InstanceContext<TInstance> _context;
@@ -39,20 +39,20 @@ namespace Automatonymous.Contexts
             _context = context;
         }
 
-        public Task Raise(Event @event, CancellationToken cancellationToken = new CancellationToken())
+        public Task Raise(Event @event)
         {
             if (_eventContext == null)
                 throw new AutomatonymousException($"Events cannot be raised from an instance only: {@event.Name}");
 
-            return _eventContext.Raise(@event, cancellationToken);
+            return _eventContext.Raise(@event);
         }
 
-        public Task Raise<TData>(Event<TData> @event, TData data, CancellationToken cancellationToken = new CancellationToken())
+        public Task Raise<TData>(Event<TData> @event, TData data)
         {
             if (_eventContext == null)
                 throw new AutomatonymousException($"Events cannot be raised from an instance only: {@event.Name}");
 
-            return _eventContext.Raise(@event, data, cancellationToken);
+            return _eventContext.Raise(@event, data);
         }
 
         public Event Event { get; }
