@@ -1,14 +1,14 @@
 ﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous.Graphing
 {
@@ -18,6 +18,7 @@ namespace Automatonymous.Graphing
     using Activities;
     using Events;
     using System.Reflection;
+
 
     public class GraphStateMachineVisitor<TInstance> :
         StateMachineVisitor
@@ -107,16 +108,14 @@ namespace Automatonymous.Graphing
 
         public void Visit(Activity activity, Action<Activity> next)
         {
-            var transitionActivity = activity as TransitionActivity<TInstance>;
-            if (transitionActivity != null)
+            if (activity is TransitionActivity<TInstance> transitionActivity)
             {
                 InspectTransitionActivity(transitionActivity);
                 next(activity);
                 return;
             }
 
-            var compositeActivity = activity as CompositeEventActivity<TInstance>;
-            if (compositeActivity != null)
+            if (activity is CompositeEventActivity<TInstance> compositeActivity)
             {
                 InspectCompositeEventActivity(compositeActivity);
                 next(activity);
@@ -124,7 +123,8 @@ namespace Automatonymous.Graphing
             }
 
             Type activityType = activity.GetType();
-            Type compensateType = activityType.GetTypeInfo().IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
+            Type compensateType = activityType.GetTypeInfo().IsGenericType
+                                  && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
                 ? activityType.GetGenericArguments().Skip(1).First()
                 : null;
 

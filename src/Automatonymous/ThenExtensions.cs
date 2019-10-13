@@ -1,14 +1,14 @@
 // Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the
+// License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 namespace Automatonymous
 {
@@ -117,6 +117,19 @@ namespace Automatonymous
             where TInstance : class
         {
             var activity = new FactoryActivity<TInstance>(activityFactory);
+            return binder.Add(activity);
+        }
+
+        /// <summary>
+        /// Add an activity execution to the event's behavior
+        /// </summary>
+        /// <typeparam name="TInstance">The state machine instance type</typeparam>
+        /// <param name="binder">The event binder</param>
+        /// <param name="activity">An existing activity</param>
+        public static EventActivityBinder<TInstance> Execute<TInstance>(this EventActivityBinder<TInstance> binder,
+            Activity<TInstance> activity)
+            where TInstance : class
+        {
             return binder.Add(activity);
         }
 
