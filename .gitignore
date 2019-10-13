@@ -41,3 +41,10 @@ AppPackages/
 
 _book
 /node_modules
+
+# Cake
+tools/**
+!tools/packages.config
+
+# Artifacts
+artifacts/**
