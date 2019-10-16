@@ -35,6 +35,15 @@ namespace Automatonymous.Contexts
             _event = @event;
         }
 
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event @event,
+            CancellationToken cancellationToken, params object[] payloads)
+            : base(cancellationToken, payloads)
+        {
+            _machine = machine;
+            _instance = instance;
+            _event = @event;
+        }
+
         public Task Raise(Event @event)
         {
             var eventContext = new EventContextProxy<TInstance>(this, @event);
@@ -65,6 +74,14 @@ namespace Automatonymous.Contexts
         public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data,
             CancellationToken cancellationToken)
             : base(machine, instance, @event, cancellationToken)
+        {
+            _data = data;
+            _event = @event;
+        }
+
+        public StateMachineEventContext(StateMachine<TInstance> machine, TInstance instance, Event<TData> @event, TData data,
+            CancellationToken cancellationToken, params object[] payloads)
+            : base(machine, instance, @event, cancellationToken, payloads)
         {
             _data = data;
             _event = @event;
