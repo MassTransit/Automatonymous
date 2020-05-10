@@ -3,10 +3,9 @@
     using System;
     using System.Linq;
     using Graphing;
-    using QuickGraph;
-    using QuickGraph.Graphviz;
-    using QuickGraph.Graphviz.Dot;
-
+    using QuikGraph;
+    using QuikGraph.Graphviz;
+    using QuikGraph.Graphviz.Dot;
 
     public class StateMachineGraphvizGenerator
     {
@@ -20,48 +19,43 @@
         public string CreateDotFile()
         {
             var algorithm = new GraphvizAlgorithm<Vertex, Edge<Vertex>>(_graph);
-            algorithm.FormatEdge += EdgeStyler;
             algorithm.FormatVertex += VertexStyler;
             return algorithm.Generate();
         }
 
-        void EdgeStyler(object sender, FormatEdgeEventArgs<Vertex, Edge<Vertex>> e)
+        private static void VertexStyler(object sender, FormatVertexEventArgs<Vertex> args)
         {
-        }
+            args.VertexFormat.Label = args.Vertex.Title;
 
-        void VertexStyler(object sender, FormatVertexEventArgs<Vertex> e)
-        {
-            e.VertexFormatter.Label = e.Vertex.Title;
-
-            if (e.Vertex.VertexType == typeof(Event))
+            if (args.Vertex.VertexType == typeof(Event))
             {
-                e.VertexFormatter.FontColor = GraphvizColor.Black;
-                e.VertexFormatter.Shape = GraphvizVertexShape.Rectangle;
+                args.VertexFormat.FontColor = GraphvizColor.Black;
+                args.VertexFormat.Shape = GraphvizVertexShape.Rectangle;
 
-                if (e.Vertex.TargetType != typeof(Event) && e.Vertex.TargetType != typeof(Exception))
-                    e.VertexFormatter.Label += "<" + e.Vertex.TargetType.Name + ">";
+                if (args.Vertex.TargetType != typeof(Event) && args.Vertex.TargetType != typeof(Exception))
+                    args.VertexFormat.Label += "<" + args.Vertex.TargetType.Name + ">";
             }
             else
             {
-                switch (e.Vertex.Title)
+                switch (args.Vertex.Title)
                 {
                     case "Initial":
-                        e.VertexFormatter.FillColor = GraphvizColor.White;
+                        args.VertexFormat.FillColor = GraphvizColor.White;
                         break;
                     case "Final":
-                        e.VertexFormatter.FillColor = GraphvizColor.White;
+                        args.VertexFormat.FillColor = GraphvizColor.White;
                         break;
                     default:
-                        e.VertexFormatter.FillColor = GraphvizColor.White;
-                        e.VertexFormatter.FontColor = GraphvizColor.Black;
+                        args.VertexFormat.FillColor = GraphvizColor.White;
+                        args.VertexFormat.FontColor = GraphvizColor.Black;
                         break;
                 }
 
-                e.VertexFormatter.Shape = GraphvizVertexShape.Ellipse;
+                args.VertexFormat.Shape = GraphvizVertexShape.Ellipse;
             }
         }
 
-        static AdjacencyGraph<Vertex, Edge<Vertex>> CreateAdjacencyGraph(StateMachineGraph data)
+        private static AdjacencyGraph<Vertex, Edge<Vertex>> CreateAdjacencyGraph(StateMachineGraph data)
         {
             var graph = new AdjacencyGraph<Vertex, Edge<Vertex>>();
 
