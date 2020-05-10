@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-    <PackageReference Include="QuickGraph.NETStandard" Version="3.8.0"/>
+    <PackageReference Include="QuikGraph" Version="2.2.0"/>
+    <PackageReference Include="QuikGraph.Graphviz" Version="2.2.0"/>
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj"/>
   </ItemGroup>
 
