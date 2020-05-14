@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
     using System;
     using GreenPipes;
@@ -21,6 +9,26 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Observing_state_machine_instance_state_changes
     {
+        [Test]
+        public void Should_have_first_moved_to_initial()
+        {
+            Assert.AreEqual(null, _observer.Events[0].Previous);
+            Assert.AreEqual(_machine.Initial, _observer.Events[0].Current);
+        }
+
+        [Test]
+        public void Should_have_second_switched_to_running()
+        {
+            Assert.AreEqual(_machine.Initial, _observer.Events[1].Previous);
+            Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
+        }
+
+        [Test]
+        public void Should_raise_the_event()
+        {
+            Assert.AreEqual(3, _observer.Events.Count);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
@@ -64,13 +72,30 @@ namespace Automatonymous.Tests
             public Event Initialized { get; private set; }
             public Event Finish { get; private set; }
         }
+    }
 
+
+    [TestFixture]
+    public class Observing_events_with_substates
+    {
+        [Test]
+        public void Should_have_all_events()
+        {
+            Assert.AreEqual(2, _eventObserver.Events.Count);
+        }
 
         [Test]
         public void Should_have_first_moved_to_initial()
         {
             Assert.AreEqual(null, _observer.Events[0].Previous);
             Assert.AreEqual(_machine.Initial, _observer.Events[0].Current);
+        }
+
+        [Test]
+        public void Should_have_fourth_switched_to_finished()
+        {
+            Assert.AreEqual(_machine.Resting, _observer.Events[3].Previous);
+            Assert.AreEqual(_machine.Final, _observer.Events[3].Current);
         }
 
         [Test]
@@ -81,16 +106,39 @@ namespace Automatonymous.Tests
         }
 
         [Test]
+        public void Should_have_third_switched_to_resting()
+        {
+            Assert.AreEqual(_machine.Running, _observer.Events[2].Previous);
+            Assert.AreEqual(_machine.Resting, _observer.Events[2].Current);
+        }
+
+        [Test]
+        public void Should_have_transition_1()
+        {
+            Assert.AreEqual("Initialized", _eventObserver.Events[0].Event.Name);
+        }
+
+        [Test]
+        public void Should_have_transition_2()
+        {
+            Assert.AreEqual("LegCramped", _eventObserver.Events[1].Event.Name);
+        }
+
+        [Test]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(3, _observer.Events.Count);
+            Assert.AreEqual(4, _observer.Events.Count);
         }
-    }
 
 
-    [TestFixture]
-    public class Observing_events_with_substates
-    {
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
@@ -150,20 +198,23 @@ namespace Automatonymous.Tests
             public Event LegCramped { get; private set; }
             public Event Finish { get; private set; }
         }
+    }
 
 
-        [Test]
-        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
-        {
-            ProbeResult result = _machine.GetProbeResult();
-
-            Console.WriteLine(result.ToJsonString());
-        }
-
+    [TestFixture]
+    public class Observing_events_with_substates_part_deux
+    {
         [Test]
         public void Should_have_all_events()
         {
             Assert.AreEqual(2, _eventObserver.Events.Count);
+        }
+
+        [Test]
+        public void Should_have_fifth_switched_to_finished()
+        {
+            Assert.AreEqual(_machine.Running, _observer.Events[4].Previous);
+            Assert.AreEqual(_machine.Final, _observer.Events[4].Current);
         }
 
         [Test]
@@ -177,7 +228,7 @@ namespace Automatonymous.Tests
         public void Should_have_fourth_switched_to_finished()
         {
             Assert.AreEqual(_machine.Resting, _observer.Events[3].Previous);
-            Assert.AreEqual(_machine.Final, _observer.Events[3].Current);
+            Assert.AreEqual(_machine.Running, _observer.Events[3].Current);
         }
 
         [Test]
@@ -197,26 +248,21 @@ namespace Automatonymous.Tests
         [Test]
         public void Should_have_transition_1()
         {
-            Assert.AreEqual("Initialized", _eventObserver.Events[0].Event.Name);
+            Assert.AreEqual("Running.BeforeEnter", _eventObserver.Events[0].Event.Name);
         }
 
         [Test]
         public void Should_have_transition_2()
         {
-            Assert.AreEqual("LegCramped", _eventObserver.Events[1].Event.Name);
+            Assert.AreEqual("Running.AfterLeave", _eventObserver.Events[1].Event.Name);
         }
 
         [Test]
         public void Should_raise_the_event()
         {
-            Assert.AreEqual(4, _observer.Events.Count);
+            Assert.AreEqual(5, _observer.Events.Count);
         }
-    }
 
-
-    [TestFixture]
-    public class Observing_events_with_substates_part_deux
-    {
         Instance _instance;
         InstanceStateMachine _machine;
         StateChangeObserver<Instance> _observer;
@@ -281,66 +327,6 @@ namespace Automatonymous.Tests
             public Event LegCramped { get; private set; }
             public Event Recovered { get; private set; }
             public Event Finish { get; private set; }
-        }
-
-
-        [Test]
-        public void Should_have_all_events()
-        {
-            Assert.AreEqual(2, _eventObserver.Events.Count);
-        }
-
-        [Test]
-        public void Should_have_fifth_switched_to_finished()
-        {
-            Assert.AreEqual(_machine.Running, _observer.Events[4].Previous);
-            Assert.AreEqual(_machine.Final, _observer.Events[4].Current);
-        }
-
-        [Test]
-        public void Should_have_first_moved_to_initial()
-        {
-            Assert.AreEqual(null, _observer.Events[0].Previous);
-            Assert.AreEqual(_machine.Initial, _observer.Events[0].Current);
-        }
-
-        [Test]
-        public void Should_have_fourth_switched_to_finished()
-        {
-            Assert.AreEqual(_machine.Resting, _observer.Events[3].Previous);
-            Assert.AreEqual(_machine.Running, _observer.Events[3].Current);
-        }
-
-        [Test]
-        public void Should_have_second_switched_to_running()
-        {
-            Assert.AreEqual(_machine.Initial, _observer.Events[1].Previous);
-            Assert.AreEqual(_machine.Running, _observer.Events[1].Current);
-        }
-
-        [Test]
-        public void Should_have_third_switched_to_resting()
-        {
-            Assert.AreEqual(_machine.Running, _observer.Events[2].Previous);
-            Assert.AreEqual(_machine.Resting, _observer.Events[2].Current);
-        }
-
-        [Test]
-        public void Should_have_transition_1()
-        {
-            Assert.AreEqual("Running.BeforeEnter", _eventObserver.Events[0].Event.Name);
-        }
-
-        [Test]
-        public void Should_have_transition_2()
-        {
-            Assert.AreEqual("Running.AfterLeave", _eventObserver.Events[1].Event.Name);
-        }
-
-        [Test]
-        public void Should_raise_the_event()
-        {
-            Assert.AreEqual(5, _observer.Events.Count);
         }
     }
 }

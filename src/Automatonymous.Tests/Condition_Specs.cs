@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
     using System;
     using System.Threading.Tasks;
@@ -21,11 +9,27 @@ namespace Automatonymous.Tests
     public class Using_a_condition_in_a_state_machine
     {
         [Test]
+        public async Task Should_allow_if_condition_to_be_evaluated()
+        {
+            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
+
+            Assert.That(_instance.CurrentState, Is.Not.EqualTo(_machine.ShouldNotBeHere));
+        }
+
+        [Test]
         public async Task Should_allow_the_condition_to_be_used()
         {
             await _machine.RaiseEvent(_instance, _machine.Started, new Start {InitializeOnly = true});
 
             Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Initialized));
+        }
+
+        [Test]
+        public async Task Should_evaluate_else_statement_when_if_condition__is_false()
+        {
+            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
+
+            Assert.That(_instance.ShouldBeCalled, Is.True);
         }
 
         [Test]
@@ -36,22 +40,6 @@ namespace Automatonymous.Tests
             Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Running));
         }
 
-        [Test]
-        public async Task Should_allow_if_condition_to_be_evaluated()
-        {
-            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
-
-            Assert.That(_instance.CurrentState, Is.Not.EqualTo(_machine.ShouldNotBeHere));
-        }
-
-        [Test]
-        public async Task Should_evaluate_else_statement_when_if_condition__is_false()
-        {
-            await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
-
-            Assert.That(_instance.ShouldBeCalled, Is.True);
-        }
-        
 
         [SetUp]
         public void Specifying_an_event_activity()
@@ -68,7 +56,7 @@ namespace Automatonymous.Tests
         {
             public bool InitializeOnly { get; set; }
             public State CurrentState { get; set; }
-            
+
             public bool ShouldBeCalled { get; set; }
         }
 
@@ -86,7 +74,7 @@ namespace Automatonymous.Tests
 
                 During(Initial,
                     When(ExplicitFilterStarted, context => true)
-                        .IfElse(context => false, 
+                        .IfElse(context => false,
                             binder => binder
                                 .Then(context => Console.WriteLine("Should not be here!"))
                                 .TransitionTo(ShouldNotBeHere),
@@ -123,25 +111,10 @@ namespace Automatonymous.Tests
         }
     }
 
+
     [TestFixture]
     public class Using_an_async_condition_in_a_state_machine
     {
-        [Test]
-        public async Task Should_allow_the_condition_to_be_used()
-        {
-            await _machine.RaiseEvent(_instance, _machine.Started, new Start {InitializeOnly = true});
-
-            Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Initialized));
-        }
-
-        [Test]
-        public async Task Should_work()
-        {
-            await _machine.RaiseEvent(_instance, _machine.Started, new Start());
-
-            Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Running));
-        }
-
         [Test]
         public async Task Should_allow_if_condition_to_be_evaluated()
         {
@@ -151,11 +124,27 @@ namespace Automatonymous.Tests
         }
 
         [Test]
+        public async Task Should_allow_the_condition_to_be_used()
+        {
+            await _machine.RaiseEvent(_instance, _machine.Started, new Start {InitializeOnly = true});
+
+            Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Initialized));
+        }
+
+        [Test]
         public async Task Should_evaluate_else_statement_when_if_condition__is_false()
         {
             await _machine.RaiseEvent(_instance, _machine.ExplicitFilterStarted, new StartedExplicitFilter());
 
             Assert.That(_instance.ShouldBeCalled, Is.True);
+        }
+
+        [Test]
+        public async Task Should_work()
+        {
+            await _machine.RaiseEvent(_instance, _machine.Started, new Start());
+
+            Assert.That(_instance.CurrentState, Is.EqualTo(_machine.Running));
         }
 
         [SetUp]
@@ -185,12 +174,13 @@ namespace Automatonymous.Tests
                 During(Initial,
                     When(Started)
                         .Then(context => context.Instance.InitializeOnly = context.Data.InitializeOnly)
-                        .IfAsync(context => Task.FromResult(context.Data.InitializeOnly), x => x.Then(context => Console.WriteLine("Initializing Only!")))
+                        .IfAsync(context => Task.FromResult(context.Data.InitializeOnly),
+                            x => x.Then(context => Console.WriteLine("Initializing Only!")))
                         .TransitionTo(Initialized));
 
                 During(Initial,
                     When(ExplicitFilterStarted, context => true)
-                        .IfElseAsync(context => Task.FromResult(false), 
+                        .IfElseAsync(context => Task.FromResult(false),
                             binder => binder
                                 .Then(context => Console.WriteLine("Should not be here!"))
                                 .TransitionTo(ShouldNotBeHere),
@@ -202,7 +192,8 @@ namespace Automatonymous.Tests
                     When(Finish)
                         .Finalize());
 
-                WhenEnter(Initialized, x => x.IfAsync(context => Task.FromResult(!context.Instance.InitializeOnly), b => b.TransitionTo(Running)));
+                WhenEnter(Initialized,
+                    x => x.IfAsync(context => Task.FromResult(!context.Instance.InitializeOnly), b => b.TransitionTo(Running)));
             }
 
             public State Running { get; private set; }

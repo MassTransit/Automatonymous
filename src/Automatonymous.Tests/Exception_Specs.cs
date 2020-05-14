@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
     using System;
     using System.Threading.Tasks;
@@ -22,6 +10,87 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class When_an_action_throws_an_exception
     {
+        [Test]
+        public void Should_capture_the_exception_message()
+        {
+            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+        }
+
+        [Test]
+        public void Should_capture_the_exception_type()
+        {
+            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+        }
+
+        [Test]
+        public void Should_have_called_the_async_if_block()
+        {
+            Assert.IsTrue(_instance.CalledThenClauseAsync);
+        }
+
+        [Test]
+        public void Should_have_called_the_exception_handler()
+        {
+            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_async_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_action()
+        {
+            Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_if_block()
+        {
+            Assert.IsTrue(_instance.CalledThenClause);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_async_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_regular_exception()
+        {
+            Assert.IsFalse(_instance.ShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_second_action()
+        {
+            Assert.IsTrue(_instance.NotCalled);
+        }
+
+
+        [Test]
+        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
+        {
+            ProbeResult result = _machine.GetProbeResult();
+
+            Console.WriteLine(result.ToJsonString());
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -77,11 +146,11 @@ namespace Automatonymous.Tests
                             .IfAsync(context => Task.FromResult(true), b => b
                                 .Then(context => context.Instance.CalledThenClauseAsync = true)
                             )
-                            .IfElse(context => false, 
+                            .IfElse(context => false,
                                 b => b.Then(context => context.Instance.ThenShouldNotBeCalled = true),
                                 b => b.Then(context => context.Instance.ElseShouldBeCalled = true)
                             )
-                            .IfElseAsync(context => Task.FromResult(false), 
+                            .IfElseAsync(context => Task.FromResult(false),
                                 b => b.Then(context => context.Instance.ThenAsyncShouldNotBeCalled = true),
                                 b => b.Then(context => context.Instance.ElseAsyncShouldBeCalled = true)
                             )
@@ -99,17 +168,12 @@ namespace Automatonymous.Tests
 
             public Event Initialized { get; private set; }
         }
+    }
 
 
-        [Test]
-        public void Should_return_a_wonderful_breakdown_of_the_guts_inside_it()
-        {
-            ProbeResult result = _machine.GetProbeResult();
-
-            Console.WriteLine(result.ToJsonString());
-        }
-
-
+    [TestFixture]
+    public class When_the_exception_does_not_match_the_type
+    {
         [Test]
         public void Should_capture_the_exception_message()
         {
@@ -134,11 +198,6 @@ namespace Automatonymous.Tests
             Assert.IsTrue(_instance.Called);
         }
 
-        [Test]
-        public void Should_not_have_called_the_regular_exception()
-        {
-            Assert.IsFalse(_instance.ShouldNotBeCalled);
-        }
 
         [Test]
         public void Should_not_have_called_the_second_action()
@@ -146,46 +205,6 @@ namespace Automatonymous.Tests
             Assert.IsTrue(_instance.NotCalled);
         }
 
-        [Test]
-        public void Should_have_called_the_first_if_block()
-        {
-            Assert.IsTrue(_instance.CalledThenClause);
-        }
-
-        [Test]
-        public void Should_have_called_the_async_if_block()
-        {
-            Assert.IsTrue(_instance.CalledThenClauseAsync);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_false_condition_then_block()
-        {
-            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_false_async_condition_then_block()
-        {
-            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
-        }
-
-        [Test]
-        public void Should_have_called_the_false_condition_else_block()
-        {
-            Assert.IsTrue(_instance.ElseShouldBeCalled);
-        }
-
-        [Test]
-        public void Should_have_called_the_false_async_condition_else_block()
-        {
-            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
-        }
-    }
-
-    [TestFixture]
-    public class When_the_exception_does_not_match_the_type
-    {
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -239,43 +258,18 @@ namespace Automatonymous.Tests
 
             public Event Initialized { get; private set; }
         }
-
-
-        [Test]
-        public void Should_capture_the_exception_message()
-        {
-            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
-        }
-
-        [Test]
-        public void Should_capture_the_exception_type()
-        {
-            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
-        }
-
-        [Test]
-        public void Should_have_called_the_exception_handler()
-        {
-            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
-        }
-
-        [Test]
-        public void Should_have_called_the_first_action()
-        {
-            Assert.IsTrue(_instance.Called);
-        }
-
-
-        [Test]
-        public void Should_not_have_called_the_second_action()
-        {
-            Assert.IsTrue(_instance.NotCalled);
-        }
     }
+
 
     [TestFixture]
     public class When_the_exception_is_caught
     {
+        [Test]
+        public void Should_have_called_the_subsequent_action()
+        {
+            Assert.IsTrue(_instance.Called);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -313,18 +307,78 @@ namespace Automatonymous.Tests
             public State Failed { get; private set; }
             public Event Initialized { get; private set; }
         }
-
-        [Test]
-        public void Should_have_called_the_subsequent_action()
-        {
-            Assert.IsTrue(_instance.Called);
-        }
     }
 
 
     [TestFixture]
     public class When_an_action_throws_an_exception_on_data_events
     {
+        [Test]
+        public void Should_capture_the_exception_message()
+        {
+            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
+        }
+
+        [Test]
+        public void Should_capture_the_exception_type()
+        {
+            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
+        }
+
+        [Test]
+        public void Should_have_called_the_async_if_block()
+        {
+            Assert.IsTrue(_instance.CalledSecondThenClause);
+        }
+
+        [Test]
+        public void Should_have_called_the_exception_handler()
+        {
+            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_async_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_false_condition_else_block()
+        {
+            Assert.IsTrue(_instance.ElseShouldBeCalled);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_action()
+        {
+            Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public void Should_have_called_the_first_if_block()
+        {
+            Assert.IsTrue(_instance.CalledThenClause);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_async_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_false_condition_then_block()
+        {
+            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
+        }
+
+        [Test]
+        public void Should_not_have_called_the_second_action()
+        {
+            Assert.IsTrue(_instance.NotCalled);
+        }
+
         Instance _instance;
         InstanceStateMachine _machine;
 
@@ -385,11 +439,11 @@ namespace Automatonymous.Tests
                             .IfAsync(context => Task.FromResult(true), b => b
                                 .Then(context => context.Instance.CalledSecondThenClause = true)
                             )
-                            .IfElse(context => false, 
+                            .IfElse(context => false,
                                 b => b.Then(context => context.Instance.ThenShouldNotBeCalled = true),
                                 b => b.Then(context => context.Instance.ElseShouldBeCalled = true)
                             )
-                            .IfElseAsync(context => Task.FromResult(false), 
+                            .IfElseAsync(context => Task.FromResult(false),
                                 b => b.Then(context => context.Instance.ThenAsyncShouldNotBeCalled = true),
                                 b => b.Then(context => context.Instance.ElseAsyncShouldBeCalled = true)
                             )
@@ -405,73 +459,5 @@ namespace Automatonymous.Tests
 
             public Event<Init> Initialized { get; private set; }
         }
-
-
-        [Test]
-        public void Should_capture_the_exception_message()
-        {
-            Assert.AreEqual("Boom!", _instance.ExceptionMessage);
-        }
-
-        [Test]
-        public void Should_capture_the_exception_type()
-        {
-            Assert.AreEqual(typeof(ApplicationException), _instance.ExceptionType);
-        }
-
-        [Test]
-        public void Should_have_called_the_exception_handler()
-        {
-            Assert.AreEqual(_machine.Failed, _instance.CurrentState);
-        }
-
-        [Test]
-        public void Should_have_called_the_first_action()
-        {
-            Assert.IsTrue(_instance.Called);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_second_action()
-        {
-            Assert.IsTrue(_instance.NotCalled);
-        }
-
-        [Test]
-        public void Should_have_called_the_first_if_block()
-        {
-            Assert.IsTrue(_instance.CalledThenClause);
-        }
-
-        [Test]
-        public void Should_have_called_the_async_if_block()
-        {
-            Assert.IsTrue(_instance.CalledSecondThenClause);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_false_condition_then_block()
-        {
-            Assert.IsFalse(_instance.ThenShouldNotBeCalled);
-        }
-
-        [Test]
-        public void Should_not_have_called_the_false_async_condition_then_block()
-        {
-            Assert.IsFalse(_instance.ThenAsyncShouldNotBeCalled);
-        }
-
-        [Test]
-        public void Should_have_called_the_false_condition_else_block()
-        {
-            Assert.IsTrue(_instance.ElseShouldBeCalled);
-        }
-
-        [Test]
-        public void Should_have_called_the_false_async_condition_else_block()
-        {
-            Assert.IsTrue(_instance.ElseAsyncShouldBeCalled);
-        }
     }
-
 }

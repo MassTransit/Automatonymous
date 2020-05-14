@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
     using System;
     using System.Linq;
@@ -65,6 +53,7 @@ namespace Automatonymous.Tests
         }
     }
 
+
     [TestFixture]
     public class Raising_an_ignored_event_that_is_not_filtered
     {
@@ -75,7 +64,8 @@ namespace Automatonymous.Tests
 
             await _machine.RaiseEvent(instance, x => x.Start);
 
-            Assert.That(async () => await _machine.RaiseEvent(instance, x => x.Charge, new A { Volts = 12 }), Throws.TypeOf<UnhandledEventException>());
+            Assert.That(async () => await _machine.RaiseEvent(instance, x => x.Charge, new A {Volts = 12}),
+                Throws.TypeOf<UnhandledEventException>());
         }
 
         TestStateMachine _machine;
@@ -120,7 +110,6 @@ namespace Automatonymous.Tests
         {
             public int Volts { get; set; }
         }
-
     }
 
 
@@ -137,16 +126,6 @@ namespace Automatonymous.Tests
             await _machine.RaiseEvent(instance, x => x.Charge, new A {Volts = 12});
 
             Assert.AreEqual(0, instance.Volts);
-        }
-
-        [Test]
-        public async Task Should_silenty_ignore_the_invalid_event()
-        {
-            var instance = new Instance();
-
-            await _machine.RaiseEvent(instance, x => x.Start);
-
-            await _machine.RaiseEvent(instance, x => x.Start);
         }
 
         [Test]
@@ -169,6 +148,16 @@ namespace Automatonymous.Tests
             ProbeResult result = _machine.GetProbeResult();
 
             Console.WriteLine(result.ToJsonString());
+        }
+
+        [Test]
+        public async Task Should_silenty_ignore_the_invalid_event()
+        {
+            var instance = new Instance();
+
+            await _machine.RaiseEvent(instance, x => x.Start);
+
+            await _machine.RaiseEvent(instance, x => x.Start);
         }
 
         TestStateMachine _machine;
@@ -214,6 +203,7 @@ namespace Automatonymous.Tests
             public int Volts { get; set; }
         }
     }
+
 
     [TestFixture]
     public class Raising_an_unhandled_event_when_the_state_machine_ignores_all_unhandled_events

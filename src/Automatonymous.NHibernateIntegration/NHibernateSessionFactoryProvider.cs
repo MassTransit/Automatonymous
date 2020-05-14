@@ -1,16 +1,4 @@
-﻿// Copyright 2011 Chris Patterson, Dru Sellers
-//  
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous
+﻿namespace Automatonymous
 {
     using System;
     using System.Collections.Generic;
@@ -82,15 +70,15 @@ namespace Automatonymous
             var mapper = new ModelMapper();
 
             mapper.AfterMapProperty += (inspector, member, customizer) =>
-                {
-                    Type memberType = member.LocalMember.GetPropertyOrFieldType();
+            {
+                Type memberType = member.LocalMember.GetPropertyOrFieldType();
 
-                    if (memberType.IsGenericType
-                        && typeof(Nullable<>).IsAssignableFrom(memberType.GetGenericTypeDefinition()))
-                        customizer.NotNullable(false);
-                    else if (!typeof(string).IsAssignableFrom(memberType))
-                        customizer.NotNullable(true);
-                };
+                if (memberType.IsGenericType
+                    && typeof(Nullable<>).IsAssignableFrom(memberType.GetGenericTypeDefinition()))
+                    customizer.NotNullable(false);
+                else if (!typeof(string).IsAssignableFrom(memberType))
+                    customizer.NotNullable(true);
+            };
 
             mapper.AddMappings(_mappedTypes);
 
@@ -129,13 +117,13 @@ namespace Automatonymous
                 configuration = configuration.Configure();
 
             configuration.DataBaseIntegration(c =>
-                {
-                    if (_databaseIntegration != null)
-                        _databaseIntegration(c);
+            {
+                if (_databaseIntegration != null)
+                    _databaseIntegration(c);
 
-                    c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
-                    c.SchemaAction = SchemaAutoAction.Update;
-                });
+                c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+                c.SchemaAction = SchemaAutoAction.Update;
+            });
 
             return configuration;
         }

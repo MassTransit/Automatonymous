@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
     using System;
     using System.Threading.Tasks;
@@ -22,6 +10,12 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Having_a_dependency_available
     {
+        [Test]
+        public void Should_capture_the_value()
+        {
+            Assert.AreEqual("79", _claim.Value);
+        }
+
         ClaimAdjustmentInstance _claim;
         InstanceStateMachine _machine;
 
@@ -137,13 +131,6 @@ namespace Automatonymous.Tests
             {
                 return (x + y).ToString();
             }
-        }
-
-
-        [Test]
-        public void Should_capture_the_value()
-        {
-            Assert.AreEqual("79", _claim.Value);
         }
     }
 }

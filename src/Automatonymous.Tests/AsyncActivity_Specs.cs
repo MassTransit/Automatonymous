@@ -1,18 +1,5 @@
-﻿// Copyright 2011-2015 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Tests
+﻿namespace Automatonymous.Tests
 {
-    using System;
     using System.Threading.Tasks;
     using GreenPipes;
     using NUnit.Framework;
@@ -21,6 +8,18 @@ namespace Automatonymous.Tests
     [TestFixture]
     public class Using_an_asynchronous_activity
     {
+        [Test]
+        public async Task Should_capture_the_value()
+        {
+            var claim = new TestInstance();
+            var machine = new TestStateMachine();
+
+            await machine.RaiseEvent(claim, machine.Create, new CreateInstance());
+
+            Assert.AreEqual("ExecuteAsync", claim.Value);
+        }
+
+
         class TestInstance
         {
             public State CurrentState { get; set; }
@@ -31,12 +30,14 @@ namespace Automatonymous.Tests
         class SetValueAsyncActivity :
             Activity<TestInstance, CreateInstance>
         {
-            async Task Activity<TestInstance, CreateInstance>.Execute(BehaviorContext<TestInstance, CreateInstance> context, Behavior<TestInstance, CreateInstance> next)
+            async Task Activity<TestInstance, CreateInstance>.Execute(BehaviorContext<TestInstance, CreateInstance> context,
+                Behavior<TestInstance, CreateInstance> next)
             {
                 context.Instance.Value = "ExecuteAsync";
             }
 
-            Task Activity<TestInstance, CreateInstance>.Faulted<TException>(BehaviorExceptionContext<TestInstance, CreateInstance, TException> context,
+            Task Activity<TestInstance, CreateInstance>.Faulted<TException>(
+                BehaviorExceptionContext<TestInstance, CreateInstance, TException> context,
                 Behavior<TestInstance, CreateInstance> next)
             {
                 return next.Faulted(context);
@@ -76,18 +77,6 @@ namespace Automatonymous.Tests
             public State Running { get; private set; }
 
             public Event<CreateInstance> Create { get; private set; }
-        }
-
-
-        [Test]
-        public async Task Should_capture_the_value()
-        {
-            var claim = new TestInstance();
-            var machine = new TestStateMachine();
-
-            await machine.RaiseEvent(claim, machine.Create, new CreateInstance());
-
-            Assert.AreEqual("ExecuteAsync", claim.Value);
         }
     }
 }

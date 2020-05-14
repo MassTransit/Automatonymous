@@ -1,16 +1,4 @@
-﻿// Copyright 2011-2016 Chris Patterson, Dru Sellers
-// 
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
-// this file except in compliance with the License. You may obtain a copy of the 
-// License at 
-// 
-//     http://www.apache.org/licenses/LICENSE-2.0 
-// 
-// Unless required by applicable law or agreed to in writing, software distributed 
-// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
-// CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-// specific language governing permissions and limitations under the License.
-namespace Automatonymous.Activities
+﻿namespace Automatonymous.Activities
 {
     using System.Threading.Tasks;
     using GreenPipes;
@@ -20,11 +8,12 @@ namespace Automatonymous.Activities
         Activity<TInstance>
         where TInstance : class
     {
-        readonly Behavior<TInstance> _thenBehavior;
-        readonly Behavior<TInstance> _elseBehavior;
         readonly StateMachineAsyncCondition<TInstance> _condition;
+        readonly Behavior<TInstance> _elseBehavior;
+        readonly Behavior<TInstance> _thenBehavior;
 
-        public ConditionActivity(StateMachineAsyncCondition<TInstance> condition, Behavior<TInstance> thenBehavior, Behavior<TInstance> elseBehavior)
+        public ConditionActivity(StateMachineAsyncCondition<TInstance> condition, Behavior<TInstance> thenBehavior,
+            Behavior<TInstance> elseBehavior)
         {
             _condition = condition;
             _thenBehavior = thenBehavior;
@@ -82,11 +71,12 @@ namespace Automatonymous.Activities
         Activity<TInstance>
         where TInstance : class
     {
-        readonly Behavior<TInstance> _thenBehavior;
-        readonly Behavior<TInstance> _elseBehavior;
         readonly StateMachineAsyncCondition<TInstance, TData> _condition;
+        readonly Behavior<TInstance> _elseBehavior;
+        readonly Behavior<TInstance> _thenBehavior;
 
-        public ConditionActivity(StateMachineAsyncCondition<TInstance, TData> condition, Behavior<TInstance> thenBehavior, Behavior<TInstance> elseBehavior)
+        public ConditionActivity(StateMachineAsyncCondition<TInstance, TData> condition, Behavior<TInstance> thenBehavior,
+            Behavior<TInstance> elseBehavior)
         {
             _condition = condition;
             _thenBehavior = thenBehavior;
