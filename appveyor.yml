@@ -1,4 +1,4 @@
-version: 4.2.1.{build}
+version: 5.0.0.{build}
 
 branches:
   only:
@@ -13,7 +13,7 @@ skip_commits:
     - '**/*.html'
 
 image:
-  - Visual Studio 2017
+  - Visual Studio 2019
 
 build: off
 test: off
@@ -29,12 +29,12 @@ deploy:
 - provider: NuGet
   name: Prerelease
   api_key:
-    secure: ZE3aLThP4rx5y4PzUOGw2Qx1C8h2bzx1fqVJSdX8bBnGjqYK6fXUrg9migGVhX9y
+    secure: AyTQNXkcp/QNILolEJI2jLiG1gW3Zd7HQqHGV2zd1mx6t9byAGtdwoH/NXUNPEdm
   on:
     branch: develop
 - provider: NuGet
   name: Release
   api_key:
-    secure: ZE3aLThP4rx5y4PzUOGw2Qx1C8h2bzx1fqVJSdX8bBnGjqYK6fXUrg9migGVhX9y
+    secure: AyTQNXkcp/QNILolEJI2jLiG1gW3Zd7HQqHGV2zd1mx6t9byAGtdwoH/NXUNPEdm
   on:
     branch: master

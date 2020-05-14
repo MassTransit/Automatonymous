@@ -1,23 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.104.0" />
-    <Reference Include="System.XML" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
     <ProjectReference Include="..\Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj" />
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj" />
   </ItemGroup>

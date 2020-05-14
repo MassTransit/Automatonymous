@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Automatonymous</RootNamespace>
     <AssemblyName>Automatonymous.NHibernateIntegration</AssemblyName>
     <SignAssembly>True</SignAssembly>
@@ -15,20 +15,9 @@
     <NoWarn>$(NoWarn);1701;1702;1705;1591;1712</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <DefineConstants>$(DefineConstants);NETCORE;NETSTD</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NHibernate" Version="5.2.7" />
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj" />
   </ItemGroup>
