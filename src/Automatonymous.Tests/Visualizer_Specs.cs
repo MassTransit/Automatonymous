@@ -52,20 +52,19 @@
 8 [shape=rectangle, label=""Suspend""];
 9 [shape=rectangle, label=""Resume""];
 10 [shape=rectangle, label=""Restart<RestartData>""];
-0 -> 5 [ ];
-1 -> 7 [ ];
-1 -> 8 [ ];
-2 -> 10 [ ];
-4 -> 9 [ ];
-5 -> 1 [ ];
-5 -> 6 [ ];
-6 -> 2 [ ];
-7 -> 3 [ ];
-8 -> 4 [ ];
-9 -> 1 [ ];
-10 -> 1 [ ];
-}
-";
+0 -> 5;
+1 -> 7;
+1 -> 8;
+2 -> 10;
+4 -> 9;
+5 -> 1;
+5 -> 6;
+6 -> 2;
+7 -> 3;
+8 -> 4;
+9 -> 1;
+10 -> 1;
+}";
 
 
         class Instance
