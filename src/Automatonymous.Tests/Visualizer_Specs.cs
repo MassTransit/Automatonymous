@@ -88,7 +88,8 @@
                     When(Finished)
                         .TransitionTo(Final),
                     When(Suspend)
-                        .TransitionTo(Suspended));
+                        .TransitionTo(Suspended),
+                    Ignore(Resume));
 
                 During(Suspended,
                     When(Resume)

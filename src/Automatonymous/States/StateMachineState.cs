@@ -70,11 +70,6 @@ namespace Automatonymous.States
                     behavior.Key.Accept(visitor);
                     behavior.Value.Behavior.Accept(visitor);
                 }
-
-                foreach (var ignoredEvent in _ignoredEvents)
-                {
-                    ignoredEvent.Key.Accept(visitor);
-                }
             });
         }
 
