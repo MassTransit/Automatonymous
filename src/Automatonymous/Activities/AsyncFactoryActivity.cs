@@ -33,10 +33,12 @@ namespace Automatonymous.Activities
             await activity.Execute(context, next).ConfigureAwait(false);
         }
 
-        Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
+        async Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
             Behavior<TInstance, TData> next)
         {
-            return next.Faulted(context);
+            Activity<TInstance, TData> activity = await _activityFactory(context).ConfigureAwait(false);
+
+            await activity.Faulted(context, next).ConfigureAwait(false);
         }
     }
 
@@ -72,20 +74,22 @@ namespace Automatonymous.Activities
         {
             Activity<TInstance> activity = await _activityFactory(context).ConfigureAwait(false);
 
-            var upconvert = new WidenBehavior<TInstance, T>(next, context);
-
-            await activity.Execute(context, upconvert).ConfigureAwait(false);
+            await activity.Execute(context, new WidenBehavior<TInstance, T>(next, context)).ConfigureAwait(false);
         }
 
-        Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
+        async Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            return next.Faulted(context);
+            Activity<TInstance> activity = await _activityFactory(context).ConfigureAwait(false);
+
+            await activity.Faulted(context, next).ConfigureAwait(false);
         }
 
-        Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
+        async Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
             Behavior<TInstance, T> next)
         {
-            return next.Faulted(context);
+            var activity = await _activityFactory(context).ConfigureAwait(false);
+
+            await activity.Faulted(context, next).ConfigureAwait(false);
         }
     }
 }

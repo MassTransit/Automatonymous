@@ -7,7 +7,7 @@
 
 
     /// <summary>
-    /// Catches an exception of a specific type and compenstates using the behavior
+    /// Catches an exception of a specific type and compensates using the behavior
     /// </summary>
     /// <typeparam name="TInstance"></typeparam>
     /// <typeparam name="TException"></typeparam>

@@ -37,20 +37,22 @@ namespace Automatonymous.Activities
         {
             Activity<TInstance> activity = _activityFactory(context);
 
-            var upconvert = new WidenBehavior<TInstance, T>(next, context);
-
-            return activity.Execute(context, upconvert);
+            return activity.Execute(context, new WidenBehavior<TInstance, T>(next, context));
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            return next.Faulted(context);
+            Activity<TInstance> activity = _activityFactory(context);
+
+            return activity.Faulted(context, next);
         }
 
         Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
             Behavior<TInstance, T> next)
         {
-            return next.Faulted(context);
+            Activity<TInstance> activity = _activityFactory(context);
+
+            return activity.Faulted(context, new WidenBehavior<TInstance, T>(next, context));
         }
     }
 
@@ -85,7 +87,9 @@ namespace Automatonymous.Activities
         Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
             Behavior<TInstance, TData> next)
         {
-            return next.Faulted(context);
+            Activity<TInstance, TData> activity = _activityFactory(context);
+
+            return activity.Faulted(context, next);
         }
     }
 }
