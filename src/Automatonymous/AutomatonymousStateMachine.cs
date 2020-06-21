@@ -5,6 +5,7 @@ namespace Automatonymous
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Accessors;
     using Activities;
@@ -25,7 +26,7 @@ namespace Automatonymous
         readonly EventObservable<TInstance> _eventObservers;
         readonly State<TInstance> _final;
         readonly State<TInstance> _initial;
-        readonly Lazy<StateMachineRegistration[]> _registrations;
+        readonly Lazy<ConfigurationHelpers.StateMachineRegistration[]> _registrations;
         readonly Dictionary<string, State<TInstance>> _stateCache;
         readonly StateObservable<TInstance> _stateObservers;
         StateAccessor<TInstance> _accessor;
@@ -34,7 +35,7 @@ namespace Automatonymous
 
         protected AutomatonymousStateMachine()
         {
-            _registrations = new Lazy<StateMachineRegistration[]>(GetRegistrations);
+            _registrations = new Lazy<ConfigurationHelpers.StateMachineRegistration[]>(() => ConfigurationHelpers.GetRegistrations(this));
             _stateCache = new Dictionary<string, State<TInstance>>();
             _eventCache = new Dictionary<string, StateMachineEvent<TInstance>>();
 
@@ -256,7 +257,7 @@ namespace Automatonymous
 
             var @event = new TriggerEvent(name);
 
-            property.SetValue(this, @event);
+            ConfigurationHelpers.InitializeEvent(this, property, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
@@ -278,7 +279,7 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
-            property.SetValue(this, @event);
+            ConfigurationHelpers.InitializeEvent(this, property, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
@@ -303,16 +304,7 @@ namespace Automatonymous
 
             var @event = new DataEvent<T>(name);
 
-            if (eventProperty.CanWrite)
-                eventProperty.SetValue(propertyValue, @event);
-            else
-            {
-                var objectProperty = propertyValue.GetType().GetProperty(eventProperty.Name, typeof(Event<T>));
-                if (objectProperty == null || !objectProperty.CanWrite)
-                    throw new ArgumentException($"The event property is not writable: {eventProperty.Name}");
-
-                objectProperty.SetValue(propertyValue, @event);
-            }
+            ConfigurationHelpers.InitializeEventProperty<TProperty, T>(eventProperty, propertyValue, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
         }
@@ -415,7 +407,7 @@ namespace Automatonymous
 
             var @event = new TriggerEvent(name);
 
-            eventProperty.SetValue(this, @event);
+            ConfigurationHelpers.InitializeEvent(this, eventProperty, @event);
 
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
 
@@ -463,7 +455,7 @@ namespace Automatonymous
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
-            property.SetValue(this, state);
+            ConfigurationHelpers.InitializeState(this, property, state);
 
             SetState(name, state);
         }
@@ -492,24 +484,9 @@ namespace Automatonymous
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers);
 
-            SetStateProperty(stateProperty, propertyValue, state);
+            ConfigurationHelpers.InitializeStateProperty(stateProperty, propertyValue, state);
 
             SetState(name, state);
-        }
-
-        static void SetStateProperty<TProperty>(PropertyInfo stateProperty, TProperty propertyValue, StateMachineState<TInstance> state)
-            where TProperty : class
-        {
-            if (stateProperty.CanWrite)
-                stateProperty.SetValue(propertyValue, state);
-            else
-            {
-                var objectProperty = propertyValue.GetType().GetProperty(stateProperty.Name, typeof(State));
-                if (objectProperty == null || !objectProperty.CanWrite)
-                    throw new ArgumentException($"The state property is not writable: {stateProperty.Name}");
-
-                objectProperty.SetValue(propertyValue, state);
-            }
         }
 
         static StateMachineState<TInstance> GetStateProperty<TProperty>(PropertyInfo stateProperty, TProperty propertyValue)
@@ -551,7 +528,7 @@ namespace Automatonymous
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
-            property.SetValue(this, state);
+            ConfigurationHelpers.InitializeState(this, property, state);
 
             SetState(name, state);
         }
@@ -586,7 +563,7 @@ namespace Automatonymous
 
             var state = new StateMachineState<TInstance>(this, name, _eventObservers, superStateInstance);
 
-            SetStateProperty(stateProperty, propertyValue, state);
+            ConfigurationHelpers.InitializeStateProperty(stateProperty, propertyValue, state);
 
             SetState(name, state);
         }
@@ -998,142 +975,214 @@ namespace Automatonymous
         /// </summary>
         void RegisterImplicit()
         {
-            foreach (StateMachineRegistration declaration in _registrations.Value)
+            foreach (ConfigurationHelpers.StateMachineRegistration declaration in _registrations.Value)
                 declaration.Declare(this);
         }
 
-        static IEnumerable<PropertyInfo> GetStateMachineProperties(TypeInfo typeInfo)
-        {
-            if (typeInfo.IsInterface)
-                yield break;
 
-            if (typeInfo.BaseType != null)
+        protected static class ConfigurationHelpers
+        {
+            public static StateMachineRegistration[] GetRegistrations(AutomatonymousStateMachine<TInstance> stateMachine)
             {
-                foreach (PropertyInfo propertyInfo in GetStateMachineProperties(typeInfo.BaseType.GetTypeInfo()))
+                var events = new List<StateMachineRegistration>();
+
+                TypeInfo machineType = stateMachine.GetType().GetTypeInfo();
+
+                IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType);
+
+                foreach (PropertyInfo propertyInfo in properties)
+                {
+                    if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType)
+                    {
+                        if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+                        {
+                            Type declarationType = typeof(DataEventRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
+                                propertyInfo.PropertyType.GetGenericArguments().First());
+                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            events.Add((StateMachineRegistration)declaration);
+                        }
+                    }
+                    else
+                    {
+                        if (propertyInfo.PropertyType == typeof(Event))
+                        {
+                            Type declarationType = typeof(TriggerEventRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            events.Add((StateMachineRegistration)declaration);
+                        }
+                        else if (propertyInfo.PropertyType == typeof(State))
+                        {
+                            Type declarationType = typeof(StateRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            events.Add((StateMachineRegistration)declaration);
+                        }
+                    }
+                }
+
+                return events.ToArray();
+            }
+
+            public static IEnumerable<PropertyInfo> GetStateMachineProperties(TypeInfo typeInfo)
+            {
+                if (typeInfo.IsInterface)
+                    yield break;
+
+                if (typeInfo.BaseType != null)
+                {
+                    foreach (PropertyInfo propertyInfo in GetStateMachineProperties(typeInfo.BaseType.GetTypeInfo()))
+                        yield return propertyInfo;
+                }
+
+                IEnumerable<PropertyInfo> properties = typeInfo.DeclaredMethods
+                    .Where(x => x.IsSpecialName && x.Name.StartsWith("get_") && !x.IsStatic)
+                    .Select(x => typeInfo.GetDeclaredProperty(x.Name.Substring("get_".Length)))
+                    .Where(x => x.CanRead && (x.CanWrite || TryGetBackingField(typeInfo, x, out _)));
+
+                foreach (PropertyInfo propertyInfo in properties)
                     yield return propertyInfo;
             }
 
-            IEnumerable<PropertyInfo> properties = typeInfo.DeclaredMethods
-                .Where(x => x.IsSpecialName && x.Name.StartsWith("get_") && !x.IsStatic)
-                .Select(x => typeInfo.GetDeclaredProperty(x.Name.Substring("get_".Length)))
-                .Where(x => x.CanRead && x.CanWrite);
-
-            foreach (PropertyInfo propertyInfo in properties)
-                yield return propertyInfo;
-        }
-
-        StateMachineRegistration[] GetRegistrations()
-        {
-            var events = new List<StateMachineRegistration>();
-
-            Type machineType = GetType();
-
-            IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType.GetTypeInfo());
-
-            foreach (PropertyInfo propertyInfo in properties)
+            public static bool TryGetBackingField(TypeInfo typeInfo, PropertyInfo property, out FieldInfo backingField)
             {
-                if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType)
-                {
-                    if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
-                    {
-                        Type declarationType = typeof(DataEventRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
-                            propertyInfo.PropertyType.GetGenericArguments().First());
-                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
-                        events.Add((StateMachineRegistration)declaration);
-                    }
-                }
+                backingField = typeInfo
+                    .GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+                    .FirstOrDefault(field =>
+                        field.Attributes.HasFlag(FieldAttributes.Private) &&
+                        field.Attributes.HasFlag(FieldAttributes.InitOnly) &&
+                        field.CustomAttributes.Any(attr => attr.AttributeType == typeof(CompilerGeneratedAttribute)) &&
+                        (field.DeclaringType == property.DeclaringType) &&
+                        field.FieldType.IsAssignableFrom(property.PropertyType) &&
+                        field.Name.StartsWith("<" + property.Name + ">")
+                    );
+
+                return backingField != null;
+            }
+
+            public static void InitializeState(AutomatonymousStateMachine<TInstance> stateMachine, PropertyInfo property,
+                StateMachineState<TInstance> state)
+            {
+                if (property.CanWrite)
+                    property.SetValue(stateMachine, state);
+                else if (TryGetBackingField(stateMachine.GetType().GetTypeInfo(), property, out var backingField))
+                    backingField.SetValue(stateMachine, state);
+                else
+                    throw new ArgumentException($"The state property is not writable: {property.Name}");
+            }
+
+            public static void InitializeStateProperty<TProperty>(PropertyInfo stateProperty, TProperty propertyValue,
+                StateMachineState<TInstance> state)
+                where TProperty : class
+            {
+                if (stateProperty.CanWrite)
+                    stateProperty.SetValue(propertyValue, state);
                 else
                 {
-                    if (propertyInfo.PropertyType == typeof(Event))
-                    {
-                        Type declarationType = typeof(TriggerEventRegistration<>).MakeGenericType(typeof(TInstance), machineType);
-                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
-                        events.Add((StateMachineRegistration)declaration);
-                    }
-                    else if (propertyInfo.PropertyType == typeof(State))
-                    {
-                        Type declarationType = typeof(StateRegistration<>).MakeGenericType(typeof(TInstance), machineType);
-                        object declaration = Activator.CreateInstance(declarationType, propertyInfo);
-                        events.Add((StateMachineRegistration)declaration);
-                    }
+                    var objectProperty = propertyValue.GetType().GetProperty(stateProperty.Name, typeof(State));
+                    if (objectProperty == null || !objectProperty.CanWrite)
+                        throw new ArgumentException($"The state property is not writable: {stateProperty.Name}");
+
+                    objectProperty.SetValue(propertyValue, state);
                 }
             }
 
-            return events.ToArray();
-        }
-
-
-        class DataEventRegistration<TStateMachine, TData> :
-            StateMachineRegistration
-            where TStateMachine : AutomatonymousStateMachine<TInstance>
-        {
-            readonly PropertyInfo _propertyInfo;
-
-            public DataEventRegistration(PropertyInfo propertyInfo)
+            public static void InitializeEvent(AutomatonymousStateMachine<TInstance> stateMachine, PropertyInfo property, Event @event)
             {
-                _propertyInfo = propertyInfo;
+                if (property.CanWrite)
+                    property.SetValue(stateMachine, @event);
+                else if (TryGetBackingField(stateMachine.GetType().GetTypeInfo(), property, out var backingField))
+                    backingField.SetValue(stateMachine, @event);
+                else
+                    throw new ArgumentException($"The event property is not writable: {property.Name}");
             }
 
-            public void Declare(object stateMachine)
+            public static void InitializeEventProperty<TProperty, T>(PropertyInfo eventProperty, TProperty propertyValue, Event @event)
+                where TProperty : class
             {
-                var machine = ((TStateMachine)stateMachine);
-                object existing = _propertyInfo.GetValue(machine);
-                if (existing != null)
-                    return;
+                if (eventProperty.CanWrite)
+                    eventProperty.SetValue(propertyValue, @event);
+                else
+                {
+                    var objectProperty = propertyValue.GetType().GetProperty(eventProperty.Name, typeof(Event<T>));
+                    if (objectProperty == null || !objectProperty.CanWrite)
+                        throw new ArgumentException($"The event property is not writable: {eventProperty.Name}");
 
-                machine.DeclareDataEvent<TData>(_propertyInfo);
-            }
-        }
-
-
-        interface StateMachineRegistration
-        {
-            void Declare(object stateMachine);
-        }
-
-
-        class StateRegistration<TStateMachine> :
-            StateMachineRegistration
-            where TStateMachine : AutomatonymousStateMachine<TInstance>
-        {
-            readonly PropertyInfo _propertyInfo;
-
-            public StateRegistration(PropertyInfo propertyInfo)
-            {
-                _propertyInfo = propertyInfo;
+                    objectProperty.SetValue(propertyValue, @event);
+                }
             }
 
-            public void Declare(object stateMachine)
+
+            public interface StateMachineRegistration
             {
-                var machine = ((TStateMachine)stateMachine);
-                object existing = _propertyInfo.GetValue(machine);
-                if (existing != null)
-                    return;
-
-                machine.DeclareState(_propertyInfo);
-            }
-        }
-
-
-        class TriggerEventRegistration<TStateMachine> :
-            StateMachineRegistration
-            where TStateMachine : AutomatonymousStateMachine<TInstance>
-        {
-            readonly PropertyInfo _propertyInfo;
-
-            public TriggerEventRegistration(PropertyInfo propertyInfo)
-            {
-                _propertyInfo = propertyInfo;
+                void Declare(object stateMachine);
             }
 
-            public void Declare(object stateMachine)
-            {
-                var machine = ((TStateMachine)stateMachine);
-                object existing = _propertyInfo.GetValue(machine);
-                if (existing != null)
-                    return;
 
-                machine.DeclareTriggerEvent(_propertyInfo);
+            public class StateRegistration<TStateMachine> :
+                StateMachineRegistration
+                where TStateMachine : AutomatonymousStateMachine<TInstance>
+            {
+                readonly PropertyInfo _propertyInfo;
+
+                public StateRegistration(PropertyInfo propertyInfo)
+                {
+                    _propertyInfo = propertyInfo;
+                }
+
+                public void Declare(object stateMachine)
+                {
+                    var machine = (TStateMachine)stateMachine;
+                    object existing = _propertyInfo.GetValue(machine);
+                    if (existing != null)
+                        return;
+
+                    machine.DeclareState(_propertyInfo);
+                }
+            }
+
+
+            public class TriggerEventRegistration<TStateMachine> :
+                StateMachineRegistration
+                where TStateMachine : AutomatonymousStateMachine<TInstance>
+            {
+                readonly PropertyInfo _propertyInfo;
+
+                public TriggerEventRegistration(PropertyInfo propertyInfo)
+                {
+                    _propertyInfo = propertyInfo;
+                }
+
+                public void Declare(object stateMachine)
+                {
+                    var machine = (TStateMachine)stateMachine;
+                    object existing = _propertyInfo.GetValue(machine);
+                    if (existing != null)
+                        return;
+
+                    machine.DeclareTriggerEvent(_propertyInfo);
+                }
+            }
+
+
+            public class DataEventRegistration<TStateMachine, TData> :
+                StateMachineRegistration
+                where TStateMachine : AutomatonymousStateMachine<TInstance>
+            {
+                readonly PropertyInfo _propertyInfo;
+
+                public DataEventRegistration(PropertyInfo propertyInfo)
+                {
+                    _propertyInfo = propertyInfo;
+                }
+
+                public void Declare(object stateMachine)
+                {
+                    var machine = (TStateMachine)stateMachine;
+                    object existing = _propertyInfo.GetValue(machine);
+                    if (existing != null)
+                        return;
+
+                    machine.DeclareDataEvent<TData>(_propertyInfo);
+                }
             }
         }
     }

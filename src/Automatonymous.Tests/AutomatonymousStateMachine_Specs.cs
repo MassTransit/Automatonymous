@@ -118,11 +118,13 @@
         }
 
 
-        class TestStateMachine : AutomatonymousStateMachine<Instance>
+        class TestStateMachine :
+            AutomatonymousStateMachine<Instance>
         {
-            public State ThisIsAState { get; private set; }
-            public Event ThisIsASimpleEvent { get; private set; }
-            public Event<EventData> ThisIsAnEventConsumingData { get; private set; }
+            // ReSharper disable UnassignedGetOnlyAutoProperty
+            public State ThisIsAState { get; }
+            public Event ThisIsASimpleEvent { get; }
+            public Event<EventData> ThisIsAnEventConsumingData { get; }
         }
     }
 }
