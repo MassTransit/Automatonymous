@@ -37,6 +37,21 @@ namespace Automatonymous
         }
 
         /// <summary>
+        /// Adds a asynchronous delegate activity to the event's behavior
+        /// </summary>
+        /// <typeparam name="TInstance">The state machine instance type</typeparam>
+        /// <typeparam name="TException">The exception type</typeparam>
+        /// <param name="binder">The event binder</param>
+        /// <param name="asyncAction">The asynchronous delegate</param>
+        public static ExceptionActivityBinder<TInstance, TException> ThenAsync<TInstance, TException>(
+            this ExceptionActivityBinder<TInstance, TException> binder, Func<BehaviorExceptionContext<TInstance, TException>, Task> asyncAction)
+            where TInstance : class
+            where TException : Exception
+        {
+            return binder.Add(new AsyncFaultedActionActivity<TInstance, TException>(asyncAction));
+        }
+
+        /// <summary>
         /// Adds an asynchronous delegate activity to the event's behavior
         /// </summary>
         /// <typeparam name="TInstance">The state machine instance type</typeparam>
@@ -78,6 +93,23 @@ namespace Automatonymous
             where TException : Exception
         {
             return binder.Add(new FaultedActionActivity<TInstance, TData, TException>(action));
+        }
+
+        /// <summary>
+        /// Adds a asynchronous delegate activity to the event's behavior
+        /// </summary>
+        /// <typeparam name="TInstance">The state machine instance type</typeparam>
+        /// <typeparam name="TException">The exception type</typeparam>
+        /// <typeparam name="TData">The event data type</typeparam>
+        /// <param name="binder">The event binder</param>
+        /// <param name="asyncAction">The asynchronous delegate</param>
+        public static ExceptionActivityBinder<TInstance, TData, TException> ThenAsync<TInstance, TData, TException>(
+            this ExceptionActivityBinder<TInstance, TData, TException> binder,
+            Func<BehaviorExceptionContext<TInstance, TData, TException>, Task> asyncAction)
+            where TInstance : class
+            where TException : Exception
+        {
+            return binder.Add(new AsyncFaultedActionActivity<TInstance, TData, TException>(asyncAction));
         }
 
         /// <summary>
