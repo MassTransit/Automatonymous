@@ -29,6 +29,12 @@
         }
 
         [Test]
+        public void Should_have_called_the_async_then_block()
+        {
+            Assert.IsTrue(_instance.ThenAsyncShouldBeCalled);
+        }
+
+        [Test]
         public void Should_have_called_the_exception_handler()
         {
             Assert.AreEqual(_machine.Failed, _instance.CurrentState);
@@ -126,6 +132,8 @@
             public bool ElseShouldBeCalled { get; set; }
             public bool ThenAsyncShouldNotBeCalled { get; set; }
             public bool ElseAsyncShouldBeCalled { get; set; }
+
+            public bool ThenAsyncShouldBeCalled { get; set; }
         }
 
 
@@ -158,6 +166,11 @@
                             {
                                 context.Instance.ExceptionMessage = context.Exception.Message;
                                 context.Instance.ExceptionType = context.Exception.GetType();
+                            })
+                            .ThenAsync(context =>
+                            {
+                                context.Instance.ThenAsyncShouldBeCalled = true;
+                                return Task.CompletedTask;
                             })
                             .TransitionTo(Failed))
                         .Catch<Exception>(ex => ex
