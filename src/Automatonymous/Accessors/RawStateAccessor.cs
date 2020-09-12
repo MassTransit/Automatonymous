@@ -1,6 +1,7 @@
 namespace Automatonymous.Accessors
 {
     using System;
+    using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -52,6 +53,21 @@ namespace Automatonymous.Accessors
                 previousState = _machine.GetState(previous.Name);
 
             return _observer.StateChanged(context, state, previousState);
+        }
+
+        public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states)
+        {
+            if (states == null || states.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(states), "One or more states must be specified");
+
+            var parameterExpression = Expression.Parameter(typeof(TInstance), "instance");
+
+            var statePropertyExpression = Expression.Property(parameterExpression, _property.Property.GetMethod);
+
+            var stateExpression = states.Select(state => Expression.Equal(statePropertyExpression,
+                Expression.Constant(state, typeof(State)))).Aggregate((left, right) => Expression.Or(left, right));
+
+            return Expression.Lambda<Func<TInstance, bool>>(stateExpression, parameterExpression);
         }
 
         public void Probe(ProbeContext context)

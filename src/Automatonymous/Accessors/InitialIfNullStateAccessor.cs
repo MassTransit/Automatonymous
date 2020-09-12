@@ -1,5 +1,7 @@
 ﻿namespace Automatonymous.Accessors
 {
+    using System;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Activities;
     using Behaviors;
@@ -39,6 +41,11 @@
         Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
         {
             return _stateAccessor.Set(context, state);
+        }
+
+        public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states)
+        {
+            return _stateAccessor.GetStateExpression(states);
         }
 
         public void Probe(ProbeContext context)

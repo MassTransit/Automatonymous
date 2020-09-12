@@ -42,6 +42,11 @@ namespace Automatonymous.Accessors
             return _accessor.Value.Set(context, state);
         }
 
+        public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states)
+        {
+            return _accessor.Value.GetStateExpression(states);
+        }
+
         public void Probe(ProbeContext context)
         {
             _accessor.Value.Probe(context);
