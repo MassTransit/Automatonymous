@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Automatonymous
+namespace Automatonymous.Builder
 {
     internal class InternalStateMachineModifier<TInstance> : StateMachineModifier<TInstance>
         where TInstance : class

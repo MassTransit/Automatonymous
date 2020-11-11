@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Automatonymous
+namespace Automatonymous.Builder
 {
     internal class InternalStateMachineEventActivitiesBuilder<TInstance> : StateMachineEventActivitiesBuilder<TInstance>
         where TInstance : class

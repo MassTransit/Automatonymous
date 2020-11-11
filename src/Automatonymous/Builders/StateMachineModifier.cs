@@ -2,7 +2,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Automatonymous
+namespace Automatonymous.Builder
 {
     public interface StateMachineModifier<TInstance>
         where TInstance : class

@@ -6,6 +6,7 @@
         using System.Linq.Expressions;
         using System.Reflection;
         using System.Threading.Tasks;
+        using Automatonymous.Builder;
         using Binders;
         using GreenPipes;
         using NUnit.Framework;

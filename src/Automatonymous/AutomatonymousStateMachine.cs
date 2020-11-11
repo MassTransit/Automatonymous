@@ -9,6 +9,7 @@ namespace Automatonymous
     using System.Threading.Tasks;
     using Accessors;
     using Activities;
+    using Automatonymous.Builder;
     using Binders;
     using Contexts;
     using Events;

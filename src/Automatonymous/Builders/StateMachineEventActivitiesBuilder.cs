@@ -1,7 +1,7 @@
 ﻿using Automatonymous.Binders;
 using System;
 
-namespace Automatonymous
+namespace Automatonymous.Builder
 {
     public interface StateMachineEventActivitiesBuilder<TInstance> :
         StateMachineModifier<TInstance>
