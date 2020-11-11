@@ -150,11 +150,10 @@
             _machine = AutomatonymousStateMachine<Instance>
                 .Build(builder => builder
                     .State("Running", out Running)
-                    .State("Resting", out Resting)
                     .Event("Initialized", out Initialized)
                     .Event("LegCramped", out LegCramped)
                     .Event("Finish", out Finish)
-                    .SubState(Resting, Running)
+                    .SubState("Resting", Running, out Resting)
                     .During(builder.Initial)
                         .When(Initialized, b => b.TransitionTo(Running))
                     .During(Running)
@@ -298,12 +297,11 @@
             _machine = AutomatonymousStateMachine<Instance>
                 .Build(builder => builder
                     .State("Running", out Running)
-                    .State("Resting", out Resting)
                     .Event("Initialized", out Initialized)
                     .Event("LegCramped", out LegCramped)
                     .Event("Finish", out Finish)
                     .Event("Recovered", out Recovered)
-                    .SubState(Resting, Running)
+                    .SubState("Resting", Running, out Resting)
                     .During(builder.Initial)
                         .When(Initialized, b => b.TransitionTo(Running))
                     .During(Running)

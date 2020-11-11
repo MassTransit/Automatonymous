@@ -183,12 +183,6 @@ namespace Automatonymous.Builder
             return this;
         }
 
-        public StateMachineModifier<TInstance> SubState(State<TInstance> subState, State<TInstance> superState)
-        {
-            _machine.SubState(subState, superState);
-            return this;
-        }
-
         public StateMachineModifier<TInstance> SubState(string name, State superState, out State<TInstance> subState)
         {
             subState = _machine.SubState(name, superState);

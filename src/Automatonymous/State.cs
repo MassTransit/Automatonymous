@@ -85,7 +85,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="subState"></param>
         void AddSubstate(State<TInstance> subState);
-        void SetSuperState(State<TInstance> superState);
+        //void SetSuperState(State<TInstance> superState);
 
         /// <summary>
         /// True if the specified state is included in the state

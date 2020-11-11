@@ -209,7 +209,6 @@
                         .State("OffHook", out OffHook)
                         .State("Ringing", out Ringing)
                         .State("Connected", out Connected)
-                        .State("OnHold", out OnHold)
                         .State("PhoneDestroyed", out PhoneDestroyed)
                         .Event("ServiceEstablished", out ServiceEstablished)
                         .Event("CallDialed", out CallDialed)
@@ -220,7 +219,7 @@
                         .Event("TakenOffHold", out TakenOffHold)
                         .Event("PhoneHurledAgainstWall", out PhoneHurledAgainstWall)
                         .InstanceState(x => x.CurrentState)
-                        .SubState(OnHold, Connected)
+                        .SubState("OnHold", Connected, out OnHold)
                         .Initially()
                             .When(ServiceEstablished, b => b
                                 .Then(context => context.Instance.Number = context.Data.Digits)

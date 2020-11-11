@@ -44,6 +44,8 @@ namespace Automatonymous.States
             Ignore(AfterLeave);
 
             _subStates = new HashSet<State<TInstance>>();
+
+            _superState = superState;
             superState?.AddSubstate(this);
         }
 
@@ -214,13 +216,7 @@ namespace Automatonymous.States
             if (_name.Equals(subState.Name))
                 throw new ArgumentException("A state cannot be a substate of itself", nameof(subState));
 
-            subState.SetSuperState(this);
             _subStates.Add(subState);
-        }
-
-        public void SetSuperState(State<TInstance> superState)
-        {
-            _superState = superState;
         }
 
         public bool HasState(State<TInstance> state)

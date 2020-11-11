@@ -680,16 +680,16 @@ namespace Automatonymous
             return state;
         }
 
-        protected internal virtual void SubState(State<TInstance> subState, State<TInstance> superState)
-        {
-            if (superState == null)
-                throw new ArgumentNullException(nameof(superState));
+        //protected internal virtual void SubState(State<TInstance> subState, State<TInstance> superState)
+        //{
+        //    if (superState == null)
+        //        throw new ArgumentNullException(nameof(superState));
 
-            State<TInstance> superStateInstance = GetState(superState.Name);
+        //    State<TInstance> superStateInstance = GetState(superState.Name);
 
-            // If the state was already defined, don't define it again
-            superStateInstance.AddSubstate(subState);
-        }
+        //    // If the state was already defined, don't define it again
+        //    superStateInstance.AddSubstate(subState);
+        //}
 
         /// <summary>
         /// Declares a state on the state machine, and initialized the property
@@ -1316,7 +1316,6 @@ namespace Automatonymous
                         return;
 
                     machine.DeclarePropertyBasedEvent((prop) => machine.DeclareTriggerEvent(prop.Name), _propertyInfo);
-                    //machine.DeclareTriggerEvent(_propertyInfo.Name);
                 }
             }
 
@@ -1340,7 +1339,6 @@ namespace Automatonymous
                         return;
 
                     machine.DeclarePropertyBasedEvent((prop) => machine.DeclareDataEvent<TData>(prop.Name), _propertyInfo);
-                    //machine.DeclareDataEvent<TData>(_propertyInfo.Name);
                 }
             }
         }

@@ -104,9 +104,6 @@ namespace Automatonymous.Builder
         public StateMachineModifier<TInstance> State<TProperty>(Expression<Func<TProperty>> propertyExpression, Expression<Func<TProperty, State>> statePropertyExpression) where TProperty : class
             => CommitActivities().State(propertyExpression, statePropertyExpression);
 
-        public StateMachineModifier<TInstance> SubState(State<TInstance> subState, State<TInstance> superState)
-            => CommitActivities().SubState(subState, superState);
-
         public StateMachineModifier<TInstance> SubState(string name, State superState, out State<TInstance> subState)
             => CommitActivities().SubState(name, superState, out subState);
 

@@ -39,7 +39,7 @@ namespace Automatonymous.Builder
         StateMachineModifier<TInstance> State<TProperty>(Expression<Func<TProperty>> propertyExpression,
             Expression<Func<TProperty, State>> statePropertyExpression)
             where TProperty : class;
-        StateMachineModifier<TInstance> SubState(State<TInstance> subState, State<TInstance> superState);
+        
         StateMachineModifier<TInstance> SubState(string name, State superState, out State<TInstance> subState);
         StateMachineModifier<TInstance> SubState<TProperty>(Expression<Func<TProperty>> propertyExpression,
             Expression<Func<TProperty, State>> statePropertyExpression, State superState)
