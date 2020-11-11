@@ -63,7 +63,7 @@
         public void A_state_is_declared()
         {
             _machine = AutomatonymousStateMachine<Instance>
-                .Build(builder => builder
+                .Create(builder => builder
                     .Event("Hello", out Hello)
                     .Event("EventA", out EventA)
                     .Event("EventInt", out EventInt)

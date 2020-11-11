@@ -205,7 +205,7 @@
             public StateMachine<PrincessModelTelephone> CreateDynamically()
             {
                 return AutomatonymousStateMachine<PrincessModelTelephone>
-                    .Build(builder => builder
+                    .Create(builder => builder
                         .State("OffHook", out OffHook)
                         .State("Ringing", out Ringing)
                         .State("Connected", out Connected)

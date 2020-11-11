@@ -16,7 +16,7 @@
 
             var instance = new Instance();
             var machine = AutomatonymousStateMachine<Instance>
-                .Build(builder => builder
+                .Create(builder => builder
                     .State("True", out True)
                     .State("False", out False)
                     .Event("Thing", out Thing)

@@ -71,7 +71,7 @@ namespace Automatonymous.Tests.DynamicModify
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Build(builder => builder
+                .Create(builder => builder
                     .Event("Ignored", out Ignored)
                     .Event("Handshake", out Handshake)
                     .Event("Hello", out Hello)

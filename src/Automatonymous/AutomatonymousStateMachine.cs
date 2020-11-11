@@ -680,17 +680,6 @@ namespace Automatonymous
             return state;
         }
 
-        //protected internal virtual void SubState(State<TInstance> subState, State<TInstance> superState)
-        //{
-        //    if (superState == null)
-        //        throw new ArgumentNullException(nameof(superState));
-
-        //    State<TInstance> superStateInstance = GetState(superState.Name);
-
-        //    // If the state was already defined, don't define it again
-        //    superStateInstance.AddSubstate(subState);
-        //}
-
         /// <summary>
         /// Declares a state on the state machine, and initialized the property
         /// </summary>
@@ -1354,7 +1343,7 @@ namespace Automatonymous
 
         private class BuilderStateMachine : AutomatonymousStateMachine<TInstance> { }
 
-        public static AutomatonymousStateMachine<TInstance> Build(Action<StateMachineModifier<TInstance>> modifier)
+        public static AutomatonymousStateMachine<TInstance> Create(Action<StateMachineModifier<TInstance>> modifier)
         {
             var machine = new BuilderStateMachine();
             machine.Modify(modifier);

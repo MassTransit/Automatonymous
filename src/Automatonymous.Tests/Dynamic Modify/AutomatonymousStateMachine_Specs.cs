@@ -91,7 +91,7 @@
         class EventData { }
 
         private StateMachine<Instance> CreateStateMachine()
-            => AutomatonymousStateMachine<Instance>.Build(builder => builder
+            => AutomatonymousStateMachine<Instance>.Create(builder => builder
                 .State("ThisIsAState", out ThisIsAState)
                 .Event("ThisIsASimpleEvent", out ThisIsASimpleEvent)
                 .Event("ThisIsAnEventConsumingData", out ThisIsAnEventConsumingData)

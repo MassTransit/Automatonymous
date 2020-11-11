@@ -35,7 +35,7 @@ namespace Automatonymous.Tests.DynamicModify
 
             _claim = new ClaimAdjustmentInstance();
             _machine = AutomatonymousStateMachine<ClaimAdjustmentInstance>
-                .Build(builder => builder
+                .Create(builder => builder
                     .State("Running", out Running)
                     .Event("Create", out Create)
                     .InstanceState(b => b.CurrentState)

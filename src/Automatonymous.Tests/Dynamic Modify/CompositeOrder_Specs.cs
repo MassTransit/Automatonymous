@@ -77,7 +77,7 @@
         private StateMachine<Instance> CreateStateMachine()
         {
             return AutomatonymousStateMachine<Instance>
-                .Build(builder => builder
+                .Create(builder => builder
                     .State("Waiting", out Waiting)
                     .Event("Start", out Start)
                     .Event("First", out First)
