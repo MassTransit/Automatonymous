@@ -48,3 +48,4 @@ tools/**
 
 # Artifacts
 artifacts/**
+/.vs
