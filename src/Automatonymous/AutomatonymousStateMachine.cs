@@ -248,7 +248,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression"></param>
         protected internal virtual void Event(Expression<Func<Event>> propertyExpression)
-            => DeclarePropertyBasedEvent(prop => DeclareTriggerEvent(prop.Name), propertyExpression);
+            => DeclarePropertyBasedEvent(prop => DeclareTriggerEvent(prop.Name), propertyExpression.GetPropertyInfo());
 
         protected internal virtual Event Event(string name)
             => DeclareTriggerEvent(name);
@@ -261,7 +261,7 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression">The event property</param>
         protected internal virtual void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-            => DeclarePropertyBasedEvent(prop => DeclareDataEvent<T>(prop.Name), propertyExpression);
+            => DeclarePropertyBasedEvent(prop => DeclareDataEvent<T>(prop.Name), propertyExpression.GetPropertyInfo());
 
         protected internal virtual Event<T> Event<T>(string name)
             => DeclareDataEvent<T>(name);
@@ -269,10 +269,9 @@ namespace Automatonymous
         Event<T> DeclareDataEvent<T>(string name)
             => DeclareEvent(name => new DataEvent<T>(name), name);
 
-        void DeclarePropertyBasedEvent<TEvent>(Func<PropertyInfo, TEvent> ctor, Expression<Func<TEvent>> propertyExpression)
+        void DeclarePropertyBasedEvent<TEvent>(Func<PropertyInfo, TEvent> ctor, PropertyInfo property)
             where TEvent : Event
         {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
             TEvent @event = ctor(property);
             ConfigurationHelpers.InitializeEvent(this, property, @event);
         }
@@ -432,23 +431,23 @@ namespace Automatonymous
             }
         }
 
-        protected internal virtual void CompositeEvent(string name,
+        internal virtual void CompositeEvent(string name,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
             => CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
 
-        protected internal virtual Event CompositeEvent(string name,
+        internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
             => CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), options, events);
 
-        protected internal virtual Event CompositeEvent(string name,
+        internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
             => CompositeEvent(name, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
 
-        protected internal virtual Event CompositeEvent(string name,
+        internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
@@ -1315,7 +1314,8 @@ namespace Automatonymous
                     if (existing != null)
                         return;
 
-                    machine.DeclareTriggerEvent(_propertyInfo.Name);
+                    machine.DeclarePropertyBasedEvent((prop) => machine.DeclareTriggerEvent(prop.Name), _propertyInfo);
+                    //machine.DeclareTriggerEvent(_propertyInfo.Name);
                 }
             }
 
@@ -1338,7 +1338,8 @@ namespace Automatonymous
                     if (existing != null)
                         return;
 
-                    machine.DeclareDataEvent<TData>(_propertyInfo.Name);
+                    machine.DeclarePropertyBasedEvent((prop) => machine.DeclareDataEvent<TData>(prop.Name), _propertyInfo);
+                    //machine.DeclareDataEvent<TData>(_propertyInfo.Name);
                 }
             }
         }
