@@ -21,7 +21,7 @@ namespace Automatonymous.States
         readonly string _name;
         readonly EventObserver<TInstance> _observer;
         readonly HashSet<State<TInstance>> _subStates;
-        readonly State<TInstance> _superState;
+        State<TInstance> _superState;
 
         public StateMachineState(AutomatonymousStateMachine<TInstance> machine, string name,
             EventObserver<TInstance> observer, State<TInstance> superState = null)
@@ -44,8 +44,8 @@ namespace Automatonymous.States
             Ignore(AfterLeave);
 
             _subStates = new HashSet<State<TInstance>>();
-            _superState = superState;
 
+            _superState = superState;
             superState?.AddSubstate(this);
         }
 
@@ -54,7 +54,7 @@ namespace Automatonymous.States
             return string.CompareOrdinal(_name, other?.Name ?? "") == 0;
         }
 
-        public State<TInstance> SuperState => _superState;
+        public State<TInstance> SuperState { get; }
         public string Name => _name;
         public Event Enter { get; }
         public Event Leave { get; }
