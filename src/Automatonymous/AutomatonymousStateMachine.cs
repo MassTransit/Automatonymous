@@ -248,57 +248,41 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression"></param>
         protected internal virtual void Event(Expression<Func<Event>> propertyExpression)
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-            DeclareTriggerEvent(property);
-        }
+            => DeclarePropertyBasedEvent(prop => DeclareTriggerEvent(prop.Name), propertyExpression);
 
         protected internal virtual Event Event(string name)
-        {
-            var @event = new TriggerEvent(name);
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
-            return @event;
-        }
+            => DeclareTriggerEvent(name);
 
-        void DeclareTriggerEvent(PropertyInfo property)
-        {
-            string name = property.Name;
-
-            var @event = new TriggerEvent(name);
-
-            ConfigurationHelpers.InitializeEvent(this, property, @event);
-
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
-        }
+        Event DeclareTriggerEvent(string name)
+            => DeclareEvent(name => new TriggerEvent(name), name);
 
         /// <summary>
         /// Declares a data event on the state machine, and initializes the property
         /// </summary>
         /// <param name="propertyExpression">The event property</param>
         protected internal virtual void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-        {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
-
-            DeclareDataEvent<T>(property);
-        }
+            => DeclarePropertyBasedEvent(prop => DeclareDataEvent<T>(prop.Name), propertyExpression);
 
         protected internal virtual Event<T> Event<T>(string name)
+            => DeclareDataEvent<T>(name);
+
+        Event<T> DeclareDataEvent<T>(string name)
+            => DeclareEvent(name => new DataEvent<T>(name), name);
+
+        void DeclarePropertyBasedEvent<TEvent>(Func<PropertyInfo, TEvent> ctor, Expression<Func<TEvent>> propertyExpression)
+            where TEvent : Event
         {
-            var @event = new DataEvent<T>(name);
-            _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
-            return @event;
+            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            TEvent @event = ctor(property);
+            ConfigurationHelpers.InitializeEvent(this, property, @event);
         }
 
-        void DeclareDataEvent<T>(PropertyInfo property)
+        TEvent DeclareEvent<TEvent>(Func<string, TEvent> ctor, string name)
+            where TEvent : Event
         {
-            string name = property.Name;
-
-            var @event = new DataEvent<T>(name);
-
-            ConfigurationHelpers.InitializeEvent(this, property, @event);
-
+            var @event = ctor(name);
             _eventCache[name] = new StateMachineEvent<TInstance>(@event, false);
+            return @event;
         }
 
         /// <summary>
@@ -1331,7 +1315,7 @@ namespace Automatonymous
                     if (existing != null)
                         return;
 
-                    machine.DeclareTriggerEvent(_propertyInfo);
+                    machine.DeclareTriggerEvent(_propertyInfo.Name);
                 }
             }
 
@@ -1354,7 +1338,7 @@ namespace Automatonymous
                     if (existing != null)
                         return;
 
-                    machine.DeclareDataEvent<TData>(_propertyInfo);
+                    machine.DeclareDataEvent<TData>(_propertyInfo.Name);
                 }
             }
         }
