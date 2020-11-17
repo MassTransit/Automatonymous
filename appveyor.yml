@@ -11,6 +11,7 @@ skip_commits:
   files:
     - docs/**/*
     - '**/*.html'
+    - readme.md
 
 image:
   - Visual Studio 2019
