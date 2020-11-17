@@ -25,4 +25,4 @@ help out with the documentation, please do so!
 
 
 [1]: http://masstransit-project.com
-[2]: http://masstransit-project.com/MassTransit/advanced/sagas/automatonymous.html
+[2]: https://masstransit-project.com/usage/sagas/automatonymous.html
