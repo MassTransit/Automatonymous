@@ -40,10 +40,6 @@ public class BuildVersion
                 suffix += $".{buildNumber}";
                 metadata = $"+sha.{commitHash}";
             }
-            else
-            {
-                metadata = $"+build.{buildNumber}.sha.{commitHash}";
-            }
         }
 
 
