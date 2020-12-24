@@ -58,7 +58,9 @@
                 await next.Execute(context).ConfigureAwait(false);
             }
             else
+            {
                 await next.Faulted(context).ConfigureAwait(false);
+            }
         }
 
         async Task Activity<TInstance>.Faulted<TData, T>(BehaviorExceptionContext<TInstance, TData, T> context,
@@ -73,7 +75,9 @@
                 await next.Execute(context).ConfigureAwait(false);
             }
             else
+            {
                 await next.Faulted(context).ConfigureAwait(false);
+            }
         }
     }
 }

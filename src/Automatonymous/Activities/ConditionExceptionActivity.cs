@@ -52,13 +52,9 @@
             if (behaviorContext != null)
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
-                {
                     await _thenBehavior.Faulted(context).ConfigureAwait(false);
-                }
                 else
-                {
                     await _elseBehavior.Faulted(context).ConfigureAwait(false);
-                }
             }
 
             await next.Faulted(context).ConfigureAwait(false);
@@ -71,13 +67,9 @@
             if (behaviorContext != null)
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
-                {
                     await _thenBehavior.Faulted(context).ConfigureAwait(false);
-                }
                 else
-                {
                     await _elseBehavior.Faulted(context).ConfigureAwait(false);
-                }
             }
 
             await next.Faulted(context).ConfigureAwait(false);
@@ -138,13 +130,9 @@
             if (behaviorContext != null)
             {
                 if (await _condition(behaviorContext).ConfigureAwait(false))
-                {
                     await _thenBehavior.Faulted(context).ConfigureAwait(false);
-                }
                 else
-                {
                     await _elseBehavior.Faulted(context).ConfigureAwait(false);
-                }
             }
 
             await next.Faulted(context).ConfigureAwait(false);

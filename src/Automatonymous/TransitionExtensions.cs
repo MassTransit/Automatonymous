@@ -13,7 +13,7 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance> TransitionTo<TInstance>(this EventActivityBinder<TInstance> source, State toState)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+            var state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -32,7 +32,7 @@ namespace Automatonymous
             this ExceptionActivityBinder<TInstance, TException> source, State toState)
             where TInstance : class where TException : Exception
         {
-            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+            var state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -48,7 +48,7 @@ namespace Automatonymous
             this EventActivityBinder<TInstance, TData> source, State toState)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+            var state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -69,7 +69,7 @@ namespace Automatonymous
             where TInstance : class
             where TException : Exception
         {
-            State<TInstance> state = source.StateMachine.GetState(toState.Name);
+            var state = source.StateMachine.GetState(toState.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -84,7 +84,7 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance, TData> Finalize<TInstance, TData>(this EventActivityBinder<TInstance, TData> source)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+            var state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -97,7 +97,7 @@ namespace Automatonymous
         public static EventActivityBinder<TInstance> Finalize<TInstance>(this EventActivityBinder<TInstance> source)
             where TInstance : class
         {
-            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+            var state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -112,7 +112,7 @@ namespace Automatonymous
             where TInstance : class
             where TException : Exception
         {
-            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+            var state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 
@@ -128,7 +128,7 @@ namespace Automatonymous
             where TInstance : class
             where TException : Exception
         {
-            State<TInstance> state = source.StateMachine.GetState(source.StateMachine.Final.Name);
+            var state = source.StateMachine.GetState(source.StateMachine.Final.Name);
 
             var activity = new TransitionActivity<TInstance>(state, source.StateMachine.Accessor);
 

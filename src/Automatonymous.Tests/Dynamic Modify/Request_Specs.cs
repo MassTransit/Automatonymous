@@ -22,7 +22,7 @@
                 Event<RequestQuote> QuoteRequested = null;
 
                 var machine = AutomatonymousStateMachine<TestState>
-                    .Create(builder => builder
+                    .New(builder => builder
                         .InstanceState(x => x.CurrentState)
                         .Event("QuoteRequested", out QuoteRequested)
                         .Request(x => x.ServiceAddress = new Uri("loopback://localhost/my_queue"), "QuoteRequest", out QuoteRequest)

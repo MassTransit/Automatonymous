@@ -28,21 +28,21 @@ namespace Automatonymous.Activities
 
         Task Activity<TInstance>.Execute(BehaviorContext<TInstance> context, Behavior<TInstance> next)
         {
-            Activity<TInstance> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Execute(context, next);
         }
 
         Task Activity<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context, Behavior<TInstance, T> next)
         {
-            Activity<TInstance> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Execute(context, new WidenBehavior<TInstance, T>(next, context));
         }
 
         Task Activity<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context, Behavior<TInstance> next)
         {
-            Activity<TInstance> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Faulted(context, next);
         }
@@ -50,7 +50,7 @@ namespace Automatonymous.Activities
         Task Activity<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context,
             Behavior<TInstance, T> next)
         {
-            Activity<TInstance> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Faulted(context, new WidenBehavior<TInstance, T>(next, context));
         }
@@ -79,7 +79,7 @@ namespace Automatonymous.Activities
 
         Task Activity<TInstance, TData>.Execute(BehaviorContext<TInstance, TData> context, Behavior<TInstance, TData> next)
         {
-            Activity<TInstance, TData> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Execute(context, next);
         }
@@ -87,7 +87,7 @@ namespace Automatonymous.Activities
         Task Activity<TInstance, TData>.Faulted<TException>(BehaviorExceptionContext<TInstance, TData, TException> context,
             Behavior<TInstance, TData> next)
         {
-            Activity<TInstance, TData> activity = _activityFactory(context);
+            var activity = _activityFactory(context);
 
             return activity.Faulted(context, next);
         }

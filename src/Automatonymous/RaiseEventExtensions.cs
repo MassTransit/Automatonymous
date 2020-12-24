@@ -46,7 +46,7 @@
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -97,7 +97,7 @@
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -148,7 +148,7 @@
             where TInstance : class
             where T1 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -206,7 +206,7 @@
             where TInstance : class
             where T1 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -264,7 +264,7 @@
             where T1 : class
             where T2 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -328,7 +328,7 @@
             where T1 : class
             where T2 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -393,7 +393,7 @@
             where T2 : class
             where T3 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -463,7 +463,7 @@
             where T2 : class
             where T3 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -534,7 +534,7 @@
             where T3 : class
             where T4 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -610,7 +610,7 @@
             where T3 : class
             where T4 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -687,7 +687,7 @@
             where T4 : class
             where T5 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -769,7 +769,7 @@
             where T4 : class
             where T5 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -852,7 +852,7 @@
             where T5 : class
             where T6 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -940,7 +940,7 @@
             where T5 : class
             where T6 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1029,7 +1029,7 @@
             where T6 : class
             where T7 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1124,7 +1124,7 @@
             where T6 : class
             where T7 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1220,7 +1220,7 @@
             where T7 : class
             where T8 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1322,7 +1322,7 @@
             where T7 : class
             where T8 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1424,7 +1424,7 @@
             where T8 : class
             where T9 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1532,7 +1532,7 @@
             where T8 : class
             where T9 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1641,7 +1641,7 @@
             where T9 : class
             where T10 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1755,7 +1755,7 @@
             where T9 : class
             where T10 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1870,7 +1870,7 @@
             where T10 : class
             where T11 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -1990,7 +1990,7 @@
             where T10 : class
             where T11 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2111,7 +2111,7 @@
             where T11 : class
             where T12 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2237,7 +2237,7 @@
             where T11 : class
             where T12 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2364,7 +2364,7 @@
             where T12 : class
             where T13 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2496,7 +2496,7 @@
             where T12 : class
             where T13 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2629,7 +2629,7 @@
             where T13 : class
             where T14 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2768,7 +2768,7 @@
             where T13 : class
             where T14 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -2907,7 +2907,7 @@
             where T14 : class
             where T15 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -3053,7 +3053,7 @@
             where T14 : class
             where T15 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -3200,7 +3200,7 @@
             where T15 : class
             where T16 : class
         {
-            Event @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");
@@ -3352,7 +3352,7 @@
             where T15 : class
             where T16 : class
         {
-            Event<TData> @event = eventSelector(machine);
+            var @event = eventSelector(machine);
             if (@event == null)
                 throw new ArgumentNullException(nameof(eventSelector),
                     "The event selector did not return a valid event from the state machine");

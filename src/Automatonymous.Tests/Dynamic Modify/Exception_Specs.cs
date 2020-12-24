@@ -107,7 +107,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Failed", out Failed)
                     .Event("Initialized", out Initialized)
                     .During(builder.Initial)
@@ -224,7 +224,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Failed", out Failed)
                     .Event("Initialized", out Initialized)
                     .InstanceState(b => b.CurrentState)
@@ -283,7 +283,7 @@
 
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .Event("Initialized", out Initialized)
                     .State("Failed", out State Failed)
                     .InstanceState(b => b.CurrentState)
@@ -386,7 +386,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Failed", out Failed)
                     .Event("Initialized", out Initialized)
                     .InstanceState(b => b.CurrentState)

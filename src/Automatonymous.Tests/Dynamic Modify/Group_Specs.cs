@@ -30,7 +30,7 @@
         {
             _instance = new PitStopInstance();
             _machine = AutomatonymousStateMachine<PitStopInstance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("BeingServiced", out BeingServiced)
                     .Event("VehicleArrived", out VehicleArrived)
                     .InstanceState(b => b.OverallState)

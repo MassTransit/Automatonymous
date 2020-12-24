@@ -28,7 +28,7 @@
 
         public int CompareTo(Event other)
         {
-            return String.Compare(_name, other.Name, StringComparison.Ordinal);
+            return string.Compare(_name, other.Name, StringComparison.Ordinal);
         }
 
         public bool Equals(TriggerEvent other)

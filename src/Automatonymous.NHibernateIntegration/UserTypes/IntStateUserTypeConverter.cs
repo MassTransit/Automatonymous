@@ -29,23 +29,20 @@
             if (machine.States.Except(states).Any())
                 throw new ArgumentOutOfRangeException("states", "One or more states are not specified");
 
-            List<KeyValuePair<int, State>> allStates =
+            var allStates =
                 states.Select((state, index) => new KeyValuePair<int, State>(index, state)).ToList();
 
-            _valueToStateCache = new Dictionary<Int32, State>(allStates.ToDictionary(x => x.Key, x => x.Value));
-            _stateToValueCache = new Dictionary<State, Int32>(allStates.ToDictionary(x => x.Value, x => x.Key));
+            _valueToStateCache = new Dictionary<int, State>(allStates.ToDictionary(x => x.Key, x => x.Value));
+            _stateToValueCache = new Dictionary<State, int>(allStates.ToDictionary(x => x.Value, x => x.Key));
         }
 
-        public SqlType[] Types
-        {
-            get { return _types; }
-        }
+        public SqlType[] Types => _types;
 
         public State Get(DbDataReader rs, string[] names, ISessionImplementor session)
         {
-            var value = (Int32)NHibernateUtil.Int32.NullSafeGet(rs, names, session);
+            var value = (int)NHibernateUtil.Int32.NullSafeGet(rs, names, session);
 
-            State state = _valueToStateCache[value];
+            var state = _valueToStateCache[value];
 
             return state;
         }
@@ -58,7 +55,7 @@
                 return;
             }
 
-            int setValue = _stateToValueCache[(State)value];
+            var setValue = _stateToValueCache[(State)value];
 
             NHibernateUtil.Int32.NullSafeSet(command, setValue, index, session);
         }

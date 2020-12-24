@@ -57,52 +57,46 @@ namespace Automatonymous.Activities
 
         async Task Transition(BehaviorContext<TInstance> context)
         {
-            State<TInstance> currentState = await _currentStateAccessor.Get(context).ConfigureAwait(false);
+            var currentState = await _currentStateAccessor.Get(context).ConfigureAwait(false);
             if (_toState.Equals(currentState))
                 return; // Homey don't play re-entry, at least not yet.
 
             if (currentState != null && !currentState.HasState(_toState))
-            {
                 await RaiseCurrentStateLeaveEvents(context, currentState).ConfigureAwait(false);
-            }
 
             await RaiseBeforeEnterEvents(context, currentState, _toState).ConfigureAwait(false);
 
             await _currentStateAccessor.Set(context, _toState).ConfigureAwait(false);
 
             if (currentState != null)
-            {
                 await RaiseAfterLeaveEvents(context, currentState, _toState).ConfigureAwait(false);
-            }
 
             if (currentState == null || !_toState.HasState(currentState))
             {
-                State<TInstance> superState = _toState.SuperState;
+                var superState = _toState.SuperState;
                 while (superState != null && (currentState == null || !superState.HasState(currentState)))
                 {
-                    BehaviorContext<TInstance> superStateEnterContext = context.GetProxy(superState.Enter);
+                    var superStateEnterContext = context.GetProxy(superState.Enter);
                     await superState.Raise(superStateEnterContext).ConfigureAwait(false);
 
                     superState = superState.SuperState;
                 }
 
-                BehaviorContext<TInstance> enterContext = context.GetProxy(_toState.Enter);
+                var enterContext = context.GetProxy(_toState.Enter);
                 await _toState.Raise(enterContext).ConfigureAwait(false);
             }
         }
 
         async Task RaiseBeforeEnterEvents(BehaviorContext<TInstance> context, State<TInstance> currentState, State<TInstance> toState)
         {
-            State<TInstance> superState = toState.SuperState;
+            var superState = toState.SuperState;
             if (superState != null && (currentState == null || !superState.HasState(currentState)))
-            {
                 await RaiseBeforeEnterEvents(context, currentState, superState).ConfigureAwait(false);
-            }
 
             if (currentState != null && toState.HasState(currentState))
                 return;
 
-            BehaviorContext<TInstance, State> beforeContext = context.GetProxy(toState.BeforeEnter, toState);
+            var beforeContext = context.GetProxy(toState.BeforeEnter, toState);
             await toState.Raise(beforeContext).ConfigureAwait(false);
         }
 
@@ -111,25 +105,23 @@ namespace Automatonymous.Activities
             if (fromState.HasState(toState))
                 return;
 
-            BehaviorContext<TInstance, State> afterContext = context.GetProxy(fromState.AfterLeave, fromState);
+            var afterContext = context.GetProxy(fromState.AfterLeave, fromState);
             await fromState.Raise(afterContext).ConfigureAwait(false);
 
-            State<TInstance> superState = fromState.SuperState;
+            var superState = fromState.SuperState;
             if (superState != null)
-            {
                 await RaiseAfterLeaveEvents(context, superState, toState).ConfigureAwait(false);
-            }
         }
 
         async Task RaiseCurrentStateLeaveEvents(BehaviorContext<TInstance> context, State<TInstance> fromState)
         {
-            BehaviorContext<TInstance> leaveContext = context.GetProxy(fromState.Leave);
+            var leaveContext = context.GetProxy(fromState.Leave);
             await fromState.Raise(leaveContext).ConfigureAwait(false);
 
-            State<TInstance> superState = fromState.SuperState;
+            var superState = fromState.SuperState;
             while (superState != null && !superState.HasState(_toState))
             {
-                BehaviorContext<TInstance> superStateLeaveContext = context.GetProxy(superState.Leave);
+                var superStateLeaveContext = context.GetProxy(superState.Leave);
                 await superState.Raise(superStateLeaveContext).ConfigureAwait(false);
 
                 superState = superState.SuperState;

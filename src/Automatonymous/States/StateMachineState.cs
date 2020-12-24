@@ -82,13 +82,10 @@ namespace Automatonymous.States
             {
                 var subStateScope = scope.CreateScope("substates");
                 foreach (var subState in _subStates)
-                {
                     subStateScope.Add("name", subState.Name);
-                }
             }
 
             if (_behaviors.Any())
-            {
                 foreach (var behavior in _behaviors)
                 {
                     var eventScope = scope.CreateScope("event");
@@ -96,16 +93,11 @@ namespace Automatonymous.States
 
                     behavior.Value.Behavior.Probe(eventScope.CreateScope("behavior"));
                 }
-            }
 
             var ignored = _ignoredEvents.Where(x => IsRealEvent(x.Key)).ToList();
             if (ignored.Any())
-            {
                 foreach (var ignoredEvent in ignored)
-                {
                     ignoredEvent.Key.Probe(scope.CreateScope("event-ignored"));
-                }
-            }
         }
 
         async Task State<TInstance>.Raise(EventContext<TInstance> context)
@@ -116,7 +108,6 @@ namespace Automatonymous.States
                     return;
 
                 if (_superState != null)
-                {
                     try
                     {
                         await _superState.Raise(context).ConfigureAwait(false);
@@ -126,7 +117,6 @@ namespace Automatonymous.States
                     {
                         // the exception is better if it's from the substate
                     }
-                }
 
                 await _machine.UnhandledEvent(context, this).ConfigureAwait(false);
                 return;
@@ -156,7 +146,6 @@ namespace Automatonymous.States
                     return;
 
                 if (_superState != null)
-                {
                     try
                     {
                         await _superState.Raise(context).ConfigureAwait(false);
@@ -166,7 +155,6 @@ namespace Automatonymous.States
                     {
                         // the exception is better if it's from the substate
                     }
-                }
 
                 await _machine.UnhandledEvent(context, this).ConfigureAwait(false);
                 return;
@@ -226,7 +214,7 @@ namespace Automatonymous.States
 
         public bool IsStateOf(State<TInstance> state)
         {
-            return _name.Equals(state.Name) || (_superState != null && _superState.IsStateOf(state));
+            return _name.Equals(state.Name) || _superState != null && _superState.IsStateOf(state);
         }
 
         public IEnumerable<Event> Events

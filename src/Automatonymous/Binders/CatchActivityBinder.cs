@@ -34,9 +34,7 @@ namespace Automatonymous.Binders
         {
             var builder = new CatchBehaviorBuilder<TInstance>();
             foreach (var activity in _activities.GetStateActivityBinders())
-            {
                 activity.Bind(builder);
-            }
 
             var compensateActivity = new CatchFaultActivity<TInstance, TException>(builder.Behavior);
 
@@ -46,9 +44,7 @@ namespace Automatonymous.Binders
         public void Bind(BehaviorBuilder<TInstance> builder)
         {
             foreach (var activity in _activities.GetStateActivityBinders())
-            {
                 activity.Bind(builder);
-            }
         }
     }
 }

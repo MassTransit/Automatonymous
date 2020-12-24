@@ -33,7 +33,7 @@
 
             Behavior<TInstance> current = new LastFaultedBehavior<TInstance>(_activities[_activities.Count - 1]);
 
-            for (int i = _activities.Count - 2; i >= 0; i--)
+            for (var i = _activities.Count - 2; i >= 0; i--)
                 current = new ActivityBehavior<TInstance>(_activities[i], current);
 
             return current;

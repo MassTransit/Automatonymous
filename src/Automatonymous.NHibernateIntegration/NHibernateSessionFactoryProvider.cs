@@ -6,7 +6,6 @@
     using NHibernate;
     using NHibernate.Cfg;
     using NHibernate.Cfg.Loquacious;
-    using NHibernate.Cfg.MappingSchema;
     using NHibernate.Mapping.ByCode;
     using NHibernate.Tool.hbm2ddl;
 
@@ -39,10 +38,7 @@
             _configuration = CreateConfiguration();
         }
 
-        public Configuration Configuration
-        {
-            get { return _configuration; }
-        }
+        public Configuration Configuration => _configuration;
 
         /// <summary>
         ///     Builds the session factory and returns the ISessionFactory. If it was already
@@ -71,7 +67,7 @@
 
             mapper.AfterMapProperty += (inspector, member, customizer) =>
             {
-                Type memberType = member.LocalMember.GetPropertyOrFieldType();
+                var memberType = member.LocalMember.GetPropertyOrFieldType();
 
                 if (memberType.IsGenericType
                     && typeof(Nullable<>).IsAssignableFrom(memberType.GetGenericTypeDefinition()))
@@ -90,11 +86,11 @@
         {
             try
             {
-                bool acquired = _factoryMutex.WaitOne();
+                var acquired = _factoryMutex.WaitOne();
                 if (!acquired)
                     throw new InvalidOperationException("Waiting for access to create session factory failed.");
 
-                ISessionFactory sessionFactory = _configuration.BuildSessionFactory();
+                var sessionFactory = _configuration.BuildSessionFactory();
 
                 _sessionFactory = sessionFactory;
                 _computed = true;
@@ -103,7 +99,7 @@
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(string.Format("Failed to create session factory"), ex);
+                throw new InvalidOperationException("Failed to create session factory", ex);
             }
             finally
             {
@@ -130,9 +126,9 @@
 
         Configuration CreateConfiguration()
         {
-            ModelMapper mapper = CreateModelMapper();
+            var mapper = CreateModelMapper();
 
-            HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
+            var domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 
             var configuration = new Configuration();
 

@@ -30,7 +30,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .Event("Initialized", out Initialized)
                     .State("Running", out Running)
                     .During(builder.Initial)

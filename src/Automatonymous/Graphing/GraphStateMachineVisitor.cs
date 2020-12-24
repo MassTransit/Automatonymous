@@ -29,15 +29,15 @@
         {
             get
             {
-                IEnumerable<Vertex> events = _events.Values
+                var events = _events.Values
                     .Where(e => _edges.Any(edge => edge.From.Equals(e)));
 
-                IEnumerable<Vertex> states = _states.Values
+                var states = _states.Values
                     .Where(s => _edges.Any(edge => edge.From.Equals(s) || edge.To.Equals(s)));
 
                 var vertices = new HashSet<Vertex>(states.Union(events));
 
-                IEnumerable<Edge> edges = _edges
+                var edges = _edges
                     .Where(e => vertices.Contains(e.From) && vertices.Contains(e.To));
 
                 return new StateMachineGraph(vertices, edges);
@@ -110,17 +110,17 @@
                 return;
             }
 
-            Type activityType = activity.GetType();
-            Type compensateType = activityType.GetTypeInfo().IsGenericType
-                                  && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
+            var activityType = activity.GetType();
+            var compensateType = activityType.GetTypeInfo().IsGenericType
+                                 && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
                 ? activityType.GetGenericArguments().Skip(1).First()
                 : null;
 
             if (compensateType != null)
             {
-                Vertex previousEvent = _currentEvent;
+                var previousEvent = _currentEvent;
 
-                Type eventType = typeof(DataEvent<>).MakeGenericType(compensateType);
+                var eventType = typeof(DataEvent<>).MakeGenericType(compensateType);
                 var evt = (Event)Activator.CreateInstance(eventType, compensateType.Name);
                 _currentEvent = GetEventVertex(evt);
 
@@ -137,7 +137,7 @@
 
         void InspectCompositeEventActivity(CompositeEventActivity<TInstance> compositeActivity)
         {
-            Vertex previousEvent = _currentEvent;
+            var previousEvent = _currentEvent;
 
             _currentEvent = GetEventVertex(compositeActivity.Event);
 
@@ -168,7 +168,7 @@
 
         void InspectTransitionActivity(TransitionActivity<TInstance> transitionActivity)
         {
-            Vertex targetState = GetStateVertex(transitionActivity.ToState);
+            var targetState = GetStateVertex(transitionActivity.ToState);
 
             _edges.Add(new Edge(_currentEvent, targetState, _currentEvent.Title));
         }
@@ -202,7 +202,7 @@
 
         static Vertex CreateEventVertex(Event @event)
         {
-            Type targetType = @event
+            var targetType = @event
                 .GetType()
                 .GetInterfaces()
                 .Where(x => x.GetTypeInfo().IsGenericType)

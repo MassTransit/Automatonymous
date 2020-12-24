@@ -117,7 +117,7 @@ namespace Automatonymous.Binders
             return _activities;
         }
 
-        private EventActivityBinder<TInstance, TData> GetBinder(
+        EventActivityBinder<TInstance, TData> GetBinder(
             Func<EventActivityBinder<TInstance, TData>, EventActivityBinder<TInstance, TData>> activityCallback)
         {
             EventActivityBinder<TInstance, TData> binder = new DataEventActivityBinder<TInstance, TData>(_machine, _event);

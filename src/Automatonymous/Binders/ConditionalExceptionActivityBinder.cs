@@ -57,14 +57,12 @@ namespace Automatonymous.Binders
             builder.Add(conditionActivity);
         }
 
-        private Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
         {
             var catchBuilder = new CatchBehaviorBuilder<TInstance>();
 
             foreach (var activity in activities.GetStateActivityBinders())
-            {
                 activity.Bind(catchBuilder);
-            }
             return catchBuilder.Behavior;
         }
     }
@@ -121,14 +119,12 @@ namespace Automatonymous.Binders
             builder.Add(conditionActivity);
         }
 
-        private Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
+        Behavior<TInstance> GetBehavior(EventActivities<TInstance> activities)
         {
             var catchBuilder = new CatchBehaviorBuilder<TInstance>();
 
             foreach (var activity in activities.GetStateActivityBinders())
-            {
                 activity.Bind(catchBuilder);
-            }
 
             return catchBuilder.Behavior;
         }

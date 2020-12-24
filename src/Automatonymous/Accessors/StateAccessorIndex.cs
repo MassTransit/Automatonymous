@@ -27,11 +27,9 @@ namespace Automatonymous.Accessors
                 if (string.IsNullOrWhiteSpace(name))
                     throw new ArgumentNullException(nameof(name));
 
-                for (int i = 1; i < _states.Value.Length; i++)
-                {
+                for (var i = 1; i < _states.Value.Length; i++)
                     if (_states.Value[i].Name.Equals(name))
                         return i;
-                }
 
                 throw new ArgumentException("Unknown state specified: " + name);
             }

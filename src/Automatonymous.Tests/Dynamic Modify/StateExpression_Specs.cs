@@ -53,7 +53,7 @@ namespace Automatonymous.Tests.DynamicModify
         public void A_state_is_declared()
         {
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .Event("Started", out Started)
                     .InstanceState(x => x.CurrentState, Running)
@@ -131,7 +131,7 @@ namespace Automatonymous.Tests.DynamicModify
         public void A_state_is_declared()
         {
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .Event("Started", out Started)
                     .InstanceState(x => x.CurrentState)
@@ -208,7 +208,7 @@ namespace Automatonymous.Tests.DynamicModify
         public void A_state_is_declared()
         {
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .Event("Started", out Started)
                     .InstanceState(x => x.CurrentState)

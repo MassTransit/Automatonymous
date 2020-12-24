@@ -26,7 +26,7 @@
         {
             _claim = new ClaimAdjustmentInstance();
             _machine = AutomatonymousStateMachine<ClaimAdjustmentInstance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .Event("Create", out Create)
                     .InstanceState(x => x.CurrentState)

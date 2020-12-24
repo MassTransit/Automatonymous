@@ -101,7 +101,7 @@ namespace Automatonymous.Binders
             return new CatchExceptionActivityBinder<TInstance, TException>(_machine, _event, _activities, conditionBinder);
         }
 
-        private ExceptionActivityBinder<TInstance, TException> GetBinder(
+        ExceptionActivityBinder<TInstance, TException> GetBinder(
             Func<ExceptionActivityBinder<TInstance, TException>, ExceptionActivityBinder<TInstance, TException>> callback)
         {
             ExceptionActivityBinder<TInstance, TException> thenBinder = new CatchExceptionActivityBinder<TInstance, TException>(_machine,
@@ -225,7 +225,7 @@ namespace Automatonymous.Binders
             return new CatchExceptionActivityBinder<TInstance, TData, TException>(_machine, _event, _activities, conditionBinder);
         }
 
-        private ExceptionActivityBinder<TInstance, TData, TException> GetBinder(
+        ExceptionActivityBinder<TInstance, TData, TException> GetBinder(
             Func<ExceptionActivityBinder<TInstance, TData, TException>, ExceptionActivityBinder<TInstance, TData, TException>> callback)
         {
             ExceptionActivityBinder<TInstance, TData, TException> binder =

@@ -42,7 +42,7 @@
         BehaviorExceptionContext<TInstance, T, TException> BehaviorExceptionContext<TInstance, TException>.GetProxy<T>(Event<T> @event,
             T data)
         {
-            BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
+            var contextProxy = _context.GetProxy(@event, data);
 
             return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
@@ -94,7 +94,7 @@
         BehaviorExceptionContext<TInstance, T, TException> BehaviorExceptionContext<TInstance, TException>.GetProxy<T>(Event<T> @event,
             T data)
         {
-            BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
+            var contextProxy = _context.GetProxy(@event, data);
 
             return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }
@@ -102,7 +102,7 @@
         BehaviorExceptionContext<TInstance, T, TException> BehaviorExceptionContext<TInstance, TData, TException>.GetProxy<T>(
             Event<T> @event, T data)
         {
-            BehaviorContext<TInstance, T> contextProxy = _context.GetProxy(@event, data);
+            var contextProxy = _context.GetProxy(@event, data);
 
             return new BehaviorExceptionContextProxy<TInstance, T, TException>(contextProxy, _exception);
         }

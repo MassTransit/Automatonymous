@@ -22,8 +22,8 @@ namespace Automatonymous
             CancellationToken cancellationToken = default)
             where TInstance : class
         {
-            StateAccessor<TInstance> accessor = machine.Accessor;
-            State<TInstance> toState = machine.GetState(state.Name);
+            var accessor = machine.Accessor;
+            var toState = machine.GetState(state.Name);
 
             Activity<TInstance> activity = new TransitionActivity<TInstance>(toState, accessor);
             Behavior<TInstance> behavior = new LastBehavior<TInstance>(activity);

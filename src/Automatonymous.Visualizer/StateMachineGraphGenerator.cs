@@ -7,6 +7,7 @@
     using QuikGraph.Graphviz;
     using QuikGraph.Graphviz.Dot;
 
+
     public class StateMachineGraphvizGenerator
     {
         readonly AdjacencyGraph<Vertex, Edge<Vertex>> _graph;
@@ -23,7 +24,7 @@
             return algorithm.Generate();
         }
 
-        private static void VertexStyler(object sender, FormatVertexEventArgs<Vertex> args)
+        static void VertexStyler(object sender, FormatVertexEventArgs<Vertex> args)
         {
             args.VertexFormat.Label = args.Vertex.Title;
 
@@ -55,7 +56,7 @@
             }
         }
 
-        private static AdjacencyGraph<Vertex, Edge<Vertex>> CreateAdjacencyGraph(StateMachineGraph data)
+        static AdjacencyGraph<Vertex, Edge<Vertex>> CreateAdjacencyGraph(StateMachineGraph data)
         {
             var graph = new AdjacencyGraph<Vertex, Edge<Vertex>>();
 

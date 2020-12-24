@@ -36,7 +36,7 @@
         public void Setup()
         {
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(b => b
+                .New(b => b
                     .State("Running", out State Running)
                     .State("Suspended", out State Suspended)
                     .State("Failed", out State Failed)

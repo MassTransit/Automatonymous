@@ -110,7 +110,7 @@ namespace Automatonymous.Binders
             return _activities;
         }
 
-        private EventActivityBinder<TInstance> GetBinder(
+        EventActivityBinder<TInstance> GetBinder(
             Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
             EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(_machine, _event);

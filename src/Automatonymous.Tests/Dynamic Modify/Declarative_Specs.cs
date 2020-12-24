@@ -28,7 +28,7 @@
             _instance = new MyState();
 
             _top = AutomatonymousStateMachine<MyState>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Greeted", out TopGreeted)
                     .Event("Initialized", out TopInitialized)
                     .InstanceState(b => b.Top)
@@ -36,7 +36,7 @@
                         .When(TopInitialized, b => b.TransitionTo(TopGreeted))
                 );
             _bottom = AutomatonymousStateMachine<MyState>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Ignored", out BottomIgnored)
                     .Event("Initialized", out BottomInitialized)
                     .InstanceState(b => b.Bottom)

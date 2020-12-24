@@ -44,7 +44,8 @@ namespace Automatonymous
         /// <param name="binder">The event binder</param>
         /// <param name="asyncAction">The asynchronous delegate</param>
         public static ExceptionActivityBinder<TInstance, TException> ThenAsync<TInstance, TException>(
-            this ExceptionActivityBinder<TInstance, TException> binder, Func<BehaviorExceptionContext<TInstance, TException>, Task> asyncAction)
+            this ExceptionActivityBinder<TInstance, TException> binder,
+            Func<BehaviorExceptionContext<TInstance, TException>, Task> asyncAction)
             where TInstance : class
             where TException : Exception
         {
@@ -211,7 +212,7 @@ namespace Automatonymous
         {
             var activity = new FactoryActivity<TInstance, TData>(context =>
             {
-                Activity<TInstance> newActivity = activityFactory(context);
+                var newActivity = activityFactory(context);
 
                 return new SlimActivity<TInstance, TData>(newActivity);
             });
@@ -233,7 +234,7 @@ namespace Automatonymous
         {
             var activity = new AsyncFactoryActivity<TInstance, TData>(async context =>
             {
-                Activity<TInstance> newActivity = await activityFactory(context).ConfigureAwait(false);
+                var newActivity = await activityFactory(context).ConfigureAwait(false);
 
                 return new SlimActivity<TInstance, TData>(newActivity);
             });

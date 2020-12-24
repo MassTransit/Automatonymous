@@ -30,14 +30,14 @@
 
         public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
-            StateUserTypeConverter converter = GetConverter();
+            var converter = GetConverter();
 
             return converter.Get(rs, names, session);
         }
 
         public void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor session)
         {
-            StateUserTypeConverter converter = GetConverter();
+            var converter = GetConverter();
 
             converter.Set(cmd, value, index, session);
         }
@@ -66,21 +66,15 @@
         {
             get
             {
-                StateUserTypeConverter converter = GetConverter();
+                var converter = GetConverter();
 
                 return converter.Types;
             }
         }
 
-        public Type ReturnedType
-        {
-            get { return typeof(State); }
-        }
+        public Type ReturnedType => typeof(State);
 
-        public bool IsMutable
-        {
-            get { return false; }
-        }
+        public bool IsMutable => false;
 
         public static void SaveAsString(T machine)
         {

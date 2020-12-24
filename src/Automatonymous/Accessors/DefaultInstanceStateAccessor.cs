@@ -1,7 +1,6 @@
 namespace Automatonymous.Accessors
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -54,7 +53,7 @@ namespace Automatonymous.Accessors
 
         StateAccessor<TInstance> CreateDefaultAccessor()
         {
-            List<PropertyInfo> states = typeof(TInstance)
+            var states = typeof(TInstance)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.PropertyType == typeof(State))
                 .Where(x => x.GetGetMethod(true) != null)
@@ -62,21 +61,17 @@ namespace Automatonymous.Accessors
                 .ToList();
 
             if (states.Count > 1)
-            {
                 throw new AutomatonymousException(
                     "The InstanceState was not configured, and could not be automatically identified as multiple State properties exist.");
-            }
 
             if (states.Count == 0)
-            {
                 throw new AutomatonymousException(
                     "The InstanceState was not configured, and no public State property exists.");
-            }
 
-            ParameterExpression instance = Expression.Parameter(typeof(TInstance), "instance");
-            MemberExpression memberExpression = Expression.Property(instance, states[0]);
+            var instance = Expression.Parameter(typeof(TInstance), "instance");
+            var memberExpression = Expression.Property(instance, states[0]);
 
-            Expression<Func<TInstance, State>> expression = Expression.Lambda<Func<TInstance, State>>(memberExpression,
+            var expression = Expression.Lambda<Func<TInstance, State>>(memberExpression,
                 instance);
 
             return new InitialIfNullStateAccessor<TInstance>(_initialState, new RawStateAccessor<TInstance>(_machine, expression, _observer));

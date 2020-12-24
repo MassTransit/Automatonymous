@@ -23,7 +23,7 @@
         {
             get
             {
-                int bits = _bits;
+                var bits = _bits;
                 return string.Join("", Enumerable.Range(0, 32).Select(x => (bits & (1 << x)) == 0 ? "0" : "1"));
             }
         }

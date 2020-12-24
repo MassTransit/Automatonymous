@@ -15,7 +15,7 @@
 
             var claim = new TestInstance();
             var machine = AutomatonymousStateMachine<TestInstance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out State Running)
                     .Event("Create", out Create)
                     .InstanceState(b => b.CurrentState)

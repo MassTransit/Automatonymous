@@ -9,8 +9,8 @@ namespace Automatonymous
     using System.Threading.Tasks;
     using Accessors;
     using Activities;
-    using Automatonymous.Builder;
     using Binders;
+    using Builder;
     using Contexts;
     using Events;
     using GreenPipes;
@@ -90,7 +90,7 @@ namespace Automatonymous
 
         async Task StateMachine<TInstance>.RaiseEvent(EventContext<TInstance> context)
         {
-            State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
+            var state = await _accessor.Get(context).ConfigureAwait(false);
 
             if (!_stateCache.TryGetValue(state.Name, out var instanceState))
                 throw new UnknownStateException(_name, state.Name);
@@ -100,7 +100,7 @@ namespace Automatonymous
 
         async Task StateMachine<TInstance>.RaiseEvent<T>(EventContext<TInstance, T> context)
         {
-            State<TInstance> state = await _accessor.Get(context).ConfigureAwait(false);
+            var state = await _accessor.Get(context).ConfigureAwait(false);
 
             if (!_stateCache.TryGetValue(state.Name, out var instanceState))
                 throw new UnknownStateException(_name, state.Name);
@@ -115,9 +115,6 @@ namespace Automatonymous
 
             throw new UnknownStateException(_name, name);
         }
-
-        public bool TryGetState(string name, out State<TInstance> state)
-            => _stateCache.TryGetValue(name, out state);
 
         public IEnumerable<State> States => _stateCache.Values;
 
@@ -147,9 +144,7 @@ namespace Automatonymous
         void Visitable.Accept(StateMachineVisitor visitor)
         {
             foreach (var x in IntrospectionStates)
-            {
                 x.Accept(visitor);
-            }
         }
 
         public void Probe(ProbeContext context)
@@ -163,9 +158,7 @@ namespace Automatonymous
             _accessor.Probe(scope);
 
             foreach (var state in IntrospectionStates)
-            {
                 state.Probe(scope);
-            }
         }
 
         IDisposable StateMachine<TInstance>.ConnectEventObserver(EventObserver<TInstance> observer)
@@ -185,6 +178,11 @@ namespace Automatonymous
         IDisposable StateMachine<TInstance>.ConnectStateObserver(StateObserver<TInstance> observer)
         {
             return _stateObservers.Connect(observer);
+        }
+
+        public bool TryGetState(string name, out State<TInstance> state)
+        {
+            return _stateCache.TryGetValue(name, out state);
         }
 
         Task DefaultUnhandledEventCallback(UnhandledEventContext<TInstance> context)
@@ -249,31 +247,43 @@ namespace Automatonymous
         /// </summary>
         /// <param name="propertyExpression"></param>
         protected internal virtual void Event(Expression<Func<Event>> propertyExpression)
-            => DeclarePropertyBasedEvent(prop => DeclareTriggerEvent(prop.Name), propertyExpression.GetPropertyInfo());
+        {
+            DeclarePropertyBasedEvent(prop => DeclareTriggerEvent(prop.Name), propertyExpression.GetPropertyInfo());
+        }
 
         protected internal virtual Event Event(string name)
-            => DeclareTriggerEvent(name);
+        {
+            return DeclareTriggerEvent(name);
+        }
 
         Event DeclareTriggerEvent(string name)
-            => DeclareEvent(name => new TriggerEvent(name), name);
+        {
+            return DeclareEvent(name => new TriggerEvent(name), name);
+        }
 
         /// <summary>
         /// Declares a data event on the state machine, and initializes the property
         /// </summary>
         /// <param name="propertyExpression">The event property</param>
         protected internal virtual void Event<T>(Expression<Func<Event<T>>> propertyExpression)
-            => DeclarePropertyBasedEvent(prop => DeclareDataEvent<T>(prop.Name), propertyExpression.GetPropertyInfo());
+        {
+            DeclarePropertyBasedEvent(prop => DeclareDataEvent<T>(prop.Name), propertyExpression.GetPropertyInfo());
+        }
 
         protected internal virtual Event<T> Event<T>(string name)
-            => DeclareDataEvent<T>(name);
+        {
+            return DeclareDataEvent<T>(name);
+        }
 
         Event<T> DeclareDataEvent<T>(string name)
-            => DeclareEvent(name => new DataEvent<T>(name), name);
+        {
+            return DeclareEvent(name => new DataEvent<T>(name), name);
+        }
 
         void DeclarePropertyBasedEvent<TEvent>(Func<PropertyInfo, TEvent> ctor, PropertyInfo property)
             where TEvent : Event
         {
-            TEvent @event = ctor(property);
+            var @event = ctor(property);
             ConfigurationHelpers.InitializeEvent(this, property, @event);
         }
 
@@ -294,14 +304,14 @@ namespace Automatonymous
             Expression<Func<TProperty, Event<T>>> eventPropertyExpression)
             where TProperty : class
         {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
                 throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
-            PropertyInfo eventProperty = eventPropertyExpression.GetPropertyInfo();
+            var eventProperty = eventPropertyExpression.GetPropertyInfo();
 
-            string name = $"{property.Name}.{eventProperty.Name}";
+            var name = $"{property.Name}.{eventProperty.Name}";
 
             var @event = new DataEvent<T>(name);
 
@@ -322,7 +332,7 @@ namespace Automatonymous
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
         {
-            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+            var trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
             var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
@@ -343,7 +353,7 @@ namespace Automatonymous
             CompositeEventOptions options,
             params Event[] events)
         {
-            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+            var trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
             var accessor = new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
@@ -362,7 +372,7 @@ namespace Automatonymous
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
         {
-            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+            var trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
@@ -383,7 +393,7 @@ namespace Automatonymous
             CompositeEventOptions options,
             params Event[] events)
         {
-            PropertyInfo trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
+            var trackingPropertyInfo = trackingPropertyExpression.GetPropertyInfo();
 
             var accessor = new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyInfo);
 
@@ -402,9 +412,9 @@ namespace Automatonymous
             if (events.Any(x => x == null))
                 throw new ArgumentException("One or more events specified has not yet been initialized");
 
-            PropertyInfo eventProperty = propertyExpression.GetPropertyInfo();
+            var eventProperty = propertyExpression.GetPropertyInfo();
 
-            string name = eventProperty.Name;
+            var name = eventProperty.Name;
 
             var @event = new TriggerEvent(name);
 
@@ -415,44 +425,57 @@ namespace Automatonymous
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
-            for (int i = 0; i < events.Length; i++)
+            for (var i = 0; i < events.Length; i++)
             {
-                int flag = 1 << i;
+                var flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete, @event);
 
-                bool Filter(State<TInstance> x) => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                bool Filter(State<TInstance> x)
+                {
+                    return options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                }
 
                 foreach (var state in _stateCache.Values.Where(Filter))
-                {
                     During(state,
                         When(events[i])
                             .Execute(activity));
-                }
             }
         }
 
         internal virtual void CompositeEvent(string name,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
-            => CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
+        {
+            CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                CompositeEventOptions.None, events);
+        }
 
         internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
-            => CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), options, events);
+        {
+            return CompositeEvent(name, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                options, events);
+        }
 
         internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
-            => CompositeEvent(name, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
+        {
+            return CompositeEvent(name, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                CompositeEventOptions.None, events);
+        }
 
         internal virtual Event CompositeEvent(string name,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
-            => CompositeEvent(name, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), options, events);
+        {
+            return CompositeEvent(name, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                options, events);
+        }
 
         Event CompositeEvent(string name, CompositeEventStatusAccessor<TInstance> accessor,
             CompositeEventOptions options, Event[] events)
@@ -473,20 +496,21 @@ namespace Automatonymous
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
-            for (int i = 0; i < events.Length; i++)
+            for (var i = 0; i < events.Length; i++)
             {
-                int flag = 1 << i;
+                var flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete, @event);
 
-                bool Filter(State<TInstance> x) => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                bool Filter(State<TInstance> x)
+                {
+                    return options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                }
 
                 foreach (var state in _stateCache.Values.Where(Filter))
-                {
                     During(state,
                         When(events[i])
                             .Execute(activity));
-                }
             }
 
             return @event;
@@ -495,24 +519,36 @@ namespace Automatonymous
         protected internal virtual void CompositeEvent(Event @event,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             params Event[] events)
-            => CompositeEvent(@event, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
+        {
+            CompositeEvent(@event, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                CompositeEventOptions.None, events);
+        }
 
         protected internal virtual Event CompositeEvent(Event @event,
             Expression<Func<TInstance, CompositeEventStatus>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
-            => CompositeEvent(@event, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), options, events);
+        {
+            return CompositeEvent(@event, new StructCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                options, events);
+        }
 
         protected internal virtual Event CompositeEvent(Event @event,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             params Event[] events)
-            => CompositeEvent(@event, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), CompositeEventOptions.None, events);
+        {
+            return CompositeEvent(@event, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                CompositeEventOptions.None, events);
+        }
 
         protected internal virtual Event CompositeEvent(Event @event,
             Expression<Func<TInstance, int>> trackingPropertyExpression,
             CompositeEventOptions options,
             params Event[] events)
-            => CompositeEvent(@event, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()), options, events);
+        {
+            return CompositeEvent(@event, new IntCompositeEventStatusAccessor<TInstance>(trackingPropertyExpression.GetPropertyInfo()),
+                options, events);
+        }
 
         Event CompositeEvent(Event @event, CompositeEventStatusAccessor<TInstance> accessor,
             CompositeEventOptions options, Event[] events)
@@ -529,20 +565,21 @@ namespace Automatonymous
             var complete = new CompositeEventStatus(Enumerable.Range(0, events.Length)
                 .Aggregate(0, (current, x) => current | (1 << x)));
 
-            for (int i = 0; i < events.Length; i++)
+            for (var i = 0; i < events.Length; i++)
             {
-                int flag = 1 << i;
+                var flag = 1 << i;
 
                 var activity = new CompositeEventActivity<TInstance>(accessor, flag, complete, @event);
 
-                bool Filter(State<TInstance> x) => options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                bool Filter(State<TInstance> x)
+                {
+                    return options.HasFlag(CompositeEventOptions.IncludeInitial) || !Equals(x, Initial);
+                }
 
                 foreach (var state in _stateCache.Values.Where(Filter))
-                {
                     During(state,
                         When(events[i])
                             .Execute(activity));
-                }
             }
 
             return @event;
@@ -554,7 +591,7 @@ namespace Automatonymous
         /// <param name="propertyExpression">The state property</param>
         protected internal virtual void State(Expression<Func<State>> propertyExpression)
         {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var property = propertyExpression.GetPropertyInfo();
 
             DeclareState(property);
         }
@@ -572,7 +609,7 @@ namespace Automatonymous
 
         void DeclareState(PropertyInfo property)
         {
-            string name = property.Name;
+            var name = property.Name;
 
             var propertyValue = property.GetValue(this);
 
@@ -597,14 +634,14 @@ namespace Automatonymous
             Expression<Func<TProperty, State>> statePropertyExpression)
             where TProperty : class
         {
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
                 throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
-            PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
+            var stateProperty = statePropertyExpression.GetPropertyInfo();
 
-            string name = $"{property.Name}.{stateProperty.Name}";
+            var name = $"{property.Name}.{stateProperty.Name}";
 
             var existingState = GetStateProperty(stateProperty, propertyValue);
             if (name.Equals(existingState?.Name))
@@ -641,11 +678,11 @@ namespace Automatonymous
             if (superState == null)
                 throw new ArgumentNullException(nameof(superState));
 
-            State<TInstance> superStateInstance = GetState(superState.Name);
+            var superStateInstance = GetState(superState.Name);
 
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var property = propertyExpression.GetPropertyInfo();
 
-            string name = property.Name;
+            var name = property.Name;
 
             var propertyValue = property.GetValue(this);
 
@@ -666,7 +703,7 @@ namespace Automatonymous
             if (superState == null)
                 throw new ArgumentNullException(nameof(superState));
 
-            State<TInstance> superStateInstance = GetState(superState.Name);
+            var superStateInstance = GetState(superState.Name);
 
             // If the state was already defined, don't define it again
             if (TryGetState(name, out var existingState) &&
@@ -693,16 +730,16 @@ namespace Automatonymous
             if (superState == null)
                 throw new ArgumentNullException(nameof(superState));
 
-            State<TInstance> superStateInstance = GetState(superState.Name);
+            var superStateInstance = GetState(superState.Name);
 
-            PropertyInfo property = propertyExpression.GetPropertyInfo();
+            var property = propertyExpression.GetPropertyInfo();
             var propertyValue = property.GetValue(this, null) as TProperty;
             if (propertyValue == null)
                 throw new ArgumentException("The property is not initialized: " + property.Name, nameof(propertyExpression));
 
-            PropertyInfo stateProperty = statePropertyExpression.GetPropertyInfo();
+            var stateProperty = statePropertyExpression.GetPropertyInfo();
 
-            string name = $"{property.Name}.{stateProperty.Name}";
+            var name = $"{property.Name}.{stateProperty.Name}";
 
             var existingState = GetStateProperty(stateProperty, propertyValue);
             if (name.Equals(existingState?.Name) && superState.Name.Equals(existingState?.SuperState?.Name))
@@ -737,7 +774,7 @@ namespace Automatonymous
         /// <param name="activities">The event and activities</param>
         protected internal void During(State state, params EventActivities<TInstance>[] activities)
         {
-            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            var activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             BindActivitiesToState(state, activitiesBinder);
         }
@@ -750,7 +787,7 @@ namespace Automatonymous
         /// <param name="activities">The event and activities</param>
         protected internal void During(State state1, State state2, params EventActivities<TInstance>[] activities)
         {
-            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            var activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             BindActivitiesToState(state1, activitiesBinder);
             BindActivitiesToState(state2, activitiesBinder);
@@ -765,7 +802,7 @@ namespace Automatonymous
         /// <param name="activities">The event and activities</param>
         protected internal void During(State state1, State state2, State state3, params EventActivities<TInstance>[] activities)
         {
-            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            var activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             BindActivitiesToState(state1, activitiesBinder);
             BindActivitiesToState(state2, activitiesBinder);
@@ -783,7 +820,7 @@ namespace Automatonymous
         protected internal void During(State state1, State state2, State state3, State state4,
             params EventActivities<TInstance>[] activities)
         {
-            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            var activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             BindActivitiesToState(state1, activitiesBinder);
             BindActivitiesToState(state2, activitiesBinder);
@@ -798,15 +835,15 @@ namespace Automatonymous
         /// <param name="activities">The event and activities</param>
         protected internal void During(IEnumerable<State> states, params EventActivities<TInstance>[] activities)
         {
-            ActivityBinder<TInstance>[] activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
+            var activitiesBinder = activities.SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
-            foreach (State state in states)
+            foreach (var state in states)
                 BindActivitiesToState(state, activitiesBinder);
         }
 
         void BindActivitiesToState(State state, IEnumerable<ActivityBinder<TInstance>> eventActivities)
         {
-            State<TInstance> activityState = GetState(state.Name);
+            var activityState = GetState(state.Name);
 
             foreach (var activity in eventActivities)
                 activity.Bind(activityState);
@@ -827,7 +864,7 @@ namespace Automatonymous
         /// <param name="activities">The event and activities</param>
         protected internal void DuringAny(params EventActivities<TInstance>[] activities)
         {
-            IEnumerable<State<TInstance>> states = _stateCache.Values.Where(x => !Equals(x, Initial) && !Equals(x, Final));
+            var states = _stateCache.Values.Where(x => !Equals(x, Initial) && !Equals(x, Final));
 
             // we only add DuringAny event handlers to non-initial and non-final states to avoid
             // reviving finalized state machine instances or creating new ones accidentally.
@@ -844,7 +881,7 @@ namespace Automatonymous
         /// <param name="activityCallback">Specify the activities that are executes when the Final state is entered.</param>
         protected internal void Finally(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
-            EventActivityBinder<TInstance> binder = When(Final.Enter);
+            var binder = When(Final.Enter);
 
             binder = activityCallback(binder);
 
@@ -853,7 +890,7 @@ namespace Automatonymous
 
         void BindTransitionEvents(State<TInstance> state, IEnumerable<EventActivities<TInstance>> activities)
         {
-            IEnumerable<ActivityBinder<TInstance>> eventActivities = activities
+            var eventActivities = activities
                 .SelectMany(activity => activity.GetStateActivityBinders().Where(x => x.IsStateTransitionEvent(state)));
 
             foreach (var eventActivity in eventActivities)
@@ -890,7 +927,7 @@ namespace Automatonymous
         /// <returns></returns>
         protected internal void WhenEnter(State state, Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
-            State<TInstance> activityState = GetState(state.Name);
+            var activityState = GetState(state.Name);
 
             EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, activityState.Enter);
 
@@ -922,9 +959,9 @@ namespace Automatonymous
         void BindEveryTransitionEvent(Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback,
             Func<State<TInstance>, Event> eventProvider)
         {
-            State<TInstance>[] states = _stateCache.Values.ToArray();
+            var states = _stateCache.Values.ToArray();
 
-            ActivityBinder<TInstance>[] binders = states.Select(state =>
+            var binders = states.Select(state =>
             {
                 EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, eventProvider(state));
 
@@ -932,12 +969,8 @@ namespace Automatonymous
             }).SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             foreach (var state in states)
-            {
                 foreach (var binder in binders)
-                {
                     binder.Bind(state);
-                }
-            }
         }
 
         /// <summary>
@@ -945,7 +978,8 @@ namespace Automatonymous
         /// </summary>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected internal void BeforeEnterAny(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        protected internal void BeforeEnterAny(
+            Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             BindEveryTransitionEvent(activityCallback, x => x.BeforeEnter);
         }
@@ -955,7 +989,8 @@ namespace Automatonymous
         /// </summary>
         /// <param name="activityCallback"></param>
         /// <returns></returns>
-        protected internal void AfterLeaveAny(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
+        protected internal void AfterLeaveAny(
+            Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
             BindEveryTransitionEvent(activityCallback, x => x.AfterLeave);
         }
@@ -963,9 +998,9 @@ namespace Automatonymous
         void BindEveryTransitionEvent(Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback,
             Func<State<TInstance>, Event<State>> eventProvider)
         {
-            State<TInstance>[] states = _stateCache.Values.ToArray();
+            var states = _stateCache.Values.ToArray();
 
-            ActivityBinder<TInstance>[] binders = states.Select(state =>
+            var binders = states.Select(state =>
             {
                 EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, eventProvider(state));
 
@@ -973,12 +1008,8 @@ namespace Automatonymous
             }).SelectMany(x => x.GetStateActivityBinders()).ToArray();
 
             foreach (var state in states)
-            {
                 foreach (var binder in binders)
-                {
                     binder.Bind(state);
-                }
-            }
         }
 
         /// <summary>
@@ -989,7 +1020,7 @@ namespace Automatonymous
         /// <returns></returns>
         protected internal void WhenLeave(State state, Func<EventActivityBinder<TInstance>, EventActivityBinder<TInstance>> activityCallback)
         {
-            State<TInstance> activityState = GetState(state.Name);
+            var activityState = GetState(state.Name);
 
             EventActivityBinder<TInstance> binder = new TriggerEventActivityBinder<TInstance>(this, activityState.Leave);
 
@@ -1007,7 +1038,7 @@ namespace Automatonymous
         protected internal void BeforeEnter(State state,
             Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
-            State<TInstance> activityState = GetState(state.Name);
+            var activityState = GetState(state.Name);
 
             EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, activityState.BeforeEnter);
 
@@ -1025,7 +1056,7 @@ namespace Automatonymous
         protected internal void AfterLeave(State state,
             Func<EventActivityBinder<TInstance, State>, EventActivityBinder<TInstance, State>> activityCallback)
         {
-            State<TInstance> activityState = GetState(state.Name);
+            var activityState = GetState(state.Name);
 
             EventActivityBinder<TInstance, State> binder = new DataEventActivityBinder<TInstance, State>(this, activityState.AfterLeave);
 
@@ -1122,9 +1153,31 @@ namespace Automatonymous
         /// </summary>
         void RegisterImplicit()
         {
-            foreach (ConfigurationHelpers.StateMachineRegistration declaration in _registrations.Value)
+            foreach (var declaration in _registrations.Value)
                 declaration.Declare(this);
         }
+
+        StateMachine<TInstance> Modify(Action<StateMachineModifier<TInstance>> modifier)
+        {
+            StateMachineModifier<TInstance> builder = new InternalStateMachineModifier<TInstance>(this);
+            modifier(builder);
+            builder.Apply();
+
+            return this;
+        }
+
+        /// <summary>
+        /// Create a new state machine using the builder pattern
+        /// </summary>
+        /// <param name="modifier"></param>
+        /// <returns></returns>
+        public static AutomatonymousStateMachine<TInstance> New(Action<StateMachineModifier<TInstance>> modifier)
+        {
+            var machine = new BuilderStateMachine();
+            machine.Modify(modifier);
+            return machine;
+        }
+
 
         protected static class ConfigurationHelpers
         {
@@ -1132,19 +1185,18 @@ namespace Automatonymous
             {
                 var events = new List<StateMachineRegistration>();
 
-                TypeInfo machineType = stateMachine.GetType().GetTypeInfo();
+                var machineType = stateMachine.GetType().GetTypeInfo();
 
-                IEnumerable<PropertyInfo> properties = GetStateMachineProperties(machineType);
+                var properties = GetStateMachineProperties(machineType);
 
-                foreach (PropertyInfo propertyInfo in properties)
-                {
+                foreach (var propertyInfo in properties)
                     if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType)
                     {
                         if (propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
                         {
-                            Type declarationType = typeof(DataEventRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
+                            var declarationType = typeof(DataEventRegistration<,>).MakeGenericType(typeof(TInstance), machineType,
                                 propertyInfo.PropertyType.GetGenericArguments().First());
-                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            var declaration = Activator.CreateInstance(declarationType, propertyInfo);
                             events.Add((StateMachineRegistration)declaration);
                         }
                     }
@@ -1152,18 +1204,17 @@ namespace Automatonymous
                     {
                         if (propertyInfo.PropertyType == typeof(Event))
                         {
-                            Type declarationType = typeof(TriggerEventRegistration<>).MakeGenericType(typeof(TInstance), machineType);
-                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            var declarationType = typeof(TriggerEventRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                            var declaration = Activator.CreateInstance(declarationType, propertyInfo);
                             events.Add((StateMachineRegistration)declaration);
                         }
                         else if (propertyInfo.PropertyType == typeof(State))
                         {
-                            Type declarationType = typeof(StateRegistration<>).MakeGenericType(typeof(TInstance), machineType);
-                            object declaration = Activator.CreateInstance(declarationType, propertyInfo);
+                            var declarationType = typeof(StateRegistration<>).MakeGenericType(typeof(TInstance), machineType);
+                            var declaration = Activator.CreateInstance(declarationType, propertyInfo);
                             events.Add((StateMachineRegistration)declaration);
                         }
                     }
-                }
 
                 return events.ToArray();
             }
@@ -1174,17 +1225,15 @@ namespace Automatonymous
                     yield break;
 
                 if (typeInfo.BaseType != null)
-                {
-                    foreach (PropertyInfo propertyInfo in GetStateMachineProperties(typeInfo.BaseType.GetTypeInfo()))
+                    foreach (var propertyInfo in GetStateMachineProperties(typeInfo.BaseType.GetTypeInfo()))
                         yield return propertyInfo;
-                }
 
-                IEnumerable<PropertyInfo> properties = typeInfo.DeclaredMethods
+                var properties = typeInfo.DeclaredMethods
                     .Where(x => x.IsSpecialName && x.Name.StartsWith("get_") && !x.IsStatic)
                     .Select(x => typeInfo.GetDeclaredProperty(x.Name.Substring("get_".Length)))
                     .Where(x => x.CanRead && (x.CanWrite || TryGetBackingField(typeInfo, x, out _)));
 
-                foreach (PropertyInfo propertyInfo in properties)
+                foreach (var propertyInfo in properties)
                     yield return propertyInfo;
             }
 
@@ -1196,7 +1245,7 @@ namespace Automatonymous
                         field.Attributes.HasFlag(FieldAttributes.Private) &&
                         field.Attributes.HasFlag(FieldAttributes.InitOnly) &&
                         field.CustomAttributes.Any(attr => attr.AttributeType == typeof(CompilerGeneratedAttribute)) &&
-                        (field.DeclaringType == property.DeclaringType) &&
+                        field.DeclaringType == property.DeclaringType &&
                         field.FieldType.IsAssignableFrom(property.PropertyType) &&
                         field.Name.StartsWith("<" + property.Name + ">")
                     );
@@ -1220,7 +1269,9 @@ namespace Automatonymous
                 where TProperty : class
             {
                 if (stateProperty.CanWrite)
+                {
                     stateProperty.SetValue(propertyValue, state);
+                }
                 else
                 {
                     var objectProperty = propertyValue.GetType().GetProperty(stateProperty.Name, typeof(State));
@@ -1245,7 +1296,9 @@ namespace Automatonymous
                 where TProperty : class
             {
                 if (eventProperty.CanWrite)
+                {
                     eventProperty.SetValue(propertyValue, @event);
+                }
                 else
                 {
                     var objectProperty = propertyValue.GetType().GetProperty(eventProperty.Name, typeof(Event<T>));
@@ -1277,7 +1330,7 @@ namespace Automatonymous
                 public void Declare(object stateMachine)
                 {
                     var machine = (TStateMachine)stateMachine;
-                    object existing = _propertyInfo.GetValue(machine);
+                    var existing = _propertyInfo.GetValue(machine);
                     if (existing != null)
                         return;
 
@@ -1300,11 +1353,11 @@ namespace Automatonymous
                 public void Declare(object stateMachine)
                 {
                     var machine = (TStateMachine)stateMachine;
-                    object existing = _propertyInfo.GetValue(machine);
+                    var existing = _propertyInfo.GetValue(machine);
                     if (existing != null)
                         return;
 
-                    machine.DeclarePropertyBasedEvent((prop) => machine.DeclareTriggerEvent(prop.Name), _propertyInfo);
+                    machine.DeclarePropertyBasedEvent(prop => machine.DeclareTriggerEvent(prop.Name), _propertyInfo);
                 }
             }
 
@@ -1323,31 +1376,18 @@ namespace Automatonymous
                 public void Declare(object stateMachine)
                 {
                     var machine = (TStateMachine)stateMachine;
-                    object existing = _propertyInfo.GetValue(machine);
+                    var existing = _propertyInfo.GetValue(machine);
                     if (existing != null)
                         return;
 
-                    machine.DeclarePropertyBasedEvent((prop) => machine.DeclareDataEvent<TData>(prop.Name), _propertyInfo);
+                    machine.DeclarePropertyBasedEvent(prop => machine.DeclareDataEvent<TData>(prop.Name), _propertyInfo);
                 }
             }
         }
 
-        private StateMachine<TInstance> Modify(Action<StateMachineModifier<TInstance>> modifier)
+
+        class BuilderStateMachine : AutomatonymousStateMachine<TInstance>
         {
-            StateMachineModifier<TInstance> builder = new InternalStateMachineModifier<TInstance>(this);
-            modifier(builder);
-            builder.Apply();
-
-            return this;
-        }
-
-        private class BuilderStateMachine : AutomatonymousStateMachine<TInstance> { }
-
-        public static AutomatonymousStateMachine<TInstance> Create(Action<StateMachineModifier<TInstance>> modifier)
-        {
-            var machine = new BuilderStateMachine();
-            machine.Modify(modifier);
-            return machine;
         }
     }
 }

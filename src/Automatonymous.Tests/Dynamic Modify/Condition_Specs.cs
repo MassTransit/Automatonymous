@@ -46,7 +46,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .State("Initialized", out Initialized)
                     .State("ShouldNotBeHere", out ShouldNotBeHere)
@@ -159,7 +159,7 @@
         {
             _instance = new Instance();
             _machine = AutomatonymousStateMachine<Instance>
-                .Create(builder => builder
+                .New(builder => builder
                     .State("Running", out Running)
                     .State("Initialized", out Initialized)
                     .State("ShouldNotBeHere", out ShouldNotBeHere)

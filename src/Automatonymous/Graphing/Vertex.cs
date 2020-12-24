@@ -44,7 +44,7 @@ namespace Automatonymous.Graphing
         {
             unchecked
             {
-                int hashCode = Title?.GetHashCode() ?? 0;
+                var hashCode = Title?.GetHashCode() ?? 0;
                 hashCode = (hashCode * 397) ^ (VertexType?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (TargetType?.GetHashCode() ?? 0);
                 return hashCode;

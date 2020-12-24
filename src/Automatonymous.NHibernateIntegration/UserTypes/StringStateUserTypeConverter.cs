@@ -24,16 +24,13 @@
             _stateCache = new Dictionary<string, State>(machine.States.ToDictionary(x => x.Name));
         }
 
-        public SqlType[] Types
-        {
-            get { return _types; }
-        }
+        public SqlType[] Types => _types;
 
         public State Get(DbDataReader rs, string[] names, ISessionImplementor session)
         {
             var value = (string)NHibernateUtil.String.NullSafeGet(rs, names, session);
 
-            State state = _stateCache[value];
+            var state = _stateCache[value];
 
             return state;
         }

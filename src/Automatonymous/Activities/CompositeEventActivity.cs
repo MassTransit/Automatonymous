@@ -66,7 +66,7 @@ namespace Automatonymous.Activities
 
         Task Execute(BehaviorContext<TInstance> context)
         {
-            CompositeEventStatus value = _accessor.Get(context.Instance);
+            var value = _accessor.Get(context.Instance);
             value.Set(_flag);
 
             _accessor.Set(context.Instance, value);

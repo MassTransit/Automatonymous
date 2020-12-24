@@ -3,7 +3,6 @@ namespace Automatonymous.Accessors
     using System;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Reflection;
     using System.Threading.Tasks;
     using GreenPipes;
     using GreenPipes.Internals.Extensions;
@@ -34,7 +33,7 @@ namespace Automatonymous.Accessors
 
         Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
-            int stateIndex = _property.Get(context.Instance);
+            var stateIndex = _property.Get(context.Instance);
 
             return Task.FromResult(_index[stateIndex]);
         }
@@ -44,16 +43,16 @@ namespace Automatonymous.Accessors
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            int stateIndex = _index[state.Name];
+            var stateIndex = _index[state.Name];
 
-            int previousIndex = _property.Get(context.Instance);
+            var previousIndex = _property.Get(context.Instance);
 
             if (stateIndex == previousIndex)
                 return TaskUtil.Completed;
 
             _property.Set(context.Instance, stateIndex);
 
-            State<TInstance> previousState = _index[previousIndex];
+            var previousState = _index[previousIndex];
 
             return _observer.StateChanged(context, state, previousState);
         }
@@ -80,7 +79,7 @@ namespace Automatonymous.Accessors
 
         static ReadWriteProperty<TInstance, int> GetCurrentStateProperty(Expression<Func<TInstance, int>> currentStateExpression)
         {
-            PropertyInfo propertyInfo = currentStateExpression.GetPropertyInfo();
+            var propertyInfo = currentStateExpression.GetPropertyInfo();
 
             return new ReadWriteProperty<TInstance, int>(propertyInfo);
         }

@@ -1,7 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ output extension="cs" #>
 <#@ assembly  name="System.Core" #>
-<#@ import namespace="System.Linq" #>
 namespace Automatonymous
 {
     using System;
@@ -127,13 +126,13 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
-        <#=tComments #>
+        <#= tComments #>
         /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance<#=tInputArgs #>>(this T machine, TInstance instance, Event @event, <#=tParms #>,
+        public static Task RaiseEvent<T, TInstance<#= tInputArgs #>>(this T machine, TInstance instance, Event @event, <#= tParms #>,
             CancellationToken cancellationToken = default(CancellationToken))
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
-            <#=tWheres #>
+            <#= tWheres #>
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
@@ -142,8 +141,9 @@ namespace Automatonymous
         for (int j = 1; j <= i; j++)
         {
 #> 
-            context.GetOrAddPayload(() => context<#=j #>);<#
-        } #>
+            context.GetOrAddPayload(() => context<#= j #>);<#
+        }
+#>
 
 
             return machine.RaiseEvent(context);
@@ -157,13 +157,13 @@ namespace Automatonymous
         /// <param name="machine">The state machine</param>
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
-        <#=tComments #>
+        <#= tComments #>
         /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TInstance<#=tInputArgs #>>(this T machine, TInstance instance, Func<T, Event> eventSelector, <#=tParms #>,
+        public static Task RaiseEvent<T, TInstance<#= tInputArgs #>>(this T machine, TInstance instance, Func<T, Event> eventSelector, <#= tParms #>,
             CancellationToken cancellationToken = default(CancellationToken))
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
-            <#=tWheres #>
+            <#= tWheres #>
         {
             Event @event = eventSelector(machine);
             if (@event == null)
@@ -173,8 +173,9 @@ namespace Automatonymous
         for (int j = 1; j <= i; j++)
         {
 #> 
-            context.GetOrAddPayload(() => context<#=j #>);<#
-        } #>
+            context.GetOrAddPayload(() => context<#= j #>);<#
+        }
+#>
 
 
             return machine.RaiseEvent(context);
@@ -190,13 +191,13 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="event">The event to raise</param>
         /// <param name="data">The event data</param>
-        <#=tComments #>
+        <#= tComments #>
         /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TData, TInstance<#=tInputArgs #>>(this T machine, TInstance instance, Event<TData> @event, TData data, <#=tParms #>,
+        public static Task RaiseEvent<T, TData, TInstance<#= tInputArgs #>>(this T machine, TInstance instance, Event<TData> @event, TData data, <#= tParms #>,
             CancellationToken cancellationToken = default(CancellationToken))
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
-            <#=tWheres #>
+            <#= tWheres #>
         {
             if (@event == null)
                 throw new ArgumentNullException(nameof(@event));
@@ -205,8 +206,9 @@ namespace Automatonymous
         for (int j = 1; j <= i; j++)
         {
 #> 
-            context.GetOrAddPayload(() => context<#=j #>);<#
-        } #>
+            context.GetOrAddPayload(() => context<#= j #>);<#
+        }
+#>
 
 
             return machine.RaiseEvent(context);
@@ -222,13 +224,13 @@ namespace Automatonymous
         /// <param name="instance">The state machine instance</param>
         /// <param name="eventSelector">Selector to the event on the state machine</param>
         /// <param name="data">The event data</param>
-        <#=tComments #>
+        <#= tComments #>
         /// <param name="cancellationToken"></param>
-        public static Task RaiseEvent<T, TData, TInstance<#=tInputArgs #>>(this T machine, TInstance instance, Func<T, Event<TData>> eventSelector, TData data, <#=tParms #>,
+        public static Task RaiseEvent<T, TData, TInstance<#= tInputArgs #>>(this T machine, TInstance instance, Func<T, Event<TData>> eventSelector, TData data, <#= tParms #>,
             CancellationToken cancellationToken = default(CancellationToken))
             where T : class, StateMachine, StateMachine<TInstance>
             where TInstance : class
-            <#=tWheres #>
+            <#= tWheres #>
         {
             Event<TData> @event = eventSelector(machine);
             if (@event == null)
@@ -238,8 +240,9 @@ namespace Automatonymous
         for (int j = 1; j <= i; j++)
         {
 #> 
-            context.GetOrAddPayload(() => context<#=j #>);<#
-        } #>
+            context.GetOrAddPayload(() => context<#= j #>);<#
+        }
+#>
 
 
             return machine.RaiseEvent(context);

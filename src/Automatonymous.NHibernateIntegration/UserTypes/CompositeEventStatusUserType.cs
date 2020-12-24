@@ -15,7 +15,7 @@
     public class CompositeEventStatusUserType :
         IUserType
     {
-        static readonly SqlType[] _types = new[] {NHibernateUtil.Int32.SqlType};
+        static readonly SqlType[] _types = {NHibernateUtil.Int32.SqlType};
 
         bool IUserType.Equals(object x, object y)
         {
@@ -32,11 +32,11 @@
 
         public object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor session, object owner)
         {
-            object value = NHibernateUtil.Int32.NullSafeGet(rs, names, session, owner);
+            var value = NHibernateUtil.Int32.NullSafeGet(rs, names, session, owner);
             if (value == null)
                 return new CompositeEventStatus();
 
-            var status = new CompositeEventStatus((Int32)value);
+            var status = new CompositeEventStatus((int)value);
 
             return status;
         }
@@ -49,7 +49,7 @@
                 return;
             }
 
-            int setValue = ((CompositeEventStatus)value).Bits;
+            var setValue = ((CompositeEventStatus)value).Bits;
 
             NHibernateUtil.Int32.NullSafeSet(cmd, setValue, index, session);
         }
@@ -74,19 +74,10 @@
             return value;
         }
 
-        public SqlType[] SqlTypes
-        {
-            get { return _types; }
-        }
+        public SqlType[] SqlTypes => _types;
 
-        public Type ReturnedType
-        {
-            get { return typeof(CompositeEventStatus); }
-        }
+        public Type ReturnedType => typeof(CompositeEventStatus);
 
-        public bool IsMutable
-        {
-            get { return false; }
-        }
+        public bool IsMutable => false;
     }
 }

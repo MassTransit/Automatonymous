@@ -26,7 +26,7 @@
 
         async Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
         {
-            State<TInstance> state = await _stateAccessor.Get(context).ConfigureAwait(false);
+            var state = await _stateAccessor.Get(context).ConfigureAwait(false);
             if (state == null)
             {
                 var behaviorContext = new EventBehaviorContext<TInstance>(context);

@@ -30,21 +30,21 @@ namespace Automatonymous.Behaviors
 
         Task Behavior<TInstance>.Execute(BehaviorContext<TInstance> context)
         {
-            BehaviorContext<TInstance, TData> nextContext = context.GetProxy(_event, _data);
+            var nextContext = context.GetProxy(_event, _data);
 
             return _next.Execute(nextContext);
         }
 
         Task Behavior<TInstance>.Execute<T>(BehaviorContext<TInstance, T> context)
         {
-            BehaviorContext<TInstance, TData> nextContext = context as BehaviorContext<TInstance, TData> ?? context.GetProxy(_event, _data);
+            var nextContext = context as BehaviorContext<TInstance, TData> ?? context.GetProxy(_event, _data);
 
             return _next.Execute(nextContext);
         }
 
         Task Behavior<TInstance>.Faulted<T, TException>(BehaviorExceptionContext<TInstance, T, TException> context)
         {
-            BehaviorExceptionContext<TInstance, TData, TException> nextContext =
+            var nextContext =
                 context as BehaviorExceptionContext<TInstance, TData, TException> ?? context.GetProxy(_event, _data);
 
             return _next.Faulted(nextContext);
@@ -52,7 +52,7 @@ namespace Automatonymous.Behaviors
 
         Task Behavior<TInstance>.Faulted<TException>(BehaviorExceptionContext<TInstance, TException> context)
         {
-            BehaviorExceptionContext<TInstance, TData, TException> nextContext = context.GetProxy(_event, _data);
+            var nextContext = context.GetProxy(_event, _data);
 
             return _next.Faulted(nextContext);
         }

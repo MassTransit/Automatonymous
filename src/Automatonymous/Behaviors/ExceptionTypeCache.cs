@@ -57,10 +57,8 @@ namespace Automatonymous.Behaviors
             {
                 var typedException = exception as TException;
                 if (typedException == null)
-                {
                     throw new ArgumentException(
                         $"The exception type {exception.GetType().Name} did not match the expected type {typeof(TException).Name}");
-                }
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TException>(context, typedException);
 
@@ -73,10 +71,8 @@ namespace Automatonymous.Behaviors
             {
                 var typedException = exception as TException;
                 if (typedException == null)
-                {
                     throw new ArgumentException(
                         $"The exception type {exception.GetType().Name} did not match the expected type {typeof(TException).Name}");
-                }
 
                 var exceptionContext = new BehaviorExceptionContextProxy<TInstance, TData, TException>(context, typedException);
 
