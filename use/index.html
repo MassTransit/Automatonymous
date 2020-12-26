@@ -1,0 +1,477 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Quick start · Automatonymous</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="creating.html" />
+    
+    
+    <link rel="prev" href="../install/" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Overview</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../install/">
+            
+                <a href="../install/">
+            
+                    
+                    Installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">Usage</li>
+        
+        
+    
+        <li class="chapter active" data-level="2.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Quick start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="creating.html">
+            
+                <a href="creating.html">
+            
+                    
+                    Creating a state machine
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="states.html">
+            
+                <a href="states.html">
+            
+                    
+                    States
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4" data-path="events.html">
+            
+                <a href="events.html">
+            
+                    
+                    Events
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.5" data-path="behavior.html">
+            
+                <a href="behavior.html">
+            
+                    
+                    Behavior
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Quick start</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="quick-start">Quick start</h1>
+<p>So you&apos;ve got the chops and want to get started quickly using Automatonymous. Maybe
+you are a bad ass and can&apos;t be bothered with reading documentation, or perhaps you
+are already familiar with the Magnum StateMachine and want to see what things have
+changed. Either way, here it is, your first state machine configured using 
+Automatonymous.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token keyword">class</span> <span class="token class-name">Relationship</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name">State</span> CurrentState <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> Name <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">RelationshipStateMachine</span> <span class="token punctuation">:</span>
+    <span class="token type-list"><span class="token class-name">AutomatonymousStateMachine<span class="token punctuation">&lt;</span>Relationship<span class="token punctuation">&gt;</span></span></span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token function">RelationshipStateMachine</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token function">Initially</span><span class="token punctuation">(</span>
+            <span class="token function">When</span><span class="token punctuation">(</span>Hello<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Friend<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">When</span><span class="token punctuation">(</span>PissOff<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Enemy<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token function">When</span><span class="token punctuation">(</span>Introduce<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">Then</span><span class="token punctuation">(</span>ctx <span class="token operator">=&gt;</span> ctx<span class="token punctuation">.</span>Instance<span class="token punctuation">.</span>Name <span class="token operator">=</span> ctx<span class="token punctuation">.</span>Data<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Friend<span class="token punctuation">)</span>                   
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token return-type class-name">State</span> Friend <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">private</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name">State</span> Enemy <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">private</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+    <span class="token keyword">public</span> <span class="token return-type class-name">Event</span> Hello <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">private</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name">Event</span> PissOff <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">private</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name">Event<span class="token punctuation">&lt;</span>Person<span class="token punctuation">&gt;</span></span> Introduce <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">private</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Person</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">public</span> <span class="token return-type class-name"><span class="token keyword">string</span></span> Name <span class="token punctuation">{</span> <span class="token keyword">get</span><span class="token punctuation">;</span> <span class="token keyword">set</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h2 id="seriously">Seriously?</h2>
+<p>Okay, so two classes are defined above, one that represents the state 
+(<code>Relationship</code>) and the other that defines the behavior of the state 
+machine (<code>RelationshipStateMachine</code>). For each state machine that is defined, 
+it is expected that there will be at least one instance.
+In Automatonymous, state is separate from behavior, allowing many instances 
+to be managed using a single state machine.</p>
+<div class="alert alert-info">
+<b>Note:</b> 
+    For some object-oriented purists, this may be causing the hair to raise on the back of your neck.
+    Chill out, it&apos;s not the end of the world here. If you have a penchant for encapsulating 
+    behavior with data (practices such as domain model, DDD, etc.), recognize that programming language
+    constructs are the only thing in your way here.
+</div>
+
+<h2 id="tracking-state">Tracking State</h2>
+<p>State is managed in Automatonymous using a class, shown above as the <code>Relationship</code>.</p>
+<h2 id="defining-behavior">Defining Behavior</h2>
+<p>Behavior is defined using a class that inherits from <code>AutomatonymousStateMachine</code>. 
+The class is generic, and the state type associated with the behavior must be specified. 
+This allows the state machine configuration to use the state for a better configuration 
+experience.</p>
+<blockquote>
+<p>It also makes Intellisense work better.</p>
+</blockquote>
+<p>In a state machine, states must be defined along with the events that can be raised.</p>
+<p>By default all public properties with the appropriate object type (either a State or an
+Event) will automatically be defined and initialized in the constructor of the base class.</p>
+<p>It is possible to be more explicit with the definition of the events and states by using
+the <code>Event()</code> and <code>State()</code> methods in the constructor using lambda methods.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token keyword">public</span> <span class="token function">RelationshipStateMachine</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">// Explicit definition of the events.</span>
+    <span class="token function">Event</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Hello<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Event</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> PissOff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Event</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Introduce<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Explicit definition of the states.</span>
+    <span class="token function">State</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Friend<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">State</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Enemy<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">Initially</span><span class="token punctuation">(</span>
+        <span class="token function">When</span><span class="token punctuation">(</span>Hello<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Friend<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token function">When</span><span class="token punctuation">(</span>PissOff<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Enemy<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token function">When</span><span class="token punctuation">(</span>Introduce<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">Then</span><span class="token punctuation">(</span>ctx <span class="token operator">=&gt;</span> ctx<span class="token punctuation">.</span>Instance<span class="token punctuation">.</span>Name <span class="token operator">=</span> ctx<span class="token punctuation">.</span>Data<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">TransitionTo</span><span class="token punctuation">(</span>Friend<span class="token punctuation">)</span>                   
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<blockquote>
+<p>Configuration of a state machine is done using an internal DSL, using an approach 
+known as Object Scoping, and is explained in Martin Fowler&apos;s Domain Specific Languages book.</p>
+</blockquote>
+<h3 id="creating-instances">Creating instances</h3>
+<h2 id="creating-the-state-machine">Creating the state machine</h2>
+<h3 id="raising-events">Raising events</h3>
+<p>Once a state machine and an instance have been created, it is necessary to raise an event 
+on the state machine instance to invoke some behavior. There are three or four participants 
+involved in raising an event: a state machine, a state machine instance, and an event. 
+If the event includes data, the data for the event is also included.</p>
+<p>The most explicit way to raise an event is shown below.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token class-name"><span class="token keyword">var</span></span> relationship <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Relationship</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name"><span class="token keyword">var</span></span> machine <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">RelationshipStateMachine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+machine<span class="token punctuation">.</span><span class="token function">RaiseEvent</span><span class="token punctuation">(</span>relationship<span class="token punctuation">,</span> machine<span class="token punctuation">.</span>Hello<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>If the event has data, it is passed along with the event as shown.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token class-name"><span class="token keyword">var</span></span> person <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token constructor-invocation class-name">Person</span> <span class="token punctuation">{</span> Name <span class="token operator">=</span> <span class="token string">&quot;Joe&quot;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+machine<span class="token punctuation">.</span><span class="token function">RaiseEvent</span><span class="token punctuation">(</span>relationship<span class="token punctuation">,</span> machine<span class="token punctuation">.</span>Introduce<span class="token punctuation">,</span> person<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="lifters">Lifters</h3>
+<p>Lifters allow events to be raised without knowing explicit details about the state 
+machine or the instance type, making it easier to raise events from objects that do 
+not have prior type knowledge about the state machine or the instance. Using an approach 
+known as <em>currying</em> (from functional programming), individual arguments of raising 
+an event can be removed.</p>
+<p>For example, using an event lift, the state machine is removed.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token class-name"><span class="token keyword">var</span></span> eventLift <span class="token operator">=</span> machine<span class="token punctuation">.</span><span class="token function">CreateEventLift</span><span class="token punctuation">(</span>machine<span class="token punctuation">.</span>Hello<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// elsewhere in the code, the lift can be used    </span>
+eventLift<span class="token punctuation">.</span><span class="token function">Raise</span><span class="token punctuation">(</span>relationship<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>The instance can also be lifted, making it possible to raise an event without any instance 
+type knowledge.</p>
+<pre class="language-"><code class="lang-csharp"><span class="token class-name"><span class="token keyword">var</span></span> instanceLift <span class="token operator">=</span> machine<span class="token punctuation">.</span><span class="token function">CreateInstanceLift</span><span class="token punctuation">(</span>relationship<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token class-name"><span class="token keyword">var</span></span> helloEvent <span class="token operator">=</span> machine<span class="token punctuation">.</span>Hello<span class="token punctuation">;</span>
+
+<span class="token comment">// elsewhere in the code, the lift can be used</span>
+instanceLift<span class="token punctuation">.</span><span class="token function">Raise</span><span class="token punctuation">(</span>helloEvent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Lifts are commonly used by plumbing code to avoid dynamic methods or delegates, making code
+clean and fast.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../install/" class="navigation navigation-prev " aria-label="Previous page: Installation">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="creating.html" class="navigation navigation-next " aria-label="Next page: Creating a state machine">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Quick start","level":"2.1","depth":1,"next":{"title":"Creating a state machine","level":"2.2","depth":1,"path":"use/creating.md","ref":"use/creating.md","articles":[]},"previous":{"title":"Installation","level":"1.2","depth":1,"path":"install/README.md","ref":"install/README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["edit-link","prism","-highlight","github","anchorjs","expandable-chapters"],"root":"docs","styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{},"github":{"url":"https://github.com/MassTransit/Automatonymous/"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/MassTransit/Automatonymous/tree/master/docs"},"theme-default":{"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchorjs":{},"expandable-chapters":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Automatonymous","gitbook":"3.2.2"},"file":{"path":"use/README.md","mtime":"2020-12-26T22:32:33.277Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-12-26T22:35:13.721Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-anchorjs/anchor.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-anchorjs/anchor-style.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters/expandable-chapters.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
