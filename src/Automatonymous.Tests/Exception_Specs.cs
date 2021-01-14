@@ -473,4 +473,57 @@
             public Event<Init> Initialized { get; private set; }
         }
     }
+
+
+    [TestFixture]
+    public class When_an_action_throws_an_exception_and_catches_it
+    {
+        [Test]
+        public void Should_finalize_in_catch_block()
+        {
+            Assert.AreEqual(_machine.Final, _instance.CurrentState);
+        }
+
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [OneTimeSetUp]
+        public async Task Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            await _machine.RaiseEvent(_instance, _machine.Initialized, new Init());
+        }
+
+
+        class Instance
+        {
+            public State CurrentState { get; set; }
+        }
+
+
+        class Init
+        {
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                InstanceState(x => x.CurrentState);
+
+                During(Initial,
+                    When(Initialized)
+                        .Then(_ => throw new ApplicationException("Boom!"))
+                        .Catch<Exception>(ex => ex
+                            .Finalize()));
+            }
+
+
+            public Event<Init> Initialized { get; private set; }
+        }
+    }
 }
