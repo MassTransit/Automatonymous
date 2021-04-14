@@ -1,0 +1,106 @@
+name: Automatonymous
+env:
+  AUTOMATONYMOUS_VERSION: 5.1.2
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: true
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'Automatonymous.sln'
+      - 'Directory.Build.props'
+      - '**/build.yml'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'Automatonymous.sln'
+      - 'Directory.Build.props'
+      - '**/build.yml'
+  workflow_dispatch:
+
+jobs:
+  compile:
+    name: Compile and Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+        working-directory: ./
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+        working-directory: ./
+
+      - name: Test
+        run: dotnet test -c Release --no-build
+        working-directory: tests/Automatonymous.Tests
+
+      - name: Test NHibernate
+        run: dotnet test -c Release --no-build
+        working-directory: tests/Automatonymous.NHibernateIntegration.Tests
+
+  calc-version:
+    name: Calculate Version
+    runs-on: ubuntu-latest
+    needs:
+      - compile
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - id: v
+        run: |
+          if [ "${{ github.ref }}" = 'refs/heads/master' ]; then
+            echo "::set-output name=version::${AUTOMATONYMOUS_VERSION}"
+          else
+            echo "::set-output name=version::${AUTOMATONYMOUS_VERSION}-develop.${{ github.run_number }}"
+          fi
+
+  publish:
+    name: Build and Publish NuGets
+    runs-on: ubuntu-latest
+    if: (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') && github.repository == 'MassTransit/Automatonymous' && success()
+    needs:
+      - calc-version
+    steps:
+      - name: Version Output Check
+        run: |
+          echo "${{ needs.calc-version.outputs.version }}"
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.x'
+
+      - name: Build and Publish Automatonymous
+        # was: brandedoutcast/publish-nuget@v2.5.5
+        uses: drusellers/publish-nuget@master
+        with:
+          project-file-path: src/Automatonymous/Automatonymous.csproj
+          version: ${{ needs.calc-version.outputs.version }}
+          tag-commit: false
+          nuget-key: ${{secrets.NUGET_API_KEY}}
+          include-symbols: true
+
+      - name: Build and Publish NHibernate
+        # was: brandedoutcast/publish-nuget@v2.5.5
+        uses: drusellers/publish-nuget@master
+        with:
+          project-file-path: src/Automatonymous.NHibernateIntegration/Automatonymous.NHibernateIntegration.csproj
+          version: ${{ needs.calc-version.outputs.version }}
+          tag-commit: false
+          nuget-key: ${{secrets.NUGET_API_KEY}}
+          include-symbols: true
+

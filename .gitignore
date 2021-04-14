@@ -1,8 +1,6 @@
 build_artifacts/*
 build_output/*
 
-.fake/**/*
-
 **/*.suo
 **/**/*.suo
 **/*.user
@@ -23,23 +21,19 @@ _ReSharper*
 *.orig
 *.user
 
-NuGet.exe
 packages
 
 TestResult.xml
 submit.xml
-src/tests/*
 src/.vs
 src/.idea
 
-tests/*
 doc/*
 SolutionVersion.cs
 AppPackages/
 .DS_Store
 *.DS_Store
 
-_book
 /node_modules
 
 # Cake

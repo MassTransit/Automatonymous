@@ -258,7 +258,7 @@ namespace Automatonymous
 
         Event DeclareTriggerEvent(string name)
         {
-            return DeclareEvent(name => new TriggerEvent(name), name);
+            return DeclareEvent(_ => new TriggerEvent(name), name);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Automatonymous
 
         Event<T> DeclareDataEvent<T>(string name)
         {
-            return DeclareEvent(name => new DataEvent<T>(name), name);
+            return DeclareEvent(_ => new DataEvent<T>(name), name);
         }
 
         void DeclarePropertyBasedEvent<TEvent>(Func<PropertyInfo, TEvent> ctor, PropertyInfo property)

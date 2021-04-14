@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous", "src\Automatonymous\Automatonymous.csproj", "{FD8F92EB-5818-4C59-8859-19D3A74F979B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Tests", "tests\Automatonymous.Tests\Automatonymous.Tests.csproj", "{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.Visualizer", "src\Automatonymous.Visualizer\Automatonymous.Visualizer.csproj", "{CD346A24-EEBB-493C-AAC0-E9896340B66A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.NHibernateIntegration", "src\Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj", "{C0932502-0847-4966-8D0A-2CA80B1669ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NHibernate", "NHibernate", "{9D51129A-6050-40F6-A776-6C7C621438DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automatonymous.NHibernateIntegration.Tests", "tests\Automatonymous.NHibernateIntegration.Tests\Automatonymous.NHibernateIntegration.Tests.csproj", "{06A25528-1537-4E70-85E2-CC979B924417}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD8F92EB-5818-4C59-8859-19D3A74F979B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED26D6B3-73D8-433C-867A-AAB4D7F687DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD346A24-EEBB-493C-AAC0-E9896340B66A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0932502-0847-4966-8D0A-2CA80B1669ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06A25528-1537-4E70-85E2-CC979B924417}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0932502-0847-4966-8D0A-2CA80B1669ED} = {9D51129A-6050-40F6-A776-6C7C621438DA}
+		{06A25528-1537-4E70-85E2-CC979B924417} = {9D51129A-6050-40F6-A776-6C7C621438DA}
+	EndGlobalSection
+EndGlobal
