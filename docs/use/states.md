@@ -43,5 +43,5 @@ class OrderStateMachine :
 }
 ```
 
-This would declare `AwaitingCreditApproval` as a substate of `Submitted`. If the state machine transitions to the `AwaitingCreditApproval` state, it is will within the `Submitted` state and events observed in either state would be raised.
+This would declare `AwaitingCreditApproval` as a substate of `Submitted`. If the state machine transitions to the `AwaitingCreditApproval` state, it is well within the `Submitted` state and events observed in either state would be raised.
 
