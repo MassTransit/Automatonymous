@@ -324,6 +324,61 @@
 
 
     [TestFixture]
+    public class When_the_exception_is_caught_within_an_else
+    {
+        [Test]
+        public void Should_have_called_the_subsequent_action()
+        {
+            Assert.AreEqual(_instance.CurrentState, _machine.Failed);
+        }
+
+        Instance _instance;
+        InstanceStateMachine _machine;
+
+        [OneTimeSetUp]
+        public async Task Specifying_an_event_activity()
+        {
+            _instance = new Instance();
+            _machine = new InstanceStateMachine();
+
+            await _machine.RaiseEvent(_instance, _machine.Initialized);
+        }
+
+
+        class Instance
+        {
+            public bool Called { get; set; }
+            public State CurrentState { get; set; }
+        }
+
+
+        class InstanceStateMachine :
+            AutomatonymousStateMachine<Instance>
+        {
+            public InstanceStateMachine()
+            {
+                InstanceState(x => x.CurrentState);
+
+                During(Initial,
+                    When(Initialized)
+                        .IfElse(x => false, then => then.TransitionTo(Completed),
+                            @else => @else
+                                .Then(_ => throw new ApplicationException("Boom!"))
+                                .TransitionTo(NotCompleted)
+                                .Catch<Exception>(ex => ex.TransitionTo(Failed))
+                        )
+                    );
+            }
+
+            public State Completed { get; private set; }
+            public State NotCompleted { get; private set; }
+            public State Failed { get; private set; }
+            public Event Initialized { get; private set; }
+        }
+    }
+
+
+    [TestFixture]
     public class When_an_action_throws_an_exception_on_data_events
     {
         [Test]
