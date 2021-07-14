@@ -85,7 +85,6 @@ jobs:
           dotnet-version: '3.1.x'
 
       - name: Build and Publish Automatonymous
-        # was: brandedoutcast/publish-nuget@v2.5.5
         uses: drusellers/publish-nuget@master
         with:
           project-file-path: src/Automatonymous/Automatonymous.csproj
@@ -95,10 +94,18 @@ jobs:
           include-symbols: true
 
       - name: Build and Publish NHibernate
-        # was: brandedoutcast/publish-nuget@v2.5.5
         uses: drusellers/publish-nuget@master
         with:
           project-file-path: src/Automatonymous.NHibernateIntegration/Automatonymous.NHibernateIntegration.csproj
+          version: ${{ needs.calc-version.outputs.version }}
+          tag-commit: false
+          nuget-key: ${{secrets.NUGET_API_KEY}}
+          include-symbols: true
+
+      - name: Build and Publish Visualizer
+        uses: drusellers/publish-nuget@master
+        with:
+          project-file-path: src/Automatonymous.Visualizer/Automatonymous.Visualizer.csproj
           version: ${{ needs.calc-version.outputs.version }}
           tag-commit: false
           nuget-key: ${{secrets.NUGET_API_KEY}}
