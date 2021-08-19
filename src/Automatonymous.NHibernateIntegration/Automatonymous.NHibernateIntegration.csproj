@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="NHibernate" Version="5.2.7" />
+    <PackageReference Include="NHibernate" Version="5.3.9" />
     <ProjectReference Include="..\Automatonymous\Automatonymous.csproj" />
   </ItemGroup>
 </Project>

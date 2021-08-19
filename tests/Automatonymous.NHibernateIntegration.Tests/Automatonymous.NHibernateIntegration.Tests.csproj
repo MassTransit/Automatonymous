@@ -4,14 +4,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="NHibernate" Version="5.2.7" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112.2" />
+    <PackageReference Include="NHibernate" Version="5.3.9" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.3" />
     <ProjectReference Include="..\..\src\Automatonymous.NHibernateIntegration\Automatonymous.NHibernateIntegration.csproj" />
     <ProjectReference Include="..\..\src\Automatonymous\Automatonymous.csproj" />
   </ItemGroup>
