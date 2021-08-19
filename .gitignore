@@ -6,6 +6,8 @@ build_output/*
 **/*.user
 **/**/*.user
 
+.idea
+
 bin
 obj
 _ReSharper*
