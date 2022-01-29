@@ -19,13 +19,9 @@
         public void Should_show_the_goods()
         {
             var generator = new StateMachineGraphvizGenerator(_graph);
-
             string dots = generator.CreateDotFile();
-
             Console.WriteLine(dots);
-
             var expected = Expected.Replace("\r", "").Replace("\n", Environment.NewLine);
-
             Assert.AreEqual(expected, dots);
         }
 

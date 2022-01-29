@@ -10,7 +10,7 @@
         [Test]
         public async Task Should_have_called_combined_event()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -23,7 +23,7 @@
         [Test]
         public async Task Should_have_called_combined_event_after_all_events()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -36,7 +36,7 @@
         [Test]
         public async Task Should_not_call_for_one_event()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -48,7 +48,57 @@
         [Test]
         public async Task Should_not_call_for_one_other_event()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.Second);
+
+            Assert.IsFalse(_instance.Called);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_have_called_combined_event()
+        {
+            _machine = new TestStateMachine(true);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.First);
+            await _machine.RaiseEvent(_instance, _machine.Second);
+
+            Assert.IsTrue(_instance.Called);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_have_called_combined_event_after_all_events()
+        {
+            _machine = new TestStateMachine(true);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.First);
+            await _machine.RaiseEvent(_instance, _machine.Second);
+
+            Assert.IsTrue(_instance.CalledAfterAll);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_not_call_for_one_event()
+        {
+            _machine = new TestStateMachine(true);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.First);
+
+            Assert.IsFalse(_instance.Called);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_not_call_for_one_other_event()
+        {
+            _machine = new TestStateMachine(true);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -73,7 +123,7 @@
         sealed class TestStateMachine :
             AutomatonymousStateMachine<Instance>
         {
-            public TestStateMachine()
+            public TestStateMachine(bool specificallyAssignedToWaiting)
             {
                 Initially(
                     When(Start)
@@ -81,12 +131,20 @@
 
                 During(Waiting,
                     When(First)
-                        .Then(context => { context.Instance.CalledAfterAll = false; }),
+                        .Then(context =>
+                        {
+                            context.Instance.CalledAfterAll = false;
+                        }),
                     When(Second)
-                        .Then(context => { context.Instance.CalledAfterAll = false; })
-                    );
+                        .Then(context =>
+                        {
+                            context.Instance.CalledAfterAll = false;
+                        }));
 
-                CompositeEvent(() => Third, x => x.CompositeStatus, First, Second);
+                if (specificallyAssignedToWaiting)
+                    CompositeEvent(() => Third, x => Equals(x, Waiting), x => x.CompositeStatus, First, Second);
+                else
+                    CompositeEvent(() => Third, x => x.CompositeStatus, First, Second);
 
                 During(Waiting,
                     When(Third)

@@ -8,8 +8,7 @@
     using Events;
 
 
-    public class GraphStateMachineVisitor<TInstance> :
-        StateMachineVisitor
+    public class GraphStateMachineVisitor<TInstance> : StateMachineVisitor
         where TInstance : class
     {
         readonly HashSet<Edge> _edges;
@@ -29,148 +28,86 @@
         {
             get
             {
-                var events = _events.Values
-                    .Where(e => _edges.Any(edge => edge.From.Equals(e)));
-
-                var states = _states.Values
-                    .Where(s => _edges.Any(edge => edge.From.Equals(s) || edge.To.Equals(s)));
-
+                var events = _events.Values.Where(e => _edges.Any(edge => edge.From.Equals(e)));
+                var states = _states.Values.Where(s => _edges.Any(edge => edge.From.Equals(s) || edge.To.Equals(s)));
                 var vertices = new HashSet<Vertex>(states.Union(events));
-
-                var edges = _edges
-                    .Where(e => vertices.Contains(e.From) && vertices.Contains(e.To));
-
-                return new StateMachineGraph(vertices, edges);
+                return new StateMachineGraph(vertices, _edges.Where(e => vertices.Contains(e.From) && vertices.Contains(e.To)));
             }
         }
 
-        public void Visit(State state, Action<State> next)
+        public void Visit(State state, Action<State> next = null)
         {
             _currentState = GetStateVertex(state);
-
-            next(state);
+            next?.Invoke(state);
         }
 
-        public void Visit(Event @event, Action<Event> next)
+        public void Visit(Event @event, Action<Event> next = null)
         {
             _currentEvent = GetEventVertex(@event);
-
-            _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
-
-            next(@event);
-        }
-
-        public void Visit<TData>(Event<TData> @event, Action<Event<TData>> next)
-        {
-            _currentEvent = GetEventVertex(@event);
-
-            _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
-
-            next(@event);
-        }
-
-        public void Visit(Activity activity)
-        {
-            Visit(activity, x => { });
-        }
-
-        public void Visit<T>(Behavior<T> behavior)
-        {
-            Visit(behavior, x => { });
-        }
-
-        public void Visit<T>(Behavior<T> behavior, Action<Behavior<T>> next)
-        {
-            next(behavior);
-        }
-
-        public void Visit<T, TData>(Behavior<T, TData> behavior)
-        {
-            Visit(behavior, x => { });
-        }
-
-        public void Visit<T, TData>(Behavior<T, TData> behavior, Action<Behavior<T, TData>> next)
-        {
-            next(behavior);
-        }
-
-        public void Visit(Activity activity, Action<Activity> next)
-        {
-            if (activity is TransitionActivity<TInstance> transitionActivity)
+            if (!_currentEvent.IsComposite)
             {
-                InspectTransitionActivity(transitionActivity);
-                next(activity);
-                return;
+                _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
             }
+            next?.Invoke(@event);
+        }
 
-            if (activity is CompositeEventActivity<TInstance> compositeActivity)
+        public void Visit<TData>(Event<TData> @event, Action<Event<TData>> next = null)
+        {
+            _currentEvent = GetEventVertex(@event);
+            if (!_currentEvent.IsComposite)
             {
-                InspectCompositeEventActivity(compositeActivity);
-                next(activity);
-                return;
+                _edges.Add(new Edge(_currentState, _currentEvent, _currentEvent.Title));
+            }
+            next?.Invoke(@event);
+        }
+
+        public void Visit<T>(Behavior<T> behavior, Action<Behavior<T>> next = null) => next?.Invoke(behavior);
+
+        public void Visit<T, TData>(Behavior<T, TData> behavior, Action<Behavior<T, TData>> next = null) => next?.Invoke(behavior);
+
+        public void Visit(Activity activity, Action<Activity> next = null)
+        {
+            switch (activity)
+            {
+                case TransitionActivity<TInstance> transitionActivity:
+                    InspectTransitionActivity(transitionActivity);
+                    next?.Invoke(activity);
+                    return;
+                case CompositeEventActivity<TInstance> compositeActivity:
+                    InspectCompositeEventActivity(compositeActivity);
+                    next?.Invoke(activity);
+                    return;
             }
 
             var activityType = activity.GetType();
-            var compensateType = activityType.GetTypeInfo().IsGenericType
-                                 && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
+            var compensateType = activityType.GetTypeInfo().IsGenericType && activityType.GetGenericTypeDefinition() == typeof(CatchFaultActivity<,>)
                 ? activityType.GetGenericArguments().Skip(1).First()
                 : null;
 
             if (compensateType != null)
             {
                 var previousEvent = _currentEvent;
-
-                var eventType = typeof(DataEvent<>).MakeGenericType(compensateType);
-                var evt = (Event)Activator.CreateInstance(eventType, compensateType.Name);
-                _currentEvent = GetEventVertex(evt);
-
+                _currentEvent = GetEventVertex((Event)Activator.CreateInstance(typeof(DataEvent<>).MakeGenericType(compensateType), compensateType.Name));
                 _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
-
-                next(activity);
-
+                next?.Invoke(activity);
                 _currentEvent = previousEvent;
                 return;
             }
 
-            next(activity);
+            next?.Invoke(activity);
         }
 
         void InspectCompositeEventActivity(CompositeEventActivity<TInstance> compositeActivity)
         {
             var previousEvent = _currentEvent;
-
             _currentEvent = GetEventVertex(compositeActivity.Event);
-
             _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
         }
 
-//        void InspectExceptionActivity(ExceptionActivity<TInstance> exceptionActivity, Action<Activity> next)
-//        {
-//            Vertex previousEvent = _currentEvent;
-//
-//            _currentEvent = GetEventVertex(exceptionActivity.Event);
-//
-//            _edges.Add(new Edge(previousEvent, _currentEvent, _currentEvent.Title));
-//
-//            next(exceptionActivity);
-//
-//            _currentEvent = previousEvent;
-//        }
-
-//        void InspectTryActivity(TryActivity<TInstance> exceptionActivity, Action<Activity> next)
-//        {
-//            Vertex previousEvent = _currentEvent;
-//
-//            next(exceptionActivity);
-//
-//            _currentEvent = previousEvent;
-//        }
-
         void InspectTransitionActivity(TransitionActivity<TInstance> transitionActivity)
         {
-            var targetState = GetStateVertex(transitionActivity.ToState);
-
-            _edges.Add(new Edge(_currentEvent, targetState, _currentEvent.Title));
+            var next = GetStateVertex(transitionActivity.ToState);
+            _edges.Add(new Edge(_currentEvent, GetStateVertex(transitionActivity.ToState), _currentEvent.Title));
         }
 
         Vertex GetStateVertex(State state)
@@ -195,28 +132,16 @@
             return vertex;
         }
 
-        static Vertex CreateStateVertex(State state)
-        {
-            return new Vertex(typeof(State), typeof(State), state.Name);
-        }
+        static Vertex CreateStateVertex(State state) =>
+            new Vertex(typeof(State), typeof(State), state.Name, false);
 
-        static Vertex CreateEventVertex(Event @event)
-        {
-            var targetType = @event
-                .GetType()
-                .GetInterfaces()
-                .Where(x => x.GetTypeInfo().IsGenericType)
-                .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
-                .Select(x => x.GetGenericArguments()[0])
-                .DefaultIfEmpty(typeof(Event))
-                .Single();
-
-            return new Vertex(typeof(Event), targetType, @event.Name);
-        }
-
-        static Vertex CreateEventVertex(Type exceptionType)
-        {
-            return new Vertex(typeof(Event), exceptionType, exceptionType.Name);
-        }
+        static Vertex CreateEventVertex(Event @event) => new Vertex(typeof(Event), @event
+            .GetType()
+            .GetInterfaces()
+            .Where(x => x.GetTypeInfo().IsGenericType)
+            .Where(x => x.GetGenericTypeDefinition() == typeof(Event<>))
+            .Select(x => x.GetGenericArguments()[0])
+            .DefaultIfEmpty(typeof(Event))
+            .Single(), @event.Name, @event.IsComposite);
     }
 }

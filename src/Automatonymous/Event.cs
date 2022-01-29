@@ -1,6 +1,7 @@
 namespace Automatonymous
 {
     using System;
+    using Binders;
 
 
     public interface Event :
@@ -8,8 +9,8 @@ namespace Automatonymous
         IComparable<Event>
     {
         string Name { get; }
+        bool IsComposite { get; set;}
     }
-
 
     public interface Event<out TData> :
         Event

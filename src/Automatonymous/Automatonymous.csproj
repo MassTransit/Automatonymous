@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8</LangVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Automatonymous.snk</AssemblyOriginatorKeyFile>
     <NoWarn>$(NoWarn);1701;1702;1705;1591;1712</NoWarn>
@@ -15,5 +16,21 @@
   <ItemGroup>
     <PackageReference Include="GreenPipes" Version="4.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AutomatonymousStateMachine.CompositeEvent.cs">
+      <DependentUpon>AutomatonymousStateMachine.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RaiseEventExtensions.cs">
+      <DependentUpon>RaiseEventExtensions.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="RaiseEventExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RaiseEventExtensions.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 </Project>

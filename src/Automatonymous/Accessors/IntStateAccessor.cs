@@ -43,18 +43,12 @@ namespace Automatonymous.Accessors
             if (state == null)
                 throw new ArgumentNullException(nameof(state));
 
-            var stateIndex = _index[state.Name];
-
             var previousIndex = _property.Get(context.Instance);
-
-            if (stateIndex == previousIndex)
+            if (_index[state.Name] == previousIndex)
                 return TaskUtil.Completed;
 
-            _property.Set(context.Instance, stateIndex);
-
-            var previousState = _index[previousIndex];
-
-            return _observer.StateChanged(context, state, previousState);
+            _property.Set(context.Instance, _index[state.Name]);
+            return _observer.StateChanged(context, state, _index[previousIndex]);
         }
 
         public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states)
@@ -63,25 +57,15 @@ namespace Automatonymous.Accessors
                 throw new ArgumentOutOfRangeException(nameof(states), "One or more states must be specified");
 
             var parameterExpression = Expression.Parameter(typeof(TInstance), "instance");
-
             var statePropertyExpression = Expression.Property(parameterExpression, _property.Property.GetMethod);
-
-            var stateExpression = states.Select(state => Expression.Equal(statePropertyExpression, Expression.Constant(_index[state.Name])))
-                .Aggregate((left, right) => Expression.Or(left, right));
-
-            return Expression.Lambda<Func<TInstance, bool>>(stateExpression, parameterExpression);
+            return Expression.Lambda<Func<TInstance, bool>>(states.Select(state => Expression.Equal(statePropertyExpression, Expression.Constant(_index[state.Name])))
+                .Aggregate(Expression.Or), parameterExpression);
         }
 
-        public void Probe(ProbeContext context)
-        {
+        public void Probe(ProbeContext context) =>
             context.Add("currentStateProperty", _property.Property.Name);
-        }
 
-        static ReadWriteProperty<TInstance, int> GetCurrentStateProperty(Expression<Func<TInstance, int>> currentStateExpression)
-        {
-            var propertyInfo = currentStateExpression.GetPropertyInfo();
-
-            return new ReadWriteProperty<TInstance, int>(propertyInfo);
-        }
+        static ReadWriteProperty<TInstance, int> GetCurrentStateProperty(Expression<Func<TInstance, int>> currentStateExpression) =>
+            new ReadWriteProperty<TInstance, int>(currentStateExpression.GetPropertyInfo());
     }
 }

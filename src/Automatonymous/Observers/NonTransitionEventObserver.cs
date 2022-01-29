@@ -10,10 +10,10 @@ namespace Automatonymous.Observers
     class NonTransitionEventObserver<TInstance> :
         EventObserver<TInstance>
     {
-        readonly IReadOnlyDictionary<string, StateMachineEvent<TInstance>> _eventCache;
+        readonly IReadOnlyDictionary<string, StateMachineEvent> _eventCache;
         readonly EventObserver<TInstance> _observer;
 
-        public NonTransitionEventObserver(IReadOnlyDictionary<string, StateMachineEvent<TInstance>> eventCache,
+        public NonTransitionEventObserver(IReadOnlyDictionary<string, StateMachineEvent> eventCache,
             EventObserver<TInstance> observer)
         {
             _eventCache = eventCache;

@@ -15,44 +15,27 @@ namespace Automatonymous.Events
         {
         }
 
-        public override void Accept(StateMachineVisitor visitor)
-        {
-            visitor.Visit(this, x => { });
-        }
+        public override void Accept(StateMachineVisitor visitor) =>
+            visitor.Visit(this, x =>
+            {
+            });
 
         public override void Probe(ProbeContext context)
         {
             base.Probe(context);
-
             context.Add("dataType", TypeCache<TData>.ShortName);
         }
 
-        public bool Equals(DataEvent<TData> other)
-        {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            return Equals(other.Name, Name);
-        }
+        public bool Equals(DataEvent<TData> other) =>
+            !ReferenceEquals(null, other) && (ReferenceEquals(this, other) || Equals(other.Name, Name));
 
-        public override string ToString()
-        {
-            return $"{Name}<{typeof(TData).Name}> (Event)";
-        }
+        public override string ToString() =>
+            $"{Name}<{typeof(TData).Name}> (Event)";
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            return Equals(obj as DataEvent<TData>);
-        }
+        public override bool Equals(object obj) =>
+            !ReferenceEquals(null, obj) && (ReferenceEquals(this, obj) || Equals(obj as DataEvent<TData>));
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode() * 27 + typeof(TData).GetHashCode();
-        }
+        public override int GetHashCode() =>
+            base.GetHashCode() * 27 + typeof(TData).GetHashCode();
     }
 }

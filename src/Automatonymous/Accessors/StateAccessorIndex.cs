@@ -14,9 +14,7 @@ namespace Automatonymous.Accessors
         public StateAccessorIndex(StateMachine<TInstance> stateMachine, State<TInstance> initial, State<TInstance> final, State[] states)
         {
             _stateMachine = stateMachine;
-
             _assignedStates = new[] {null, initial, final}.Concat(states.Cast<State<TInstance>>()).ToArray();
-
             _states = new Lazy<State<TInstance>[]>(CreateStateArray);
         }
 
@@ -35,20 +33,10 @@ namespace Automatonymous.Accessors
             }
         }
 
-        public State<TInstance> this[int index]
-        {
-            get
-            {
-                if (index < 0 || index >= _states.Value.Length)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+        public State<TInstance> this[int index] =>
+            index < 0 || index >= _states.Value.Length ? throw new ArgumentOutOfRangeException(nameof(index)) : _states.Value[index];
 
-                return _states.Value[index];
-            }
-        }
-
-        State<TInstance>[] CreateStateArray()
-        {
-            return _assignedStates.Concat(_stateMachine.States.Cast<State<TInstance>>()).Distinct().ToArray();
-        }
+        State<TInstance>[] CreateStateArray() =>
+            _assignedStates.Concat(_stateMachine.States.Cast<State<TInstance>>()).Distinct().ToArray();
     }
 }

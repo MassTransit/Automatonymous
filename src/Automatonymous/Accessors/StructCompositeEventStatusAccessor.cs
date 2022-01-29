@@ -5,8 +5,7 @@ namespace Automatonymous.Accessors
     using GreenPipes.Internals.Reflection;
 
 
-    public class StructCompositeEventStatusAccessor<TInstance> :
-        CompositeEventStatusAccessor<TInstance>
+    public class StructCompositeEventStatusAccessor<TInstance> : CompositeEventStatusAccessor<TInstance>
     {
         readonly ReadWriteProperty<TInstance, CompositeEventStatus> _property;
 
@@ -15,19 +14,13 @@ namespace Automatonymous.Accessors
             _property = new ReadWriteProperty<TInstance, CompositeEventStatus>(propertyInfo);
         }
 
-        public CompositeEventStatus Get(TInstance instance)
-        {
-            return _property.Get(instance);
-        }
+        public CompositeEventStatus Get(TInstance instance) =>
+            _property.Get(instance);
 
-        public void Set(TInstance instance, CompositeEventStatus status)
-        {
+        public void Set(TInstance instance, CompositeEventStatus status) =>
             _property.Set(instance, status);
-        }
 
-        public void Probe(ProbeContext context)
-        {
+        public void Probe(ProbeContext context) =>
             context.Add("property", _property.Property.Name);
-        }
     }
 }

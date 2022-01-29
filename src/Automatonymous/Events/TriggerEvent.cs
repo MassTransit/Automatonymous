@@ -4,61 +4,39 @@
     using GreenPipes;
 
 
-    public class TriggerEvent :
-        Event
+    public class TriggerEvent : Event
     {
-        readonly string _name;
 
-        public TriggerEvent(string name)
+        public string Name { get; }
+        public bool IsComposite { get; set; }
+
+        public TriggerEvent(string name, bool isComposite = false)
         {
-            _name = name;
+            Name = name;
+            IsComposite = isComposite;
         }
 
-        public string Name => _name;
+        public virtual void Accept(StateMachineVisitor visitor) =>
+            visitor.Visit(this, x =>
+            {
+            });
 
-        public virtual void Accept(StateMachineVisitor visitor)
-        {
-            visitor.Visit(this, x => { });
-        }
+        public virtual void Probe(ProbeContext context) =>
+            context.Add("name", Name);
 
-        public virtual void Probe(ProbeContext context)
-        {
-            context.Add("name", _name);
-        }
+        public int CompareTo(Event other) =>
+            string.Compare(Name, other.Name, StringComparison.Ordinal);
 
-        public int CompareTo(Event other)
-        {
-            return string.Compare(_name, other.Name, StringComparison.Ordinal);
-        }
+        public bool Equals(TriggerEvent other) =>
+            !ReferenceEquals(null, other) && (ReferenceEquals(this, other) || Equals(other.Name, Name));
 
-        public bool Equals(TriggerEvent other)
-        {
-            if (ReferenceEquals(null, other))
-                return false;
-            if (ReferenceEquals(this, other))
-                return true;
-            return Equals(other._name, _name);
-        }
+        public override bool Equals(object obj) =>
+            !ReferenceEquals(null, obj) && (ReferenceEquals(this, obj) || obj.GetType() == typeof(TriggerEvent) && Equals((TriggerEvent)obj));
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            if (obj.GetType() != typeof(TriggerEvent))
-                return false;
-            return Equals((TriggerEvent)obj);
-        }
+        public override int GetHashCode() =>
+            Name?.GetHashCode() ?? 0;
 
-        public override int GetHashCode()
-        {
-            return _name?.GetHashCode() ?? 0;
-        }
-
-        public override string ToString()
-        {
-            return $"{_name} (Event)";
-        }
+        public override string ToString() =>
+            $"{Name} (Event)";
     }
 }

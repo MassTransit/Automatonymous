@@ -6,9 +6,7 @@ namespace Automatonymous.Graphing
             where TInstance : class
         {
             var inspector = new GraphStateMachineVisitor<TInstance>();
-
             machine.Accept(inspector);
-
             return inspector.Graph;
         }
     }

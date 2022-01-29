@@ -49,10 +49,8 @@ namespace Automatonymous.States
             superState?.AddSubstate(this);
         }
 
-        public bool Equals(State other)
-        {
-            return string.CompareOrdinal(_name, other?.Name ?? "") == 0;
-        }
+        public bool Equals(State other) =>
+            string.CompareOrdinal(_name, other?.Name ?? "") == 0;
 
         public State<TInstance> SuperState { get; }
         public string Name => _name;

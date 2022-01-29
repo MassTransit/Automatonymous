@@ -1,5 +1,6 @@
 ﻿namespace Automatonymous.Tests
 {
+    using System;
     using System.Threading.Tasks;
     using NUnit.Framework;
 
@@ -10,7 +11,7 @@
         [Test]
         public async Task Should_call_when_met()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -24,7 +25,35 @@
         [Test]
         public async Task Should_skip_when_not_met()
         {
-            _machine = new TestStateMachine();
+            _machine = new TestStateMachine(false);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.First);
+            await _machine.RaiseEvent(_instance, _machine.Second);
+
+            Assert.IsFalse(_instance.Called);
+            Assert.IsFalse(_instance.SecondFirst);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_call_when_met()
+        {
+            _machine = new TestStateMachine(true);
+            _instance = new Instance();
+            await _machine.RaiseEvent(_instance, _machine.Start);
+
+            await _machine.RaiseEvent(_instance, _machine.Second);
+            await _machine.RaiseEvent(_instance, _machine.First);
+
+            Assert.IsTrue(_instance.Called);
+            Assert.IsTrue(_instance.SecondFirst);
+        }
+
+        [Test]
+        public async Task Assigned_to_specific_state_should_skip_when_not_met()
+        {
+            _machine = new TestStateMachine(true);
             _instance = new Instance();
             await _machine.RaiseEvent(_instance, _machine.Start);
 
@@ -55,7 +84,7 @@
         sealed class TestStateMachine :
             AutomatonymousStateMachine<Instance>
         {
-            public TestStateMachine()
+            public TestStateMachine(bool specificallyAssignedToWaiting)
             {
                 Initially(
                     When(Start)
@@ -77,7 +106,10 @@
                         })
                     );
 
-                CompositeEvent(() => Third, x => x.CompositeStatus, First, Second);
+                if (specificallyAssignedToWaiting)
+                    CompositeEvent(() => Third, x => Equals(x, Waiting), x => x.CompositeStatus, First, Second);
+                else
+                    CompositeEvent(() => Third, x => x.CompositeStatus, First, Second);
 
                 During(Waiting,
                     When(Third, context => context.Instance.SecondFirst)

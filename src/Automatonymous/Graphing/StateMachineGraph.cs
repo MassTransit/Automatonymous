@@ -8,17 +8,14 @@ namespace Automatonymous.Graphing
     [Serializable]
     public class StateMachineGraph
     {
-        readonly Edge[] _edges;
-        readonly Vertex[] _vertices;
+        public IEnumerable<Vertex> Vertices { get; }
+
+        public IEnumerable<Edge> Edges { get; }
 
         public StateMachineGraph(IEnumerable<Vertex> vertices, IEnumerable<Edge> edges)
         {
-            _vertices = vertices.ToArray();
-            _edges = edges.ToArray();
+            Vertices = vertices.ToArray();
+            Edges = edges.ToArray();
         }
-
-        public IEnumerable<Vertex> Vertices => _vertices;
-
-        public IEnumerable<Edge> Edges => _edges;
     }
 }

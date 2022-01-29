@@ -15,19 +15,13 @@ namespace Automatonymous.Accessors
             _property = new ReadWriteProperty<TInstance, int>(propertyInfo);
         }
 
-        public CompositeEventStatus Get(TInstance instance)
-        {
-            return new CompositeEventStatus(_property.Get(instance));
-        }
+        public CompositeEventStatus Get(TInstance instance) =>
+            new CompositeEventStatus(_property.Get(instance));
 
-        public void Set(TInstance instance, CompositeEventStatus status)
-        {
+        public void Set(TInstance instance, CompositeEventStatus status) =>
             _property.Set(instance, status.Bits);
-        }
 
-        public void Probe(ProbeContext context)
-        {
+        public void Probe(ProbeContext context) =>
             context.Add("property", _property.Property.Name);
-        }
     }
 }

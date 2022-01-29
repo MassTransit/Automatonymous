@@ -31,25 +31,17 @@ namespace Automatonymous.Accessors
             _accessor = new Lazy<StateAccessor<TInstance>>(CreateDefaultAccessor);
         }
 
-        Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context)
-        {
-            return _accessor.Value.Get(context);
-        }
+        Task<State<TInstance>> StateAccessor<TInstance>.Get(InstanceContext<TInstance> context) =>
+            _accessor.Value.Get(context);
 
-        Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state)
-        {
-            return _accessor.Value.Set(context, state);
-        }
+        Task StateAccessor<TInstance>.Set(InstanceContext<TInstance> context, State<TInstance> state) =>
+            _accessor.Value.Set(context, state);
 
-        public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states)
-        {
-            return _accessor.Value.GetStateExpression(states);
-        }
+        public Expression<Func<TInstance, bool>> GetStateExpression(params State[] states) =>
+            _accessor.Value.GetStateExpression(states);
 
-        public void Probe(ProbeContext context)
-        {
+        public void Probe(ProbeContext context) =>
             _accessor.Value.Probe(context);
-        }
 
         StateAccessor<TInstance> CreateDefaultAccessor()
         {
@@ -69,12 +61,10 @@ namespace Automatonymous.Accessors
                     "The InstanceState was not configured, and no public State property exists.");
 
             var instance = Expression.Parameter(typeof(TInstance), "instance");
-            var memberExpression = Expression.Property(instance, states[0]);
-
-            var expression = Expression.Lambda<Func<TInstance, State>>(memberExpression,
-                instance);
-
-            return new InitialIfNullStateAccessor<TInstance>(_initialState, new RawStateAccessor<TInstance>(_machine, expression, _observer));
+            return new InitialIfNullStateAccessor<TInstance>(_initialState, new RawStateAccessor<TInstance>(
+                _machine,
+                Expression.Lambda<Func<TInstance, State>>(Expression.Property(instance, states[0]), instance),
+                _observer));
         }
     }
 }
